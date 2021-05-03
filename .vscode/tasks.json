@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "g++ build active file",
+        "command": "/usr/local/gcc-11.1.0/bin/gcc11.1",
+        "args": [
+            "${file}",
+            "-lglfw",
+            "-lGL",
+            "-o",
+            "${fileDirname}/Project Epsilon"
+            //"${fileDirname}/${fileBasenameNoExtension}"
+        ],
+        "options": {
+          "cwd": "/usr/bin"
+        },
+        "problemMatcher": ["$gcc"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }
