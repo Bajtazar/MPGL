@@ -1,26 +1,17 @@
 {
-    "version": "2.0.0",
-    "tasks": [
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
       {
-        "type": "shell",
-        "label": "g++ build active file",
-        "command": "/usr/local/gcc-11.1.0/bin/gcc11.1",
-        "args": [
-            "${file}",
-            "-lglfw",
-            "-lGL",
-            "-o",
-            "${fileDirname}/Project Epsilon"
-            //"${fileDirname}/${fileBasenameNoExtension}"
-        ],
-        "options": {
-          "cwd": "/usr/bin"
-        },
-        "problemMatcher": ["$gcc"],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        }
+          "label": "build",
+          "type": "shell",
+          "command": "make",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": "$gcc",
       }
-    ]
-  }
+  ]
+}
