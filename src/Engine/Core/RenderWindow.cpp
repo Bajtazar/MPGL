@@ -18,7 +18,7 @@ namespace ge {
         glfwMakeContextCurrent(windowHandler);
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             throw RenderWindowGladException(title);
-        glViewport(0, 0, width, height);
+        setCallbacks();
     }
 
     RenderWindow::RenderWindow(RenderWindow&& window) noexcept : windowHandler(window.windowHandler) {
@@ -31,7 +31,8 @@ namespace ge {
         return *this;
     }
 
-    void RenderWindow::clear(void) noexcept{
+    void RenderWindow::clear(const Color& color) noexcept{
+        glClearColor(color.red, color.green, color.blue, color.alpha);
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
@@ -47,6 +48,18 @@ namespace ge {
         glfwWindowHint(GLFW_RESIZABLE, options.resizable);
         glfwWindowHint(GLFW_MAXIMIZED, options.maximised);
         glfwWindowHint(GLFW_FLOATING, options.floating);
+    }
+
+    void framebufferCallback(GLFWwindow* window, int width, int height) noexcept {
+        RenderWindow* render = static_cast<RenderWindow*>(glfwGetWindowUserPointer(window));
+        glViewport(0, 0, width, height);
+        render->width = width;
+        render->height = height;
+    }
+
+    void RenderWindow::setCallbacks(void) noexcept {
+        glfwSetWindowUserPointer(windowHandler, this);
+        glfwSetFramebufferSizeCallback(windowHandler, framebufferCallback);
     }
 
 }

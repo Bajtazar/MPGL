@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
+#include "Color.hpp"
+
 namespace ge {
 
     class RenderWindow {
@@ -32,15 +34,18 @@ namespace ge {
         const std::string& getWindowTitle(void) const noexcept { return name; }
 
         void draw(void) noexcept;
-        void clear(void) noexcept;
+        void clear(const Color& = Color::literals::Black) noexcept;
 
         ~RenderWindow(void) noexcept { glfwTerminate(); }
+
+        friend void framebufferCallback(GLFWwindow* window, int width, int height) noexcept;
     private:
         int32_t width;
         int32_t height;
         std::string name;
         GLFWwindow* windowHandler;
         void setWindowOptions(const Options&) const noexcept;
+        void setCallbacks(void) noexcept;
     };
 
 }
