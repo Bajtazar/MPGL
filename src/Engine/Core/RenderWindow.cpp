@@ -21,13 +21,18 @@ namespace ge {
         setCallbacks();
     }
 
-    RenderWindow::RenderWindow(RenderWindow&& window) noexcept : windowHandler(window.windowHandler) {
+    RenderWindow::RenderWindow(RenderWindow&& window) noexcept : width(window.width), height(window.height), name(window.name), windowHandler(window.windowHandler) {
         window.windowHandler = nullptr;
+        glfwSetWindowUserPointer(windowHandler, this);
     }
 
     RenderWindow& RenderWindow::operator= (RenderWindow&& window) noexcept{
         windowHandler = window.windowHandler;
         window.windowHandler = nullptr;
+        width = window.width;
+        height = window.height;
+        name = window.name;
+        glfwSetWindowUserPointer(windowHandler, this);
         return *this;
     }
 
