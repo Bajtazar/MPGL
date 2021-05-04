@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Color.hpp"
+#include "../Mathematics/Vector2.hpp"
 
 namespace ge {
 
@@ -20,7 +21,7 @@ namespace ge {
             Options(uint16_t major=3,uint16_t minor=3,bool floating=false,bool maximised=false,bool resizable=true) noexcept;
         };
         // RenderWindow methods;
-        explicit RenderWindow(int32_t width, int32_t height, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr) noexcept(false);
+        explicit RenderWindow(Vector2i dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr) noexcept(false);
         RenderWindow(const RenderWindow& window) noexcept = delete;
         RenderWindow(RenderWindow&& window) noexcept;
 
@@ -29,8 +30,8 @@ namespace ge {
 
         operator bool() const noexcept { return glfwWindowShouldClose(windowHandler); }
 
-        int32_t getWindowWidth(void) const noexcept { return width; }
-        int32_t getWindowHeight(void) const noexcept { return height; }
+        Vector2i getWindowBaseDimmensions(void) const noexcept { return baseDimmensions; }
+        Vector2i getWindowDimmensions(void) const noexcept { return dimmensions; }
         const std::string& getWindowTitle(void) const noexcept { return name; }
 
         void draw(void) noexcept;
@@ -40,8 +41,8 @@ namespace ge {
 
         friend void framebufferCallback(GLFWwindow* window, int width, int height) noexcept;
     private:
-        int32_t width;
-        int32_t height;
+        Vector2i baseDimmensions;
+        Vector2i dimmensions;
         std::string name;
         GLFWwindow* windowHandler;
         void setWindowOptions(const Options&) const noexcept;

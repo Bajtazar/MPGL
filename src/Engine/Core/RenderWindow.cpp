@@ -8,11 +8,11 @@ namespace ge {
     RenderWindow::Options::Options(uint16_t major,uint16_t minor,bool floating,bool maximised,bool resizable) noexcept
     : openGLMajorVersion(major), openGLMinorVersion(minor), floating(floating), maximised(maximised), resizable(resizable) {}
 
-    RenderWindow::RenderWindow(int32_t width, int32_t height, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) {
+    RenderWindow::RenderWindow(Vector2i dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : baseDimmensions(dimmensions), dimmensions(dimmensions) {
         if (!glfwInit())
             throw RenderWindowInitException(title);
         setWindowOptions(options);
-        windowHandler = glfwCreateWindow(width, height, title.c_str(), monitor, share);
+        windowHandler = glfwCreateWindow(dimmensions.x, dimmensions.y, title.c_str(), monitor, share);
         if (!windowHandler)
             throw RenderWindowInvalidArgsException(title);
         glfwMakeContextCurrent(windowHandler);
@@ -21,7 +21,7 @@ namespace ge {
         setCallbacks();
     }
 
-    RenderWindow::RenderWindow(RenderWindow&& window) noexcept : width(window.width), height(window.height), name(window.name), windowHandler(window.windowHandler) {
+    RenderWindow::RenderWindow(RenderWindow&& window) noexcept : baseDimmensions(window.baseDimmensions), dimmensions(window.dimmensions), name(window.name), windowHandler(window.windowHandler) {
         window.windowHandler = nullptr;
         glfwSetWindowUserPointer(windowHandler, this);
     }
@@ -29,8 +29,8 @@ namespace ge {
     RenderWindow& RenderWindow::operator= (RenderWindow&& window) noexcept{
         windowHandler = window.windowHandler;
         window.windowHandler = nullptr;
-        width = window.width;
-        height = window.height;
+        dimmensions = window.dimmensions;
+        baseDimmensions = window.baseDimmensions;
         name = window.name;
         glfwSetWindowUserPointer(windowHandler, this);
         return *this;
@@ -58,8 +58,7 @@ namespace ge {
     void framebufferCallback(GLFWwindow* window, int width, int height) noexcept {
         RenderWindow* render = static_cast<RenderWindow*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        render->width = width;
-        render->height = height;
+        render->dimmensions = {width, height};
     }
 
     void RenderWindow::setCallbacks(void) noexcept {
