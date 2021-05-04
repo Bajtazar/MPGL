@@ -2,7 +2,7 @@ CXX	:= /usr/local/gcc-11.1.0/bin/g++11.1
 CXX_FLAGS	:= -std=c++20 -ggdb -lGL -lglfw  -ldl -lm -lpthread -pthread
 
 BIN	:= bin
-SRC	:= src
+SRC	:= $(shell find . -name "*.cpp")
 INCLUDE	:= include
 
 LIBRARIES	:=
@@ -16,7 +16,7 @@ run: clean all
 	clear
 	./$(BIN)/$(EXECUTABLE)
 
-$(BIN)/$(EXECUTABLE): $(SRC)/*.cpp glad.c
+$(BIN)/$(EXECUTABLE): $(SRC) glad.c
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $@ $(LIBRARIES)
 
 clean:
