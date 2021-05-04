@@ -10,7 +10,7 @@ namespace ge {
     private:
         virtual void createMessage(void) noexcept {
             using namespace std::literals;
-            message = "Cannot initliazie GLEW under '"s + windowName + "'\n";
+            message = "Cannot link GLEW library when window '"s + windowName + "' is being initialized\n";
         }
     };
 

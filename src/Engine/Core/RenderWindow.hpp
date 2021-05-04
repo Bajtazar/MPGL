@@ -6,9 +6,19 @@
 
 namespace ge {
 
-    class RenderWindow{
+    class RenderWindow {
     public:
-        explicit RenderWindow(int32_t width, int32_t height, std::string title, GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr) noexcept(false);
+        // OpenGL Options
+        struct Options {
+            uint16_t openGLMajorVersion;
+            uint16_t openGLMinorVersion;
+            bool floating;
+            bool maximised;
+            bool resizable;
+            Options(uint16_t major=3,uint16_t minor=3,bool floating=false,bool maximised=false,bool resizable=true) noexcept;
+        };
+        // RenderWindow methods;
+        explicit RenderWindow(int32_t width, int32_t height, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr) noexcept(false);
         RenderWindow(const RenderWindow& window) noexcept = delete;
         RenderWindow(RenderWindow&& window) noexcept;
 
@@ -30,6 +40,7 @@ namespace ge {
         int32_t height;
         std::string name;
         GLFWwindow* windowHandler;
+        void setWindowOptions(const Options&) const noexcept;
     };
 
 }
