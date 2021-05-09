@@ -30,8 +30,8 @@ namespace ge {
 
         operator bool() const noexcept { return glfwWindowShouldClose(windowHandler); }
 
-        Vector2i getWindowBaseDimmensions(void) const noexcept { return baseDimmensions; }
-        Vector2i getWindowDimmensions(void) const noexcept { return dimmensions; }
+        const Vector2i& getWindowBaseDimmensions(void) const noexcept { return baseDimmensions; }
+        const Vector2i&  getWindowDimmensions(void) const noexcept { return dimmensions; }
         const std::string& getWindowTitle(void) const noexcept { return name; }
 
         void draw(void) noexcept;
