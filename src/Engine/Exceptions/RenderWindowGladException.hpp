@@ -10,7 +10,7 @@ namespace ge {
     private:
         virtual void createMessage(void) noexcept {
             using namespace std::literals;
-            message = "Cannot initialize GLAD when widnow '"s + windowName +"' is being initialized";
+            message = "Cannot initialize GLAD when window '"s + windowName +"' is being initialized";
         }
     };
 

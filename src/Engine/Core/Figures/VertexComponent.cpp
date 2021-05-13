@@ -2,13 +2,11 @@
 
 namespace ge {
 
-    template <FigureTypes::PrimitveType Type>
-    VertexComponent::VertexComponent(const Vector2i&  scene, Type type) noexcept : VertexComponent(scene) {
+    VertexComponent::VertexComponent(const Vector2i&  scene, FigureTypes::PrimitveType auto type) noexcept : VertexComponent(scene) {
 
     }
 
-    template <FigureTypes::LineType Type>
-    VertexComponent::VertexComponent(const Vector2i&  scene, Type type) noexcept : VertexComponent(scene) {
+    VertexComponent::VertexComponent(const Vector2i&  scene, FigureTypes::LineType auto type) noexcept : VertexComponent(scene) {
 
     }
 

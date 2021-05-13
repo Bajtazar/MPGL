@@ -9,10 +9,8 @@ namespace ge {
 
     class VertexComponent : public Drawable {
     public:
-        template <FigureTypes::PrimitveType Type>
-        explicit VertexComponent(const Vector2i&  scene, Type type) noexcept;
-        template <FigureTypes::LineType Type>
-        explicit VertexComponent(const Vector2i&  scene, Type type) noexcept;
+        explicit VertexComponent(const Vector2i&  scene, FigureTypes::PrimitveType auto type) noexcept;
+        explicit VertexComponent(const Vector2i&  scene, FigureTypes::LineType auto type) noexcept;
 
 
         ~VertexComponent(void) noexcept = default;

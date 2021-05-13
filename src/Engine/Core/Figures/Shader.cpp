@@ -1,8 +1,5 @@
 #include "Shader.hpp"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <algorithm>
 #include <iterator>
 #include <iostream>
@@ -22,7 +19,7 @@ namespace ge {
         glCompileShader(shaderID);
         int32_t success;
         glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
-        if (!success) std::cout << "Error in shader compilation\n";
+        if(!success) std::cout << "Shader compilation error\n";
     }
 
     template <bool ShaderType>
