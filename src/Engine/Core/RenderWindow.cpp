@@ -2,7 +2,7 @@
 
 namespace ge {
 
-    RenderWindow::RenderWindow(Vector2i dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : WindowInterface(dimmensions, title, options, monitor, share){
+    RenderWindow::RenderWindow(const Vector2i& dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : WindowInterface(dimmensions, title, options, monitor, share){
 
     }
 

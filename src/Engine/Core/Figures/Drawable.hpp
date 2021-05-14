@@ -12,12 +12,15 @@ namespace ge {
             //drawable.draw(target);
             return target;
         }*/
+
+        virtual void setShaders(const ShaderLibrary&) noexcept = 0;
+        virtual void copyToGPU(void) noexcept = 0;
+        virtual void draw(void) const noexcept = 0;
+
         virtual ~Drawable(void) noexcept = default;
     protected:
         const Vector2i& scene;
-        virtual void setShaders(const ShaderLibrary&) const noexcept = 0;
-        virtual void copyToGPU(void) const noexcept = 0;
-        virtual void draw(void) const noexcept = 0;
+        uint32_t shaderProgram;
     };
 
 }

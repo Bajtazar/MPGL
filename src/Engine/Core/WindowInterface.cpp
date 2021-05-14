@@ -8,7 +8,8 @@ namespace ge {
     WindowInterface::Options::Options(uint16_t major,uint16_t minor,bool floating,bool maximised,bool resizable) noexcept
     : openGLMajorVersion(major), openGLMinorVersion(minor), floating(floating), maximised(maximised), resizable(resizable) {}
 
-    WindowInterface::WindowInterface(Vector2i dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) {
+    WindowInterface::WindowInterface(Vector2i dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share)
+    : dimmensions(dimmensions), baseDimmensions(dimmensions) {
         if (!glfwInit())
             throw RenderWindowInitException(title);
         setWindowOptions(options);

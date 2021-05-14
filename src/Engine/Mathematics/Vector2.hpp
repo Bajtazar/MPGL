@@ -20,6 +20,25 @@ namespace ge {
         Vector2& operator-=(const Vector2& right) noexcept;
         Vector2& operator*=(const T& value) noexcept;
         Vector2& operator/=(const T& value) noexcept;
+
+        template<std::size_t Index>
+        constexpr auto&& get() &  { return get_helper<Index>(*this); }
+
+        template<std::size_t Index>
+        constexpr auto&& get() && { return get_helper<Index>(*this); }
+
+        template<std::size_t Index>
+        constexpr auto&& get() const &  { return get_helper<Index>(*this); }
+
+        template<std::size_t Index>
+        constexpr auto&& get() const && { return get_helper<Index>(*this); }
+
+        template<std::size_t Index, typename This>
+        constexpr auto&& get_helper(This&& t) {
+            static_assert(Index < 2, "Index out of Vector2 bounds");
+            if constexpr (Index == 0) return std::forward<This>(t).x;
+            if constexpr (Index == 1) return std::forward<This>(t).y;
+        }
     };
 
     template class Vector2<float>;
