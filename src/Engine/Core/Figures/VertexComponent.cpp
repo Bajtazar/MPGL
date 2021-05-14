@@ -15,7 +15,7 @@ namespace ge {
         glBindBuffer(GL_ARRAY_BUFFER, verticesBuffer);
     }
 
-    void VertexComponent::setShaders() const noexcept {
+    void VertexComponent::setShaders(const ShaderLibrary&) const noexcept {
 
     }
 
@@ -23,7 +23,7 @@ namespace ge {
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW);
     }
 
-    void VertexComponent::draw(RenderWindow& target) const noexcept {
+    void VertexComponent::draw(void) const noexcept {
 
     }
 

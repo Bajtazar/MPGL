@@ -20,9 +20,9 @@ namespace ge {
         std::vector<float> vertices;
         uint32_t verticesBuffer;
 
-        virtual void setShaders() const noexcept final;
+        virtual void setShaders(const ShaderLibrary&) const noexcept final;
         virtual void copyToGPU(void) const noexcept final;
-        virtual void draw(RenderWindow& target) const noexcept final;
+        virtual void draw(void) const noexcept final;
     };
 
 }

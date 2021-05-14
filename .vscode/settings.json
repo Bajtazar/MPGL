@@ -50,6 +50,10 @@
         "concepts": "cpp",
         "numbers": "cpp",
         "map": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "ratio": "cpp",
+        "iomanip": "cpp"
     }
 }

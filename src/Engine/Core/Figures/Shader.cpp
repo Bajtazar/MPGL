@@ -1,8 +1,8 @@
 #include "Shader.hpp"
+#include "../../Utility/Logger.hpp"
 
 #include <algorithm>
 #include <iterator>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
@@ -18,8 +18,18 @@ namespace ge {
         glShaderSource(shaderID, 1, &handle, nullptr);
         glCompileShader(shaderID);
         int32_t success;
-        glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
-        if(!success) std::cout << "Shader compilation error\n";
+        glGetProgramiv(shaderID, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            char info[512];
+            glGetProgramInfoLog(shaderID, 512, nullptr, info);
+            Logger::saveOpenGl(info, 512);
+        }
+    }
+
+    template <bool ShaderType>
+    Shader<ShaderType>& Shader<ShaderType>::operator= (Shader&& shader) noexcept {
+        shaderID = std::move(shaderID);
+        return *this;
     }
 
     template <bool ShaderType>

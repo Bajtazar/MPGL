@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <string>
 
 namespace ge {
 
@@ -11,7 +11,10 @@ namespace ge {
     public:
         explicit Shader(std::string shaderPath) noexcept;
         Shader(const Shader& shader) noexcept = delete;
-        //Shader(Shader&& shader) noexcept;
+        Shader(Shader&& shader) noexcept : shaderID(std::move(shader.shaderID)) {}
+
+        Shader& operator= (const Shader& shader) noexcept = delete;
+        Shader& operator= (Shader&& shader) noexcept;
 
         const uint32_t& getShader(void) const noexcept { return shaderID; }
         ~Shader(void) noexcept;

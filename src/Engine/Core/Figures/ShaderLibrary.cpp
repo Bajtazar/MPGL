@@ -1,7 +1,6 @@
 #include "ShaderLibrary.hpp"
 #include "../../Utility/FileIO.hpp"
-
-#include <iostream>
+#include "../../Utility/Logger.hpp"
 
 using namespace std::literals;
 
@@ -13,12 +12,16 @@ namespace ge {
                 VertexShader vertex("shaders/Vertex/"s + s2);
                 FragmentShader fragment("shaders/Fragment/" + s3);
                 uint32_t programID = glCreateProgram();
-                int32_t success;
                 glAttachShader(programID, vertex.getShader());
                 glAttachShader(programID, fragment.getShader());
                 glLinkProgram(programID);
+                int32_t success;
                 glGetProgramiv(programID, GL_LINK_STATUS, &success);
-                if(!success) std::cout << "Shader program linking error\n";
+                if (!success) {
+                    char info[512];
+                    glGetProgramInfoLog(programID, 512, nullptr, info);
+                    Logger::saveOpenGl(info, 512);
+                }
                 programs[s1] = programID;
             }
         }

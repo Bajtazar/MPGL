@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../RenderWindow.hpp"
+#include "ShaderLibrary.hpp"
+#include "../../Mathematics/Vector2.hpp"
 
 namespace ge {
 
@@ -14,9 +15,9 @@ namespace ge {
         virtual ~Drawable(void) noexcept = default;
     protected:
         const Vector2i& scene;
-        virtual void setShaders() const noexcept = 0;
+        virtual void setShaders(const ShaderLibrary&) const noexcept = 0;
         virtual void copyToGPU(void) const noexcept = 0;
-        virtual void draw(RenderWindow& target) const noexcept = 0;
+        virtual void draw(void) const noexcept = 0;
     };
 
 }
