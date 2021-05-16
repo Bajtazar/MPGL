@@ -9,7 +9,6 @@ namespace ge {
 
     class RenderWindow : virtual private WindowInterface {
     public:
-        // RenderWindow methods;
         explicit RenderWindow(const Vector2i& dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr) noexcept(false);
         RenderWindow(const RenderWindow& window) noexcept = delete;
         RenderWindow(RenderWindow&& window) noexcept = delete;

@@ -2,6 +2,7 @@
 
 #include "FigureType.hpp"
 #include "Drawable.hpp"
+#include "../Color.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -9,63 +10,66 @@
 
 namespace ge {
 
+    template <bool PolygonMode = false>
     class VertexComponent : public Drawable {
-    private:
-        using Vertex = std::pair<Vector2f, float>;
     public:
-        explicit VertexComponent(const Vector2i& scene, FigureTypes::PrimitveType auto type) noexcept;
-        explicit VertexComponent(const Vector2i& scene, FigureTypes::LineType auto type) noexcept;
+        struct Vertex {
+            constexpr explicit Vertex(const Vector2f& position, const Color& color) noexcept : color(color), position(position) {}
+            constexpr explicit Vertex(void) noexcept = default;
+
+            Vector2f position;
+            float depth;
+            Color color;
+
+            template<std::size_t Index>
+            constexpr auto&& get() &  { return __getHelper<Index>(*this); }
+
+            template<std::size_t Index>
+            constexpr auto&& get() && { return __getHelper<Index>(*this); }
+
+            template<std::size_t Index>
+            constexpr auto&& get() const &  { return __getHelper<Index>(*this); }
+
+            template<std::size_t Index>
+            constexpr auto&& get() const && { return __getHelper<Index>(*this); }
+        private:
+            template<std::size_t Index, typename _This>
+            constexpr auto&& __getHelper(_This&& __this) {
+                static_assert(Index < 3, "Index out of Vertex bounds");
+                if constexpr (Index == 0) return std::forward<_This>(__this).position;
+                if constexpr (Index == 1) return std::forward<_This>(__this).color;
+                if constexpr (Index == 2) return std::forward<_This>(__this).depth;
+            }
+        };
+
+        explicit VertexComponent(void) noexcept = default;
+        explicit VertexComponent(const Vector2i& scene, const FigureType& type) noexcept;
 
         virtual void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
         virtual void copyToGPU(void) noexcept final;
         virtual void draw(void) const noexcept final;
 
-        template <std::contiguous_iterator _Iter, typename _Tp>
-        class Iterator : std::iterator<std::forward_iterator_tag, _Tp, void, void, void> {
-        public:
-            using iterator_category = std::forward_iterator_tag;
-            using difference_type = std::ptrdiff_t;
-            using value_type = _Tp;
-            using reference = value_type&;
-            using pointer = value_type*;
+        Vertex& operator[] (uint16_t index) noexcept { return vertices[index]; }
 
-            explicit Iterator(void) noexcept = default;
-            explicit Iterator(const _Iter& __iter) noexcept : __iter(__iter) {}
+        using iterator = std::vector<Vertex>::iterator;
+        using const_iterator = std::vector<Vertex>::const_iterator;
 
-            reference operator* (void) const noexcept { return __iter->first; }
-            pointer operator-> (void) noexcept { return &__iter->first; }
-            Iterator& operator++ (void) noexcept { ++__iter; return *this; }
-            Iterator operator++ (int) noexcept { auto temp = *this; ++__iter; return temp; }
-
-            friend bool operator== (const Iterator& left, const Iterator& right) noexcept { return left.__iter == right.__iter; }
-            friend bool operator!= (const Iterator& left, const Iterator& right) noexcept { return left.__iter != right.__iter; }
-        private:
-            _Iter __iter;
-        };
-
-        using iterator = Iterator<std::vector<Vertex>::iterator, Vector2f>;
-        using const_iterator = Iterator<std::vector<Vertex>::const_iterator, const Vector2f>;
-
-        iterator begin(void) noexcept { return iterator{vertices.begin()}; }
-        iterator end(void) noexcept { return iterator{vertices.end()}; }
-        const_iterator begin(void) const noexcept { return const_iterator{vertices.begin()}; }
-        const_iterator end(void) const noexcept { return const_iterator{vertices.end()}; }
+        iterator begin(void) noexcept { return iterator{ vertices.begin() }; }
+        iterator end(void) noexcept { return iterator{ vertices.end() }; }
+        const_iterator begin(void) const noexcept { return const_iterator{ vertices.begin() }; }
+        const_iterator end(void) const noexcept { return const_iterator{ vertices.end() }; }
 
         ~VertexComponent(void) noexcept;
-    private:
-        explicit VertexComponent(const Vector2i& scene, size_t size) noexcept;
-
+    protected:
         std::vector<Vertex> vertices;
         uint32_t verticesBuffer;
         uint32_t vertexArrayObject;
     };
 
-    VertexComponent::VertexComponent(const Vector2i& scene, FigureTypes::PrimitveType auto type) noexcept : VertexComponent(scene, type.verticiesCount()) {
+    template class VertexComponent<true>;
+    template class VertexComponent<false>;
 
-    }
-
-    VertexComponent::VertexComponent(const Vector2i& scene, FigureTypes::LineType auto type) noexcept : VertexComponent(scene, type.verticiesCount()) {
-
-    }
+    typedef VertexComponent<false> FilledComponent;
+    typedef VertexComponent<true> PolygonComponent;
 
 }
