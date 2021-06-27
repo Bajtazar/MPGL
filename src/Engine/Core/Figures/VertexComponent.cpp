@@ -3,7 +3,7 @@
 namespace ge {
 
     template <bool PolygonMode>
-    VertexComponent<PolygonMode>::VertexComponent(const Vector2i& scene, const FigureType& type) noexcept : Drawable(scene), vertices(type.verticiesCount()) {
+    VertexComponent<PolygonMode>::VertexComponent(const Vector2i& scene, size_t size) noexcept : Drawable(scene), vertices(size) {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &verticesBuffer);
     }
@@ -25,10 +25,10 @@ namespace ge {
         glBindBuffer(GL_ARRAY_BUFFER, verticesBuffer);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(0));
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(0));
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -2,6 +2,12 @@
 
 #include <iostream>
 
+std::string fun(std::string& t, std::string s = "", int r = 2) {
+    while (--r)
+        s += s;
+    t += s;
+    return s;
+}
 int main(void) noexcept {
     ge::RenderWindow window{{640, 480}, "Hello World!"};
 
@@ -22,6 +28,7 @@ int main(void) noexcept {
         component.draw();
         window.draw();
     }
-
+    std::string name = "x";
+    std::cout << fun(name, name) << name;
     return 0;
 }

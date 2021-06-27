@@ -18,32 +18,30 @@ namespace ge {
             constexpr explicit Vertex(void) noexcept = default;
 
             Vector2f position;
-            float depth;
             Color color;
 
             template<std::size_t Index>
-            constexpr auto&& get() &  { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) &  { return __getHelper<Index>(*this); }
 
             template<std::size_t Index>
-            constexpr auto&& get() && { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) && { return __getHelper<Index>(*this); }
 
             template<std::size_t Index>
-            constexpr auto&& get() const &  { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) const &  { return __getHelper<Index>(*this); }
 
             template<std::size_t Index>
-            constexpr auto&& get() const && { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) const && { return __getHelper<Index>(*this); }
         private:
             template<std::size_t Index, typename _This>
             constexpr auto&& __getHelper(_This&& __this) {
-                static_assert(Index < 3, "Index out of Vertex bounds");
+                static_assert(Index < 2, "Index out of Vertex bounds");
                 if constexpr (Index == 0) return std::forward<_This>(__this).position;
                 if constexpr (Index == 1) return std::forward<_This>(__this).color;
-                if constexpr (Index == 2) return std::forward<_This>(__this).depth;
             }
         };
 
         explicit VertexComponent(void) noexcept = default;
-        explicit VertexComponent(const Vector2i& scene, const FigureType& type) noexcept;
+        explicit VertexComponent(const Vector2i& scene, const FigureType& type) noexcept : VertexComponent(scene, type.verticiesCount())  {}
 
         virtual void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
         virtual void copyToGPU(void) noexcept final;
@@ -61,6 +59,8 @@ namespace ge {
 
         ~VertexComponent(void) noexcept;
     protected:
+        explicit VertexComponent(const Vector2i& scene, size_t size) noexcept;
+
         std::vector<Vertex> vertices;
         uint32_t verticesBuffer;
         uint32_t vertexArrayObject;
