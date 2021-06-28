@@ -16,9 +16,9 @@ int main(void) noexcept {
     ge::PolygonComponent component2(window.getWindowBaseDimmensions(), ge::FigureTypes::Triangle);
     component2.setShaders(window.getShaderLib());
 
-    component2[0].position = {-0.3f, -0.3f};
-    component2[1].position = {0.f, 0.2f};
-    component2[2].position = {0.3f, -0.3f};
+    component2[0].position = {200, 200};
+    component2[1].position = {300, 300};
+    component2[2].position = {200, 300};
     for (auto& color : component2 | ge::views::color)
         color = ge::Color::literals::Blue;
 

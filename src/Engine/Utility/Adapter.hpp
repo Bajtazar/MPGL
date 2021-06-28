@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ranges>
+#include "../Core/Color.hpp"
 
 namespace ge {
 
@@ -22,7 +23,10 @@ namespace ge {
             return range = std::move(factor) / scaleFactor * value_type{2} - value_type{1};
         }
 
-        operator T() const noexcept { return range; }
+        constexpr operator T() const noexcept { return range; }
+
+        T& get(void) noexcept { return range; }
+        const T& get(void) const noexcept { return range; }
 
     private:
         T range;

@@ -21,22 +21,22 @@ namespace ge {
             Color color;
 
             template<std::size_t Index>
-            constexpr auto&& get(void) &  { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) &  { return getHelper<Index>(*this); }
 
             template<std::size_t Index>
-            constexpr auto&& get(void) && { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) && { return getHelper<Index>(*this); }
 
             template<std::size_t Index>
-            constexpr auto&& get(void) const &  { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) const &  { return getHelper<Index>(*this); }
 
             template<std::size_t Index>
-            constexpr auto&& get(void) const && { return __getHelper<Index>(*this); }
+            constexpr auto&& get(void) const && { return getHelper<Index>(*this); }
         private:
-            template<std::size_t Index, typename _This>
-            constexpr auto&& __getHelper(_This&& __this) {
+            template<std::size_t Index, typename This>
+            constexpr auto&& getHelper(This&& __this) {
                 static_assert(Index < 2, "Index out of Vertex bounds");
-                if constexpr (Index == 0) return std::forward<_This>(__this).position;
-                if constexpr (Index == 1) return std::forward<_This>(__this).color;
+                if constexpr (Index == 0) return std::forward<This>(__this).position;
+                if constexpr (Index == 1) return std::forward<This>(__this).color;
             }
         };
 

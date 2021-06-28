@@ -30,16 +30,16 @@ namespace ge {
         }
 
         template<std::size_t Index>
-        constexpr auto&& get() &  { return getHelper<Index>(*this); }
+        constexpr auto&& get(void) &  { return getHelper<Index>(*this); }
 
         template<std::size_t Index>
-        constexpr auto&& get() && { return getHelper<Index>(*this); }
+        constexpr auto&& get(void) && { return getHelper<Index>(*this); }
 
         template<std::size_t Index>
-        constexpr auto&& get() const &  { return getHelper<Index>(*this); }
+        constexpr auto&& get(void) const &  { return getHelper<Index>(*this); }
 
         template<std::size_t Index>
-        constexpr auto&& get() const && { return getHelper<Index>(*this); }
+        constexpr auto&& get(void) const && { return getHelper<Index>(*this); }
 
         template<std::size_t Index, typename _This>
         constexpr auto&& getHelper(_This&& __this) {
