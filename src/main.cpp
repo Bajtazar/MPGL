@@ -1,34 +1,38 @@
 #include "Engine/2DGraphics.hpp"
 
-#include <iostream>
-
-std::string fun(std::string& t, std::string s = "", int r = 2) {
-    while (--r)
-        s += s;
-    t += s;
-    return s;
-}
 int main(void) noexcept {
     ge::RenderWindow window{{640, 480}, "Hello World!"};
 
-    ge::PolygonComponent component(window.getWindowBaseDimmensions(), ge::FigureTypes::Triangle);
+    ge::FilledComponent component(window.getWindowBaseDimmensions(), ge::FigureTypes::Triangle);
     component.setShaders(window.getShaderLib());
 
-    component[0].position = {-0.5f, -0.5f};
+    component[0].position = {200, 300};
     component[0].color = ge::Color::literals::Red;
-    component[1].position = {0.f, 0.5f};
+    component[1].position = {300, 200};
     component[1].color = ge::Color::literals::Green;
-    component[2].position = {0.5f, -0.5f};
+    component[2].position = {400, 300};
     component[2].color = ge::Color::literals::Blue;
 
+    ge::PolygonComponent component2(window.getWindowBaseDimmensions(), ge::FigureTypes::Triangle);
+    component2.setShaders(window.getShaderLib());
+
+    component2[0].position = {-0.3f, -0.3f};
+    component2[1].position = {0.f, 0.2f};
+    component2[2].position = {0.3f, -0.3f};
+    for (auto& color : component2 | ge::views::color)
+        color = ge::Color::literals::Blue;
+
     component.copyToGPU();
+    component2.copyToGPU();
 
     while (!window){
         window.clear();
+
         component.draw();
+        component2.draw();
+
         window.draw();
     }
-    std::string name = "x";
-    std::cout << fun(name, name) << name;
+
     return 0;
 }

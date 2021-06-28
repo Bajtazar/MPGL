@@ -3,6 +3,7 @@
 #include "FigureType.hpp"
 #include "Drawable.hpp"
 #include "../Color.hpp"
+#include "../../Utility/Adapter.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -14,10 +15,9 @@ namespace ge {
     class VertexComponent : public Drawable {
     public:
         struct Vertex {
-            constexpr explicit Vertex(const Vector2f& position, const Color& color) noexcept : color(color), position(position) {}
-            constexpr explicit Vertex(void) noexcept = default;
+            constexpr explicit Vertex(const Vector2f& position, const Color& color, const Vector2i& scene) noexcept : position{position, Vector2f(scene)}, color{color} {}
 
-            Vector2f position;
+            Adapter<Vector2f> position;
             Color color;
 
             template<std::size_t Index>

@@ -3,7 +3,7 @@
 namespace ge {
 
     template <bool PolygonMode>
-    VertexComponent<PolygonMode>::VertexComponent(const Vector2i& scene, size_t size) noexcept : Drawable(scene), vertices(size) {
+    VertexComponent<PolygonMode>::VertexComponent(const Vector2i& scene, size_t size) noexcept : Drawable(scene), vertices{size, Vertex{{}, {}, scene}} {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &verticesBuffer);
     }

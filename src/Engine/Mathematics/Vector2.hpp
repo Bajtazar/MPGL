@@ -13,6 +13,8 @@ namespace ge {
         constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
         constexpr Vector2(void) noexcept = default;
 
+        using value_type = T;
+
         T x;
         T y;
 
@@ -21,21 +23,26 @@ namespace ge {
         constexpr Vector2& operator*=(const T& value) noexcept;
         constexpr Vector2& operator/=(const T& value) noexcept;
 
-        template<std::size_t Index>
-        constexpr auto&& get() &  { return __getHelper<Index>(*this); }
+        template <Arithmetic U>
+            requires std::is_convertible_v<T, U>
+        constexpr operator Vector2<U>() const noexcept {
+            return {static_cast<U>(x), static_cast<U>(y)};
+        }
 
         template<std::size_t Index>
-        constexpr auto&& get() && { return __getHelper<Index>(*this); }
+        constexpr auto&& get() &  { return getHelper<Index>(*this); }
 
         template<std::size_t Index>
-        constexpr auto&& get() const &  { return __getHelper<Index>(*this); }
+        constexpr auto&& get() && { return getHelper<Index>(*this); }
 
         template<std::size_t Index>
-        constexpr auto&& get() const && { return __getHelper<Index>(*this); }
+        constexpr auto&& get() const &  { return getHelper<Index>(*this); }
 
-    private:
+        template<std::size_t Index>
+        constexpr auto&& get() const && { return getHelper<Index>(*this); }
+
         template<std::size_t Index, typename _This>
-        constexpr auto&& __getHelper(_This&& __this) {
+        constexpr auto&& getHelper(_This&& __this) {
             static_assert(Index < 2, "Index out of Vector2 bounds");
             if constexpr (Index == 0) return std::forward<_This>(__this).x;
             if constexpr (Index == 1) return std::forward<_This>(__this).y;
@@ -104,6 +111,28 @@ namespace ge {
     template <Arithmetic T>
     constexpr Vector2<T> operator/(const T& left, const Vector2<T>& right) noexcept {
         return {left / right.x, left / right.y};
+    }
+
+    // Graphical operators
+
+    template <Arithmetic T>
+    constexpr Vector2<T> operator*(const Vector2<T>& left, const Vector2<T>& right) noexcept {
+        return {left.x * right.x, left.y * right.y};
+    }
+
+    template <Arithmetic T>
+    constexpr Vector2<T> operator/(const Vector2<T>& left, const Vector2<T>& right) {
+        return {left.x / right.x, left.y / right.y};
+    }
+
+    template <Arithmetic T>
+    constexpr Vector2<T> operator+(const Vector2<T>& left, const T& right) noexcept {
+        return {left.x + right, left.y + right};
+    }
+
+    template <Arithmetic T>
+    constexpr Vector2<T> operator-(const Vector2<T>& left, const T& right) noexcept {
+        return {left.x - right, left.y - right};
     }
 
 }
