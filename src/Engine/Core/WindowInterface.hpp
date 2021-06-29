@@ -4,7 +4,7 @@
 #include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "../Mathematics/Vector2.hpp"
+#include "../Mathematics/Vector.hpp"
 #include "Color.hpp"
 
 namespace ge {

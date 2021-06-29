@@ -13,7 +13,7 @@ namespace ge {
         if (!glfwInit())
             throw RenderWindowInitException(title);
         setWindowOptions(options);
-        window = glfwCreateWindow(dimmensions.x, dimmensions.y, title.c_str(), monitor, share);
+        window = glfwCreateWindow(get<0>(dimmensions), get<1>(dimmensions), title.c_str(), monitor, share);
         glfwMakeContextCurrent(window);
         if (!window)
             throw RenderWindowInvalidArgsException(title);
@@ -25,7 +25,7 @@ namespace ge {
     void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        render->dimmensions = {width, height};
+        render->dimmensions = Vector<int32_t, int32_t>{width, height};
     }
 
     void WindowInterface::setCallbacks(void) noexcept {

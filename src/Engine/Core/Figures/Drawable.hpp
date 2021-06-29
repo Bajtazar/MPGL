@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ShaderLibrary.hpp"
-#include "../../Mathematics/Vector2.hpp"
+#include "../../Mathematics/Vector.hpp"
 
 namespace ge {
 
