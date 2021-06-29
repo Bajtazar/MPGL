@@ -1,4 +1,5 @@
 #include "Engine/2DGraphics.hpp"
+#include "Engine/Mathematics/Vector.hpp"
 
 int main(void) noexcept {
     ge::RenderWindow window{{640, 480}, "Hello World!"};
