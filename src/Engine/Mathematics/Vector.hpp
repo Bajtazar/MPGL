@@ -3,6 +3,7 @@
 #include <tuple>
 #include <concepts>
 #include <algorithm>
+#include <iterator>
 
 namespace ge {
 
@@ -16,10 +17,25 @@ namespace ge {
     class Vector : public std::tuple<T, Args...> {
     public:
         using value_type = T;
+
         constexpr Vector(const T& first, const Args&... args) noexcept : std::tuple<T, Args...>{first, args...} {
             std::reverse(reinterpret_cast<T*>(this), reinterpret_cast<T*>(this) + sizeof...(Args) + 1);
         }
         constexpr Vector(void) noexcept = default;
+
+        template <std::size_t Index>
+            requires (Index >= sizeof...(Args))
+        constexpr T& get(void) noexcept { return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&>(*this)); }
+
+        template <std::size_t Index>
+            requires (Index >= sizeof...(Args))
+        constexpr const T& get(void) const noexcept { return std::get<sizeof...(Args) - Index>(static_cast<const std::tuple<T, Args...>&>(*this)); }
+
+        template <std::size_t Index>
+            requires (Index >= sizeof...(Args))
+        constexpr T&& get(void) noexcept { return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&&>(*this)); }
+
+        constexpr std::size_t size(void) const noexcept { return sizeof...(Args) + 1; }
 
         constexpr Vector& operator+=(const Vector& right) noexcept;
         constexpr Vector& operator-=(const Vector& right) noexcept;
@@ -54,6 +70,68 @@ namespace ge {
         friend Vector operator* <>(const T& left, const Vector& right) noexcept;
         friend Vector operator/ <>(const T& left, const Vector& right);
 
+        template <Arithmetic value_type>
+        class Iterator : public std::iterator<std::contiguous_iterator_tag, value_type, std::ptrdiff_t, value_type*, value_type&> {
+        public:
+            using iterator_category = std::contiguous_iterator_tag;
+            using difference_type = std::ptrdiff_t;
+            using reference = value_type&;
+            using pointer = value_type*;
+
+            constexpr explicit Iterator(value_type* iter) noexcept : iter(iter) {}
+            constexpr explicit Iterator(void) noexcept = default;
+
+            constexpr Iterator& operator++(void) noexcept { ++iter; return *this; }
+            constexpr Iterator& operator++(int) noexcept { auto tmp = *this; ++iter; return tmp; }
+
+            constexpr Iterator& operator--(void) noexcept { --iter; return *this; }
+            constexpr Iterator& operator--(int) noexcept { auto tmp = *this; --iter; return tmp; }
+
+            constexpr reference operator*(void) const noexcept { return *iter; }
+            constexpr pointer operator->(void) noexcept { return iter; }
+
+            constexpr Iterator& operator+=(std::size_t offset) noexcept { iter += offset; return *this; }
+            constexpr Iterator& operator-=(std::size_t offset) noexcept { iter -= offset; return *this; }
+            constexpr Iterator operator[] (std::size_t offset) noexcept { auto tmp = *this; tmp += offset; return tmp; }
+
+            friend constexpr bool operator== (const Iterator& right, const Iterator& left) noexcept { return right.iter == left.iter; }
+            friend constexpr bool operator!= (const Iterator& right, const Iterator& left) noexcept { return right.iter != left.iter; }
+
+            friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
+            friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
+            friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
+            friend constexpr auto operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
+
+            friend constexpr bool operator> (const Iterator& right, const Iterator& left) noexcept { return right.iter > left.iter; }
+            friend constexpr bool operator< (const Iterator& right, const Iterator& left) noexcept { return right.iter < left.iter; }
+            friend constexpr bool operator>= (const Iterator& right, const Iterator& left) noexcept { return right.iter >= left.iter; }
+            friend constexpr bool operator<= (const Iterator& right, const Iterator& left) noexcept { return right.iter <= left.iter; }
+            friend constexpr auto operator<=> (const Iterator& right, const Iterator& left) noexcept {  left.iter < right.iter ? std::weak_ordering::less : right.iter < left.iter ? std::weak_ordering::greater : std::weak_ordering::equivalent; }
+        private:
+            value_type* iter;
+        };
+
+        using iterator = Iterator<T>;
+        using const_iterator = Iterator<const T>;
+
+        constexpr iterator begin(void) noexcept { return iterator{ reinterpret_cast<T*>(this) }; }
+        constexpr iterator end(void) noexcept { return iterator{ reinterpret_cast<T*>(this) + sizeof...(Args) + 1 }; }
+
+        constexpr const_iterator begin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
+        constexpr const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
+
+        constexpr const_iterator cbegin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
+        constexpr const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
+
+        constexpr auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
+        constexpr auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
+
+        constexpr auto crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
+        constexpr auto crend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
+
+        constexpr T& operator[] (std::size_t index) noexcept { return *(reinterpret_cast<T*>(this) + index); }
+        constexpr const T& operator[] (std::size_t index) const noexcept { return *(reinterpret_cast<const T*>(this) + index); }
+
         explicit constexpr Vector(std::tuple<T, Args...>&& tuple) noexcept : std::tuple<T, Args...> { std::move(tuple) } {}
     };
 
@@ -71,8 +149,7 @@ namespace ge {
         requires (sizeof...(TArgs) > sizeof...(Args))
     constexpr Vector<T, Args...>::operator Vector<T, TArgs...>() const noexcept {
         Vector<T, TArgs...> base;
-        T* end = reinterpret_cast<T*>(&base) + sizeof...(TArgs) - sizeof...(Args);
-        std::copy(reinterpret_cast<const T*>(this), reinterpret_cast<const T*>(this) + sizeof...(Args) + 1, end);
+        std::ranges::copy(*this, base);
         return base;
     }
 
@@ -94,158 +171,135 @@ namespace ge {
         return std::get<sizeof...(Args) - Index>(static_cast<const std::tuple<T, Args...>&>(vector));
     }
 
-    template <std::size_t Index, Arithmetic T, std::regular_invocable<const T&, const T&, T&> Predicate, AllSame<T>... Args>
-    constexpr void performOperation(const Vector<T, Args...>& left, const Vector<T, Args...>& right, Vector<T, Args...>& target, Predicate predicate) noexcept {
-        std::invoke(predicate, get<Index>(left), get<Index>(right), get<Index>(target));
-        if constexpr (Index != sizeof...(Args))
-            performOperation<Index + 1, T, Predicate, Args...>(left, right, target, std::move(predicate));
-    }
-
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator+= (const Vector& right) noexcept {
-        performOperation<0>(*this, right, *this, [](const T& left, const T& right, T& target) -> void { target = left + right;});
+        std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left + right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator-= (const Vector& right) noexcept {
-        performOperation<0>(*this, right, *this, [](const T& left, const T& right, T& target) -> void { target = left - right;});
+        std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left - right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator*= (const Vector& right) noexcept {
-        performOperation<0>(*this, right, *this, [](const T& left, const T& right, T& target) -> void { target = left * right;});
+        std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left * right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator/= (const Vector& right) {
-        performOperation<0>(*this, right, *this, [](const T& left, const T& right, T& target) -> void { target = left / right;});
+        std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left / right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator+= (const T& right) noexcept {
-        std::apply(
-            [&right]<typename... IArgs>(IArgs&... args) -> void {
-                ([&right](T& number)->void{ number += right; }(args), ...);
-            }, static_cast<std::tuple<T, Args...>&>(*this)
-        );
+        std::ranges::for_each(*this, [&right](T& value) -> void { value += right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator-= (const T& right) noexcept {
-        std::apply(
-            [&right]<typename... IArgs>(IArgs&... args) -> void {
-                ([&right](T& number)->void{ number -= right; }(args), ...);
-            }, static_cast<std::tuple<T, Args...>&>(*this)
-        );
+        std::ranges::for_each(*this, [&right](T& value) -> void { value -= right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator*= (const T& right) noexcept {
-        std::apply(
-            [&right]<typename... IArgs>(IArgs&... args) -> void {
-                ([&right](T& number)->void{ number *= right; }(args), ...);
-            }, static_cast<std::tuple<T, Args...>&>(*this)
-        );
+        std::ranges::for_each(*this, [&right](T& value) -> void { value *= right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...>& Vector<T, Args...>::operator/= (const T& right) {
-        std::apply(
-            [&right]<typename... IArgs>(IArgs&... args) -> void {
-                ([&right](T& number)->void{ number /= right; }(args), ...);
-            }, static_cast<std::tuple<T, Args...>&>(*this)
-        );
+        std::ranges::for_each(*this, [&right](T& value) -> void { value /= right; });
         return *this;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator+ (const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(left, right, result, [](const T& left, const T& right, T& target) -> void { target = left + right; });
+        std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left + right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator- (const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(left, right, result, [](const T& left, const T& right, T& target) -> void { target = left - right; });
+        std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left - right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator* (const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(left, right, result, [](const T& left, const T& right, T& target) -> void { target = left * right; });
+        std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left * right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator/ (const Vector<T, Args...>& left, const Vector<T, Args...>& right) {
         Vector<T, Args...> result;
-        performOperation<0>(left, right, result, [](const T& left, const T& right, T& target) -> void { target = left / right; });
+        std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left / right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator+ (const Vector<T, Args...>& left, const T& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(left, left, result, [&right](const T& left, const T& _, T& target) -> void { target = left + right; });
+        std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left + right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator- (const Vector<T, Args...>& left, const T& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(left, left, result, [&right](const T& left, const T& _, T& target) -> void { target = left - right; });
+        std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left - right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator* (const Vector<T, Args...>& left, const T& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(left, left, result, [&right](const T& left, const T& _, T& target) -> void { target = left * right; });
+        std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left * right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator/ (const Vector<T, Args...>& left, const T& right) {
         Vector<T, Args...> result;
-        performOperation<0>(left, left, result, [&right](const T& left, const T& _, T& target) -> void { target = left / right; });
+        std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left / right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator+ (const T& left, const Vector<T, Args...>& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(right, right, result, [&left](const T& _, const T& right, T& target) -> void { target = left + right; });
+        std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left + right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator- (const T& left, const Vector<T, Args...>& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(right, right, result, [&left](const T& _, const T& right, T& target) -> void { target = left - right; });
+        std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left - right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator* (const T& left, const Vector<T, Args...>& right) noexcept {
         Vector<T, Args...> result;
-        performOperation<0>(right, right, result, [&left](const T& _, const T& right, T& target) -> void { target = left * right; });
+        std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left * right; });
         return result;
     }
 
     template <Arithmetic T, AllSame<T>... Args>
     constexpr Vector<T, Args...> operator/ (const T& left, const Vector<T, Args...>& right) {
         Vector<T, Args...> result;
-        performOperation<0>(right, right, result, [&left](const T& _, const T& right, T& target) -> void { target = left / right; });
+        std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left / right; });
         return result;
     }
 
