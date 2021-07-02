@@ -3,7 +3,7 @@
 
 namespace ge {
 
-    constexpr std::size_t VertexSize = 18 * sizeof(float);
+    constexpr std::size_t VertexSizeTriangle = 18 * sizeof(float);
 
     template <bool PolygonMode>
     Triangle<PolygonMode>::Triangle(const Vector2i& scene, const Vector2f& firstVertex,
@@ -42,6 +42,8 @@ namespace ge {
 
     template <bool PolygonMode>
     Triangle<PolygonMode>& Triangle<PolygonMode>::operator= (Triangle&& triangle) noexcept {
+        glDeleteBuffers(1, &vertexBuffer);
+        glDeleteVertexArrays(1, &vertexArrayObject);
         vertexArrayObject = triangle.vertexArrayObject;
         vertexBuffer = triangle.vertexBuffer;
         shaderProgram = triangle.shaderProgram;
@@ -52,7 +54,7 @@ namespace ge {
     void Triangle<PolygonMode>::copyToGPU(void) noexcept {
         glBindVertexArray(vertexArrayObject);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, VertexSize, vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, VertexSizeTriangle, vertices.data(), GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
         glEnableVertexAttribArray(0);
