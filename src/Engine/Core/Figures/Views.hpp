@@ -6,7 +6,7 @@
 namespace ge {
 
     template <class T>
-    concept __Vertex = requires(T _vertex) { _vertex.position, _vertex.color; };
+    concept isVertex = requires(T vertex) { vertex.position, vertex.color; };
 
     template <class T>
     using position_t = decltype(std::declval<T&>().position);
@@ -18,10 +18,10 @@ namespace ge {
     using iterator_value_type_t = typename std::iterator_traits<std::ranges::iterator_t<_Range>>::value_type;
 
     template <std::ranges::input_range _Range>
-        requires std::ranges::view<_Range> && __Vertex<iterator_value_type_t<_Range>>
+        requires std::ranges::view<_Range> && isVertex<iterator_value_type_t<_Range>>
     class position_view : public std::ranges::view_interface<position_view<_Range>> {
     public:
-        explicit position_view(void) noexcept = default;
+        constexpr explicit position_view(void) noexcept = default;
         constexpr explicit position_view(_Range __base) noexcept : __base(__base) {}
 
         class iterator : public std::iterator<std::input_iterator_tag, void, void, void, void> {
@@ -58,10 +58,10 @@ namespace ge {
     position_view(_Range&& __base) -> position_view<std::views::all_t<_Range>>;
 
     template <std::ranges::input_range _Range>
-        requires std::ranges::view<_Range> && __Vertex<iterator_value_type_t<_Range>>
+        requires std::ranges::view<_Range> && isVertex<iterator_value_type_t<_Range>>
     class color_view : public std::ranges::view_interface<color_view<_Range>> {
     public:
-        explicit color_view(void) noexcept = default;
+        constexpr explicit color_view(void) noexcept = default;
         constexpr explicit color_view(_Range __base) noexcept : __base(__base) {}
 
         class iterator : public std::iterator<std::input_iterator_tag, void, void, void, void> {
@@ -163,8 +163,8 @@ namespace ge {
     }
 
     namespace views {
-        inline details::position_view_range_adaptor position;
-        inline details::color_view_range_adaptor color;
+        inline constexpr details::position_view_range_adaptor position;
+        inline constexpr details::color_view_range_adaptor color;
     }
 
 }

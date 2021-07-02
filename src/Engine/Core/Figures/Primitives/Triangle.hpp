@@ -1,20 +1,32 @@
 #pragma once
 
-#include "../VertexComponent.hpp"
+#include "../Shape.hpp"
 
 namespace ge {
 
     template <bool PolygonMode = false>
-    class Triangle : public VertexComponent<PolygonMode> {
+    class Triangle : public Shape {
     public:
-        explicit Triangle(void) noexcept : vertices(3) {}
-        explicit Triangle(const Vector2i& scene, const Vector2i& firstVerticie,
-                          const Vector2i& secondVerticie, const Vector2i& thirdVerticie) noexcept;
+        Triangle(const Vector2i& scene,        const Vector2f& firstVertex,
+                 const Vector2f& secondVertex, const Vector2f& thirdVertex,
+                 const Color& color) noexcept;
+        Triangle(const Vector2i& scene) noexcept;
+
+        Triangle(const Triangle& triangle) noexcept;
+        Triangle(Triangle&& triangle) noexcept;
+
+        Triangle& operator= (const Triangle& triangle) noexcept;
+        Triangle& operator= (Triangle&& triangle) noexcept;
+
+        virtual void copyToGPU(void) noexcept;
+        virtual void draw(void) const noexcept;
+
+        ~Triangle(void) noexcept = default;
     };
 
-    template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(const Vector2i& scene, const Vector2i& firstVerticie, const Vector2i& secondVerticie, const Vector2i& thirdVerticie) noexcept : VertexComponent(scene, 3) {
-        //auto __iter = vertices.begin();
-    }
+    template class Triangle<true>;
+    template class Triangle<false>;
+
+    typedef Triangle<true> PolygonTriangle;
 
 }

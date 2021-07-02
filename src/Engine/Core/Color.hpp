@@ -18,26 +18,21 @@ namespace ge {
         float blue;
         float alpha;
 
-        template<std::size_t Index>
-        constexpr auto&& get() &  { return __getHelper<Index>(*this); }
+        template <std::size_t Index>
+            requires (Index < 4)
+        inline constexpr auto& get(void) noexcept { return std::get<3 - Index>(reinterpret_cast<std::tuple<float, float, float, float>&>(*this)); }
 
-        template<std::size_t Index>
-        constexpr auto&& get() && { return __getHelper<Index>(*this); }
+        template <std::size_t Index>
+            requires (Index < 4)
+        inline constexpr const auto& get(void) const noexcept { return std::get<3 - Index>(reinterpret_cast<const std::tuple<float, float, float, float>&>(*this)); }
 
-        template<std::size_t Index>
-        constexpr auto&& get() const &  { return __getHelper<Index>(*this); }
+        template <std::size_t Index>
+            requires (Index < 4)
+        inline constexpr auto&& get(void) noexcept { return std::get<3 - Index>(reinterpret_cast<std::tuple<float, float, float, float>&&>(*this)); }
 
-        template<std::size_t Index>
-        constexpr auto&& get() const && { return __getHelper<Index>(*this); }
-    private:
-        template<std::size_t Index, typename _This>
-        constexpr auto&& __getHelper(_This&& __this) {
-            static_assert(Index < 4, "Index out of Color bounds");
-            if constexpr (Index == 0) return std::forward<_This>(__this).red;
-            if constexpr (Index == 1) return std::forward<_This>(__this).green;
-            if constexpr (Index == 2) return std::forward<_This>(__this).blue;
-            if constexpr (Index == 3) return std::forward<_This>(__this).alpha;
-        }
+        template <std::size_t Index>
+            requires (Index < 4)
+        inline constexpr const auto&& get(void) const noexcept { return std::get<3 - Index>(reinterpret_cast<const std::tuple<float, float, float, float>&&>(*this)); }
     };
 
     struct Color::literals {

@@ -4,6 +4,7 @@
 #include <concepts>
 #include <algorithm>
 #include <iterator>
+#include <numeric>
 
 namespace ge {
 
@@ -153,21 +154,26 @@ namespace ge {
         return base;
     }
 
+    template <Arithmetic T, AllSame<T>... Args>
+    constexpr T dotProduct(const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
+        return std::inner_product(left.begin(), left.end(), right.begin(), static_cast<T>(0));
+    }
+
     template <std::size_t Index, Arithmetic T, AllSame<T>... Args>
         requires (sizeof...(Args) >= Index)
-    decltype(auto) get(Vector<T, Args...>&& vector) noexcept {
+    constexpr decltype(auto) get(Vector<T, Args...>&& vector) noexcept {
         return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&&>(vector));
     }
 
     template <std::size_t Index, Arithmetic T, AllSame<T>... Args>
         requires (sizeof...(Args) >= Index)
-    decltype(auto) get(Vector<T, Args...>& vector) noexcept {
+    constexpr decltype(auto) get(Vector<T, Args...>& vector) noexcept {
         return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&>(vector));
     }
 
     template <std::size_t Index, Arithmetic T, AllSame<T>... Args>
         requires (sizeof...(Args) >= Index)
-    decltype(auto) get(const Vector<T, Args...>& vector) noexcept {
+    constexpr decltype(auto) get(const Vector<T, Args...>& vector) noexcept {
         return std::get<sizeof...(Args) - Index>(static_cast<const std::tuple<T, Args...>&>(vector));
     }
 
