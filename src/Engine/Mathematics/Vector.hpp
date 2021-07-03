@@ -96,17 +96,6 @@ namespace ge {
             constexpr Iterator operator[] (std::size_t offset) noexcept { auto tmp = *this; tmp += offset; return tmp; }
 
             friend constexpr bool operator== (const Iterator& right, const Iterator& left) noexcept { return right.iter == left.iter; }
-            friend constexpr bool operator!= (const Iterator& right, const Iterator& left) noexcept { return right.iter != left.iter; }
-
-            friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
-            friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
-            friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
-            friend constexpr auto operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
-
-            friend constexpr bool operator> (const Iterator& right, const Iterator& left) noexcept { return right.iter > left.iter; }
-            friend constexpr bool operator< (const Iterator& right, const Iterator& left) noexcept { return right.iter < left.iter; }
-            friend constexpr bool operator>= (const Iterator& right, const Iterator& left) noexcept { return right.iter >= left.iter; }
-            friend constexpr bool operator<= (const Iterator& right, const Iterator& left) noexcept { return right.iter <= left.iter; }
             friend constexpr auto operator<=> (const Iterator& right, const Iterator& left) noexcept {  left.iter < right.iter ? std::weak_ordering::less : right.iter < left.iter ? std::weak_ordering::greater : std::weak_ordering::equivalent; }
         private:
             value_type* iter;
@@ -299,13 +288,6 @@ namespace ge {
     constexpr Vector<T, Args...> operator* (const T& left, const Vector<T, Args...>& right) noexcept {
         Vector<T, Args...> result;
         std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left * right; });
-        return result;
-    }
-
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator/ (const T& left, const Vector<T, Args...>& right) {
-        Vector<T, Args...> result;
-        std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left / right; });
         return result;
     }
 
