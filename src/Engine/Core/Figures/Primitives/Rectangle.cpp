@@ -46,7 +46,7 @@ namespace ge {
         return *this;
     }
 
-    Rectangle::Rectangle(Rectangle&& rectangle) noexcept : Shape{scene, std::move(vertices)} {
+    Rectangle::Rectangle(Rectangle&& rectangle) noexcept : Shape{scene, std::move(rectangle.vertices)} {
         vertexArrayObject = rectangle.vertexArrayObject;
         vertexBuffer = rectangle.vertexBuffer;
         elementArrayBuffer = rectangle.elementArrayBuffer;

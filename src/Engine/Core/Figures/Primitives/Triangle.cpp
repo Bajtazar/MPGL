@@ -34,7 +34,7 @@ namespace ge {
     }
 
     template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(Triangle&& triangle) noexcept : Shape{scene, std::move(vertices)} {
+    Triangle<PolygonMode>::Triangle(Triangle&& triangle) noexcept : Shape{scene, std::move(triangle.vertices)} {
         vertexArrayObject = triangle.vertexArrayObject;
         vertexBuffer = triangle.vertexBuffer;
         shaderProgram = triangle.shaderProgram;

@@ -69,7 +69,6 @@ namespace ge {
         friend Vector operator+ <>(const T& left, const Vector& right) noexcept;
         friend Vector operator- <>(const T& left, const Vector& right) noexcept;
         friend Vector operator* <>(const T& left, const Vector& right) noexcept;
-        friend Vector operator/ <>(const T& left, const Vector& right);
 
         template <Arithmetic value_type>
         class Iterator : public std::iterator<std::contiguous_iterator_tag, value_type, std::ptrdiff_t, value_type*, value_type&> {
@@ -96,6 +95,12 @@ namespace ge {
             constexpr Iterator operator[] (std::size_t offset) noexcept { auto tmp = *this; tmp += offset; return tmp; }
 
             friend constexpr bool operator== (const Iterator& right, const Iterator& left) noexcept { return right.iter == left.iter; }
+
+            friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
+            friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
+            friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
+            friend constexpr auto operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
+
             friend constexpr auto operator<=> (const Iterator& right, const Iterator& left) noexcept {  left.iter < right.iter ? std::weak_ordering::less : right.iter < left.iter ? std::weak_ordering::greater : std::weak_ordering::equivalent; }
         private:
             value_type* iter;

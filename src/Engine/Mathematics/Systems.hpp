@@ -30,7 +30,7 @@ namespace ge {
         template <std::weakly_incrementable Iter, std::sentinel_for<Iter> Sent, std::invocable<iterator_value_type_t<Iter>, double> Pred = powerInvocable>
             requires requires (iterator_value_type_t<Iter> a) { a += a; }
         constexpr iterator_value_type_t<Iter> operator() (Iter first, Sent last, double norm = 2., Pred pred = {}) const noexcept {
-            IterValueType<Iter> sum {};
+            iterator_value_type_t<Iter> sum {};
             for (;first != last; ++first)
                 sum += std::move(std::invoke(pred, std::move(*first), norm));
             return std::invoke(pred, sum, 1. / norm);
