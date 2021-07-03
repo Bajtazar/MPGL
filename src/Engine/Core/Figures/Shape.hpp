@@ -43,6 +43,8 @@ namespace ge {
         using reverse_iterator = std::vector<Vertex>::reverse_iterator;
         using const_reverse_iterator = std::vector<Vertex>::const_reverse_iterator;
 
+        std::size_t size(void) const noexcept { return vertices.size(); }
+
         iterator begin(void) noexcept { return vertices.begin(); }
         iterator end(void) noexcept { return vertices.end(); }
 
