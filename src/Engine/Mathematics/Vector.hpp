@@ -99,7 +99,7 @@ namespace ge {
             friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
             friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
             friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
-            friend constexpr auto operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
+            friend constexpr difference_type operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
 
             friend constexpr auto operator<=> (const Iterator& right, const Iterator& left) noexcept {  left.iter < right.iter ? std::weak_ordering::less : right.iter < left.iter ? std::weak_ordering::greater : std::weak_ordering::equivalent; }
         private:

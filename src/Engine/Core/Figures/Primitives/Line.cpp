@@ -28,7 +28,7 @@ namespace ge {
         return *this;
     }
 
-    Line::Line(Line&& line) noexcept : Shape{scene, std::move(line.vertices)} {
+    Line::Line(Line&& line) noexcept : Shape{line.scene, std::move(line.vertices)} {
         vertexArrayObject = line.vertexArrayObject;
         vertexBuffer = line.vertexBuffer;
         shaderProgram = line.shaderProgram;

@@ -39,7 +39,7 @@ namespace ge {
             friend bool operator==(const iterator& left, const iterator& right) noexcept { return left.__iter == right.__iter; }
             friend bool operator!=(const iterator& left, const iterator& right) noexcept { return left.__iter != right.__iter; }
 
-            reference operator*(void) const noexcept {return __iter->position; }
+            auto& operator*(void) const noexcept {return __iter->position; }
         private:
             std::ranges::iterator_t<_Range> __iter;
         };
@@ -79,7 +79,7 @@ namespace ge {
             friend bool operator==(const iterator& left, const iterator& right) noexcept { return left.__iter == right.__iter; }
             friend bool operator!=(const iterator& left, const iterator& right) noexcept { return left.__iter != right.__iter; }
 
-            reference operator*(void) const noexcept {return __iter->color; }
+            auto& operator*(void) const noexcept {return __iter->color; }
         private:
             std::ranges::iterator_t<_Range> __iter;
         };

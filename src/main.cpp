@@ -1,7 +1,6 @@
 #include "Engine/2DGraphics.hpp"
 #include <math.h>
 #include <numbers>
-
 using namespace ge;
 
 int main(void) noexcept {
@@ -26,6 +25,12 @@ int main(void) noexcept {
     }
 
     window.emplaceDrawable<Line>(100_x + 100_y, 200_x + 100_y, ge::Color::literals::Green);
+    window.emplaceDrawable<LineStrip>(4, ge::Color::literals::White);
+    LineStrip& lineStrip = dynamic_cast<LineStrip&>(*window[4]);
+    lineStrip[0].position = 40_x + 40_y;
+    lineStrip[1].position = 50_x + 50_y;
+    lineStrip[2].position = 60_x + 40_y;
+    lineStrip[3].position = 50_x + 30_y;
 
     return window.windowLoop();
 }

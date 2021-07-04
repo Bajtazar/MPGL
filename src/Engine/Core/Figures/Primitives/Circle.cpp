@@ -2,6 +2,7 @@
 #include "../../../Mathematics/Systems.hpp"
 
 #include <numbers>
+#include <iterator>
 
 namespace ge {
 
@@ -18,18 +19,22 @@ namespace ge {
 
     Circle::Circle(const Circle& circle) noexcept : Shape{circle.scene, circle.vertices.size()}, center{circle.center} {
         shaderProgram = circle.shaderProgram;
-        std::ranges::copy(circle, begin());
+        vertices.clear();
+        vertices.reserve(circle.vertices.size());
+        std::ranges::copy(circle, std::back_inserter(vertices));
     }
 
     Circle& Circle::operator= (const Circle& circle) noexcept {
         shaderProgram = circle.shaderProgram;
-        std::ranges::copy(circle, begin());
+        vertices.clear();
+        vertices.reserve(circle.vertices.size());
+        std::ranges::copy(circle, std::back_inserter(vertices));
         copyToGPU();
         return *this;
     }
 
 
-    Circle::Circle(Circle&& circle) noexcept : Shape{scene, std::move(circle.vertices)}, center{std::move(circle.center)} {
+    Circle::Circle(Circle&& circle) noexcept : Shape{circle.scene, std::move(circle.vertices)}, center{std::move(circle.center)} {
         vertexArrayObject = circle.vertexArrayObject;
         vertexBuffer = circle.vertexBuffer;
         shaderProgram = circle.shaderProgram;
