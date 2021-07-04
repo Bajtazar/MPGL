@@ -5,4 +5,5 @@
 #include "Core/Figures/Primitives/Triangle.hpp"
 #include "Core/Figures/Primitives/Rectangle.hpp"
 #include "Core/Figures/Primitives/Circle.hpp"
+#include "Core/Figures/Primitives/Line.hpp"
 #include "Core/Figures/Views.hpp"

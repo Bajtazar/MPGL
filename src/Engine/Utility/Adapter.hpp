@@ -6,7 +6,7 @@
 namespace ge {
 
     template <typename T>
-    concept Adaptable = requires(T& a, typename T::value_type b) { a / a; a * b; a - b; } && std::is_convertible_v<uint32_t, typename T::value_type>;
+    concept Adaptable = requires(T& a, typename T::value_type b) { a / a; a * a; a * b; a - b; a + b; } && std::is_convertible_v<uint32_t, typename T::value_type>;
 
     template <Adaptable T>
     class Adapter {
@@ -23,7 +23,9 @@ namespace ge {
             return range = std::move(factor) / scaleFactor * value_type{2} - value_type{1};
         }
 
-        constexpr operator T() const noexcept { return range; }
+        constexpr operator T() const noexcept {
+            return (range + value_type{1}) * value_type{2} * scaleFactor;
+        }
 
         T& get(void) noexcept { return range; }
         const T& get(void) const noexcept { return range; }

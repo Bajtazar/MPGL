@@ -25,5 +25,7 @@ int main(void) noexcept {
         iter += 2 * std::numbers::pi_v<double> / (circle.size() - 1);
     }
 
+    window.emplaceDrawable<Line>(100_x + 100_y, 200_x + 100_y, ge::Color::literals::Green);
+
     return window.windowLoop();
 }
