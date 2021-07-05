@@ -5,7 +5,7 @@
 namespace ge {
 
     LineStrip::LineStrip(const Vector2i& scene, std::size_t vertices, const Color& color) noexcept : Shape{scene, vertices} {
-        for (auto& color_ : this->vertices | ge::views::color)
+        for (auto& color_ : this->vertices | views::color)
             color_ = color;
     }
 

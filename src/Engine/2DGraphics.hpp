@@ -7,4 +7,5 @@
 #include "Core/Figures/Primitives/Circle.hpp"
 #include "Core/Figures/Primitives/Line.hpp"
 #include "Core/Figures/Primitives/LineStrip.hpp"
+#include "Core/Figures/Primitives/Points.hpp"
 #include "Core/Figures/Views.hpp"
