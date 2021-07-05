@@ -26,8 +26,8 @@ namespace ge {
         const std::string& getWindowTitle(void) const noexcept { return WindowInterface::getWindowTitle(); }
 
         void addDrawable(std::unique_ptr<Drawable>&& drawable) noexcept;
-        template <class T, typename... Args>
-            requires std::is_constructible_v<T, const Vector2i&, Args...> && std::is_base_of_v<Drawable, T>
+        template <std::derived_from<Drawable> T, typename... Args>
+            requires std::is_constructible_v<T, const Vector2i&, Args...>
         void emplaceDrawable(Args&&... args) noexcept;
 
         void setDrawablesShaders(void) noexcept;
@@ -68,8 +68,8 @@ namespace ge {
         std::vector<std::unique_ptr<Drawable>> drawables;
     };
 
-    template <class T, typename... Args>
-        requires std::is_constructible_v<T, const Vector2i&, Args...> && std::is_base_of_v<Drawable, T>
+    template <std::derived_from<Drawable> T, typename... Args>
+        requires std::is_constructible_v<T, const Vector2i&, Args...>
     void RenderWindow::emplaceDrawable(Args&&... args) noexcept {
         drawables.push_back(std::move(std::make_unique<T>(WindowInterface::getWindowBaseDimmensions(), std::forward<Args>(args)...)));
     }

@@ -36,7 +36,8 @@ namespace ge {
         virtual void copyToGPU(void) noexcept = 0;
         virtual void draw(void) const noexcept = 0;
 
-        Vertex& operator[] (uint16_t index) { return vertices[index]; }
+        Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
+        const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }
 
         using iterator = std::vector<Vertex>::iterator;
         using const_iterator = std::vector<Vertex>::const_iterator;
