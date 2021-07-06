@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "Drawable.hpp"
+#include "Views.hpp"
 
 namespace ge {
 
@@ -40,30 +41,60 @@ namespace ge {
             requires std::is_constructible_v<Base, const Vector2f&, Args...>
         void emplaceBack(Args&&... args) noexcept;
 
-        using iterator = DrawableVector<Base, Allocator>::iterator;
-        using const_iterator = DrawableVector<Base, Allocator>::const_iterator;
-        using reverse_iterator = DrawableVector<Base, Allocator>::reverse_iterator;
-        using const_reverse_iterator = DrawableVector<Base, Allocator>::const_reverse_iterator;
+        template <class InnerIterator, typename value_type>
+        class Iterator : public std::iterator<std::contiguous_iterator_tag, value_type, std::ptrdiff_t, value_type*, value_type&> {
+        public:
+            using reference = value_type&;
+            using pointer = value_type*;
+            using difference_type = std::ptrdiff_t;
+            using iterator_category = std::contiguous_iterator_tag;
+
+            explicit Iterator(void) noexcept = default;
+            explicit Iterator(const InnerIterator& iter) noexcept : iter{iter} {}
+
+            Iterator& operator++(void) noexcept { ++iter; return *this; }
+            Iterator& operator++(int)  noexcept { auto tmp = *this; ++iter; return tmp; }
+            Iterator& operator--(void) noexcept { --iter; return *this; }
+            Iterator& operator--(int)  noexcept { auto tmp = *this; --iter; return tmp; }
+            reference operator* (void) const noexcept { return **iter; }
+            pointer   operator->(void) noexcept { return *iter; }
+
+            friend bool operator== (const Iterator& right, const Iterator& left) noexcept { return right.iter == left.iter; }
+
+            friend Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
+            friend Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
+            friend Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
+            friend difference_type operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
+
+            friend auto operator<=> (const Iterator& right, const Iterator& left) noexcept {  left.iter < right.iter ? std::weak_ordering::less : right.iter < left.iter ? std::weak_ordering::greater : std::weak_ordering::equivalent; }
+        private:
+            InnerIterator iter;
+        };
+
+        using iterator = Iterator<typename DrawableVector<Base, Allocator>::iterator, Base>;
+        using const_iterator = Iterator<typename DrawableVector<Base, Allocator>::const_iterator, const Base>;
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
         using value_type = Base;
 
-        iterator begin(void) noexcept { return DrawableVector<Base, Allocator>::begin(); }
-        iterator end(void) noexcept { return DrawableVector<Base, Allocator>::end(); }
+        iterator begin(void) noexcept { return iterator{ DrawableVector<Base, Allocator>::begin() }; }
+        iterator end(void) noexcept { return iterator{ DrawableVector<Base, Allocator>::end() }; }
 
-        const_iterator begin(void) const noexcept { return DrawableVector<Base, Allocator>::begin(); }
-        const_iterator end(void) const noexcept { return DrawableVector<Base, Allocator>::end(); }
+        const_iterator begin(void) const noexcept { return const_iterator{ DrawableVector<Base, Allocator>::begin() }; }
+        const_iterator end(void) const noexcept { return const_iterator{ DrawableVector<Base, Allocator>::end() }; }
 
-        const_iterator cbegin(void) const noexcept { return DrawableVector<Base, Allocator>::begin(); }
-        const_iterator cend(void) const noexcept { return DrawableVector<Base, Allocator>::end(); }
+        const_iterator cbegin(void) const noexcept { return const_iterator{ DrawableVector<Base, Allocator>::cbegin() }; }
+        const_iterator cend(void) const noexcept { return const_iterator{ DrawableVector<Base, Allocator>::cend() }; }
 
-        reverse_iterator rbegin(void) noexcept { return DrawableVector<Base, Allocator>::rbegin(); }
-        reverse_iterator rend(void) noexcept { return DrawableVector<Base, Allocator>::rend(); }
+        reverse_iterator rbegin(void) noexcept { return reverse_iterator{ --end() }; }
+        reverse_iterator rend(void) noexcept { return reverse_iterator{ --begin() }; }
 
-        const_reverse_iterator rbegin(void) const noexcept { return DrawableVector<Base, Allocator>::rbegin(); }
-        const_reverse_iterator rend(void) const noexcept { return DrawableVector<Base, Allocator>::rend(); }
+        const_reverse_iterator rbegin(void) const noexcept { return const_reverse_iterator{ --end() }; }
+        const_reverse_iterator rend(void) const noexcept { return const_reverse_iterator{ --begin() }; }
 
-        const_reverse_iterator crbegin(void) const noexcept { return DrawableVector<Base, Allocator>::crbegin(); }
-        const_reverse_iterator crend(void) const noexcept { return DrawableVector<Base, Allocator>::crend(); }
+        const_reverse_iterator crbegin(void) const noexcept { return const_reverse_iterator{ --cend() }; }
+        const_reverse_iterator crend(void) const noexcept { return const_reverse_iterator{ --cbegin() }; }
 
         virtual void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
         virtual void copyToGPU(void) noexcept final;
@@ -103,16 +134,16 @@ namespace ge {
 
     template <DrawableType Base, class Allocator>
     void DrawableArray<Base, Allocator>::setShaders(const ShaderLibrary& shaderLibrary) noexcept {
-        std::ranges::for_each(*this, [&shaderLibrary](auto& drawable){ drawable->setShaders(shaderLibrary); });
+        std::ranges::for_each(*this, [&shaderLibrary](auto& drawable){ drawable.setShaders(shaderLibrary); });
     }
 
     template <DrawableType Base, class Allocator>
     void DrawableArray<Base, Allocator>::copyToGPU(void) noexcept {
-        std::ranges::for_each(*this, [](auto& drawable){ drawable->copyToGPU(); });
+        std::ranges::for_each(*this, [](auto& drawable){ drawable.copyToGPU(); });
     }
 
     template <DrawableType Base, class Allocator>
     void DrawableArray<Base, Allocator>::draw(void) const noexcept {
-        std::ranges::for_each(*this, [](const auto& drawable){ drawable->draw(); });
+        std::ranges::for_each(*this, [](const auto& drawable){ drawable.draw(); });
     }
 }
