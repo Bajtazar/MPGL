@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-#include <memory>
 #include <type_traits>
 
 #include "WindowInterface.hpp"
@@ -21,13 +19,12 @@ namespace ge {
 
         operator bool() const noexcept { return shouldWindowClose(); }
 
-        const Vector2i& getWindowBaseDimmensions(void) const noexcept { return WindowInterface::getWindowBaseDimmensions(); }
-        const Vector2i& getWindowDimmensions(void) const noexcept { return WindowInterface::getWindowDimmensions(); }
+        const std::shared_ptr<Vector2i>& getWindowDimmensions(void) const noexcept { return WindowInterface::getWindowDimmensions(); }
         const std::string& getWindowTitle(void) const noexcept { return WindowInterface::getWindowTitle(); }
 
         void addDrawable(std::unique_ptr<Drawable>&& drawable) noexcept;
         template <std::derived_from<Drawable> T, typename... Args>
-            requires std::is_constructible_v<T, const Vector2i&, Args...>
+            requires std::is_constructible_v<T, const std::shared_ptr<Vector2i>&, Args...>
         void emplaceDrawable(Args&&... args) noexcept;
 
         void setDrawablesShaders(void) noexcept;
@@ -69,9 +66,9 @@ namespace ge {
     };
 
     template <std::derived_from<Drawable> T, typename... Args>
-        requires std::is_constructible_v<T, const Vector2i&, Args...>
+        requires std::is_constructible_v<T, const std::shared_ptr<Vector2i>&, Args...>
     void RenderWindow::emplaceDrawable(Args&&... args) noexcept {
-        drawables.push_back(std::move(std::make_unique<T>(WindowInterface::getWindowBaseDimmensions(), std::forward<Args>(args)...)));
+        drawables.push_back(std::move(std::make_unique<T>(WindowInterface::getWindowDimmensions(), std::forward<Args>(args)...)));
     }
 
 }

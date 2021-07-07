@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "ShaderLibrary.hpp"
 #include "../../Mathematics/Vector.hpp"
 
@@ -7,7 +9,7 @@ namespace ge {
 
     class Drawable {
     public:
-        explicit Drawable(const Vector2i&  scene) noexcept : scene(scene) {}
+        explicit Drawable(const std::shared_ptr<Vector2i>&  scene) noexcept : scene{scene} {}
         /*friend RenderWindow& operator<< (RenderWindow& target, Drawable& drawable) noexcept{
             //drawable.draw(target);
             return target;
@@ -19,7 +21,7 @@ namespace ge {
 
         virtual ~Drawable(void) noexcept = default;
     protected:
-        const Vector2i& scene;
+        const std::shared_ptr<Vector2i>& scene;
         uint32_t shaderProgram;
     };
 

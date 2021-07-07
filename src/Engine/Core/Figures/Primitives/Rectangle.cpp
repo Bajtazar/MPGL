@@ -7,11 +7,11 @@ namespace ge {
 
     const std::array<uint32_t, 6> Rectangle::indexes {0, 1, 2, 0, 3, 2};
 
-    Rectangle::Rectangle(const Vector2i& scene) noexcept : Shape{scene, 4} {
+    Rectangle::Rectangle(const std::shared_ptr<Vector2i>& scene) noexcept : Shape{scene, 4} {
         glGenBuffers(1, &elementArrayBuffer);
     }
 
-    Rectangle::Rectangle(const Vector2i& scene, const Vector2f& firstVertex, const Vector2f& dimmensions,
+    Rectangle::Rectangle(const std::shared_ptr<Vector2i>& scene, const Vector2f& firstVertex, const Vector2f& dimmensions,
         const Color& color) noexcept : Rectangle{scene} {
 
         vertices[0].position = firstVertex;
@@ -22,7 +22,7 @@ namespace ge {
             color_ = color;
     }
 
-    Rectangle::Rectangle(const Vector2i& scene, const Vector2f& firstVertex, const Vector2f& secondVertex,
+    Rectangle::Rectangle(const std::shared_ptr<Vector2i>& scene, const Vector2f& firstVertex, const Vector2f& secondVertex,
         const Vector2f& thirdVertex, const Color& color) noexcept : Rectangle{scene} {
 
         vertices[0].position = firstVertex;

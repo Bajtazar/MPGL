@@ -4,14 +4,14 @@ namespace ge {
 
     constexpr std::size_t VertexSizeLine = 12 * sizeof(float);
 
-    Line::Line(const Vector2i& scene, const Vector2f& firstVertex, const Vector2f& secondVertex, const Color& color) noexcept : Shape{scene, 2} {
+    Line::Line(const std::shared_ptr<Vector2i>& scene, const Vector2f& firstVertex, const Vector2f& secondVertex, const Color& color) noexcept : Shape{scene, 2} {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
         vertices[0].color = color;
         vertices[1].color = color;
     }
 
-    Line::Line(const Vector2i& scene, const Color& color) noexcept : Shape{scene, 2} {
+    Line::Line(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept : Shape{scene, 2} {
         vertices[0].color = color;
         vertices[1].color = color;
     }

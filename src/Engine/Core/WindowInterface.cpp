@@ -9,7 +9,7 @@ namespace ge {
     : openGLMajorVersion(major), openGLMinorVersion(minor), floating(floating), maximised(maximised), resizable(resizable) {}
 
     WindowInterface::WindowInterface(Vector2i dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share)
-    : dimmensions(dimmensions), baseDimmensions(dimmensions) {
+    : dimmensions{std::move(std::make_shared<Vector2i>(dimmensions))} {
         if (!glfwInit())
             throw RenderWindowInitException(title);
         setWindowOptions(options);
@@ -25,7 +25,7 @@ namespace ge {
     void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        render->dimmensions = Vector<int32_t, int32_t>{width, height};
+        *(render->dimmensions) = Vector<int32_t, int32_t>{width, height};
     }
 
     void WindowInterface::setCallbacks(void) noexcept {
