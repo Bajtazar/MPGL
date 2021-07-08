@@ -1,5 +1,6 @@
 #include "Logger.hpp"
 #include "FileIO.hpp"
+#include "Ranges.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -8,12 +9,20 @@
 
 namespace ge {
 
-    void Logger::saveOpenGl(GLchar* infoLog, size_t size) noexcept {
+    void Logger::saveOpenGl(const std::string& infoLog, const std::string& title) noexcept {
+        if (!accumulate(infoLog, 0u))
+            return;
         std::stringstream ss = getTimeInString();
-        for (char* i = infoLog; i != &infoLog[size]; ++i) ss << i;
-        ss << '\n';
+        ss << '[' << title << ']' << ' ' << infoLog << '\n';
         std::cout << ss.rdbuf();
         FileIO::saveFile("logs/" + getCurrentDay() + ".log", std::move(ss), std::ios_base::app);
+    }
+
+    std::string Logger::loggingString(std::size_t size, char fill) noexcept {
+        std::string info;
+        info.resize(size);
+        std::fill(info.begin(), info.end(), fill);
+        return info;
     }
 
     std::stringstream Logger::getTimeInString(void) noexcept {

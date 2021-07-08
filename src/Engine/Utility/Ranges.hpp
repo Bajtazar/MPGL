@@ -2,6 +2,7 @@
 
 #include <ranges>
 #include <iterator>
+#include <functional>
 
 namespace ge {
 

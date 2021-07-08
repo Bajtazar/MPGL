@@ -20,9 +20,9 @@ namespace ge {
         int32_t success;
         glGetProgramiv(shaderID, GL_COMPILE_STATUS, &success);
         if (!success) {
-            char info[512];
-            glGetProgramInfoLog(shaderID, 512, nullptr, info);
-            Logger::saveOpenGl(info, 512);
+            std::string info = Logger::loggingString(512, 0);
+            glGetProgramInfoLog(shaderID, 512, nullptr, info.data());
+            Logger::saveOpenGl(info, "Shader compiler");
         }
     }
 

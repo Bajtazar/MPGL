@@ -18,9 +18,9 @@ namespace ge {
                 int32_t success;
                 glGetProgramiv(programID, GL_LINK_STATUS, &success);
                 if (!success) {
-                    char info[512];
-                    glGetProgramInfoLog(programID, 512, nullptr, info);
-                    Logger::saveOpenGl(info, 512);
+                    std::string info = Logger::loggingString(512, 0);
+                    glGetProgramInfoLog(programID, 512, nullptr, info.data());
+                    Logger::saveOpenGl(info, "Shader linker");
                 }
                 programs[s1] = programID;
             }
