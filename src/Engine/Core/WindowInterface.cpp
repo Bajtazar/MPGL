@@ -25,7 +25,9 @@ namespace ge {
     void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        *(render->dimmensions) = Vector<int32_t, int32_t>{width, height};
+        Vector2i oldDimmensions = *(render->dimmensions);
+        *(render->dimmensions) = Vector2i{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        std::ranges::for_each(render->transformables, [&oldDimmensions](auto& ptr){ ptr->onScreenTransformation(oldDimmensions); });
     }
 
     void WindowInterface::setCallbacks(void) noexcept {

@@ -13,6 +13,14 @@ namespace ge {
         shaderProgram = shaderLibrary["2DDefault"];
     }
 
+    void Shape::onScreenTransformation(const Vector2i& oldDimmensions) noexcept {
+        for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position)) {
+            Vector2f& position = vertexPosition.get();
+            position = (position + 1.f) * static_cast<Vector2f>(oldDimmensions) / static_cast<Vector2f>(*scene) - 1.f;
+        }
+        copyToGPU();
+    }
+
     Shape::~Shape(void) noexcept {
         glDeleteBuffers(1, &vertexBuffer);
         glDeleteVertexArrays(1, &vertexArrayObject);

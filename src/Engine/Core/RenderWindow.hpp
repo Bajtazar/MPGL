@@ -22,7 +22,8 @@ namespace ge {
         const std::shared_ptr<Vector2i>& getWindowDimmensions(void) const noexcept { return WindowInterface::getWindowDimmensions(); }
         const std::string& getWindowTitle(void) const noexcept { return WindowInterface::getWindowTitle(); }
 
-        void addDrawable(std::unique_ptr<Drawable>&& drawable) noexcept;
+        void pushDrawable(const std::shared_ptr<Drawable>& drawable) noexcept;
+        void pushDrawable(std::shared_ptr<Drawable>&& drawable) noexcept;
         template <std::derived_from<Drawable> T, typename... Args>
             requires std::is_constructible_v<T, const std::shared_ptr<Vector2i>&, Args...>
         void emplaceDrawable(Args&&... args) noexcept;
@@ -31,13 +32,13 @@ namespace ge {
         void copyDrawablesToGPU(void) noexcept;
         void drawDrawables(void) const noexcept;
 
-        const std::unique_ptr<Drawable>& operator[] (std::size_t index) const noexcept { return drawables[index]; }
-        std::unique_ptr<Drawable>& operator[] (std::size_t index) noexcept { return drawables[index]; }
+        const std::shared_ptr<Drawable>& operator[] (std::size_t index) const noexcept { return drawables[index]; }
+        std::shared_ptr<Drawable>& operator[] (std::size_t index) noexcept { return drawables[index]; }
 
-        using iterator = std::vector<std::unique_ptr<Drawable>>::iterator;
-        using const_iterator = std::vector<std::unique_ptr<Drawable>>::const_iterator;
-        using reverse_iterator = std::vector<std::unique_ptr<Drawable>>::reverse_iterator;
-        using const_reverse_iterator = std::vector<std::unique_ptr<Drawable>>::const_reverse_iterator;
+        using iterator = std::vector<std::shared_ptr<Drawable>>::iterator;
+        using const_iterator = std::vector<std::shared_ptr<Drawable>>::const_iterator;
+        using reverse_iterator = std::vector<std::shared_ptr<Drawable>>::reverse_iterator;
+        using const_reverse_iterator = std::vector<std::shared_ptr<Drawable>>::const_reverse_iterator;
 
         iterator begin(void) noexcept { return drawables.begin(); }
         iterator end(void) noexcept { return drawables.end(); }
@@ -62,13 +63,16 @@ namespace ge {
         ~RenderWindow(void) noexcept = default;
     private:
         ShaderLibrary shaders;
-        std::vector<std::unique_ptr<Drawable>> drawables;
+        std::vector<std::shared_ptr<Drawable>> drawables;
     };
 
     template <std::derived_from<Drawable> T, typename... Args>
         requires std::is_constructible_v<T, const std::shared_ptr<Vector2i>&, Args...>
     void RenderWindow::emplaceDrawable(Args&&... args) noexcept {
-        drawables.push_back(std::move(std::make_unique<T>(WindowInterface::getWindowDimmensions(), std::forward<Args>(args)...)));
+        auto ptr = std::make_shared<T>(WindowInterface::getWindowDimmensions(), std::forward<Args>(args)...);
+        if constexpr (std::is_base_of_v<Transformable, T>)
+            transformables.push_back(std::static_pointer_cast<Transformable>(ptr));
+        drawables.push_back(std::move(ptr));
     }
 
 }

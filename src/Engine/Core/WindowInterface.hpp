@@ -3,9 +3,13 @@
 
 #include <string>
 #include <memory>
+#include <vector>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include "../Mathematics/Vector.hpp"
+#include "Figures/Transformable.hpp"
 #include "Color.hpp"
 
 namespace ge {
@@ -39,6 +43,7 @@ namespace ge {
         void draw(void) const noexcept;
         constexpr const std::shared_ptr<Vector2i>& getWindowDimmensions(void) const noexcept { return dimmensions; }
         constexpr const std::string& getWindowTitle(void) const noexcept { return name; }
+        std::vector<std::shared_ptr<Transformable>> transformables;
     private:
         std::shared_ptr<Vector2i> dimmensions;
         std::string name;

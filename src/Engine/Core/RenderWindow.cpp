@@ -6,7 +6,15 @@ namespace ge {
 
     }
 
-    void RenderWindow::addDrawable(std::unique_ptr<Drawable>&& drawable) noexcept {
+    void RenderWindow::pushDrawable(const std::shared_ptr<Drawable>& drawable) noexcept {
+        if (auto ptr = std::dynamic_pointer_cast<Transformable>(drawable))
+            transformables.push_back(ptr);
+        drawables.push_back(drawable);
+    }
+
+    void RenderWindow::pushDrawable(std::shared_ptr<Drawable>&& drawable) noexcept {
+        if (auto ptr = std::dynamic_pointer_cast<Transformable>(drawable))
+            transformables.push_back(ptr);
         drawables.push_back(std::move(drawable));
     }
 

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Drawable.hpp"
+#include "Transformable.hpp"
 #include "../Color.hpp"
 #include "../../Utility/Adapter.hpp"
 
 
 namespace ge {
 
-    class Shape : public Drawable {
+    class Shape : public Drawable, public Transformable {
     public:
         struct Vertex {
             constexpr explicit Vertex(const Vector2f& position, const Color& color, const std::shared_ptr<Vector2i>& scene) noexcept : position{position, scene}, color{color} {}
@@ -35,6 +36,8 @@ namespace ge {
         virtual void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
         virtual void copyToGPU(void) noexcept = 0;
         virtual void draw(void) const noexcept = 0;
+
+        virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept;
 
         Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
         const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }
