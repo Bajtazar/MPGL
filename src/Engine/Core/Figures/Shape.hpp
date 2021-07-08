@@ -38,6 +38,9 @@ namespace ge {
         virtual void draw(void) const noexcept = 0;
 
         virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept;
+        virtual void translate(const Vector2f& shift) noexcept;
+
+        virtual void rotate(const Vector2f& center, float angle) noexcept;
 
         Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
         const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }

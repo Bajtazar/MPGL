@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <compare>
 
 namespace ge {
 
@@ -95,13 +96,17 @@ namespace ge {
             constexpr Iterator operator[] (std::size_t offset) noexcept { auto tmp = *this; tmp += offset; return tmp; }
 
             friend constexpr bool operator== (const Iterator& right, const Iterator& left) noexcept { return right.iter == left.iter; }
+            friend constexpr bool operator!= (const Iterator& right, const Iterator& left) noexcept { return right.iter != left.iter; }
 
             friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
             friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
             friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
             friend constexpr difference_type operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
 
-            friend constexpr auto operator<=> (const Iterator& right, const Iterator& left) noexcept {  left.iter < right.iter ? std::weak_ordering::less : right.iter < left.iter ? std::weak_ordering::greater : std::weak_ordering::equivalent; }
+            friend constexpr bool operator> (const Iterator& right, const Iterator& left) noexcept { return right.iter > left.iter; }
+            friend constexpr bool operator< (const Iterator& right, const Iterator& left) noexcept { return right.iter < left.iter; }
+            friend constexpr bool operator>= (const Iterator& right, const Iterator& left) noexcept { return right.iter >= left.iter; }
+            friend constexpr bool operator<= (const Iterator& right, const Iterator& left) noexcept { return right.iter <= left.iter; }
         private:
             value_type* iter;
         };

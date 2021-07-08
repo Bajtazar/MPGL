@@ -2,6 +2,8 @@
 #include <math.h>
 #include <numbers>
 
+#include <iostream>
+
 using namespace ge;
 
 int main(void) noexcept {

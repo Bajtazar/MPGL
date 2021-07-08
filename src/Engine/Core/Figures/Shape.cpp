@@ -21,6 +21,21 @@ namespace ge {
         copyToGPU();
     }
 
+    void Shape::translate(const Vector2f& shift) noexcept {
+        for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position))
+            vertexPosition = Vector2f(vertexPosition) + shift;
+        copyToGPU();
+    }
+
+    void Shape::rotate(const Vector2f& center, float angle) noexcept {
+        for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position)) {
+            Vector2f position = vertexPosition;
+            Vector2f radius = position - center;
+            // @TODO
+        }
+        copyToGPU();
+    }
+
     Shape::~Shape(void) noexcept {
         glDeleteBuffers(1, &vertexBuffer);
         glDeleteVertexArrays(1, &vertexArrayObject);
