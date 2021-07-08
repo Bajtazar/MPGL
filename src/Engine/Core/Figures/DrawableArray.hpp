@@ -5,18 +5,19 @@
 #include <algorithm>
 
 #include "Drawable.hpp"
+#include "Transformable.hpp"
 #include "Views.hpp"
 
 namespace ge {
 
     template <class T>
-    concept DrawableType = std::is_base_of_v<Drawable, T> && std::is_constructible_v<T, const std::shared_ptr<Vector2i>&>;
+    concept DrawableType = std::is_base_of_v<Drawable, T> && std::is_base_of_v<Transformable, T> && std::is_constructible_v<T, const std::shared_ptr<Vector2i>&>;
 
     template <class T, class Alloc>
     using DrawableVector = std::vector<std::unique_ptr<T>, Alloc>;
 
     template <DrawableType Base, class Allocator = std::allocator<std::unique_ptr<Base>>>
-    class DrawableArray : private DrawableVector<Base, Allocator>, public Drawable {
+    class DrawableArray : private DrawableVector<Base, Allocator>, public Drawable, public Transformable {
     public:
         explicit DrawableArray(const std::shared_ptr<Vector2i>& scene) noexcept;
         explicit DrawableArray(const std::shared_ptr<Vector2i>& scene, std::size_t size, const Base& base) noexcept;
@@ -99,6 +100,8 @@ namespace ge {
         virtual void copyToGPU(void) noexcept final;
         virtual void draw(void) const noexcept final;
 
+        virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
+
         ~DrawableArray(void) noexcept = default;
     };
 
@@ -144,5 +147,10 @@ namespace ge {
     template <DrawableType Base, class Allocator>
     void DrawableArray<Base, Allocator>::draw(void) const noexcept {
         std::ranges::for_each(*this, [](const auto& drawable){ drawable.draw(); });
+    }
+
+    template <DrawableType Base, class Allocator>
+    void DrawableArray<Base, Allocator>::onScreenTransformation(const Vector2i& oldDimmensions) noexcept {
+        std::ranges::for_each(*this, [&oldDimmensions](auto& transformable){ transformable.onScreenTransformation(oldDimmensions); });
     }
 }

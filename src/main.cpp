@@ -4,8 +4,6 @@
 
 using namespace ge;
 
-template class DrawableArray<Triangle<true>>;
-
 int main(void) noexcept {
     ge::RenderWindow window{640_x + 480_y, "Hello World!"};
 
