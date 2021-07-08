@@ -36,6 +36,12 @@ namespace ge {
         copyToGPU();
     }
 
+    void Shape::scale(const Vector2f& center, float factor) noexcept {
+        for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position))
+            vertexPosition = (static_cast<Vector2f>(vertexPosition) - center) * factor + center;
+        copyToGPU();
+    }
+
     Shape::~Shape(void) noexcept {
         glDeleteBuffers(1, &vertexBuffer);
         glDeleteVertexArrays(1, &vertexArrayObject);

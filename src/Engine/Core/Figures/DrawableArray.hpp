@@ -102,8 +102,8 @@ namespace ge {
 
         virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
         virtual void translate(const Vector2f& shift) noexcept final;
-
-        virtual void rotate(const Vector2f& center, float angle) noexcept;
+        virtual void scale(const Vector2f& center, float factor) noexcept final;
+        virtual void rotate(const Vector2f& center, float angle) noexcept final;
 
         ~DrawableArray(void) noexcept = default;
     };
@@ -160,6 +160,11 @@ namespace ge {
     template <DrawableType Base, class Allocator>
     void DrawableArray<Base, Allocator>::translate(const Vector2f& shift) noexcept {
         std::ranges::for_each(*this, [&shift](auto& transformable){ transformable.translate(shift); });
+    }
+
+    template <DrawableType Base, class Allocator>
+    void DrawableArray<Base, Allocator>::scale(const Vector2f& center, float factor) noexcept {
+        std::ranges::for_each(*this, [&center, &factor](auto& transformable){ transformable.scale(center, factor); });
     }
 
     template <DrawableType Base, class Allocator>
