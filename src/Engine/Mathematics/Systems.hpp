@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Vector.hpp"
 #include "../Core/Figures/Views.hpp"
+#include "Matrix.hpp"
 
 #include <math.h>
 
@@ -54,6 +54,11 @@ namespace ge {
     template <Mathematical T>
     inline constexpr Vector<T, T> polarToCartesian(const Vector<T, T>& vector) noexcept {
         return { vector[0] * std::cos(vector[1]), vector[0] * std::sin(vector[1]) };
+    }
+
+    template <Mathematical T>
+    inline constexpr Matrix<T, 2> rotationMatrix(float angle) noexcept {
+        return {Vector2f{std::cos(angle), -std::sin(angle)}, Vector2f{std::sin(angle), std::cos(angle)}};
     }
 
 }

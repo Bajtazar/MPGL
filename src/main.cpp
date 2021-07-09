@@ -2,12 +2,11 @@
 #include <math.h>
 #include <numbers>
 
-#include <iostream>
-
 using namespace ge;
 
 int main(void) noexcept {
     ge::RenderWindow window{640_x + 480_y, "Hello World!"};
+
 
     window.emplaceDrawable<Circle>(400_x + 200_y, 100.f, ge::Color::literals::Yellow);
 

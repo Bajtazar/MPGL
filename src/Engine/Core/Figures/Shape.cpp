@@ -1,4 +1,5 @@
 #include "Shape.hpp"
+#include "../../Mathematics/Systems.hpp"
 
 namespace ge {
 
@@ -31,7 +32,7 @@ namespace ge {
         for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position)) {
             Vector2f position = vertexPosition;
             Vector2f radius = position - center;
-            // @TODO
+            vertexPosition = rotationMatrix<float>(angle) * radius + center;
         }
         copyToGPU();
     }

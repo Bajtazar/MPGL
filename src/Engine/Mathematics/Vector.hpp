@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
-#include <compare>
+#include <vector>
 
 namespace ge {
 
@@ -93,7 +93,7 @@ namespace ge {
 
             constexpr Iterator& operator+=(std::size_t offset) noexcept { iter += offset; return *this; }
             constexpr Iterator& operator-=(std::size_t offset) noexcept { iter -= offset; return *this; }
-            constexpr Iterator operator[] (std::size_t offset) noexcept { auto tmp = *this; tmp += offset; return tmp; }
+            constexpr reference operator[](std::size_t offset) const noexcept { return *(iter + offset); }
 
             friend constexpr bool operator== (const Iterator& right, const Iterator& left) noexcept { return right.iter == left.iter; }
             friend constexpr bool operator!= (const Iterator& right, const Iterator& left) noexcept { return right.iter != left.iter; }
@@ -125,6 +125,9 @@ namespace ge {
 
         constexpr auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
         constexpr auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
+
+        constexpr auto rbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
+        constexpr auto rend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
         constexpr auto crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
         constexpr auto crend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
