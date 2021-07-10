@@ -275,7 +275,14 @@ namespace ge {
         constexpr column_value_type& getColumn(std::size_t index) noexcept { return *(reinterpret_cast<column_value_type*>(this) + index); }
         constexpr const column_value_type& getColumn(std::size_t index) const noexcept { return *(reinterpret_cast<const column_value_type*>(this) + index); }
 
+        template <typename U = T, std::size_t MinorRows = Rows - 1>
+            requires (MinorRows > 1)
+        constexpr Matrix<U, Rows - 1> minor(std::size_t row, std::size_t column) const noexcept;
+
         constexpr Matrix& transpose(void) noexcept;
+
+        template <typename U = T>
+        constexpr U determinent(U init = {0}, U positive = {1}, U negative = {-1}) const noexcept;
 
         constexpr Matrix& operator+= (const Matrix& right) noexcept;
         constexpr Matrix& operator-= (const Matrix& right) noexcept;
@@ -573,5 +580,39 @@ namespace ge {
         std::transform(matrix.begin(), matrix.end(), result.begin(), [&vector](const auto& row)->T{ return innerProduct(row, vector, T{0}); });
         return result;
     }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <typename U, std::size_t MinorRows>
+        requires (MinorRows > 1)
+    constexpr Matrix<U, Rows - 1> Matrix<T, Rows>::minor(std::size_t row, std::size_t column) const noexcept {
+        Matrix<U, Rows - 1> result;
+        for (std::size_t i = 0, ri = 0; i < Rows; ++i) {
+            if (i != row) {
+                for (std::size_t j = 0, rj = 0;j < Rows; ++j) {
+                    if (j != column) {
+                        result.getColumn(rj)[ri] = static_cast<U>(getColumn(j)[i]);
+                        ++rj;
+                    }
+                }
+                ++ri;
+            }
+        }
+        return result;
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <typename U>
+    constexpr U Matrix<T, Rows>::determinent(U init, U positive, U negative) const noexcept {
+        if constexpr (Rows == 2)
+            init = static_cast<U>(getColumn(0)[0] * getColumn(1)[1]) - static_cast<U>(getColumn(0)[1] * getColumn(1)[0]);
+        else {
+            for (std::size_t i = 0;i < Rows; ++i)
+                init += (i % 2 ? negative : positive) * static_cast<U>(getColumn(i)[0]) * minor<U>(0, i).determinent();
+        }
+        return init;
+    }
+
 
 }
