@@ -73,6 +73,7 @@ namespace ge {
         explicit Shape(const std::shared_ptr<Vector2i>& scene, std::vector<Vertex>&& vertices) noexcept;
 
         std::vector<Vertex> vertices;
+        uint32_t shaderProgram;
         uint32_t vertexBuffer;
         uint32_t vertexArrayObject;
     };

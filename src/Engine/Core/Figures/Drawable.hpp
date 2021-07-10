@@ -22,7 +22,6 @@ namespace ge {
         virtual ~Drawable(void) noexcept = default;
     protected:
         const std::shared_ptr<Vector2i>& scene;
-        uint32_t shaderProgram;
     };
 
 }
