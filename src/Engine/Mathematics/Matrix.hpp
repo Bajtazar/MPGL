@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector.hpp"
+#include "Ranges.hpp"
 
 #include <ranges>
 
@@ -278,6 +279,7 @@ namespace ge {
 
         constexpr Matrix& operator+= (const Matrix& right) noexcept;
         constexpr Matrix& operator-= (const Matrix& right) noexcept;
+        constexpr Matrix& operator*= (const Matrix& right) noexcept;
 
     };
 
@@ -528,24 +530,47 @@ namespace ge {
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
     constexpr Matrix<T, Rows>& Matrix<T, Rows>::operator+= (const Matrix& right) noexcept {
-        std::ranges::transform(*this | std::views::join, right | std::views::join, std::ranges::begin(*this | std::views::join),
-            [](const T& left, const T& right)->T{ return left + right; });
+        for (std::size_t i = 0;i < Rows; ++i)
+            for (std::size_t j = 0;j < i; ++j)
+                this->getColumn(i)[j] += right.getColumn(i)[j];
         return *this;
     }
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
     constexpr Matrix<T, Rows>& Matrix<T, Rows>::operator-= (const Matrix& right) noexcept {
-        std::ranges::transform(*this | std::views::join, right | std::views::join, std::ranges::begin(*this | std::views::join),
-            [](const T& left, const T& right)->T{ return left - right; });
+        for (std::size_t i = 0;i < Rows; ++i)
+            for (std::size_t j = 0;j < i; ++j)
+                this->getColumn(i)[j] -= right.getColumn(i)[j];
         return *this;
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    constexpr Matrix<T, Rows>& Matrix<T, Rows>::operator*= (const Matrix& right) noexcept {
+        Matrix<T, Rows> result;
+        for (std::size_t i = 0;i < Rows; ++i)
+            for (std::size_t j = 0;j < i; ++j)
+                result[i][j] = innerProduct((*this)[i], right.getColumn(j), T{0});
+        *this = result;
+        return *this;
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    constexpr Matrix<T, Rows> operator* (const Matrix<T, Rows>& leftMatrix, const Matrix<T, Rows>& rightMatrix) noexcept {
+        Matrix<T, Rows> result;
+        for (std::size_t i = 0;i < Rows; ++i)
+            for (std::size_t j = 0;j < i; ++j)
+                result[i][j] = innerProduct(leftMatrix[i], rightMatrix.getColumn(j), T{0});
+        return result;
     }
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
     constexpr Matrix<T, Rows>::column_value_type operator*(const Matrix<T, Rows>& matrix, const typename Matrix<T, Rows>::column_value_type& vector) noexcept {
         typename Matrix<T, Rows>::column_value_type result;
-        std::transform(matrix.begin(), matrix.end(), result.begin(), [&vector](const auto& row)->T{ return std::inner_product(row.begin(), row.end(), vector.begin(), T{0}); });
+        std::transform(matrix.begin(), matrix.end(), result.begin(), [&vector](const auto& row)->T{ return innerProduct(row, vector, T{0}); });
         return result;
     }
 
