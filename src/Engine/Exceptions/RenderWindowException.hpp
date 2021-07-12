@@ -11,6 +11,8 @@ namespace ge{
         const char* what (void) const noexcept{ return message.c_str(); }
         const std::string& getMessage(void) const noexcept { return message; }
         const std::string& getWindowName(void) const noexcept { return windowName; }
+
+        virtual ~RenderWindowException(void) noexcept = default;
     protected:
         std::string windowName;
         std::string message;
