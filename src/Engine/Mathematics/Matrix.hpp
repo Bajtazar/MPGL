@@ -4,6 +4,7 @@
 #include "Ranges.hpp"
 
 #include <ranges>
+#include <optional>
 
 namespace ge {
 
@@ -37,6 +38,8 @@ namespace ge {
             requires (sizeof...(Args) == Rows)
         constexpr Matrix(const Args&... args) noexcept : MatrixTuple<T, Rows>{ args... } { std::reverse(columnBegin(), columnEnd()); transpose(); }
         constexpr Matrix(void) noexcept = default;
+
+        static Matrix<T, Rows> identityMatrix(void) noexcept;
 
         constexpr std::size_t size(void) const noexcept { return Rows; }
 
@@ -284,11 +287,88 @@ namespace ge {
         template <typename U = T>
         constexpr U determinent(U init = {0}, U positive = {1}, U negative = {-1}) const noexcept;
 
+        template <typename U = T>
+        std::optional<Matrix<U, Rows>> inverse(void) const noexcept;
+
         constexpr Matrix& operator+= (const Matrix& right) noexcept;
         constexpr Matrix& operator-= (const Matrix& right) noexcept;
         constexpr Matrix& operator*= (const Matrix& right) noexcept;
 
     };
+
+    template <Arithmetic T, std::size_t Rows>
+    using MatVector = typename Matrix<T, Rows>::column_value_type;
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    std::optional<MatVector<T, Rows>> luDecomposition(Matrix<T, Rows>& matrix) noexcept {
+        MatVector<T, Rows> permutations;
+        std::iota(permutations.begin(), permutations.end(), 0);
+        for (std::size_t k = 0, kp; k < Rows; ++k) {
+            T p{0};
+            for (std::size_t i = k; i < Rows; ++i) {
+                if (T v = std::abs(matrix.getColumn(k)[i]); v > p) {
+                    p = v;
+                    kp = i;
+                }
+            }
+            if (!p) return {};
+            std::swap(permutations[k], permutations[kp]);
+            for (std::size_t i = 0;i < Rows; ++i)
+                std::swap(matrix.getColumn(i)[k], matrix.getColumn(i)[kp]);
+            for (std::size_t i = k + 1; i < Rows; ++i) {
+                matrix.getColumn(k)[i] /= matrix.getColumn(k)[k];
+                for (std::size_t j = k + 1; j < Rows; ++j)
+                    matrix.getColumn(j)[i] -= matrix.getColumn(k)[i] * matrix.getColumn(j)[k];
+            }
+        }
+        return { permutations };
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    MatVector<T, Rows> lupSolve(const Matrix<T, Rows>& luMatrix, const MatVector<T, Rows>& permutations, const MatVector<T, Rows>& vector) noexcept {
+        MatVector<T, Rows> result;
+        MatVector<T, Rows> helper;
+        for (std::size_t i = 0; i < Rows; ++i) {
+            T sum{0};
+            for (std::size_t j = 0;j < i - 1; ++j)
+                sum += luMatrix.getColumn(j)[i] * helper[j];
+            helper[i] = vector[permutations[i]] - sum;
+        }
+        for (std::size_t i = Rows - 1; i < Rows; --i) {
+            T sum{0};
+            for (std::size_t j = i + 1; j < Rows; ++j)
+                sum += luMatrix.getColumn(j)[i] * result[j];
+            result[i] = (helper[i] - sum) / luMatrix.getColumn(i)[i];
+        }
+        return result;
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <typename U>
+    std::optional<Matrix<U, Rows>> Matrix<T, Rows>::inverse(void) const noexcept {
+        Matrix<U, Rows> luMatrix = *this;
+        auto idMatrix = Matrix<U, Rows>::identityMatrix();
+        if (auto permutations = luDecomposition(luMatrix)) {
+            Matrix<U, Rows> inverseMatrix;
+            for (std::size_t i = 0;i < Rows; ++i)
+                inverseMatrix.getColumn(i) = lupSolve(luMatrix, *permutations, idMatrix.getColumn(i));
+            return { inverseMatrix };
+        }
+        return {};
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    Matrix<T, Rows> Matrix<T, Rows>::identityMatrix(void) noexcept {
+        Matrix<T, Rows> matrix;
+        for (std::size_t i = 0;i < Rows; ++i)
+            for (std::size_t j = 0;j < Rows; ++j)
+                matrix.getColumn(i)[j] = i == j ? T{1} : T{0};
+        return matrix;
+    }
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)

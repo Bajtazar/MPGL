@@ -114,26 +114,26 @@ namespace ge {
         using iterator = Iterator<T>;
         using const_iterator = Iterator<const T>;
 
-        constexpr iterator begin(void) noexcept { return iterator{ reinterpret_cast<T*>(this) }; }
-        constexpr iterator end(void) noexcept { return iterator{ reinterpret_cast<T*>(this) + sizeof...(Args) + 1 }; }
+        iterator begin(void) noexcept { return iterator{ reinterpret_cast<T*>(this) }; }
+        iterator end(void) noexcept { return iterator{ reinterpret_cast<T*>(this) + sizeof...(Args) + 1 }; }
 
-        constexpr const_iterator begin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
-        constexpr const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
+        const_iterator begin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
+        const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
 
-        constexpr const_iterator cbegin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
-        constexpr const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
+        const_iterator cbegin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
+        const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
 
-        constexpr auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
-        constexpr auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
+        auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
+        auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
-        constexpr auto rbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
-        constexpr auto rend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
+        auto rbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
+        auto rend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
-        constexpr auto crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
-        constexpr auto crend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
+        auto crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
+        auto crend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
-        constexpr T& operator[] (std::size_t index) noexcept { return *(reinterpret_cast<T*>(this) + index); }
-        constexpr const T& operator[] (std::size_t index) const noexcept { return *(reinterpret_cast<const T*>(this) + index); }
+        T& operator[] (std::size_t index) noexcept { return *(reinterpret_cast<T*>(this) + index); }
+        const T& operator[] (std::size_t index) const noexcept { return *(reinterpret_cast<const T*>(this) + index); }
 
         explicit constexpr Vector(std::tuple<T, Args...>&& tuple) noexcept : std::tuple<T, Args...> { std::move(tuple) } {}
     };
