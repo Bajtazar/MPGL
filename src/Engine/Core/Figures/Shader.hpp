@@ -10,7 +10,7 @@ namespace ge {
     public:
         explicit Shader(std::string shaderPath) noexcept;
         Shader(const Shader& shader) noexcept = delete;
-        Shader(Shader&& shader) noexcept : shaderID(std::move(shader.shaderID)) {}
+        Shader(Shader&& shader) noexcept : shaderID(std::move(shader.shaderID)) { shader.shaderID = 0; }
 
         Shader& operator= (const Shader& shader) noexcept = delete;
         Shader& operator= (Shader&& shader) noexcept;

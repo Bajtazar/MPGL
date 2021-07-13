@@ -29,6 +29,7 @@ namespace ge {
     template <bool ShaderType>
     Shader<ShaderType>& Shader<ShaderType>::operator= (Shader&& shader) noexcept {
         shaderID = std::move(shaderID);
+        shader.shaderID = 0;
         return *this;
     }
 
