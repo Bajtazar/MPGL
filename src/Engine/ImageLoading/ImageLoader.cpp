@@ -11,7 +11,7 @@ namespace ge {
     std::string ImageLoader::extractTag(const std::string& fileName) noexcept {
         std::size_t dot = fileName.find_last_of('.');
         std::string tag;
-        std::transform(fileName.begin(), fileName.begin() + dot, std::back_inserter(tag), [](const char& x) { return std::tolower(x); });
+        std::transform(fileName.begin() + dot + 1, fileName.end(), std::back_inserter(tag), [](const char& x) { return std::tolower(x); });
         return tag;
     }
 

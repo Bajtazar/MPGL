@@ -15,18 +15,8 @@ namespace ge {
 
         ~BMPLoader(void) noexcept = default;
     private:
-        template <typename T>
-        T decode(std::ifstream& file) const noexcept;
-
         virtual void readHeader(std::ifstream& file) final;
         virtual void readImage(std::ifstream& file) noexcept final;
     };
-
-    template <typename T>
-    T BMPLoader::decode(std::ifstream& file) const noexcept {
-        T data;
-        file >> data;
-        return data;
-    }
 
 }

@@ -1,11 +1,14 @@
 #include "Engine/2DGraphics.hpp"
+#include "Engine/Core/Texture.hpp"
 #include <math.h>
 #include <numbers>
 
 using namespace ge;
 
 int main(void) noexcept {
-    ge::RenderWindow window{640_x + 480_y, "Hello World!"};
+    RenderWindow window{640_x + 480_y, "Hello World!"};
+
+    Texture texture{"test.bmp"};
 
     window.emplaceDrawable<Circle>(400_x + 200_y, 100.f, ge::Color::literals::Yellow);
 

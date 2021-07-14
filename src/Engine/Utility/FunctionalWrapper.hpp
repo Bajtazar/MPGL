@@ -12,7 +12,7 @@ namespace ge {
 
         template <typename... Args>
             requires std::constructible_from<T, Args...>
-        std::unique_ptr<U> operator() (Args&&... args) const noexcept { return std::make_unique<T>(std::forward<Args>(args)...); }
+        std::unique_ptr<U> operator() (Args&&... args) const { return std::make_unique<T>(std::forward<Args>(args)...); }
     };
 
 }
