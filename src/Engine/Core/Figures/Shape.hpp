@@ -37,10 +37,10 @@ namespace ge {
         virtual void copyToGPU(void) noexcept = 0;
         virtual void draw(void) const noexcept = 0;
 
-        virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept;
-        virtual void translate(const Vector2f& shift) noexcept;
-        virtual void scale(const Vector2f& center, float factor) noexcept;
-        virtual void rotate(const Vector2f& center, float angle) noexcept;
+        virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
+        virtual void translate(const Vector2f& shift) noexcept final;
+        virtual void scale(const Vector2f& center, float factor) noexcept final;
+        virtual void rotate(const Vector2f& center, float angle) noexcept final;
 
         Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
         const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }
@@ -63,6 +63,9 @@ namespace ge {
 
         reverse_iterator rbegin(void) noexcept { return vertices.rbegin(); }
         reverse_iterator rend(void) noexcept { return vertices.rend(); }
+
+        const_reverse_iterator rbegin(void) const noexcept { return vertices.rbegin(); }
+        const_reverse_iterator rend(void) const noexcept { return vertices.rend(); }
 
         const_reverse_iterator crbegin(void) const noexcept { return vertices.crbegin(); }
         const_reverse_iterator crend(void) const noexcept { return vertices.crend(); }

@@ -9,13 +9,13 @@ namespace ge {
     class Rectangle : public Shape {
     public:
         Rectangle(const std::shared_ptr<Vector2i>& scene) noexcept;
+        // parallelogram
         Rectangle(const std::shared_ptr<Vector2i>& scene, const Vector2f& firstVertex,
                   const Vector2f& secondVertex,           const Vector2f& thirdVertex,
                   const Color& color) noexcept;
-        // parallelogram
+        // rectangle parallel to the x and y axis
         Rectangle(const std::shared_ptr<Vector2i>& scene, const Vector2f& firstVertex,
                   const Vector2f& dimmensions,            const Color& color) noexcept;
-        // rectangle parallel to the x and y axis
         Rectangle(const Rectangle& rectangle) noexcept;
         Rectangle(Rectangle&& rectangle) noexcept;
 

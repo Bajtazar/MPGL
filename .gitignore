@@ -3,3 +3,6 @@ obj/
 Project Epsilon
 Epsilon*/
 Makefile.save.*
+*.bmp
+*.jpg
+*.png
