@@ -153,6 +153,9 @@ namespace ge {
         requires Colorable
     Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
     :  Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
+        glGenVertexArrays(1, &vertexArrayObject);
+        glGenBuffers(1, &vertexBuffer);
+        glGenBuffers(1, &elementArrayBuffer);
         vertices[0].position = firstVertex;
         vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
         vertices[2].position = firstVertex + dimmensions;
@@ -164,6 +167,9 @@ namespace ge {
         requires Colorable
     Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
     : Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
+        glGenVertexArrays(1, &vertexArrayObject);
+        glGenBuffers(1, &vertexBuffer);
+        glGenBuffers(1, &elementArrayBuffer);
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
         vertices[2].position = thirdVertex;

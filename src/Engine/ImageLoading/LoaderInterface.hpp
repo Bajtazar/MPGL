@@ -8,14 +8,14 @@ namespace ge {
 
     class LoaderInterface {
     public:
-        const uint8_t* memoryPointer(void) const noexcept { return pixels.data(); }
+        const std::byte* memoryPointer(void) const noexcept { return pixels.data(); }
 
         std::size_t getWidth(void) const noexcept { return width; }
         std::size_t getHeight(void) const noexcept { return height; }
 
         virtual ~LoaderInterface(void) noexcept = default;
     protected:
-        std::vector<uint8_t> pixels;
+        std::vector<std::byte> pixels;
         std::string fileName;
         std::size_t width;
         std::size_t height;

@@ -26,15 +26,15 @@ namespace ge {
         width = readType<uint32_t>(file);
         height = readType<uint32_t>(file);
         for (uint32_t i = 0;i < offset; ++i)
-            readType<uint8_t>(file);
+            readType<std::byte>(file);
     }
 
     void BMPLoader::readImage(std::ifstream& file) noexcept {
         for (uint32_t i = 0;i < height; ++i) {
             for (uint32_t j = 0;j < 3 * width; ++j)
-                pixels.push_back(readType<uint8_t>(file));
+                pixels.push_back(readType<std::byte>(file));
             for (uint32_t j = 0; j < (4 - (width % 4)) % 4; ++j)
-                readType<uint8_t>(file);
+                readType<std::byte>(file);
         }
     }
 }
