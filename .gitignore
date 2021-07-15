@@ -1,7 +1,9 @@
 bin/
 obj/
 Project Epsilon
+include/
 Epsilon*/
+logs/
 Makefile.save.*
 *.bmp
 *.jpg

@@ -29,7 +29,6 @@ namespace ge {
         vertices.clear();
         vertices.reserve(circle.vertices.size());
         std::ranges::copy(circle, std::back_inserter(vertices));
-        copyToGPU();
         return *this;
     }
 
@@ -38,6 +37,8 @@ namespace ge {
         vertexArrayObject = circle.vertexArrayObject;
         vertexBuffer = circle.vertexBuffer;
         shaderProgram = circle.shaderProgram;
+        circle.vertexArrayObject = 0;
+        circle.vertexBuffer = 0;
     }
 
     Circle& Circle::operator= (Circle&& circle) noexcept {
@@ -46,6 +47,8 @@ namespace ge {
         vertexArrayObject = circle.vertexArrayObject;
         vertexBuffer = circle.vertexBuffer;
         shaderProgram = circle.shaderProgram;
+        circle.vertexArrayObject = 0;
+        circle.vertexBuffer = 0;
         return *this;
     }
 

@@ -42,7 +42,6 @@ namespace ge {
     Rectangle& Rectangle::operator= (const Rectangle& rectangle) noexcept {
         shaderProgram = rectangle.shaderProgram;
         std::ranges::copy(rectangle, begin());
-        copyToGPU();
         return *this;
     }
 
@@ -51,6 +50,9 @@ namespace ge {
         vertexBuffer = rectangle.vertexBuffer;
         elementArrayBuffer = rectangle.elementArrayBuffer;
         shaderProgram = rectangle.shaderProgram;
+        rectangle.vertexArrayObject = 0;
+        rectangle.vertexBuffer = 0;
+        rectangle.elementArrayBuffer = 0;
     }
 
     Rectangle& Rectangle::operator= (Rectangle&& rectangle) noexcept {
@@ -61,6 +63,9 @@ namespace ge {
         vertexBuffer = rectangle.vertexBuffer;
         shaderProgram = rectangle.shaderProgram;
         elementArrayBuffer = rectangle.elementArrayBuffer;
+        rectangle.vertexArrayObject = 0;
+        rectangle.vertexBuffer = 0;
+        rectangle.elementArrayBuffer = 0;
         return *this;
     }
 

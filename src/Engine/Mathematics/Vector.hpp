@@ -57,20 +57,6 @@ namespace ge {
             requires (sizeof...(TArgs) > sizeof...(Args))
         constexpr operator Vector<T, TArgs...>() const noexcept;
 
-        friend Vector operator+ <>(const Vector& left, const Vector& right) noexcept;
-        friend Vector operator- <>(const Vector& left, const Vector& right) noexcept;
-        friend Vector operator* <>(const Vector& left, const Vector& right) noexcept;
-        friend Vector operator/ <>(const Vector& left, const Vector& right);
-
-        friend Vector operator+ <>(const Vector& left, const T& right) noexcept;
-        friend Vector operator- <>(const Vector& left, const T& right) noexcept;
-        friend Vector operator* <>(const Vector& left, const T& right) noexcept;
-        friend Vector operator/ <>(const Vector& left, const T& right);
-
-        friend Vector operator+ <>(const T& left, const Vector& right) noexcept;
-        friend Vector operator- <>(const T& left, const Vector& right) noexcept;
-        friend Vector operator* <>(const T& left, const Vector& right) noexcept;
-
         template <Arithmetic value_type>
         class Iterator : public std::iterator<std::contiguous_iterator_tag, value_type, std::ptrdiff_t, value_type*, value_type&> {
         public:

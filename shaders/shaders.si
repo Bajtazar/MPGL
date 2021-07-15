@@ -1,1 +1,3 @@
 2DDefault 2DDefault.glsl 2DDefault.glsl
+2DTexture 2DTexture.glsl 2DTexture.glsl
+2DCTexture 2DCTexture.glsl 2DCTexture.glsl

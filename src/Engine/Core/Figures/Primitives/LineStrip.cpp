@@ -23,7 +23,6 @@ namespace ge {
         vertices.clear();
         vertices.reserve(lineStrip.vertices.size());
         std::ranges::copy(lineStrip, std::back_inserter(vertices));
-        copyToGPU();
         return *this;
     }
 
@@ -31,6 +30,8 @@ namespace ge {
         vertexArrayObject = lineStrip.vertexArrayObject;
         vertexBuffer = lineStrip.vertexBuffer;
         shaderProgram = lineStrip.shaderProgram;
+        lineStrip.vertexArrayObject = 0;
+        lineStrip.vertexBuffer = 0;
     }
 
     LineStrip& LineStrip::operator= (LineStrip&& lineStrip) noexcept {
@@ -39,6 +40,8 @@ namespace ge {
         vertexArrayObject = lineStrip.vertexArrayObject;
         vertexBuffer = lineStrip.vertexBuffer;
         shaderProgram = lineStrip.shaderProgram;
+        lineStrip.vertexArrayObject = 0;
+        lineStrip.vertexBuffer = 0;
         return *this;
     }
 

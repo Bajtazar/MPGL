@@ -24,7 +24,6 @@ namespace ge {
     Line& Line::operator= (const Line& line) noexcept {
         shaderProgram = line.shaderProgram;
         std::ranges::copy(line, begin());
-        copyToGPU();
         return *this;
     }
 
@@ -32,6 +31,8 @@ namespace ge {
         vertexArrayObject = line.vertexArrayObject;
         vertexBuffer = line.vertexBuffer;
         shaderProgram = line.shaderProgram;
+        line.vertexArrayObject = 0;
+        line.vertexBuffer = 0;
     }
 
     Line& Line::operator= (Line&& line) noexcept {
@@ -40,6 +41,8 @@ namespace ge {
         vertexArrayObject = line.vertexArrayObject;
         vertexBuffer = line.vertexBuffer;
         shaderProgram = line.shaderProgram;
+        line.vertexArrayObject = 0;
+        line.vertexBuffer = 0;
         return *this;
     }
 

@@ -29,7 +29,6 @@ namespace ge {
     Triangle<PolygonMode>& Triangle<PolygonMode>::operator= (const Triangle& triangle) noexcept {
         shaderProgram = triangle.shaderProgram;
         std::ranges::copy(triangle, begin());
-        copyToGPU();
         return *this;
     }
 
@@ -38,6 +37,8 @@ namespace ge {
         vertexArrayObject = triangle.vertexArrayObject;
         vertexBuffer = triangle.vertexBuffer;
         shaderProgram = triangle.shaderProgram;
+        triangle.vertexArrayObject = 0;
+        triangle.vertexBuffer = 0;
     }
 
     template <bool PolygonMode>
@@ -47,6 +48,8 @@ namespace ge {
         vertexArrayObject = triangle.vertexArrayObject;
         vertexBuffer = triangle.vertexBuffer;
         shaderProgram = triangle.shaderProgram;
+        triangle.vertexArrayObject = 0;
+        triangle.vertexBuffer = 0;
         return *this;
     }
 

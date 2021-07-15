@@ -6,9 +6,9 @@
 namespace ge {
 
     struct Color {
-        constexpr Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha=0) noexcept : red((float)red/255), green((float)green/255), blue((float)blue/255), alpha((float)alpha/255) {}
+        constexpr Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha=255) noexcept : red((float)red/255), green((float)green/255), blue((float)blue/255), alpha((float)alpha/255) {}
         constexpr Color(float red, float green, float blue, float alpha) noexcept : red(red), green(green), blue(blue), alpha(alpha) {}
-        constexpr Color(void) noexcept : red(0.f), green(0.f), blue(0.f), alpha(0.f) {}
+        constexpr Color(void) noexcept : red(0.f), green(0.f), blue(0.f), alpha(1.f) {}
 
         struct literals;
 

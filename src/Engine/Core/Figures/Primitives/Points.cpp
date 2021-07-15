@@ -23,7 +23,6 @@ namespace ge {
         vertices.clear();
         vertices.reserve(points.vertices.size());
         std::ranges::copy(points, std::back_inserter(vertices));
-        copyToGPU();
         return *this;
     }
 
@@ -31,6 +30,8 @@ namespace ge {
         vertexArrayObject = points.vertexArrayObject;
         vertexBuffer = points.vertexBuffer;
         shaderProgram = points.shaderProgram;
+        points.vertexArrayObject = 0;
+        points.vertexBuffer = 0;
     }
 
     Points& Points::operator= (Points&& points) noexcept {
@@ -39,6 +40,8 @@ namespace ge {
         vertexArrayObject = points.vertexArrayObject;
         vertexBuffer = points.vertexBuffer;
         shaderProgram = points.shaderProgram;
+        points.vertexArrayObject = 0;
+        points.vertexBuffer = 0;
         return *this;
     }
 
