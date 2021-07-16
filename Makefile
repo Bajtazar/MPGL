@@ -1,5 +1,5 @@
 CXX	:= /usr/local/gcc-11.1.0/bin/g++11.1
-CXX_FLAGS	:= -std=c++20 -O3 -ggdb -lGL -lglfw  -ldl -lm -lpthread -pthread
+CXX_FLAGS	:= -std=c++20 -O3 -ggdb -lGL -lglfw  -ldl -lm -lpthread -pthread -ltbb
 
 BIN	:= bin
 SRC	:= $(shell find . -name "*.cpp")

@@ -2,13 +2,15 @@
 
 #include "Shader.hpp"
 
+#include <string>
+#include <vector>
 #include <map>
 
 namespace ge {
 
     class ShaderLibrary {
     public:
-        explicit ShaderLibrary(void) noexcept;
+        explicit ShaderLibrary(void);
         ShaderLibrary(const ShaderLibrary& shaderLib) noexcept = delete;
         ShaderLibrary(ShaderLibrary&& shaderLib) noexcept : programs(std::move(shaderLib.programs)) {}
 
@@ -25,6 +27,8 @@ namespace ge {
         ~ShaderLibrary(void) noexcept;
     private:
         std::map<std::string, uint32_t> programs;
+
+        std::vector<std::string> getShaderList(void) const;
     };
 
 }

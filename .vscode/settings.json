@@ -55,6 +55,11 @@
         "ctime": "cpp",
         "ratio": "cpp",
         "iomanip": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "codecvt": "cpp",
+        "cstring": "cpp",
+        "thread": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp"
     }
 }

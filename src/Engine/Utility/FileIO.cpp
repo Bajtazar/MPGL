@@ -1,9 +1,16 @@
 #include "FileIO.hpp"
 
+#include <filesystem>
 #include <algorithm>
 #include <iterator>
 
 namespace ge {
+
+    std::vector<std::string> FileIO::getAllDirectoryFiles(const std::string& dirName) noexcept {
+        std::vector<std::string> files;
+        std::ranges::transform(std::filesystem::directory_iterator(dirName), std::back_inserter(files), [](auto& path){ return path.path(); });
+        return files;
+    }
 
     std::optional<FileIO::stream> FileIO::readFile(const std::string& fileName) noexcept {
         std::ifstream file(fileName.c_str());
