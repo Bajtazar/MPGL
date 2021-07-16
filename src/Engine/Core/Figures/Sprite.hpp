@@ -65,24 +65,24 @@ namespace ge {
         using Vertex = std::conditional_t<IsColorable, ColorableVertex, DefaultVertex>;
 
         // Default constructor
-        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture) noexcept;
+        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture) noexcept;
         // parallelogram
-        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture,
+        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& secondVertex,
                const Vector2f& thirdVertex) noexcept;
         // parallelogram for colorable version
         template <bool Colorable = IsColorable>
             requires Colorable
-        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture,
+        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& secondVertex,
                const Vector2f& thirdVertex,            const Color& color) noexcept;
         // rectangle parallel to the x and y axis
-        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture,
+        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& dimmensions) noexcept;
         // rectangle parallel to the x and y axis for colorable version
         template <bool Colorable = IsColorable>
             requires Colorable
-        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture,
+        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& dimmensions,
                const Color& color) noexcept;
 
@@ -130,7 +130,7 @@ namespace ge {
     private:
         static const std::array<uint32_t, 6> indexes;
         std::array<Vertex, 4> vertices;
-        Texture texture;
+        Texture<> texture;
         uint32_t elementArrayBuffer;
         uint32_t shaderProgram;
         uint32_t vertexBuffer;
@@ -151,7 +151,7 @@ namespace ge {
     template <bool IsColorable>
     template <bool Colorable>
         requires Colorable
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
     :  Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
@@ -165,7 +165,7 @@ namespace ge {
     template <bool IsColorable>
     template <bool Colorable>
         requires Colorable
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
     : Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
