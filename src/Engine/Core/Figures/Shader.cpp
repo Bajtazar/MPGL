@@ -1,5 +1,6 @@
 #include "Shader.hpp"
 #include "../../Utility/Logger.hpp"
+#include "../../Exceptions/ShaderCompilationException.hpp"
 
 #include <algorithm>
 #include <iterator>
@@ -9,7 +10,7 @@
 namespace ge {
 
     template <bool ShaderType>
-    Shader<ShaderType>::Shader(std::string shaderPath) noexcept {
+    Shader<ShaderType>::Shader(std::string shaderPath) {
         if constexpr (ShaderType)
             shaderID = glCreateShader(GL_VERTEX_SHADER);
         else
@@ -23,6 +24,7 @@ namespace ge {
             std::string info = Logger::loggingString(512, 0);
             glGetProgramInfoLog(shaderID, 512, nullptr, info.data());
             Logger::saveOpenGl(info, "Shader compiler");
+            throw ShaderCompilationException{info};
         }
     }
 

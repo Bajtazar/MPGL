@@ -8,7 +8,7 @@ namespace ge {
     template <bool ShaderType>
     class Shader {
     public:
-        explicit Shader(std::string shaderPath) noexcept;
+        explicit Shader(std::string shaderPath);
         Shader(const Shader& shader) noexcept = delete;
         Shader(Shader&& shader) noexcept : shaderID(std::move(shader.shaderID)) { shader.shaderID = 0; }
 

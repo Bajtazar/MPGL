@@ -2,6 +2,7 @@
 #include "../../Utility/FileIO.hpp"
 #include "../../Utility/Logger.hpp"
 #include "../../Exceptions/ShaderLibraryInvalidShadersException.hpp"
+#include "../../Exceptions/ShaderProgramLinkingException.hpp"
 
 #include <algorithm>
 
@@ -9,8 +10,8 @@ namespace ge {
 
     ShaderLibrary::ShaderLibrary(void) {
         for (const std::string& shader : getShaderList()) {
-            VertexShader vertex("shaders/Vertex/" + shader);
-            FragmentShader fragment("shaders/Fragment/" + shader);
+            VertexShader vertex{"shaders/Vertex/" + shader};
+            FragmentShader fragment{"shaders/Fragment/" + shader};
             uint32_t programID = glCreateProgram();
             glAttachShader(programID, vertex.getShader());
             glAttachShader(programID, fragment.getShader());
@@ -21,6 +22,7 @@ namespace ge {
                 std::string info = Logger::loggingString(512, 0);
                 glGetProgramInfoLog(programID, 512, nullptr, info.data());
                 Logger::saveOpenGl(info, "Shader linker");
+                throw ShaderProgramLinkingException{info};
             }
             programs[shader.substr(0, shader.find('.'))] = programID;
         }
