@@ -29,6 +29,22 @@ namespace ge {
 
     template <typename Counter, class Allocator>
         requires (!std::is_reference_v<Counter>)
+    Texture<Counter, Allocator>::Texture(const Image& image, const Options& options, const Allocator& alloc) : textureID{0}, allocator{alloc}, connections{std::allocator_traits<Allocator>::allocate(this->allocator, 1)} {
+        *connections = 1;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(options.horizontalWrapping));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(options.verticalWrapping));
+        if (options.verticalWrapping == Options::TextureWrapper::ClampToBorder || options.horizontalWrapping == Options::TextureWrapper::ClampToBorder)
+            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &options.borderColor.red);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(options.minifyingFilter));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(options.magnifyingFilter));
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.getMemoryPtr());
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    template <typename Counter, class Allocator>
+        requires (!std::is_reference_v<Counter>)
     Texture<Counter, Allocator>::Texture(const Texture& texture) : allocator{texture.allocator}, textureID{texture.textureID}, connections{texture.connections} {
         ++(*connections);
     }

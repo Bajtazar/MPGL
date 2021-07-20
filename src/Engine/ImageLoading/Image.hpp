@@ -23,6 +23,8 @@ namespace ge {
         VEC_CONSTEXPR explicit Image(std::size_t width, std::size_t height) noexcept;
         VEC_CONSTEXPR explicit Image(void) noexcept = default;
 
+        #pragma pack(push, 1)
+
         struct Pixel {
             uint8_t red;
             uint8_t green;
@@ -33,6 +35,8 @@ namespace ge {
             friend std::istream& operator>> (std::istream& is, Pixel& pixel) noexcept;
             friend std::ostream& operator<< (std::ostream& os, Pixel& pixel) noexcept;
         };
+
+        #pragma pack(pop)
 
         template <class BaseType>
         class Row {

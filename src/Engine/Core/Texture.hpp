@@ -46,6 +46,7 @@ namespace ge {
                     Color borderColor = {}) noexcept;
         };
         explicit Texture(const std::string& fileName, const Options& options = {}, const Allocator& alloc = {});
+        explicit Texture(const Image& image, const Options& options = {}, const Allocator& alloc = {});
 
         Texture(const Texture& texture);
         Texture(Texture&& texture);
