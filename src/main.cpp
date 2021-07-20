@@ -23,7 +23,7 @@ int main(void) noexcept {
 
     window.emplaceDrawable<DefaultSprite>( Texture<>{"pad.bmp"}, 100_x + 100_y, 100_x + 100_y);
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[2]);
-    sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
+    //sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
 
     return window.windowLoop();
 }

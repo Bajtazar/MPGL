@@ -22,12 +22,6 @@ namespace ge {
     template <Arithmetic T, std::size_t Rows>
     using MatrixTuple = decltype(tupleConstructor<decltype(vectorConverter(tupleConstructor<T, Rows>())), Rows>());
 
-    template <typename T>
-    concept Constant = std::is_const_v<std::remove_reference_t<T>>;
-
-    template <typename T>
-    concept NotConstant = !Constant<T>;
-
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
     class Matrix : public MatrixTuple<T, Rows> {
@@ -61,17 +55,17 @@ namespace ge {
                 constexpr explicit Iterator(void) noexcept = default;
 
                 constexpr Iterator& operator++(void) noexcept { iter += Rows; return *this; }
-                constexpr Iterator& operator++(int)  noexcept { auto tmp = *this; iter += Rows; return tmp; }
+                constexpr Iterator  operator++(int)  noexcept { auto tmp = *this; iter += Rows; return tmp; }
 
                 constexpr Iterator& operator--(void) noexcept { iter -= Rows; return *this; }
-                constexpr Iterator& operator--(int)  noexcept { auto tmp = *this; iter -= Rows; return tmp; }
+                constexpr Iterator  operator--(int)  noexcept { auto tmp = *this; iter -= Rows; return tmp; }
 
                 constexpr reference operator*(void) const noexcept { return *iter; }
                 constexpr pointer operator->(void)  const noexcept { return iter; }
 
-                constexpr Iterator& operator+= (std::size_t offset) noexcept { iter += offset * Rows; return *this; }
-                constexpr Iterator& operator-= (std::size_t offset) noexcept { iter -= offset * Rows; return *this; }
-                constexpr reference operator[] (std::size_t offset) const noexcept { return *(iter + offset * Rows); }
+                constexpr Iterator& operator+= (std::ptrdiff_t offset) noexcept { iter += offset * Rows; return *this; }
+                constexpr Iterator& operator-= (std::ptrdiff_t offset) noexcept { iter -= offset * Rows; return *this; }
+                constexpr reference operator[] (std::ptrdiff_t offset) const noexcept { return *(iter + offset * Rows); }
 
                 friend constexpr bool operator== (const Iterator& left, const Iterator& right) noexcept { return left.iter == right.iter; }
                 friend constexpr bool operator!= (const Iterator& left, const Iterator& right) noexcept { return left.iter != right.iter; }
@@ -80,9 +74,9 @@ namespace ge {
                 friend constexpr bool operator>= (const Iterator& left, const Iterator& right) noexcept { return left.iter >= right.iter; }
                 friend constexpr bool operator<= (const Iterator& left, const Iterator& right) noexcept { return left.iter <= right.iter; }
 
-                friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left * Rows; return tmp; }
-                friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right * Rows; return tmp; }
-                friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left * Rows; return tmp; }
+                friend constexpr Iterator operator+ (const Iterator& right, std::ptrdiff_t left) noexcept { auto tmp = right; tmp.iter += left * Rows; return tmp; }
+                friend constexpr Iterator operator+ (std::ptrdiff_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right * Rows; return tmp; }
+                friend constexpr Iterator operator- (const Iterator& right, std::ptrdiff_t left) noexcept { auto tmp = right; tmp.iter -= left * Rows; return tmp; }
                 friend constexpr difference_type operator- (const Iterator& right, const Iterator& left) noexcept { return (right.iter - left.iter) / Rows; }
             private:
                 pointer iter;
@@ -169,9 +163,9 @@ namespace ge {
 
             constexpr reference operator*(void) const noexcept { return value_type{ref, row}; }
 
-            constexpr Iterator& operator+= (std::size_t offset) noexcept { row += offset; return *this; }
-            constexpr Iterator& operator-= (std::size_t offset) noexcept { row -= offset; return *this; }
-            constexpr reference operator[] (std::size_t offset) const noexcept { return Row{ref, row + offset}; }
+            constexpr Iterator& operator+= (difference_type offset) noexcept { row += offset; return *this; }
+            constexpr Iterator& operator-= (difference_type offset) noexcept { row -= offset; return *this; }
+            constexpr reference operator[] (std::size_t index) const noexcept { return Row{ref, row + index}; }
 
             friend constexpr bool operator== (const Iterator& left, const Iterator& right) noexcept { return left.row == right.row; }
             friend constexpr bool operator!= (const Iterator& left, const Iterator& right) noexcept { return left.row != right.row; }
@@ -180,9 +174,9 @@ namespace ge {
             friend constexpr bool operator>= (const Iterator& left, const Iterator& right) noexcept { return left.row >= right.row; }
             friend constexpr bool operator<= (const Iterator& left, const Iterator& right) noexcept { return left.row <= right.row; }
 
-            friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.row += left; return tmp; }
-            friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.row += right; return tmp; }
-            friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.row -= left; return tmp; }
+            friend constexpr Iterator operator+ (const Iterator& right, difference_type left) noexcept { auto tmp = right; tmp.row += left; return tmp; }
+            friend constexpr Iterator operator+ (difference_type right, const Iterator& left) noexcept { auto tmp = left; tmp.row += right; return tmp; }
+            friend constexpr Iterator operator- (const Iterator& right, difference_type left) noexcept { auto tmp = right; tmp.row -= left; return tmp; }
             friend constexpr difference_type operator- (const Iterator& right, const Iterator& left) noexcept { return right.row - left.row; }
         private:
             std::size_t row;
@@ -233,9 +227,9 @@ namespace ge {
             constexpr reference operator*(void) const noexcept { return *iter; }
             constexpr pointer operator->(void)  const noexcept { return iter; }
 
-            constexpr ColumnIterator& operator+= (std::size_t offset) noexcept { iter += offset; return *this; }
-            constexpr ColumnIterator& operator-= (std::size_t offset) noexcept { iter -= offset; return *this; }
-            constexpr reference operator[] (std::size_t offset) const noexcept { return *(iter + offset); }
+            constexpr ColumnIterator& operator+= (difference_type offset) noexcept { iter += offset; return *this; }
+            constexpr ColumnIterator& operator-= (difference_type offset) noexcept { iter -= offset; return *this; }
+            constexpr reference operator[] (std::size_t index) const noexcept { return *(iter + index); }
 
             friend constexpr bool operator== (const ColumnIterator& left, const ColumnIterator& right) noexcept { return left.iter == right.iter; }
             friend constexpr bool operator!= (const ColumnIterator& left, const ColumnIterator& right) noexcept { return left.iter != right.iter; }
@@ -244,9 +238,9 @@ namespace ge {
             friend constexpr bool operator>= (const ColumnIterator& left, const ColumnIterator& right) noexcept { return left.iter >= right.iter; }
             friend constexpr bool operator<= (const ColumnIterator& left, const ColumnIterator& right) noexcept { return left.iter <= right.iter; }
 
-            friend constexpr ColumnIterator operator+ (const ColumnIterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
-            friend constexpr ColumnIterator operator+ (std::size_t right, const ColumnIterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
-            friend constexpr ColumnIterator operator- (const ColumnIterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
+            friend constexpr ColumnIterator operator+ (const ColumnIterator& right, difference_type left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
+            friend constexpr ColumnIterator operator+ (difference_type right, const ColumnIterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
+            friend constexpr ColumnIterator operator- (const ColumnIterator& right, difference_type left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
             friend constexpr difference_type operator- (const ColumnIterator& right, const ColumnIterator& left) noexcept { return right.iter - left.iter; }
         private:
             pointer iter;

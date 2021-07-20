@@ -1,24 +1,22 @@
 #pragma once
 
 #include <fstream>
-#include <vector>
-#include <type_traits>
+
+#include "Image.hpp"
 
 namespace ge {
 
     class LoaderInterface {
     public:
-        const std::byte* memoryPointer(void) const noexcept { return pixels.data(); }
+        const Image& getImage(void) const noexcept { return pixels; }
 
-        std::size_t getWidth(void) const noexcept { return width; }
-        std::size_t getHeight(void) const noexcept { return height; }
+        std::size_t getWidth(void) const noexcept { return pixels.getWidth(); }
+        std::size_t getHeight(void) const noexcept { return pixels.getHeight(); }
 
         virtual ~LoaderInterface(void) noexcept = default;
     protected:
-        std::vector<std::byte> pixels;
+        Image pixels;
         std::string fileName;
-        std::size_t width;
-        std::size_t height;
 
         explicit LoaderInterface(const std::string& fileName) : fileName{std::move(fileName)} {}
 

@@ -7,13 +7,9 @@
 #include <numeric>
 #include <vector>
 
+#include "../Utility/Concepts.hpp"
+
 namespace ge {
-
-    template <typename T>
-    concept Arithmetic = std::is_arithmetic_v<T>;
-
-    template <typename T, typename... Args>
-    concept AllSame = (... && std::same_as<T, Args>);
 
     template <Arithmetic T, AllSame<T>... Args>
     class Vector : public std::tuple<T, Args...> {

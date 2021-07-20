@@ -13,7 +13,8 @@ namespace ge {
     public:
         explicit ImageLoader(const std::string& fileName);
 
-        const std::byte* memoryPointer(void) const noexcept { return opener->memoryPointer(); }
+        const Image& getImage(void) const noexcept { return opener->getImage(); }
+        const uint8_t* memoryPointer(void) const noexcept { return opener->getImage().getMemoryPtr(); }
 
         std::size_t getWidth(void) const noexcept { return opener->getWidth(); }
         std::size_t getHeight(void) const noexcept { return opener->getHeight(); }
