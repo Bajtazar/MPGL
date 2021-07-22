@@ -23,7 +23,7 @@ namespace ge {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(options.minifyingFilter));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(options.magnifyingFilter));
         ImageLoader loader{fileName};
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, loader.getWidth(), loader.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, loader.memoryPointer());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, loader.getWidth(), loader.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, loader.memoryPointer());
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 

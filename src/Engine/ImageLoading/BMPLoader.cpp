@@ -8,9 +8,9 @@ namespace ge {
     const std::string BMPLoader::Tag{"bmp"};
 
     BMPLoader::BMPLoader(const std::string& fileName) : LoaderInterface(std::move(fileName)) {
-        std::ifstream file{fileName.c_str(), std::ios::binary};
+        std::ifstream file{this->fileName.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
-            throw ImageLoadingFileException{fileName};
+            throw ImageLoadingFileException{this->fileName};
         readHeader(file);
         readImage(file);
     }
@@ -30,7 +30,7 @@ namespace ge {
     void BMPLoader::readImage(std::ifstream& file) noexcept {
         for (auto row : pixels) {
             for (auto& pixel : row)
-                file >> pixel;
+                Image::Manip::RGB(file, pixel);
             for (uint32_t j = 0; j < (4 - (pixels.getWidth() % 4)) % 4; ++j)
                 readType<std::byte>(file);
         }

@@ -10,18 +10,18 @@ namespace ge {
         image.resize(width * height);
     }
 
-    std::istream& operator>> (std::istream& is, Image::Pixel& pixel) noexcept {
+    std::ostream& Image::Manip::RGB(std::ostream& os, const Pixel& pixel) noexcept {
+        os.put(reinterpret_cast<const char&>(pixel.red));
+        os.put(reinterpret_cast<const char&>(pixel.green));
+        os.put(reinterpret_cast<const char&>(pixel.blue));
+        return os;
+    }
+
+    std::istream& Image::Manip::RGB(std::istream& is, Pixel& pixel) noexcept {
         is.get(reinterpret_cast<char&>(pixel.red));
         is.get(reinterpret_cast<char&>(pixel.green));
         is.get(reinterpret_cast<char&>(pixel.blue));
         return is;
-    }
-
-    std::ostream& operator<< (std::ostream& os, Image::Pixel& pixel) noexcept {
-        os.put(reinterpret_cast<char&>(pixel.red));
-        os.put(reinterpret_cast<char&>(pixel.green));
-        os.put(reinterpret_cast<char&>(pixel.blue));
-        return os;
     }
 
 }

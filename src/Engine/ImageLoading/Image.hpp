@@ -29,14 +29,17 @@ namespace ge {
             uint8_t red;
             uint8_t green;
             uint8_t blue;
-            // uint8_t alpha;
-            constexpr Pixel(uint8_t red, uint8_t green, uint8_t blue) noexcept : red{red}, green{green}, blue{blue} {}
+            uint8_t alpha;
+            constexpr Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) noexcept : red{red}, green{green}, blue{blue}, alpha{alpha} {}
             constexpr Pixel(void) noexcept = default;
-            friend std::istream& operator>> (std::istream& is, Pixel& pixel) noexcept;
-            friend std::ostream& operator<< (std::ostream& os, Pixel& pixel) noexcept;
         };
 
         #pragma pack(pop)
+
+        struct Manip {
+            static std::istream& RGB(std::istream& is, Pixel& pixel) noexcept;
+            static std::ostream& RGB(std::ostream& os, const Pixel& pixel) noexcept;
+        };
 
         template <class BaseType>
         class Row {

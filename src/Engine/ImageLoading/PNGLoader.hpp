@@ -1,17 +1,16 @@
 #pragma once
 
 #include "LoaderInterface.hpp"
-#include "../Exceptions/ImageLoadingFileException.hpp"
 
 namespace ge {
 
-    class BMPLoader : public LoaderInterface {
+    class PNGLoader : public LoaderInterface {
     public:
-        explicit BMPLoader(const std::string& fileName);
+        explicit PNGLoader(const std::string& fileName);
 
         static const std::string Tag;
 
-        ~BMPLoader(void) noexcept = default;
+        ~PNGLoader(void) noexcept = default;
     private:
         virtual void readHeader(std::ifstream& file) final;
         virtual void readImage(std::ifstream& file) noexcept final;

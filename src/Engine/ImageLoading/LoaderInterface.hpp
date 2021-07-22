@@ -26,7 +26,7 @@ namespace ge {
 
     template <typename T>
         requires std::is_trivially_constructible_v<T>
-    T readType(std::ifstream& file) noexcept {
+    T readType(std::istream& file) noexcept {
         T data;
         char* raw = reinterpret_cast<char*>(&data);
         for (uint16_t i = 0;i < sizeof(T); ++i, ++raw)
