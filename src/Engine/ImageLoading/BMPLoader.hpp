@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LoaderInterface.hpp"
-#include "../Exceptions/ImageLoadingFileException.hpp"
 
 namespace ge {
 

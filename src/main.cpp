@@ -6,6 +6,7 @@ using namespace ge;
 
 int main(void) noexcept {
     RenderWindow window{640_x + 480_y, "Hello World!"};
+    window.setFPSLimit(140);
 
     window.emplaceDrawable<Circle>(400_x + 200_y, 100.f, ge::Color::literals::Yellow);
 
@@ -23,7 +24,7 @@ int main(void) noexcept {
 
     window.emplaceDrawable<DefaultSprite>( Texture<>{"pad.bmp"}, 100_x + 100_y, 100_x + 100_y);
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[2]);
-    //sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
+    sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
 
     return window.windowLoop();
 }

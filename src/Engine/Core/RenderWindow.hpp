@@ -6,6 +6,8 @@
 #include "Figures/ShaderLibrary.hpp"
 #include "Figures/Drawable.hpp"
 
+#include <chrono>
+
 namespace ge {
 
     class RenderWindow : virtual private WindowInterface {
@@ -31,6 +33,8 @@ namespace ge {
         void setDrawablesShaders(void) noexcept;
         void copyDrawablesToGPU(void) noexcept;
         void drawDrawables(void) const noexcept;
+
+        bool setFPSLimit(std::size_t fpsLimit) noexcept;
 
         const std::shared_ptr<Drawable>& operator[] (std::size_t index) const noexcept { return drawables[index]; }
         std::shared_ptr<Drawable>& operator[] (std::size_t index) noexcept { return drawables[index]; }
@@ -64,6 +68,8 @@ namespace ge {
     private:
         ShaderLibrary shaders;
         std::vector<std::shared_ptr<Drawable>> drawables;
+        std::chrono::microseconds sleepTime;
+        std::chrono::steady_clock::time_point lastTime;
     };
 
     template <std::derived_from<Drawable> T, typename... Args>

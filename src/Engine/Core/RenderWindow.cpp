@@ -1,8 +1,12 @@
 #include "RenderWindow.hpp"
 
+#include <thread>
+
 namespace ge {
 
-    RenderWindow::RenderWindow(const Vector2i& dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : WindowInterface{dimmensions, title, options, monitor, share} {}
+    using std::operator""us;
+
+    RenderWindow::RenderWindow(const Vector2i& dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : WindowInterface{dimmensions, title, options, monitor, share}, sleepTime{0us}, lastTime{0us} {}
 
     void RenderWindow::pushDrawable(const std::shared_ptr<Drawable>& drawable) noexcept {
         if (auto ptr = std::dynamic_pointer_cast<Transformable>(drawable))
@@ -30,22 +34,30 @@ namespace ge {
 
     void RenderWindow::clear(const Color& color) noexcept{
         WindowInterface::clear(color);
+        lastTime = std::chrono::steady_clock::now();
     }
 
     void RenderWindow::draw(void) noexcept {
         WindowInterface::draw();
+        std::this_thread::sleep_until(lastTime + sleepTime);
+    }
+
+    bool RenderWindow::setFPSLimit(std::size_t fpsLimit) noexcept {
+        if (fpsLimit) {
+            sleepTime = 1'000'000us / fpsLimit;
+            return true;
+        }
+        return false;
     }
 
     int32_t RenderWindow::windowLoop(void) noexcept {
         setDrawablesShaders();
         copyDrawablesToGPU();
-
         while (!(*this)) {
             clear();
             drawDrawables();
             draw();
         }
-
         return 0;
     }
 
