@@ -12,8 +12,8 @@ namespace ge {
 
         ~BMPLoader(void) noexcept = default;
     private:
-        virtual void readHeader(std::ifstream& file) final;
-        virtual void readImage(std::ifstream& file) noexcept final;
+        void readHeader(std::ifstream& file);
+        void readImage(std::ifstream& file) noexcept;
     };
 
 }

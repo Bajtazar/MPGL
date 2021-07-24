@@ -18,8 +18,7 @@ namespace ge {
     void BMPLoader::readHeader(std::ifstream& file) {
         if (readType<uint16_t>(file) != 0x4D42)
             throw ImageLoadingInvalidTypeException{fileName};
-        readType<uint32_t>(file);   // file size
-        readType<uint32_t>(file);   // two reserved fields
+        readType<uint64_t>(file);   // file size and two reserved fields
         uint32_t offset = readType<uint32_t>(file) - 6 * sizeof(uint32_t) - sizeof(uint16_t);
         readType<uint32_t>(file);   // DIB header
         pixels.resize(readType<uint32_t>(file), readType<uint32_t>(file));
@@ -31,8 +30,7 @@ namespace ge {
         for (auto row : pixels) {
             for (auto& pixel : row)
                 Image::Manip::RGB(file, pixel);
-            for (uint32_t j = 0; j < (4 - (pixels.getWidth() % 4)) % 4; ++j)
-                readType<std::byte>(file);
+            ignoreNBytes((4 - pixels.getWidth() % 4) % 4, file);
         }
     }
 }

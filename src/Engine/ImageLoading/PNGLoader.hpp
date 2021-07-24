@@ -1,6 +1,10 @@
 #pragma once
 
 #include "LoaderInterface.hpp"
+#include "../Utility/FunctionalWrapper.hpp"
+
+#include <map>
+#include <functional>
 
 namespace ge {
 
@@ -12,8 +16,21 @@ namespace ge {
 
         ~PNGLoader(void) noexcept = default;
     private:
-        virtual void readHeader(std::ifstream& file) final;
-        virtual void readImage(std::ifstream& file) noexcept final;
+        void readImage(std::ifstream& file);
+
+        struct ChunkInterface {
+            explicit ChunkInterface(void) = default;
+            virtual void operator() (std::size_t length, std::istream& data, PNGLoader&) = 0;
+            virtual ~ChunkInterface(void) = default;
+        };
+
+        struct IHDRChunk : ChunkInterface {
+            explicit IHDRChunk(void) = default;
+            virtual void operator() (std::size_t length, std::istream& data, PNGLoader&) final;
+            ~IHDRChunk(void) = default;
+        };
+
+        static std::map<std::string, std::function<std::unique_ptr<ChunkInterface> (void)>> chunkParsers;
     };
 
 }
