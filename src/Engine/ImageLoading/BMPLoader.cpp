@@ -1,6 +1,6 @@
 #include "BMPLoader.hpp"
 
-#include "../Exceptions/ImageLoadingFileException.hpp"
+#include "../Exceptions/ImageLoadingFileOpenException.hpp"
 #include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
 
 namespace ge {
@@ -10,7 +10,7 @@ namespace ge {
     BMPLoader::BMPLoader(const std::string& fileName) : LoaderInterface(std::move(fileName)) {
         std::ifstream file{this->fileName.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
-            throw ImageLoadingFileException{this->fileName};
+            throw ImageLoadingFileOpenException{this->fileName};
         readHeader(file);
         readImage(file);
     }
