@@ -25,10 +25,12 @@ namespace ge {
             throw ImageLoadingInvalidTypeException{fileName};
         while (auto length = readType<uint32_t, true>(file)) {
             if (auto iter = chunkParsers.find(readNChars(4, file)); iter != chunkParsers.end())
-                std::invoke(*std::invoke(iter->second), length, file, *this);
+                std::invoke(*std::invoke(iter->second, std::ref(*this)), length, file);
             else
-                ignoreNBytes(length + 4, file);
+                readNChars(length + 4, file);
         }
+        if (readType<uint64_t>(file) != 0x826042AE444E4549)
+            throw ImageLoadingFileCorruptionException{fileName};
     }
 
     std::array<uint32_t, 256> PNGLoader::createCRCTable(void) noexcept {
@@ -45,29 +47,29 @@ namespace ge {
         return table;
     }
 
-    void PNGLoader::ChunkInterface::checkCRCCode(const uint32_t& crc, const PNGLoader& loader) {
+    void PNGLoader::ChunkInterface::checkCRCCode(const uint32_t& crc) const {
         if ((crcCode ^ 0xFFFFFFFF) != crc)
             throw ImageLoadingFileCorruptionException{loader.fileName};
     }
 
-    void PNGLoader::IHDRChunk::operator() ([[maybe_unused]] std::size_t length, std::istream& data, PNGLoader& loader) {
+    void PNGLoader::IHDRChunk::operator() ([[maybe_unused]] std::size_t length, std::istream& data) {
         loader.pixels.resize(readType<uint32_t, true>(data), readType<uint32_t, true>(data));
         readCRCCode(crcCode, static_cast<uint32_t>(loader.pixels.getWidth()));
         readCRCCode(crcCode, static_cast<uint32_t>(loader.pixels.getHeight()));
-        parseBitDepth(readType<uint8_t>(data), loader);
-        parseColorType(readType<uint8_t>(data), loader);
+        parseBitDepth(readType<uint8_t>(data));
+        parseColorType(readType<uint8_t>(data));
         readCRCCode(crcCode, readType<uint16_t, true>(data)); // compresion method and filter method
-        parseInterlance(readType<uint8_t>(data), loader);
-        checkCRCCode(readType<uint32_t, true>(data), loader);
+        parseInterlance(readType<uint8_t>(data));
+        checkCRCCode(readType<uint32_t, true>(data));
     }
 
-    void PNGLoader::IHDRChunk::parseBitDepth(const uint8_t& bitDepth, [[maybe_unused]] PNGLoader& loader) {
+    void PNGLoader::IHDRChunk::parseBitDepth(const uint8_t& bitDepth) {
         if (bitDepth != 0x08)
             throw NotSupportedException{"not 8-bit pixel fortmats are not supported"};
         readCRCCode(crcCode, bitDepth);
     }
 
-    void PNGLoader::IHDRChunk::parseColorType(const uint8_t& colorType, PNGLoader& loader) {
+    void PNGLoader::IHDRChunk::parseColorType(const uint8_t& colorType) {
         readCRCCode(crcCode, colorType);
         switch (colorType) {
             case 2:
@@ -81,14 +83,24 @@ namespace ge {
         }
     }
 
-    void PNGLoader::IHDRChunk::parseInterlance(const uint8_t& interlance, [[maybe_unused]] PNGLoader& loader) {
+    void PNGLoader::IHDRChunk::parseInterlance(const uint8_t& interlance) {
         if (interlance)
             throw NotSupportedException{"Adam7 interlance in PNG files is not supported"};
         readCRCCode(crcCode, interlance);
     }
 
-    const std::map<std::string, std::function<std::unique_ptr<PNGLoader::ChunkInterface> (void)>> PNGLoader::chunkParsers {
-        {"IHDR", FunctionalWrapper<PNGLoader::IHDRChunk, PNGLoader::ChunkInterface>{}}
+    void PNGLoader::IDATChunk::operator() (std::size_t length, std::istream& data) {
+        loader.rawFileData.resize(length);
+        for (char& byte : loader.rawFileData) {
+            data.get(byte);
+            crcCode = crcTable[(crcCode ^ byte) & 0xFF] ^ (crcCode >> 8);
+        }
+        checkCRCCode(readType<uint32_t, true>(data));
+    }
+
+    const std::map<std::string, std::function<std::unique_ptr<PNGLoader::ChunkInterface> (PNGLoader&)>> PNGLoader::chunkParsers {
+        {"IHDR", FunctionalWrapper<PNGLoader::IHDRChunk, PNGLoader::ChunkInterface>{}},
+        {"IDAT", FunctionalWrapper<PNGLoader::IDATChunk, PNGLoader::ChunkInterface>{}}
     };
 
 }
