@@ -87,27 +87,32 @@ namespace ge {
             using reverse_iterator = std::reverse_iterator<iterator>;
             using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-            template <NotConstant Type = BaseType>
-            constexpr T& operator[] (std::size_t index) noexcept { return *(reinterpret_cast<T*>(&reference.get()) + row + index * Rows); }
+            constexpr T& operator[] (std::size_t index) noexcept
+                requires NotConstant<BaseType>
+            { return *(reinterpret_cast<T*>(&reference.get()) + row + index * Rows); }
             constexpr const T& operator[] (std::size_t index) const noexcept { return *(reinterpret_cast<const T*>(&reference.get()) + row + index * Rows); }
 
-            template <NotConstant Type = BaseType>
-            constexpr iterator begin(void) noexcept { return iterator{ reinterpret_cast<T*>(&reference.get()) + row }; }
+            constexpr iterator begin(void) noexcept
+                requires NotConstant<BaseType>
+            { return iterator{ reinterpret_cast<T*>(&reference.get()) + row }; }
             constexpr const_iterator begin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row }; }
 
-            template <NotConstant Type = BaseType>
-            constexpr iterator end(void) noexcept { return iterator{ reinterpret_cast<T*>(&reference.get()) + row + Rows * Rows }; }
+            constexpr iterator end(void) noexcept
+                requires NotConstant<BaseType>
+            { return iterator{ reinterpret_cast<T*>(&reference.get()) + row + Rows * Rows }; }
             constexpr const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row + Rows * Rows }; }
 
             constexpr const_iterator cbegin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row }; }
             constexpr const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row + Rows * Rows }; }
 
-            template <NotConstant Type = BaseType>
-            constexpr reverse_iterator rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
+            constexpr reverse_iterator rbegin(void) noexcept
+                requires NotConstant<BaseType>
+            { return std::reverse_iterator{ end() - 1 }; }
             constexpr const_reverse_iterator rbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
 
-            template <NotConstant Type = BaseType>
-            constexpr reverse_iterator rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
+            constexpr reverse_iterator rend(void) noexcept
+                requires NotConstant<BaseType>
+            { return std::reverse_iterator{ begin() - 1 }; }
             constexpr const_reverse_iterator rend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
             constexpr const_reverse_iterator crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }

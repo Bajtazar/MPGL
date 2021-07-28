@@ -3,7 +3,6 @@
 #include "../Exceptions/HuffmanTreeEmptyMapException.hpp"
 #include "../Collections/MinHeap.hpp"
 #include "../Utility/Concepts.hpp"
-#include "../Utility/Views.hpp"
 
 #include <unordered_map>
 #include <map>

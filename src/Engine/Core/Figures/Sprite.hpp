@@ -71,20 +71,16 @@ namespace ge {
                const Vector2f& firstVertex,            const Vector2f& secondVertex,
                const Vector2f& thirdVertex) noexcept;
         // parallelogram for colorable version
-        template <bool Colorable = IsColorable>
-            requires Colorable
         Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& secondVertex,
-               const Vector2f& thirdVertex,            const Color& color) noexcept;
+               const Vector2f& thirdVertex,            const Color& color) noexcept requires IsColorable;
         // rectangle parallel to the x and y axis
         Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& dimmensions) noexcept;
         // rectangle parallel to the x and y axis for colorable version
-        template <bool Colorable = IsColorable>
-            requires Colorable
         Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& dimmensions,
-               const Color& color) noexcept;
+               const Color& color) noexcept requires IsColorable;
 
         Sprite(const Sprite& sprite) noexcept;
         Sprite(Sprite&& sprite) noexcept;
@@ -137,9 +133,7 @@ namespace ge {
         uint32_t vertexArrayObject;
 
         static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2i>& scene) noexcept;
-        template <bool Colorable = IsColorable>
-            requires Colorable
-        static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept;
+        static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept requires IsColorable;
     };
 
     template class Sprite<true>;
@@ -149,9 +143,8 @@ namespace ge {
     typedef Sprite<true> ColorableSprite;
 
     template <bool IsColorable>
-    template <bool Colorable>
-        requires Colorable
     Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
+        requires (IsColorable)
     :  Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
@@ -163,9 +156,8 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    template <bool Colorable>
-        requires Colorable
     Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
+        requires (IsColorable)
     : Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
@@ -177,9 +169,7 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    template <bool Colorable>
-        requires Colorable
-    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept {
+    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept requires IsColorable {
         return {Vertex{{}, color, {0.f, 0.f}, scene}, Vertex{{}, color, {0.f, 1.f}, scene}, Vertex{{}, color, {1.f, 1.f}, scene}, Vertex{{}, color, {1.f, 0.f}, scene}};
     }
 
