@@ -14,8 +14,8 @@ namespace ge {
     class HuffmanTree {
     public:
         typedef std::unordered_map<CharType, FrequencyType>     DecodingMap;
-        typedef std::map<uint8_t, FrequencyType>                CharactersMap;
-        typedef std::map<uint8_t, std::string>                  CodesMap;
+        typedef std::map<CharType, FrequencyType>               CharactersMap;
+        typedef std::map<CharType, std::string>                 CodesMap;
         typedef std::vector<CharType>                           FrequencyArray;
 
         explicit HuffmanTree(const CharactersMap& data);
@@ -34,12 +34,12 @@ namespace ge {
             std::unique_ptr<Node> leftNode;
             std::unique_ptr<Node> rightNode;
             FrequencyType frequency;
-            uint8_t character;
+            CharType character;
 
-            explicit Node(uint8_t character = 0, const FrequencyType& frequency = 0)
+            explicit Node(CharType character = 0, const FrequencyType& frequency = 0)
                 : leftNode{nullptr}, rightNode{nullptr}, frequency{frequency},
                 character{character} {}
-            explicit Node(const std::pair<uint8_t, FrequencyType>& frequencyPair)
+            explicit Node(const std::pair<CharType, FrequencyType>& frequencyPair)
                 : leftNode{nullptr}, rightNode{nullptr}, frequency{frequencyPair.second},
                 character{frequencyPair.first} {}
 
@@ -99,7 +99,7 @@ namespace ge {
         CountedArray smallestCodes;
         FrequencyType code = 0;
         for (auto bits : std::views::iota(min, max + 1))
-            smallestCodes[bits] = code = (std::move(code) + counted[bits - 1]) << 1;
+            smallestCodes[bits] = code = (code + counted[bits - 1]) << 1;
         return smallestCodes;
     }
 
@@ -124,7 +124,7 @@ namespace ge {
         HuffmanTree<CharType, FrequencyType, InnerNode>::createDefaultDecoder(void)
     {
         FrequencyArray frequency;
-        frequency.resize(288);
+        frequency.reserve(288);
         std::ranges::fill_n(std::back_inserter(frequency), 144, 8);
         std::ranges::fill_n(std::back_inserter(frequency), 112, 9);
         std::ranges::fill_n(std::back_inserter(frequency), 24, 7);
