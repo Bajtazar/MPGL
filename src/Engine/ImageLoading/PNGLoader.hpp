@@ -5,6 +5,7 @@
 
 #include <map>
 #include <array>
+#include <deque>
 #include <functional>
 
 namespace ge {
@@ -55,7 +56,7 @@ namespace ge {
             ~IDATChunk(void) = default;
         };
 
-        std::vector<char> rawFileData;
+        std::deque<char> rawFileData;
         struct HeaderData {
             enum class Types {
                 RGB,

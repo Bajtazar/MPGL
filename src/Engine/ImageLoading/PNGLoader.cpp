@@ -4,6 +4,7 @@
 #include "../Exceptions/ImageLoadingFileOpenException.hpp"
 #include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
 #include "../Exceptions/NotSupportedException.hpp"
+#include "../Compression/DeflateDecoder.hpp"
 
 #include <numeric>
 #include <ranges>
@@ -31,6 +32,7 @@ namespace ge {
         }
         if (readType<uint64_t>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
+        DeflateDecoder decoder{rawFileData};
     }
 
     std::array<uint32_t, 256> PNGLoader::createCRCTable(void) noexcept {
