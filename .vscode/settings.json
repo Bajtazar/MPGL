@@ -60,6 +60,7 @@
         "cstring": "cpp",
         "thread": "cpp",
         "semaphore": "cpp",
-        "stop_token": "cpp"
+        "stop_token": "cpp",
+        "bitset": "cpp"
     }
 }

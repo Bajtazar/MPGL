@@ -3,6 +3,8 @@
 #include <numbers>
 
 #include "Engine/ImageLoading/PNGLoader.hpp"
+#include "Engine/Compression/HuffmanTree.hpp"
+#include <iostream>
 
 using namespace ge;
 

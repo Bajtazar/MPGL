@@ -16,4 +16,10 @@ namespace ge {
     template <typename T>
     concept NotConstant = !Constant<T>;
 
+    template <typename T>
+    concept SizeType = std::is_unsigned_v<T> && Arithmetic<T>;
+
+    template <typename T>
+    concept Addable = requires (T a) { a + a; };
+
 }

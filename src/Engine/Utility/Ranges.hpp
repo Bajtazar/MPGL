@@ -4,10 +4,9 @@
 #include <iterator>
 #include <functional>
 
-namespace ge {
+#include "Concepts.hpp"
 
-    template <typename T>
-    concept Addable = requires (T a) { a + a; };
+namespace ge {
 
     struct accumulateFn {
 
