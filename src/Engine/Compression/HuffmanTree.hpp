@@ -26,9 +26,6 @@ namespace ge {
         static DecodingMap createDecodingMap(const FrequencyArray& frequency);
         static DecodingMap createDefaultDecoder(void);
 
-        static constexpr const CharType maxFreqLength = 15;
-        static constexpr const CharType maxInstantLength = 10;
-        static constexpr const FrequencyType blockSize = 0x0100;
     private:
         struct Node {
             std::unique_ptr<Node> leftNode;
@@ -50,7 +47,7 @@ namespace ge {
         typedef std::unique_ptr<Node>                            NodePtr;
         typedef std::reference_wrapper<const NodePtr>            NodeCRef;
 
-        typedef std::array<FrequencyType, maxFreqLength>         CountedArray;
+        typedef std::array<FrequencyType, sizeof(FrequencyType)> CountedArray;
         typedef std::unordered_map<CharType, FrequencyType>      FrequencyMap;
 
         void walkThrough(NodeCRef node, CodesMap& map, std::string code) const;
