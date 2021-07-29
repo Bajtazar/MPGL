@@ -22,4 +22,7 @@ namespace ge {
     template <typename T>
     concept Addable = requires (T a) { a + a; };
 
+    template <typename T, typename U>
+    concept SameSize = (sizeof(T) == sizeof(U));
+
 }
