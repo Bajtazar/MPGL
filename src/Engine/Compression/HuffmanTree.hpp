@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../Exceptions/HuffmanTreeEmptyMapException.hpp"
+#include "../Exceptions/HuffmanTreeDecoderException.hpp"
 #include "../Collections/MinHeap.hpp"
+#include "../Utility/BitIterator.hpp"
 #include "../Utility/Concepts.hpp"
 
 #include <unordered_map>
@@ -22,11 +24,29 @@ namespace ge {
         explicit HuffmanTree(const FrequencyArray& frequency);
         explicit HuffmanTree(const CharactersMap& data);
 
+        HuffmanTree(const HuffmanTree& tree) noexcept = delete;
+        HuffmanTree(HuffmanTree&& tree) : root{std::move(tree.root)} {}
+
+        HuffmanTree& operator= (const HuffmanTree& tree) noexcept = delete;
+        HuffmanTree& operator= (HuffmanTree&& tree) { root = std::move(tree.root); return *this; }
+
         CodesMap getCoding(void) const noexcept;
         DecodingMap getDecoder(void) const noexcept;
 
         static HuffmanTree createDeflateDecoder(void) requires (sizeof(CharType) * CHAR_BIT > 8);
 
+        class Decoder {
+        public:
+            explicit Decoder(HuffmanTree&& tree) : tree{std::move(tree)} {}
+            explicit Decoder(void) : tree{createDeflateDecoder()} {}
+
+            template <typename T>
+            CharType decodeToken(BitIterator<T>& iterator);
+        private:
+            HuffmanTree tree;
+        };
+
+        ~HuffmanTree(void) noexcept = default;
     private:
         struct Node {
             std::unique_ptr<Node> leftNode;
@@ -176,6 +196,17 @@ namespace ge {
             code = (code << 1) + 1;
         }
         map[node.get()->character] = code;
+    }
+
+    template <typename CharType, SizeType FrequencyType>
+    template <typename T>
+    CharType HuffmanTree<CharType, FrequencyType>::Decoder::decodeToken(BitIterator<T>& iterator) {
+        std::reference_wrapper<NodePtr> node{tree.root};
+        while (node.get() && node.get()->isInner)
+            node = std::ref(*iterator++ ? node.get()->rightNode : node.get()->leftNode);
+        if (!node.get())
+            throw HuffmanTreeDecoderException{};
+        return node.get()->character;
     }
 
 

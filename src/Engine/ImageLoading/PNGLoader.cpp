@@ -33,6 +33,7 @@ namespace ge {
         if (readType<uint64_t>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
         DeflateDecoder decoder{rawFileData};
+        decoder.decompress();
     }
 
     std::array<uint32_t, 256> PNGLoader::createCRCTable(void) noexcept {

@@ -1,12 +1,17 @@
 #include "DeflateDecoder.hpp"
 
+#include "../Exceptions/NotSupportedException.hpp"
 #include "../Exceptions/DeflateDecoderInvalidHeaderException.hpp"
 #include "../Exceptions/DeflateDecoderDataCorruptionException.hpp"
 
 #include <bitset>
+#include <ranges>
+#include <iostream>
 #include <algorithm>
 
 namespace ge {
+
+    HuffmanTree<uint16_t>::Decoder DeflateDecoder::fixedCodeDecoder{};
 
     DeflateDecoder::DeflateDecoder(std::deque<char>& rawData) : rawData{rawData} {
         parseHeader();
@@ -35,8 +40,57 @@ namespace ge {
         if (((256u * cmf + flg) % 31))
             throw DeflateDecoderDataCorruptionException{};
         std::bitset<8> bits{flg};
-        isDict = bits[5];
+        if (bits[5]) // isDict
+            throw NotSupportedException{"No-default dicts are not supported."};
         compressionMethod = bits[6] + 2 * bits[7];
+    }
+
+    void DeflateDecoder::decompress(void) {
+        BitIter iterator {rawData.begin()};
+        while (readBlock(iterator)) {
+
+        }
+    }
+
+    bool DeflateDecoder::readBlock(BitIter& iterator) {
+        bool isNotFinal = *iterator++;   // ? inverse bit sequence ?
+        if (*iterator++) {
+            if (*iterator++)
+            { std::cout << "Throw\n"; return false; }
+            //    return true; // throw error
+            else
+            { std::cout << "Dynamic\n"; return false; }
+            //    return true; // dynamic huffman codes
+        } else {
+            if (*iterator++)
+            { std::cout << "Fixed\n"; return false; }
+            //    return true; // fixed huffman codes
+            else
+                copyNotCompressed(iterator);
+        }
+        return isNotFinal;
+    }
+
+    void DeflateDecoder::decompressBlock(BitIter& iterator) {
+        auto token = fixedCodeDecoder.decodeToken(iterator);
+        for (;token != BlockEnd; token = fixedCodeDecoder.decodeToken(iterator)) {
+            if (token < BlockEnd) {
+                outputStream.push_back(token);
+                continue;
+            }
+
+        }
+    }
+
+    void DeflateDecoder::copyNotCompressed(BitIter& iterator) {
+        iterator.skipToNextByte();
+        uint16_t length = iterator.readType<uint16_t, true>();
+        uint16_t complement = iterator.readType<uint16_t, true>();
+        if (length != 0xFFFF - complement)
+            throw DeflateDecoderDataCorruptionException{};
+        outputStream.reserve(outputStream.size() + length);
+        for ([[maybe_unused]] auto i : std::views::iota(uint16_t(0), length))
+            outputStream.push_back(iterator.readByte());
     }
 
     void DeflateDecoder::saveAdler32Code(void) {
