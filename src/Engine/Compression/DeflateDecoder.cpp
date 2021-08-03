@@ -6,7 +6,6 @@
 
 #include <bitset>
 #include <ranges>
-#include <iostream>
 #include <algorithm>
 
 namespace ge {
@@ -45,41 +44,112 @@ namespace ge {
         compressionMethod = bits[6] + 2 * bits[7];
     }
 
-    void DeflateDecoder::decompress(void) {
+    std::vector<char>& DeflateDecoder::decompress(void) {
         BitIter iterator {rawData.begin()};
-        while (readBlock(iterator)) {
-
-        }
+        while (readBlock(iterator));
+        // adler32
+        return outputStream;
     }
 
     bool DeflateDecoder::readBlock(BitIter& iterator) {
-        bool isNotFinal = *iterator++;   // ? inverse bit sequence ?
+        if (!*iterator++)
+            return false;
         if (*iterator++) {
             if (*iterator++)
-            { std::cout << "Throw\n"; return false; }
-            //    return true; // throw error
+                throw DeflateDecoderDataCorruptionException{};
             else
-            { std::cout << "Dynamic\n"; return false; }
-            //    return true; // dynamic huffman codes
+                decompressFixedBlock(iterator);
         } else {
             if (*iterator++)
-            { std::cout << "Fixed\n"; return false; }
-            //    return true; // fixed huffman codes
+                decompressDynamicBlock(iterator);
             else
                 copyNotCompressed(iterator);
         }
-        return isNotFinal;
+        return true;
     }
 
-    void DeflateDecoder::decompressBlock(BitIter& iterator) {
+    void DeflateDecoder::decompressFixedBlock(BitIter& iterator) {
         auto token = fixedCodeDecoder.decodeToken(iterator);
         for (;token != BlockEnd; token = fixedCodeDecoder.decodeToken(iterator)) {
-            if (token < BlockEnd) {
+            if (token < BlockEnd)
                 outputStream.push_back(token);
-                continue;
-            }
-
+            else
+                decompressFixedDistance(token - 257, iterator);
         }
+    }
+
+    void DeflateDecoder::decompressFixedDistance(uint16_t token, BitIter& iterator) {
+        auto [lenBits, length] = extraLength[token];
+        length += readNBits(lenBits, iterator);
+        uint16_t distanceToken = readRNBits(5, iterator);
+        auto [distBits, distance] = distances[distanceToken];
+        distance += readNBits(distBits, iterator);
+        uint32_t offset = outputStream.size() - distance;
+        std::copy(outputStream.begin() + offset, outputStream.begin() + offset + length,
+            std::back_inserter(outputStream));
+    }
+
+    std::pair<DeflateDecoder::Decoder, DeflateDecoder::Decoder> DeflateDecoder::generateDynamicTrees(
+        const Decoder& decoder, uint32_t literals, uint32_t distances, BitIter& iterator) const
+    {
+        std::vector<uint16_t> bitLengths, distanceLength;
+        bitLengths.reserve(MaxAlphabetLength);
+        std::size_t repeat = 0;
+        while (bitLengths.size() < literals + distances) {
+            uint16_t token = decoder.decodeToken(iterator);
+            if (token < 16)
+                repeat = 1;
+            else if (token == 16) {
+                repeat = 3 + readNBits(2, iterator);
+                token = bitLengths.back();
+            } else if (token == 17) {
+                repeat = 3 + readNBits(3, iterator);
+                token = 0;
+            } else if (token == 18) {
+                repeat = 11 + readNBits(7, iterator);
+                token = 0;
+            }
+            while (repeat--)
+                bitLengths.push_back(token);
+        }
+        bitLengths.resize(literals + 32, 0);
+        std::copy(bitLengths.begin() + literals, bitLengths.begin() + literals + 32, std::back_inserter(distanceLength));
+        bitLengths.resize(MaxAlphabetLength);
+        std::fill(bitLengths.begin() + literals, bitLengths.end(), 0);
+        return {HuffmanTree<uint16_t>{bitLengths}, HuffmanTree<uint16_t>{distanceLength}};
+    }
+
+    void DeflateDecoder::dynamicBlockLoop(const Decoder& mainDecoder, const Decoder& distanceDecoder, BitIter& iterator) {
+        auto token = mainDecoder.decodeToken(iterator);
+        for (;token != BlockEnd; token = mainDecoder.decodeToken(iterator)) {
+            if (token < BlockEnd)
+                outputStream.push_back(token);
+            else
+                decompressDynamicDistance(token - 257, iterator, distanceDecoder);
+        }
+    }
+
+    void DeflateDecoder::decompressDynamicBlock(BitIter& iterator) {
+        uint32_t literals = 257 + readNBits(5, iterator);
+        uint32_t distances = 1 + readNBits(5, iterator);
+        uint32_t codeLength = 4 + readNBits(4, iterator);
+        std::vector<uint16_t> codes(19, 0);
+        for (uint16_t i = 0;i < codeLength; ++i)
+            codes[dynamicCodesOrder[i]] = (uint16_t) readNBits(3, iterator);
+        HuffmanTree<uint16_t>::Decoder mainDecoder{HuffmanTree<uint16_t>{codes}};
+        auto [treeDecoder, distanceDecoder] = generateDynamicTrees(mainDecoder, literals, distances, iterator);
+        dynamicBlockLoop(treeDecoder, distanceDecoder, iterator);
+    }
+
+    void DeflateDecoder::decompressDynamicDistance(uint16_t token, BitIter& iterator, const HuffmanTree<uint16_t>::Decoder& distanceDecoder) {
+        auto [addbits, addLength] = extraLength[token];
+        uint32_t length = readNBits(addbits, iterator) + addLength;
+        uint32_t distanceToken = distanceDecoder.decodeToken(iterator);
+        auto [distBits, distLength] = distances[distanceToken];
+        uint32_t distance = readNBits(distBits, iterator) + distLength;
+        std::size_t offset = outputStream.size() - distance;
+        std::copy(outputStream.begin() + offset, outputStream.begin() + offset + length,
+            std::back_inserter(outputStream));
     }
 
     void DeflateDecoder::copyNotCompressed(BitIter& iterator) {
@@ -108,6 +178,20 @@ namespace ge {
             s2 = (s1 + s2) % DeflateDecoder::AdlerBase;
         }
         return (s2 << 16) + s1;
+    }
+
+    uint32_t DeflateDecoder::readNBits(std::size_t length, BitIter& iter) noexcept {
+        uint32_t answer = 0;
+        for (std::size_t i = 0;i < length; ++i)
+            answer += (*iter++) << i;
+        return answer;
+    }
+
+    uint32_t DeflateDecoder::readRNBits(std::size_t length, BitIter& iter) noexcept {
+        uint32_t answer = 0;
+        for ([[maybe_unused]] std::size_t i = 1;i <= length; ++i)
+            answer += (*iter++) << (length - i);
+        return answer;
     }
 
 }

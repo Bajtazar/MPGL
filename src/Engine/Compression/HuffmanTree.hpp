@@ -37,11 +37,11 @@ namespace ge {
 
         class Decoder {
         public:
-            explicit Decoder(HuffmanTree&& tree) : tree{std::move(tree)} {}
-            explicit Decoder(void) : tree{createDeflateDecoder()} {}
+            Decoder(HuffmanTree&& tree) : tree{std::move(tree)} {}
+            Decoder(void) : tree{createDeflateDecoder()} {}
 
             template <typename T>
-            CharType decodeToken(BitIterator<T>& iterator);
+            CharType decodeToken(BitIterator<T>& iterator) const;
         private:
             HuffmanTree tree;
         };
@@ -200,10 +200,10 @@ namespace ge {
 
     template <typename CharType, SizeType FrequencyType>
     template <typename T>
-    CharType HuffmanTree<CharType, FrequencyType>::Decoder::decodeToken(BitIterator<T>& iterator) {
-        std::reference_wrapper<NodePtr> node{tree.root};
+    CharType HuffmanTree<CharType, FrequencyType>::Decoder::decodeToken(BitIterator<T>& iterator) const {
+        std::reference_wrapper<const NodePtr> node{tree.root};
         while (node.get() && node.get()->isInner)
-            node = std::ref(*iterator++ ? node.get()->rightNode : node.get()->leftNode);
+            node = std::cref(*iterator++ ? node.get()->rightNode : node.get()->leftNode);
         if (!node.get())
             throw HuffmanTreeDecoderException{};
         return node.get()->character;
