@@ -21,7 +21,10 @@ namespace ge {
         typedef std::map<CharType, std::string>                 CodesMap;
         typedef std::vector<CharType>                           FrequencyArray;
 
-        explicit HuffmanTree(const FrequencyArray& frequency);
+        template <ForwardConvertible<CharType> FreqRange, ForwardConvertible<CharType> CharRange>
+        explicit HuffmanTree(const FreqRange& frequency, const CharRange& characters);
+        template <ForwardConvertible<CharType> FreqRange>
+        explicit HuffmanTree(const FreqRange& frequency);
         explicit HuffmanTree(const CharactersMap& data);
 
         HuffmanTree(const HuffmanTree& tree) noexcept = delete;
@@ -77,7 +80,8 @@ namespace ge {
 
         NodePtr root;
 
-        CountedArray generateFrequencyArray(const FrequencyArray& frequency);
+        template <ForwardConvertible<CharType> FreqRange>
+        CountedArray generateFrequencyArray(const FreqRange& frequency);
         CountedArray generateSmallestCodes(const CountedArray& counted, FrequencyType min, FrequencyType max);
     };
 
@@ -100,12 +104,28 @@ namespace ge {
     }
 
     template <typename CharType, SizeType FrequencyType>
-    HuffmanTree<CharType, FrequencyType>::HuffmanTree(const FrequencyArray& frequency) : root{nullptr} {
+    template <ForwardConvertible<CharType> FreqRange>
+    HuffmanTree<CharType, FrequencyType>::HuffmanTree(const FreqRange& frequency) : root{nullptr} {
         auto [minFreq, maxFreq] = std::ranges::minmax_element(frequency);
         auto smallestCodes = generateSmallestCodes(generateFrequencyArray(frequency), *minFreq, *maxFreq);
         std::ranges::for_each(frequency, [&, i = 0](const auto& bits) mutable -> void {
             if (auto iter = i++; bits) {
                 addNode(bits, iter, smallestCodes[bits]);
+                ++smallestCodes[bits];
+            }
+        });
+    }
+
+    template <typename CharType, SizeType FrequencyType>
+    template <ForwardConvertible<CharType> FreqRange, ForwardConvertible<CharType> CharRange>
+    HuffmanTree<CharType, FrequencyType>::HuffmanTree(const FreqRange& frequency, const CharRange& characters)
+        : root{nullptr}
+    {
+        auto [minFreq, maxFreq] = std::ranges::minmax_element(frequency);
+        auto smallestCodes = generateSmallestCodes(generateFrequencyArray(frequency), *minFreq, *maxFreq);
+        std::ranges::for_each(frequency, [&, iter = characters.begin()](const auto& bits) mutable -> void {
+            if (bits) {
+                addNode(bits, *iter++, smallestCodes[bits]);
                 ++smallestCodes[bits];
             }
         });
@@ -125,8 +145,9 @@ namespace ge {
     }
 
     template <typename CharType, SizeType FrequencyType>
+    template <ForwardConvertible<CharType> FreqRange>
     HuffmanTree<CharType, FrequencyType>::CountedArray
-        HuffmanTree<CharType, FrequencyType>::generateFrequencyArray(const FrequencyArray& frequency)
+        HuffmanTree<CharType, FrequencyType>::generateFrequencyArray(const FreqRange& frequency)
     {
         CountedArray counted;
         counted.fill(0);

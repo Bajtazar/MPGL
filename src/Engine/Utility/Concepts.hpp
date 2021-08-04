@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <ranges>
 
 namespace ge {
 
@@ -24,5 +25,9 @@ namespace ge {
 
     template <typename T, typename U>
     concept SameSize = (sizeof(T) == sizeof(U));
+
+    template <typename Range, typename T>
+    concept ForwardConvertible = std::ranges::forward_range<Range>
+        && std::convertible_to<std::ranges::range_value_t<Range>, T>;
 
 }

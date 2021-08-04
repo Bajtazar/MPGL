@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Compression/HuffmanTree.hpp"
 #include "LoaderInterface.hpp"
 
 #include <functional>
@@ -32,7 +33,16 @@ namespace ge {
             ~StartOfScanChunk(void) noexcept = default;
         };
 
+        struct DHTChunk : public ChunkInterface {
+            explicit DHTChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+            virtual void operator() (std::istream& data) final;
+            ~DHTChunk(void) noexcept = default;
+        };
+
         void parseChunks(std::ifstream& file);
+        void invokeParser(uint16_t signature, std::istream& file);
+
+        uint8_t huffmanTrees : 2;
 
         static const std::map<uint16_t, std::function<std::unique_ptr<ChunkInterface> (JPEGLoader&)>> chunkParser;
     };
