@@ -8,4 +8,5 @@ Makefile.save.*
 *.bmp
 *.jpg
 *.png
+*.jpeg
 glad.c

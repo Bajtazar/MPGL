@@ -28,7 +28,7 @@ namespace ge {
             if (auto iter = chunkParsers.find(readNChars(4, file)); iter != chunkParsers.end())
                 std::invoke(*std::invoke(iter->second, std::ref(*this)), length, file);
             else
-                readNChars(length + 4, file);
+                ignoreNBytes(length + 4, file);
         }
         if (readType<uint64_t>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
@@ -106,11 +106,6 @@ namespace ge {
         }
         checkCRCCode(readType<uint32_t, true>(data));
     }
-
-    const std::map<std::string, std::function<std::unique_ptr<PNGLoader::ChunkInterface> (PNGLoader&)>> PNGLoader::chunkParsers {
-        {"IHDR", FunctionalWrapper<PNGLoader::IHDRChunk, PNGLoader::ChunkInterface>{}},
-        {"IDAT", FunctionalWrapper<PNGLoader::IDATChunk, PNGLoader::ChunkInterface>{}}
-    };
 
     uint8_t PNGLoader::paethPredictor(uint8_t a, uint8_t b, uint8_t c) const noexcept {
         uint16_t paethA = b > c ? b - c : c - b;
@@ -216,5 +211,10 @@ namespace ge {
                 (this->*setter)(i, j, filter, iter);
         }
     }
+
+    const std::map<std::string, std::function<std::unique_ptr<PNGLoader::ChunkInterface> (PNGLoader&)>> PNGLoader::chunkParsers {
+        {"IHDR", FunctionalWrapper<PNGLoader::IHDRChunk, PNGLoader::ChunkInterface>{}},
+        {"IDAT", FunctionalWrapper<PNGLoader::IDATChunk, PNGLoader::ChunkInterface>{}}
+    };
 
 }
