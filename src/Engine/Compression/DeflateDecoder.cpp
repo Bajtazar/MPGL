@@ -52,8 +52,7 @@ namespace ge {
     }
 
     bool DeflateDecoder::readBlock(BitIter& iterator) {
-        if (!*iterator++)
-            return false;
+        bool isFinal = *iterator++;
         if (*iterator++) {
             if (*iterator++)
                 throw DeflateDecoderDataCorruptionException{};
@@ -65,7 +64,7 @@ namespace ge {
             else
                 copyNotCompressed(iterator);
         }
-        return true;
+        return !isFinal;
     }
 
     void DeflateDecoder::decompressFixedBlock(BitIter& iterator) {
@@ -85,8 +84,8 @@ namespace ge {
         auto [distBits, distance] = distances[distanceToken];
         distance += readNBits(distBits, iterator);
         uint32_t offset = outputStream.size() - distance;
-        std::copy(outputStream.begin() + offset, outputStream.begin() + offset + length,
-            std::back_inserter(outputStream));
+        for (auto i : std::views::iota(0u, length))
+            outputStream.push_back(outputStream[offset + i]);
     }
 
     std::pair<DeflateDecoder::Decoder, DeflateDecoder::Decoder> DeflateDecoder::generateDynamicTrees(
@@ -148,8 +147,8 @@ namespace ge {
         auto [distBits, distLength] = distances[distanceToken];
         uint32_t distance = readNBits(distBits, iterator) + distLength;
         std::size_t offset = outputStream.size() - distance;
-        std::copy(outputStream.begin() + offset, outputStream.begin() + offset + length,
-            std::back_inserter(outputStream));
+        for (auto i : std::views::iota(0u, length))
+            outputStream.push_back(outputStream[offset + i]);
     }
 
     void DeflateDecoder::copyNotCompressed(BitIter& iterator) {

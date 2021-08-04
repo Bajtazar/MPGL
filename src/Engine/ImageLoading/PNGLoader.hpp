@@ -18,6 +18,9 @@ namespace ge {
 
         ~PNGLoader(void) noexcept = default;
     private:
+        typedef std::vector<char>::const_iterator                                   CharIter;
+        typedef void(PNGLoader::*PixelsSetter)(std::size_t, std::size_t, uint8_t, CharIter&);
+
         template <typename T>
         static void readCRCCode(uint32_t& crc, const T& data) noexcept;
         template <std::size_t N>
@@ -60,9 +63,22 @@ namespace ge {
         struct HeaderData {
             enum class Types {
                 RGB,
-                RGBA
+                RGBA,
+                GRAY,
+                GRAYALPHA
             } type;
         } headerData;
+
+        uint8_t paethPredictor(uint8_t a, uint8_t b, uint8_t c) const noexcept;
+        uint8_t reconstructA(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
+        uint8_t reconstructB(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
+        uint8_t reconstructC(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
+        void filterPixels(const std::vector<char>& data) noexcept;
+        void setRGBAPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
+        void setRGBPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
+        void setGrayPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
+        void setGrayAlphaPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
+        PixelsSetter getPixelsSetter(void) const noexcept;
 
         static const std::map<std::string, std::function<std::unique_ptr<ChunkInterface> (PNGLoader&)>> chunkParsers;
         static const std::array<uint32_t, 256> crcTable;

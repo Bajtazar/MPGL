@@ -30,6 +30,8 @@ namespace ge {
             uint8_t green;
             uint8_t blue;
             uint8_t alpha;
+            constexpr uint8_t& operator[] (std::size_t index) noexcept;
+            constexpr const uint8_t& operator[] (std::size_t index) const noexcept;
             constexpr Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) noexcept : red{red}, green{green}, blue{blue}, alpha{alpha} {}
             constexpr Pixel(void) noexcept = default;
         };
@@ -93,7 +95,7 @@ namespace ge {
 
             template <NotConstant Type = BaseType>
             constexpr Pixel& operator[] (std::size_t index) noexcept { return reference.get().image[reference.get().width * rowID + index]; }
-            constexpr const Pixel& operator[] (std::size_t index) const noexcept { return reference.get().image[reference.get().width * width + index]; }
+            constexpr const Pixel& operator[] (std::size_t index) const noexcept { return reference.get().image[reference.get().width * rowID + index]; }
 
             template <NotConstant Type = BaseType>
             constexpr iterator begin(void) noexcept { return iterator{ &(reference.get().image[reference.get().width * rowID]) };  }
@@ -202,5 +204,33 @@ namespace ge {
         std::size_t width;
         std::size_t height;
     };
+
+    constexpr uint8_t& Image::Pixel::operator[] (std::size_t index) noexcept {
+        switch (index) {
+            case 0:
+                return red;
+            case 1:
+                return green;
+            case 2:
+                return blue;
+            case 3:
+                return alpha;
+        }
+        return red;
+    }
+
+    constexpr const uint8_t& Image::Pixel::operator[] (std::size_t index) const noexcept {
+        switch (index) {
+            case 0:
+                return red;
+            case 1:
+                return green;
+            case 2:
+                return blue;
+            case 3:
+                return alpha;
+        }
+        return red;
+    }
 
 }
