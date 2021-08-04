@@ -132,7 +132,7 @@ namespace ge {
         uint32_t literals = 257 + readNBits(5, iterator);
         uint32_t distances = 1 + readNBits(5, iterator);
         uint32_t codeLength = 4 + readNBits(4, iterator);
-        std::vector<uint16_t> codes(19, 0);
+        std::array<uint16_t, 19> codes{};
         for (uint16_t i = 0;i < codeLength; ++i)
             codes[dynamicCodesOrder[i]] = (uint16_t) readNBits(3, iterator);
         HuffmanTree<uint16_t>::Decoder mainDecoder{HuffmanTree<uint16_t>{codes}};

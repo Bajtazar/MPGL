@@ -149,8 +149,7 @@ namespace ge {
     HuffmanTree<CharType, FrequencyType>::CountedArray
         HuffmanTree<CharType, FrequencyType>::generateFrequencyArray(const FreqRange& frequency)
     {
-        CountedArray counted;
-        counted.fill(0);
+        CountedArray counted{};
         for (const auto& length : frequency)
             ++counted[length];
         counted[0] = 0;
