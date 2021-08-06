@@ -8,7 +8,7 @@
 
 namespace ge {
 
-    struct accumulateFn {
+    struct AccumulateFn {
 
         template <std::weakly_incrementable Iter, std::sentinel_for<Iter> Sent, Addable Init, typename Proj = std::identity>
             requires std::convertible_to<typename std::iterator_traits<Iter>::value_type, Init>
@@ -44,6 +44,50 @@ namespace ge {
 
     };
 
-    inline constexpr accumulateFn accumulate{};
+    inline constexpr AccumulateFn accumulate{};
+
+    template <typename T>
+    struct FindFirstAndLastResult {
+        [[no_unique_address]] T first;
+        [[no_unique_address]] T last;
+
+        template <typename U>
+            requires std::convertible_to<const T&, U>
+        constexpr operator FindFirstAndLastResult<U>() const & { return {first, last}; }
+
+        template <typename U>
+            requires std::convertible_to<T, U>
+        constexpr operator FindFirstAndLastResult<U>() && { return {std::move(first), std::move(last)}; }
+    };
+
+    struct FindFirstAndLastIfFn {
+
+        template <std::forward_iterator Iter, std::sentinel_for<Iter> Sent, typename Proj = std::identity,
+            std::indirect_unary_predicate<std::projected<Iter, Proj>> Pred>
+        constexpr FindFirstAndLastResult<Iter> operator() (Iter iter, Sent sent, Pred pred, Proj proj = {}) const noexcept {
+            auto first = iter, last = sent;
+            if (iter == sent)
+                return {first, last};
+            for (; !std::invoke(pred, std::invoke(proj, *iter)) && iter != sent; ++iter);
+            first = iter;
+            if (iter == sent)
+                return {first, first};
+            --sent;
+            for (; !std::invoke(pred, std::invoke(proj, *sent)) && iter != sent; --sent);
+            last = iter != sent ? sent : first;
+            return {first, last};
+        }
+
+        template <std::ranges::forward_range Range, typename Proj = std::identity,
+            std::indirect_unary_predicate<std::projected<std::ranges::iterator_t<Range>, Proj>> Pred>
+        constexpr FindFirstAndLastResult<std::ranges::borrowed_iterator_t<Range>> operator()
+            (Range&& range, Pred pred, Proj proj = {}) const noexcept
+        {
+            return (*this)(std::ranges::begin(range), std::ranges::end(range), std::move(pred), std::move(proj));
+        }
+
+    };
+
+    inline constexpr FindFirstAndLastIfFn findFirstAndLastIf;
 
 }

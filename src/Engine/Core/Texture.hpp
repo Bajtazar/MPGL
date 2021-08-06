@@ -58,7 +58,7 @@ namespace ge {
 
         ~Texture(void);
     private:
-        Allocator allocator;
+        [[no_unique_address]] Allocator allocator;
         Counter* connections;
         uint32_t textureID;
     };

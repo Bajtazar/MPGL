@@ -30,4 +30,8 @@ namespace ge {
     concept ForwardConvertible = std::ranges::forward_range<Range>
         && std::convertible_to<std::ranges::range_value_t<Range>, T>;
 
+    template <typename Range, typename T>
+    concept RandomAccessConvertible = std::ranges::random_access_range<Range>
+        && std::convertible_to<std::ranges::range_value_t<Range>, T>;
+
 }

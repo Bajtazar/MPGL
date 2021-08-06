@@ -5,6 +5,7 @@
 #include "../Collections/MinHeap.hpp"
 #include "../Utility/BitIterator.hpp"
 #include "../Utility/Concepts.hpp"
+#include "../Utility/Ranges.hpp"
 
 #include <unordered_map>
 #include <climits>
@@ -21,8 +22,8 @@ namespace ge {
         typedef std::map<CharType, std::string>                 CodesMap;
         typedef std::vector<CharType>                           FrequencyArray;
 
-        template <ForwardConvertible<CharType> FreqRange, ForwardConvertible<CharType> CharRange>
-        explicit HuffmanTree(const FreqRange& frequency, const CharRange& characters);
+        template <RandomAccessConvertible<CharType> CountedRange, ForwardConvertible<CharType> CharRange>
+        explicit HuffmanTree(const CountedRange& counted, const CharRange& characters);
         template <ForwardConvertible<CharType> FreqRange>
         explicit HuffmanTree(const FreqRange& frequency);
         explicit HuffmanTree(const CharactersMap& data);
@@ -73,6 +74,7 @@ namespace ge {
         typedef std::reference_wrapper<const NodePtr>                   NodeCRef;
 
         typedef std::array<FrequencyType, sizeof(CharType) * CHAR_BIT>  CountedArray;
+        typedef std::vector<std::pair<uint8_t, uint8_t>>                CharacterLengthArray;
 
         void walkThrough(NodeCRef node, CodesMap& map, std::string code) const;
         void walkThrough(NodeCRef node, DecodingMap& map, FrequencyType code) const;
@@ -82,7 +84,8 @@ namespace ge {
 
         template <ForwardConvertible<CharType> FreqRange>
         CountedArray generateFrequencyArray(const FreqRange& frequency);
-        CountedArray generateSmallestCodes(const CountedArray& counted, FrequencyType min, FrequencyType max);
+        template <ForwardConvertible<FrequencyType> CountedRange>
+        CountedArray generateSmallestCodes(const CountedRange& counted, FrequencyType min, FrequencyType max);
     };
 
     template <typename CharType, SizeType FrequencyType>
@@ -109,25 +112,23 @@ namespace ge {
         auto [minFreq, maxFreq] = std::ranges::minmax_element(frequency);
         auto smallestCodes = generateSmallestCodes(generateFrequencyArray(frequency), *minFreq, *maxFreq);
         std::ranges::for_each(frequency, [&, i = 0](const auto& bits) mutable -> void {
-            if (auto iter = i++; bits) {
-                addNode(bits, iter, smallestCodes[bits]);
-                ++smallestCodes[bits];
-            }
+            if (auto iter = i++; bits)
+                addNode(bits, iter, smallestCodes[bits]++);
         });
     }
 
     template <typename CharType, SizeType FrequencyType>
-    template <ForwardConvertible<CharType> FreqRange, ForwardConvertible<CharType> CharRange>
-    HuffmanTree<CharType, FrequencyType>::HuffmanTree(const FreqRange& frequency, const CharRange& characters)
+    template <RandomAccessConvertible<CharType> CountedRange, ForwardConvertible<CharType> CharRange>
+    HuffmanTree<CharType, FrequencyType>::HuffmanTree(const CountedRange& counted, const CharRange& characters)
         : root{nullptr}
     {
-        auto [minFreq, maxFreq] = std::ranges::minmax_element(frequency);
-        auto smallestCodes = generateSmallestCodes(generateFrequencyArray(frequency), *minFreq, *maxFreq);
-        std::ranges::for_each(frequency, [&, iter = characters.begin()](const auto& bits) mutable -> void {
-            if (bits) {
-                addNode(bits, *iter++, smallestCodes[bits]);
-                ++smallestCodes[bits];
-            }
+        auto [minFreq, maxFreq] = findFirstAndLastIf(counted, [](const auto& value)->bool{ return value != 0; });
+        auto smallestCodes = generateSmallestCodes(counted, minFreq - counted.begin(), maxFreq - counted.begin());
+        auto iter = characters.begin();
+        std::ranges::for_each(smallestCodes, [&, i = 0](auto code) mutable -> void {
+            auto length = i++;
+            for ([[maybe_unused]] auto _ : std::views::iota(static_cast<FrequencyType>(0), counted[length]))
+                addNode(static_cast<CharType>(length), *iter++, code++);
         });
     }
 
@@ -157,10 +158,11 @@ namespace ge {
     }
 
     template <typename CharType, SizeType FrequencyType>
+    template <ForwardConvertible<FrequencyType> CountedRange>
     HuffmanTree<CharType, FrequencyType>::CountedArray
-        HuffmanTree<CharType, FrequencyType>::generateSmallestCodes(const CountedArray& counted, FrequencyType min, FrequencyType max)
+        HuffmanTree<CharType, FrequencyType>::generateSmallestCodes(const CountedRange& counted, FrequencyType min, FrequencyType max)
     {
-        CountedArray smallestCodes;
+        CountedArray smallestCodes{};
         FrequencyType code = 0;
         for (auto bits : std::views::iota(min, max + 1))
             smallestCodes[bits] = code = (code + counted[bits - 1]) << 1;
@@ -182,13 +184,13 @@ namespace ge {
 
     template <typename CharType, SizeType FrequencyType>
     void HuffmanTree<CharType, FrequencyType>::walkThrough(NodeCRef node, CodesMap& map, std::string code) const {
-        if (!node.get()) return;
-        while (node.get()->isInner) {
+        while (node.get() && node.get()->isInner) {
             walkThrough(std::cref(node.get()->leftNode), map, code + "0");
             node = std::cref(node.get()->rightNode);
             code += "1";
         }
-        map[node.get()->character] = code;
+        if (node.get())
+            map[node.get()->character] = code;
     }
 
     template <typename CharType, SizeType FrequencyType>
@@ -209,13 +211,13 @@ namespace ge {
 
     template <typename CharType, SizeType FrequencyType>
     void HuffmanTree<CharType, FrequencyType>::walkThrough(NodeCRef node, DecodingMap& map, FrequencyType code) const {
-        if (!node.get()) return;
-        while (node.get()->isInner) {
+        while (node.get() && node.get()->isInner) {
             walkThrough(std::cref(node.get()->leftNode), map, code << 1);
             node = std::cref(node.get()->rightNode);
             code = (code << 1) + 1;
         }
-        map[node.get()->character] = code;
+        if (node.get())
+            map[node.get()->character] = code;
     }
 
     template <typename CharType, SizeType FrequencyType>
