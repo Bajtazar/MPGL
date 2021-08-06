@@ -40,7 +40,7 @@ namespace ge {
         std::array<uint32_t, 256> table;
         std::ranges::for_each(table, [i = 0](auto& value) mutable -> void {
             value = i++;
-            for ([[maybe_unused]] auto j : std::views::iota(0, 8)) {
+            for ([[maybe_unused]] auto _ : std::views::iota(0, 8)) {
                 if (value & 1)
                     value = 0xEDB88320 ^ (value >> 1);
                 else
@@ -76,16 +76,16 @@ namespace ge {
         readCRCCode(crcCode, colorType);
         switch (colorType) {
             case 0:
-                loader.headerData.type = PNGLoader::HeaderData::Types::GRAY;
+                loader.headerData.setter = &PNGLoader::setGrayPixels;
                 return;
             case 2:
-                loader.headerData.type = PNGLoader::HeaderData::Types::RGB;
+                loader.headerData.setter = &PNGLoader::setRGBPixels;
                 return;
             case 4:
-                loader.headerData.type = PNGLoader::HeaderData::Types::GRAYALPHA;
+                loader.headerData.setter = &PNGLoader::setGrayAlphaPixels;
                 return;
             case 6:
-                loader.headerData.type = PNGLoader::HeaderData::Types::RGBA;
+                loader.headerData.setter = &PNGLoader::setRGBAPixels;
                 return;
             default:
                 throw NotSupportedException{"following PNG image type is not supported"};
@@ -127,88 +127,46 @@ namespace ge {
         return (row < pixels.getHeight() - 1) && column < pixels.getHeight() - 1 ? pixels[row + 1][column - 1][pixel] : 0;
     }
 
+    uint8_t PNGLoader::filterSubpixel(std::size_t row, std::size_t column, uint8_t filter, uint8_t subpixelID, CharIter& iter) noexcept {
+        uint8_t subpixel = *iter++;
+        if (filter == 1)
+            subpixel += reconstructA(row, column, subpixelID);
+        else if (filter == 2)
+            subpixel += reconstructB(row, column, subpixelID);
+        else if (filter == 3)
+            subpixel += ((uint16_t) reconstructA(row, column, subpixelID) + reconstructB(row, column, subpixelID)) / 2;
+        else if (filter == 4)
+            subpixel += paethPredictor(reconstructA(row, column, subpixelID),
+                reconstructB(row, column, subpixelID), reconstructC(row, column, subpixelID));
+        return subpixel;
+    }
+
     void PNGLoader::setRGBAPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
-        for (uint8_t k = 0; k < 4; ++k, ++iter) {
-            auto& subpixel = pixels[row][column][k];
-            subpixel = *iter;
-            if (filter == 1)
-                subpixel += reconstructA(row, column, k);
-            else if (filter == 2)
-                subpixel += reconstructB(row, column, k);
-            else if (filter == 3)
-                subpixel += ((uint16_t) reconstructA(row, column, k) + reconstructB(row, column, k)) / 2;
-            else if (filter == 4)
-                subpixel += paethPredictor(reconstructA(row, column, k),
-                    reconstructB(row, column, k), reconstructC(row, column, k));
-        }
+        for (uint8_t sub = 0; sub < 4; ++sub)
+            pixels[row][column][sub] = filterSubpixel(row, column, filter, sub, iter);
     }
     void PNGLoader::setRGBPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
-        for (uint8_t k = 0; k < 3; ++k, ++iter) {
-            auto& subpixel = pixels[row][column][k];
-            subpixel = *iter;
-            if (filter == 1)
-                subpixel += reconstructA(row, column, k);
-            else if (filter == 2)
-                subpixel += reconstructB(row, column, k);
-            else if (filter == 3)
-                subpixel += ((uint16_t) reconstructA(row, column, k) + reconstructB(row, column, k)) / 2;
-            else if (filter == 4)
-                subpixel += paethPredictor(reconstructA(row, column, k),
-                    reconstructB(row, column, k), reconstructC(row, column, k));
-        }
+        for (uint8_t sub = 0; sub < 3; ++sub)
+            pixels[row][column][sub] = filterSubpixel(row, column, filter, sub, iter);
     }
 
     void PNGLoader::setGrayPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
-        uint8_t subpixel = *iter++;
-        if (filter == 1)
-            subpixel += reconstructA(row, column, 0);
-        else if (filter == 2)
-            subpixel += reconstructB(row, column, 0);
-        else if (filter == 3)
-            subpixel += ((uint16_t) reconstructA(row, column, 0) + reconstructB(row, column, 0)) / 2;
-        else if (filter == 4)
-            subpixel += paethPredictor(reconstructA(row, column, 0),
-                reconstructB(row, column, 0), reconstructC(row, column, 0));
+        uint8_t subpixel = filterSubpixel(row, column, filter, 0, iter);
         for (uint8_t sub = 0; sub < 3; ++sub)
             pixels[row][column][sub] = subpixel;
     }
 
     void PNGLoader::setGrayAlphaPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
         setGrayPixels(row, column, filter, iter);
-        uint8_t& subpixel = pixels[row][column].alpha;
-        subpixel = *iter++;
-        if (filter == 1)
-            subpixel += reconstructA(row, column, 3);
-        else if (filter == 2)
-            subpixel += reconstructB(row, column, 3);
-        else if (filter == 3)
-            subpixel += ((uint16_t) reconstructA(row, column, 3) + reconstructB(row, column, 3)) / 2;
-        else if (filter == 4)
-            subpixel += paethPredictor(reconstructA(row, column, 3),
-                reconstructB(row, column, 3), reconstructC(row, column, 3));
-    }
-
-    PNGLoader::PixelsSetter PNGLoader::getPixelsSetter(void) const noexcept {
-        switch (headerData.type) {
-            case HeaderData::Types::RGBA:
-                return &PNGLoader::setRGBAPixels;
-            case HeaderData::Types::RGB:
-                return &PNGLoader::setRGBPixels;
-            case HeaderData::Types::GRAY:
-                return &PNGLoader::setGrayPixels;
-            case HeaderData::Types::GRAYALPHA:
-                return &PNGLoader::setGrayAlphaPixels;
-        }
-        return &PNGLoader::setRGBAPixels;
+        pixels[row][column].alpha = filterSubpixel(row, column, filter, 3, iter);
     }
 
     void PNGLoader::filterPixels(const std::vector<char>& data) noexcept {
         auto iter = data.begin();
-        PixelsSetter setter = getPixelsSetter();
         for (std::size_t i = pixels.getHeight() - 1;i < pixels.getHeight(); --i) {
             uint8_t filter = *iter++;
             for (std::size_t j = 0;j < pixels.getWidth(); ++j)
-                (this->*setter)(i, j, filter, iter);
+                (this->*headerData.setter)(i, j, filter, iter);
         }
     }
 

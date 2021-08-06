@@ -61,24 +61,19 @@ namespace ge {
 
         std::deque<char> rawFileData;
         struct HeaderData {
-            enum class Types {
-                RGB,
-                RGBA,
-                GRAY,
-                GRAYALPHA
-            } type;
+            PixelsSetter setter;
         } headerData;
 
         uint8_t paethPredictor(uint8_t a, uint8_t b, uint8_t c) const noexcept;
         uint8_t reconstructA(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
         uint8_t reconstructB(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
         uint8_t reconstructC(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
+        uint8_t filterSubpixel(std::size_t row, std::size_t column, uint8_t filter, uint8_t subpixelID, CharIter& iter) noexcept;
         void filterPixels(const std::vector<char>& data) noexcept;
         void setRGBAPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
         void setRGBPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
         void setGrayPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
         void setGrayAlphaPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept;
-        PixelsSetter getPixelsSetter(void) const noexcept;
 
         static const std::map<std::string, std::function<std::unique_ptr<ChunkInterface> (PNGLoader&)>> chunkParsers;
         static const std::array<uint32_t, 256> crcTable;
