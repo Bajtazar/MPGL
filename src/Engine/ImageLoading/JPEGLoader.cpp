@@ -15,26 +15,35 @@ namespace ge {
 
     const std::string JPEGLoader::Tag{"jpeg"};
 
-    JPEGLoader::JPEGLoader(const std::string& fileName) : LoaderInterface{std::move(fileName)} {
+    JPEGLoader::JPEGLoader(const std::string& fileName) : LoaderInterface{std::move(fileName)}, endOfImage{false} {
         std::ifstream file{this->fileName.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
             throw ImageLoadingFileOpenException{this->fileName};
         parseChunks(file);
     }
 
-    void JPEGLoader::invokeParser(uint16_t signature, std::istream& file) {
+    void JPEGLoader::parseNextChunk(std::istream& file, uint16_t signature) {
+        if (signature == 0xFFD9) {
+            endOfImage = true;
+            return;
+        }
         if (auto iter = chunkParser.find(signature); iter != chunkParser.end())
-            std::invoke(*std::invoke(iter->second, std::ref(*this)), file);
+            parsingQueue.push(iter->second);
         else
-            ignoreNBytes(readType<uint16_t, true>(file) - 2, file);
+            parsingQueue.push(emptyChunk);
     }
 
     void JPEGLoader::parseChunks(std::ifstream& file) {
         if (readType<uint16_t>(file) != 0xD8FF)
             throw ImageLoadingInvalidTypeException{fileName};
-        for (uint16_t signature = readType<uint16_t, true>(file); 0xFFD9 != signature && !file.eof();
-                signature = readType<uint16_t, true>(file))
-            invokeParser(signature, file);
+        while (!endOfImage) { // while not end
+            parseNextChunk(file, readType<uint16_t, true>(file));
+            while (!parsingQueue.empty()) {
+                auto chunk = std::move(parsingQueue.front());
+                parsingQueue.pop();
+                std::invoke(*std::invoke(chunk, std::ref(*this)), file);
+            }
+        };
     }
 
     void JPEGLoader::DHTChunk::operator() (std::istream& data) {
@@ -55,7 +64,7 @@ namespace ge {
         uint8_t header = readType<uint8_t>(data);
         QuantizationTable table;
         table.number = 0xF & header;
-        table.precision = 0xF0 & header;
+        table.precision = (0xF0 & header) >> 4;
         table.information.resize(length);
         std::ranges::for_each(table.information, [&data](uint8_t& quant)
             { data.get(reinterpret_cast<char&>(quant)); });
@@ -76,35 +85,42 @@ namespace ge {
                 readType<uint8_t>(data), readType<uint8_t>(data));
     }
 
-    void JPEGLoader::StartOfScanChunk::operator() (std::istream& data) {
-        ignoreNBytes(3, data);
+    void JPEGLoader::SOSChunk::operator() (std::istream& data) {
+        uint16_t length = readType<uint16_t, true>(data) - 2;
+        ignoreNBytes(length, data); // progressive jpegs are not used
         while (!data.eof()) {
-            if (readType<uint8_t>(data) == 0xFF) {
-                if (auto point = readType<uint8_t>(data); point != 0x00 && !(point >= 0xD0 && point <= 0xD7)) {
-                    if (point != 0xD9)
-                        loader.invokeParser(0xFF00 | point, data);
-                    return;
-                }
-            }
+            auto byte = readType<uint8_t>(data);
+            if (byte == 0xFF)
+                if (uint8_t header = readType<uint8_t>(data))
+                    return loader.parseNextChunk(data, 0xFF00 | header);
+            loader.imageData.push_back(byte);
         }
+        if (data.eof())
+            loader.endOfImage = true;
+    }
+
+    void JPEGLoader::EmptyChunk::operator() (std::istream& data) {
+        ignoreNBytes(readType<uint16_t, true>(data) - 2, data);
     }
 
     JPEGLoader::HuffmanTable::HuffmanTable(HuffmanTree<uint16_t> tree, uint8_t header, const std::string& fileName)
-        : decoder{std::move(tree)}, number{static_cast<uint8_t>(0xF & header)}, type{static_cast<bool>(0x10 & header)}
+        : decoder{std::move(tree)}, number{static_cast<uint8_t>(0xF & header)}, type{static_cast<bool>((0x10 & header) >> 4)}
     {
         if (0xe0 & header)
             throw ImageLoadingFileCorruptionException{fileName};
     }
 
-    JPEGLoader::Component::Component(uint8_t id, uint8_t samplings, uint8_t tableNumber) noexcept
+    JPEGLoader::Component::Component(uint8_t tableNumber, uint8_t samplings, uint8_t id) noexcept
         : id{id}, verticalSampling{static_cast<uint8_t>(0xF & samplings)},
-            horizontalSampling{static_cast<uint8_t>(0xF0 & samplings)},tableNumber{tableNumber} {}
+            horizontalSampling{static_cast<uint8_t>((0xF0 & samplings) >> 4)},tableNumber{tableNumber} {}
+
+    const JPEGLoader::ChunkParser JPEGLoader::emptyChunk = FunctionalWrapper<JPEGLoader::EmptyChunk, JPEGLoader::ChunkInterface>{};
 
     const std::map<uint16_t, std::function<std::unique_ptr<JPEGLoader::ChunkInterface> (JPEGLoader&)>> JPEGLoader::chunkParser {
         {0xFFC4, FunctionalWrapper<JPEGLoader::DHTChunk, JPEGLoader::ChunkInterface>{}},
         {0xFFDB, FunctionalWrapper<JPEGLoader::DQTChunk, JPEGLoader::ChunkInterface>{}},
         {0xFFC0, FunctionalWrapper<JPEGLoader::SOF0Chunk, JPEGLoader::ChunkInterface>{}},
-        {0xFFDA, FunctionalWrapper<JPEGLoader::StartOfScanChunk, JPEGLoader::ChunkInterface>{}}
+        {0xFFDA, FunctionalWrapper<JPEGLoader::SOSChunk, JPEGLoader::ChunkInterface>{}}
     };
 
 }

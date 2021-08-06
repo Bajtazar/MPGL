@@ -6,6 +6,7 @@
 #include <functional>
 #include <memory>
 #include <tuple>
+#include <queue>
 #include <map>
 
 namespace ge {
@@ -45,10 +46,16 @@ namespace ge {
             ~SOF0Chunk(void) noexcept = default;
         };
 
-        struct StartOfScanChunk : public ChunkInterface {
-            explicit StartOfScanChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+        struct SOSChunk : public ChunkInterface {
+            explicit SOSChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
             virtual void operator() (std::istream& data) final;
-            ~StartOfScanChunk(void) noexcept = default;
+            ~SOSChunk(void) noexcept = default;
+        };
+
+        struct EmptyChunk : public ChunkInterface {
+            explicit EmptyChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+            virtual void operator() (std::istream& data) final;
+            ~EmptyChunk(void) noexcept = default;
         };
 
         struct HuffmanTable {
@@ -69,17 +76,24 @@ namespace ge {
             uint8_t verticalSampling : 4;
             uint8_t horizontalSampling: 4;
             uint8_t tableNumber;
-            explicit Component(uint8_t id, uint8_t samplings, uint8_t tableNumber) noexcept;
+            explicit Component(uint8_t tableNumber, uint8_t samplings, uint8_t id) noexcept;
         };
 
-        void parseChunks(std::ifstream& file);
-        void invokeParser(uint16_t signature, std::istream& file);
+        typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)> ChunkParser;
+        typedef std::reference_wrapper<ChunkParser> ChunkParserRef;
 
+        void parseChunks(std::ifstream& file);
+        void parseNextChunk(std::istream& file, uint16_t signature);
+
+        std::queue<ChunkParser> parsingQueue;
         std::vector<HuffmanTable> huffmanTables;
         std::vector<QuantizationTable> quantizationTables;
         std::vector<Component> componentsTable;
+        std::vector<uint8_t> imageData;
+        bool endOfImage;
 
-        static const std::map<uint16_t, std::function<std::unique_ptr<ChunkInterface> (JPEGLoader&)>> chunkParser;
+        static const ChunkParser emptyChunk;
+        static const std::map<uint16_t, ChunkParser> chunkParser;
     };
 
 }
