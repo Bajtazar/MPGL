@@ -26,9 +26,6 @@ namespace ge {
         typedef BitIterator<std::deque<char>::iterator>  BitIter;
         typedef HuffmanTree<uint16_t>::Decoder Decoder;
 
-        static uint32_t readNBits(std::size_t length, BitIter& iter) noexcept;
-        static uint32_t readRNBits(std::size_t length, BitIter& iter) noexcept;
-
         void parseHeader(void);
         void saveAdler32Code(void);
         bool readBlock(BitIter& iterator);

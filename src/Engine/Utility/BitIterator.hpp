@@ -31,6 +31,10 @@ namespace ge {
         auto readByte(void) noexcept;
         template <typename T, bool BigEndian>
         T readType(void) noexcept;
+        template <typename T>
+        T readNBits(std::size_t length) noexcept;
+        template <typename T>
+        T readRNBits(std::size_t length) noexcept;
     private:
         Iter iter;
         std::bitset<CHAR_BIT> bits;
@@ -84,4 +88,23 @@ namespace ge {
         return data;
     }
 
+    template <std::input_iterator Iter>
+        requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
+    template <typename T>
+    T BitIterator<Iter>::readNBits(std::size_t length) noexcept {
+        T answer = 0;
+        for (std::size_t i = 0;i < length; ++i)
+            answer += (*(*this)++) << i;
+        return answer;
+    }
+
+    template <std::input_iterator Iter>
+        requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
+    template <typename T>
+    T BitIterator<Iter>::readRNBits(std::size_t length) noexcept {
+        T answer = 0;
+        for ([[maybe_unused]] std::size_t i = 1;i <= length; ++i)
+            answer += (*(*this)++) << (length - i);
+        return answer;
+    }
 }

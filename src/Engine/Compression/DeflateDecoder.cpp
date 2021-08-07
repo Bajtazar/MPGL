@@ -79,10 +79,10 @@ namespace ge {
 
     void DeflateDecoder::decompressFixedDistance(uint16_t token, BitIter& iterator) {
         auto [lenBits, length] = extraLength[token];
-        length += readNBits(lenBits, iterator);
-        uint16_t distanceToken = readRNBits(5, iterator);
+        length += iterator.readNBits<uint16_t>(lenBits);
+        uint16_t distanceToken = iterator.readRNBits<uint8_t>(5);
         auto [distBits, distance] = distances[distanceToken];
-        distance += readNBits(distBits, iterator);
+        distance += iterator.readNBits<uint32_t>(distBits);
         uint32_t offset = outputStream.size() - distance;
         for (auto i : std::views::iota(0u, length))
             outputStream.push_back(outputStream[offset + i]);
@@ -99,13 +99,13 @@ namespace ge {
             if (token < 16)
                 repeat = 1;
             else if (token == 16) {
-                repeat = 3 + readNBits(2, iterator);
+                repeat = 3 +  iterator.readNBits<uint8_t>(2);
                 token = bitLengths.back();
             } else if (token == 17) {
-                repeat = 3 + readNBits(3, iterator);
+                repeat = 3 + iterator.readNBits<uint8_t>(3);
                 token = 0;
             } else if (token == 18) {
-                repeat = 11 + readNBits(7, iterator);
+                repeat = 11 + iterator.readNBits<uint8_t>(7);
                 token = 0;
             }
             while (repeat--)
@@ -129,12 +129,12 @@ namespace ge {
     }
 
     void DeflateDecoder::decompressDynamicBlock(BitIter& iterator) {
-        uint32_t literals = 257 + readNBits(5, iterator);
-        uint32_t distances = 1 + readNBits(5, iterator);
-        uint32_t codeLength = 4 + readNBits(4, iterator);
+        uint16_t literals = 257 + iterator.readNBits<uint16_t>(5);
+        uint8_t distances = 1 + iterator.readNBits<uint8_t>(5);
+        uint8_t codeLength = 4 + iterator.readNBits<uint8_t>(4);
         std::array<uint16_t, 19> codes{};
         for (uint16_t i = 0;i < codeLength; ++i)
-            codes[dynamicCodesOrder[i]] = (uint16_t) readNBits(3, iterator);
+            codes[dynamicCodesOrder[i]] = iterator.readNBits<uint16_t>(3);
         HuffmanTree<uint16_t>::Decoder mainDecoder{HuffmanTree<uint16_t>{codes}};
         auto [treeDecoder, distanceDecoder] = generateDynamicTrees(mainDecoder, literals, distances, iterator);
         dynamicBlockLoop(treeDecoder, distanceDecoder, iterator);
@@ -142,10 +142,10 @@ namespace ge {
 
     void DeflateDecoder::decompressDynamicDistance(uint16_t token, BitIter& iterator, const HuffmanTree<uint16_t>::Decoder& distanceDecoder) {
         auto [addbits, addLength] = extraLength[token];
-        uint32_t length = readNBits(addbits, iterator) + addLength;
+        uint32_t length = iterator.readNBits<uint32_t>(addbits) + addLength;
         uint32_t distanceToken = distanceDecoder.decodeToken(iterator);
         auto [distBits, distLength] = distances[distanceToken];
-        uint32_t distance = readNBits(distBits, iterator) + distLength;
+        uint32_t distance = iterator.readNBits<uint32_t>(distBits) + distLength;
         std::size_t offset = outputStream.size() - distance;
         for (auto i : std::views::iota(0u, length))
             outputStream.push_back(outputStream[offset + i]);
@@ -177,20 +177,6 @@ namespace ge {
             s2 = (s1 + s2) % DeflateDecoder::AdlerBase;
         }
         return (s2 << 16) + s1;
-    }
-
-    uint32_t DeflateDecoder::readNBits(std::size_t length, BitIter& iter) noexcept {
-        uint32_t answer = 0;
-        for (std::size_t i = 0;i < length; ++i)
-            answer += (*iter++) << i;
-        return answer;
-    }
-
-    uint32_t DeflateDecoder::readRNBits(std::size_t length, BitIter& iter) noexcept {
-        uint32_t answer = 0;
-        for ([[maybe_unused]] std::size_t i = 1;i <= length; ++i)
-            answer += (*iter++) << (length - i);
-        return answer;
     }
 
 }
