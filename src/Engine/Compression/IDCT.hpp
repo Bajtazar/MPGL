@@ -19,8 +19,9 @@ namespace ge {
         template <std::ranges::random_access_range Range>
         InvertedMatrix<Range> invertVector(const Range& range) noexcept;
     private:
-        Matrix<double, Precision> inverseTable;
-        double invertPoint(uint8_t i, uint8_t j) const noexcept;
+        Matrix<long double, Precision> inverseTable;
+        template <std::ranges::random_access_range Range>
+        long double invertPoint(uint8_t i, uint8_t j, const Range& range) const noexcept;
     };
 
     template <uint8_t Precision>
@@ -28,28 +29,30 @@ namespace ge {
         for (auto i : std::views::iota(uint8_t(0), Precision))
             for (auto j : std::views::iota(uint8_t(0), Precision))
                 inverseTable[i][j] = std::cos(
-                    i * (2.*j + 1.) * std::numbers::pi_v<double> / 16.);
-        for (auto& value : inverseTable.getColumn(0))
-            value /= sqrt(2.);
+                    (2. * j + 1.) * i * std::numbers::pi_v<long double> / 16.);
+        for (auto& value : inverseTable[0])
+            value /= std::sqrt(2.);
     }
 
     template <uint8_t Precision>
-    double IDCT<Precision>::invertPoint(uint8_t i, uint8_t j) const noexcept {
-        double sum = 0;
+    template <std::ranges::random_access_range Range>
+    long double IDCT<Precision>::invertPoint(uint8_t i, uint8_t j, const Range& range) const noexcept {
+        long double sum = 0;
+        auto iter = std::ranges::begin(range);
         for (auto x : std::views::iota(uint8_t(0), Precision))
             for (auto y : std::views::iota(uint8_t(0), Precision))
-                sum += inverseTable[x][i] * inverseTable[y][j];
-        return sum / 4.;
+                sum += (long double) (*iter++) * inverseTable[y][j] * inverseTable[x][i];
+        return 2. * sum / Precision;
     }
 
     template <uint8_t Precision>
     template <std::ranges::random_access_range Range>
     IDCT<Precision>::InvertedMatrix<Range> IDCT<Precision>::invertVector(const Range& range) noexcept {
-        InvertedMatrix<Range> matrix;
-        output.resize(Precision * Precision);
+        InvertedMatrix<Range> matrix;;
         for (auto i : std::views::iota(uint8_t(0), Precision))
             for (auto j : std::views::iota(uint8_t(0), Precision))
-                matrix[i][j] = invertPoint(i, j);
+                matrix[i][j] = invertPoint(i, j, range);
+        // will be much optimylised
         return matrix;
     }
 
