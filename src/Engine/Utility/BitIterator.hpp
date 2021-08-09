@@ -8,19 +8,30 @@
 
 namespace ge {
 
-    template <std::input_iterator Iter>
+    struct BitIteratorTag : public std::input_iterator_tag {};
+
+    template <class Iter>
+    concept BitIteratorConcept = std::input_iterator<Iter> &&
+        requires {typename Iter::iterator_category;} &&
+        std::derived_from< typename Iter::iterator_category, BitIteratorTag>;
+
+    template <class Range>
+    concept BitRange = std::ranges::input_range<Range> &&
+        BitIteratorConcept<std::ranges::iterator_t<Range>>;
+
+    template <std::input_iterator Iter, bool Direction = false>
         requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
-    class BitIterator : public std::iterator<std::input_iterator_tag, bool> {
+    class BitIterator : public std::iterator<BitIteratorTag, bool> {
     public:
         typedef bool                bit;
         typedef bit                 value_type;
-        using iterator_category  =  std::input_iterator_tag;
+        using iterator_category  =  BitIteratorTag;
 
         explicit BitIterator(Iter&& iter) noexcept : iter{std::move(iter)}, bits{uint8_t(*(this->iter))}, bitIter{0} {}
         explicit BitIterator(const Iter& iter) noexcept : iter{iter}, bits{*iter}, bitIter{0} {}
         explicit BitIterator(void) noexcept = default;
 
-        bit operator* (void) const noexcept { return bits[bitIter]; }
+        bit operator* (void) const noexcept { if constexpr (Direction) return bits[CHAR_BIT - bitIter - 1]; else return bits[bitIter]; }
 
         BitIterator& operator++ (void) noexcept;
         BitIterator operator++ (int) noexcept;
@@ -41,9 +52,9 @@ namespace ge {
         uint8_t bitIter;
     };
 
-    template <std::input_iterator Iter>
+    template <std::input_iterator Iter, bool Dir>
         requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
-    BitIterator<Iter>& BitIterator<Iter>::operator++ (void) noexcept {
+    BitIterator<Iter, Dir>& BitIterator<Iter, Dir>::operator++ (void) noexcept {
         ++bitIter;
         if (bitIter == CHAR_BIT) {
             bits = std::bitset<CHAR_BIT>{uint8_t(*(++iter))};
@@ -52,27 +63,27 @@ namespace ge {
         return *this;
     }
 
-    template <std::input_iterator Iter>
+    template <std::input_iterator Iter, bool Dir>
         requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
-    BitIterator<Iter> BitIterator<Iter>::operator++ (int) noexcept {
+    BitIterator<Iter, Dir> BitIterator<Iter, Dir>::operator++ (int) noexcept {
         auto temp = *this;
         ++(*this);
         return temp;
     }
 
-    template <std::input_iterator Iter>
+    template <std::input_iterator Iter, bool Dir>
         requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
-    auto BitIterator<Iter>::readByte(void) noexcept {
+    auto BitIterator<Iter, Dir>::readByte(void) noexcept {
         auto temp = *iter++;
         bits = std::bitset<CHAR_BIT>{uint8_t(*iter)};
         bitIter = 0;
         return temp;
     }
 
-    template <std::input_iterator Iter>
+    template <std::input_iterator Iter, bool Dir>
         requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
     template <typename T, bool BigEndian>
-    T BitIterator<Iter>::readType(void) noexcept {
+    T BitIterator<Iter, Dir>::readType(void) noexcept {
         T data;
         if constexpr (BigEndian) {
             char* raw = reinterpret_cast<char*>(&data) + sizeof(T) - 1;
@@ -88,23 +99,27 @@ namespace ge {
         return data;
     }
 
-    template <std::input_iterator Iter>
+    template <std::input_iterator Iter, bool Dir>
         requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
     template <typename T>
-    T BitIterator<Iter>::readNBits(std::size_t length) noexcept {
+    T BitIterator<Iter, Dir>::readNBits(std::size_t length) noexcept {
         T answer = 0;
         for (std::size_t i = 0;i < length; ++i)
             answer += (*(*this)++) << i;
         return answer;
     }
 
-    template <std::input_iterator Iter>
+    template <std::input_iterator Iter, bool Dir>
         requires requires (Iter it) { { *it } -> SameSize<std::byte>; }
     template <typename T>
-    T BitIterator<Iter>::readRNBits(std::size_t length) noexcept {
+    T BitIterator<Iter, Dir>::readRNBits(std::size_t length) noexcept {
         T answer = 0;
         for ([[maybe_unused]] std::size_t i = 1;i <= length; ++i)
             answer += (*(*this)++) << (length - i);
         return answer;
     }
+
+    template <std::input_iterator Iter>
+    using ReverseBitIter = BitIterator<Iter, true>;
+
 }

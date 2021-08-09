@@ -374,7 +374,8 @@ namespace ge {
     template <Arithmetic U>
     constexpr Matrix<T, Rows>::operator Matrix<U, Rows>() const noexcept {
         Matrix<U, Rows> base;
-        std::ranges::copy(*this, base);
+        std::copy(reinterpret_cast<const T*>(this), reinterpret_cast<const T*>(this) + Rows * Rows,
+            reinterpret_cast<U*>(&base));
         return base;
     }
 
@@ -384,7 +385,8 @@ namespace ge {
         requires (URows > Rows)
     constexpr Matrix<T, Rows>::operator Matrix<T, URows>() const noexcept {
         Matrix<T, URows> base;
-        std::ranges::copy(*this, base);
+        std::copy(reinterpret_cast<const T*>(this), reinterpret_cast<const T*>(this) + Rows * Rows,
+            reinterpret_cast<T*>(&base));
         return base;
     }
 

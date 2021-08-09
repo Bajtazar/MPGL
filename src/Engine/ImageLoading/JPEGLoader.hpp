@@ -1,6 +1,9 @@
 #pragma once
 
+#include "../Mathematics/Matrix.hpp"
 #include "../Compression/HuffmanTree.hpp"
+#include "../Utility/BitIterator.hpp"
+#include "../Compression/IDCT.hpp"
 #include "LoaderInterface.hpp"
 
 #include <functional>
@@ -60,38 +63,50 @@ namespace ge {
 
         struct HuffmanTable {
             HuffmanTree<uint16_t>::Decoder decoder;
-            uint8_t number : 4;
-            bool type : 1;
-            explicit HuffmanTable(HuffmanTree<uint16_t> tree, uint8_t header, const std::string& fileName);
+            explicit HuffmanTable(HuffmanTree<uint16_t> tree);
         };
 
         struct QuantizationTable {
             std::vector<uint8_t> information;
-            uint8_t number : 4;
             uint8_t precision : 4;
         };
 
         struct Component {
-            uint8_t id;
             uint8_t verticalSampling : 4;
             uint8_t horizontalSampling: 4;
             uint8_t tableNumber;
-            explicit Component(uint8_t tableNumber, uint8_t samplings, uint8_t id) noexcept;
+            explicit Component(uint8_t tableNumber, uint8_t samplings) noexcept;
         };
 
-        typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)> ChunkParser;
-        typedef std::reference_wrapper<ChunkParser> ChunkParserRef;
+        typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)>         ChunkParser;
+        typedef std::reference_wrapper<ChunkParser>                                 ChunkParserRef;
+        typedef std::map<bool, std::map<uint8_t, std::unique_ptr<HuffmanTable>>>    HuffmanArray;
+        typedef ReverseBitIter<std::vector<uint8_t>::const_iterator>                Iter;
+        typedef std::map<uint8_t, Matrix<int16_t, 8>>                               MatricesMap;
+        typedef std::map<uint8_t, std::unique_ptr<QuantizationTable>>               QuantizationArray;
+        typedef std::map<uint8_t, std::unique_ptr<Component>>                       ComponentArray;
+        template <typename T>
+        using PixelMatrix = std::tuple<Matrix<T, 8>, Matrix<T, 8>, Matrix<T, 8>>;
+
+        static PixelMatrix<uint8_t> convertYCbCrToRGB(PixelMatrix<int16_t> yCbCr) noexcept;
+        static std::size_t getBoundry(std::size_t boundry) noexcept;
+        static uint8_t adjustPixelColor(int16_t color) noexcept;
+        static int32_t decodeNumber(uint8_t code, uint16_t bits) noexcept;
 
         void parseChunks(std::ifstream& file);
         void parseNextChunk(std::istream& file, uint16_t signature);
+        Matrix<int16_t, 8> readMatrix(Iter& iter, uint8_t id, int32_t coeff) noexcept;
+        void decodeImage(void);
+        void drawYCbCrOnImage(MatricesMap& matrices, std::size_t row, std::size_t column) noexcept;
 
+        ComponentArray componentsTable;
+        QuantizationArray quantizationTables;
         std::queue<ChunkParser> parsingQueue;
-        std::vector<HuffmanTable> huffmanTables;
-        std::vector<QuantizationTable> quantizationTables;
-        std::vector<Component> componentsTable;
         std::vector<uint8_t> imageData;
+        HuffmanArray huffmanTables;
         bool endOfImage;
 
+        static const IDCT<>     inverseCosineTransform;
         static const ChunkParser emptyChunk;
         static const std::map<uint16_t, ChunkParser> chunkParser;
     };

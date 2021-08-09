@@ -3,6 +3,7 @@
 #include <numbers>
 
 #include "Engine/ImageLoading/JPEGLoader.hpp"
+#include <iostream>
 
 using namespace ge;
 
@@ -24,11 +25,11 @@ int main(void) noexcept {
     array.emplaceBack(400_x + 400_y, 300_x + 300_y, 400_x + 300_y, Color::literals::White);
     array.emplaceBack(200_x + 200_y, 200_x + 300_y, 300_x + 200_y, Color::literals::Green);
 
-    window.emplaceDrawable<DefaultSprite>( Texture<>{"pad.png"}, 100_x + 100_y, 100_x + 100_y);
+    JPEGLoader loader{"pad.jpeg"};
+
+    window.emplaceDrawable<DefaultSprite>( Texture<>{loader.getImage()}, 100_x + 100_y, 100_x + 100_y);
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[2]);
     sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
-
-    JPEGLoader loader{"pad.jpeg"};
 
     return window.windowLoop();
 }

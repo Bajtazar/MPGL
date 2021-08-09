@@ -44,8 +44,8 @@ namespace ge {
             Decoder(HuffmanTree&& tree) : tree{std::move(tree)} {}
             Decoder(void) : tree{createDeflateDecoder()} {}
 
-            template <typename T>
-            CharType decodeToken(BitIterator<T>& iterator) const;
+            template <BitIteratorConcept Iter>
+            CharType decodeToken(Iter& iterator) const;
         private:
             HuffmanTree tree;
         };
@@ -125,10 +125,10 @@ namespace ge {
         auto [minFreq, maxFreq] = findFirstAndLastIf(counted, [](const auto& value)->bool{ return value != 0; });
         auto smallestCodes = generateSmallestCodes(counted, minFreq - counted.begin(), maxFreq - counted.begin());
         auto iter = characters.begin();
-        std::ranges::for_each(smallestCodes, [&, i = 0](auto code) mutable -> void {
+        std::ranges::for_each(counted, [&, i = 0](auto code) mutable -> void {
             auto length = i++;
-            for ([[maybe_unused]] auto _ : std::views::iota(static_cast<FrequencyType>(0), counted[length]))
-                addNode(static_cast<CharType>(length), *iter++, code++);
+            for ([[maybe_unused]] auto _ : std::views::iota(static_cast<CharType>(0), code))
+                addNode(length, *iter++, smallestCodes[length]++);
         });
     }
 
@@ -221,8 +221,8 @@ namespace ge {
     }
 
     template <typename CharType, SizeType FrequencyType>
-    template <typename T>
-    CharType HuffmanTree<CharType, FrequencyType>::Decoder::decodeToken(BitIterator<T>& iterator) const {
+    template <BitIteratorConcept Iter>
+    CharType HuffmanTree<CharType, FrequencyType>::Decoder::decodeToken(Iter& iterator) const {
         std::reference_wrapper<const NodePtr> node{tree.root};
         while (node.get() && node.get()->isInner)
             node = std::cref(*iterator++ ? node.get()->rightNode : node.get()->leftNode);
