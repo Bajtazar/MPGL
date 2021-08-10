@@ -44,7 +44,7 @@ namespace ge {
             Decoder(HuffmanTree&& tree) : tree{std::move(tree)} {}
             Decoder(void) : tree{createDeflateDecoder()} {}
 
-            template <BitIteratorConcept Iter>
+            template <BitIterator Iter>
             CharType decodeToken(Iter& iterator) const;
         private:
             HuffmanTree tree;
@@ -221,7 +221,7 @@ namespace ge {
     }
 
     template <typename CharType, SizeType FrequencyType>
-    template <BitIteratorConcept Iter>
+    template <BitIterator Iter>
     CharType HuffmanTree<CharType, FrequencyType>::Decoder::decodeToken(Iter& iterator) const {
         std::reference_wrapper<const NodePtr> node{tree.root};
         while (node.get() && node.get()->isInner)

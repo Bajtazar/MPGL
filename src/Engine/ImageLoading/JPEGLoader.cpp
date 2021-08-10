@@ -122,7 +122,7 @@ namespace ge {
 
     Matrix<int16_t, 8> JPEGLoader::readMatrix(Iter& iter, uint8_t id, int32_t coeff) noexcept {
         uint8_t code = huffmanTables[false][id]->decoder.decodeToken(iter);
-        uint16_t bits = iter.readRNBits<uint16_t>(code);    // will be normal
+        uint16_t bits = readRNBits<uint16_t>(code, iter);
         int32_t dcoefficent = coeff + decodeNumber(code, bits);
         std::vector<int16_t> data;
         data.resize(64, 0);
@@ -136,7 +136,7 @@ namespace ge {
                 length += code >> 4;
                 code &= 0xF;
             }
-            bits = iter.readRNBits<uint16_t>(code);
+            bits = readRNBits<uint16_t>(code, iter);
             if (length < 64) {
                 data[length] = decodeNumber(code, bits) * quantizationTables[id]->information[length];
                 ++length;

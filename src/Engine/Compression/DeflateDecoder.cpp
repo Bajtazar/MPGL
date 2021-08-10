@@ -79,10 +79,10 @@ namespace ge {
 
     void DeflateDecoder::decompressFixedDistance(uint16_t token, BitIter& iterator) {
         auto [lenBits, length] = extraLength[token];
-        length += iterator.readNBits<uint16_t>(lenBits);
-        uint16_t distanceToken = iterator.readRNBits<uint8_t>(5);
+        length += readNBits<uint16_t>(lenBits, iterator);
+        uint16_t distanceToken = readRNBits<uint8_t>(5, iterator);
         auto [distBits, distance] = distances[distanceToken];
-        distance += iterator.readNBits<uint32_t>(distBits);
+        distance += readNBits<uint32_t>(distBits, iterator);
         uint32_t offset = outputStream.size() - distance;
         for (auto i : std::views::iota(0u, length))
             outputStream.push_back(outputStream[offset + i]);
@@ -99,13 +99,13 @@ namespace ge {
             if (token < 16)
                 repeat = 1;
             else if (token == 16) {
-                repeat = 3 +  iterator.readNBits<uint8_t>(2);
+                repeat = 3 +  readNBits<uint8_t>(2, iterator);
                 token = bitLengths.back();
             } else if (token == 17) {
-                repeat = 3 + iterator.readNBits<uint8_t>(3);
+                repeat = 3 + readNBits<uint8_t>(3, iterator);
                 token = 0;
             } else if (token == 18) {
-                repeat = 11 + iterator.readNBits<uint8_t>(7);
+                repeat = 11 + readNBits<uint8_t>(7, iterator);
                 token = 0;
             }
             while (repeat--)
@@ -129,12 +129,12 @@ namespace ge {
     }
 
     void DeflateDecoder::decompressDynamicBlock(BitIter& iterator) {
-        uint16_t literals = 257 + iterator.readNBits<uint16_t>(5);
-        uint8_t distances = 1 + iterator.readNBits<uint8_t>(5);
-        uint8_t codeLength = 4 + iterator.readNBits<uint8_t>(4);
+        uint16_t literals = 257 + readNBits<uint16_t>(5, iterator);
+        uint8_t distances = 1 + readNBits<uint8_t>(5, iterator);
+        uint8_t codeLength = 4 + readNBits<uint8_t>(4, iterator);
         std::array<uint16_t, 19> codes{};
         for (uint16_t i = 0;i < codeLength; ++i)
-            codes[dynamicCodesOrder[i]] = iterator.readNBits<uint16_t>(3);
+            codes[dynamicCodesOrder[i]] = readNBits<uint8_t>(3, iterator);
         HuffmanTree<uint16_t>::Decoder mainDecoder{HuffmanTree<uint16_t>{codes}};
         auto [treeDecoder, distanceDecoder] = generateDynamicTrees(mainDecoder, literals, distances, iterator);
         dynamicBlockLoop(treeDecoder, distanceDecoder, iterator);
@@ -142,10 +142,10 @@ namespace ge {
 
     void DeflateDecoder::decompressDynamicDistance(uint16_t token, BitIter& iterator, const HuffmanTree<uint16_t>::Decoder& distanceDecoder) {
         auto [addbits, addLength] = extraLength[token];
-        uint32_t length = iterator.readNBits<uint32_t>(addbits) + addLength;
+        uint32_t length = addLength + readNBits<uint32_t>(addbits, iterator);
         uint32_t distanceToken = distanceDecoder.decodeToken(iterator);
         auto [distBits, distLength] = distances[distanceToken];
-        uint32_t distance = iterator.readNBits<uint32_t>(distBits) + distLength;
+        uint32_t distance = distLength + readNBits<uint32_t>(distBits, iterator);
         std::size_t offset = outputStream.size() - distance;
         for (auto i : std::views::iota(0u, length))
             outputStream.push_back(outputStream[offset + i]);
@@ -153,13 +153,13 @@ namespace ge {
 
     void DeflateDecoder::copyNotCompressed(BitIter& iterator) {
         iterator.skipToNextByte();
-        uint16_t length = iterator.readType<uint16_t, true>();
-        uint16_t complement = iterator.readType<uint16_t, true>();
+        uint16_t length = readType<uint16_t, true>(iterator);
+        uint16_t complement = readType<uint16_t, true>(iterator);
         if (length != 0xFFFF - complement)
             throw DeflateDecoderDataCorruptionException{};
         outputStream.reserve(outputStream.size() + length);
         for ([[maybe_unused]] auto i : std::views::iota(uint16_t(0), length))
-            outputStream.push_back(iterator.readByte());
+            outputStream.push_back(static_cast<char>(iterator.readByte()));
     }
 
     void DeflateDecoder::saveAdler32Code(void) {

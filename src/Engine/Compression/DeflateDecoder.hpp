@@ -23,7 +23,7 @@ namespace ge {
         CompressionLevel getCompressionLevel(void) const noexcept;
         std::vector<char>& decompress(void);
     private:
-        typedef BitIterator<std::deque<char>::iterator>  BitIter;
+        typedef LittleEndianBitIter<std::deque<char>::iterator>  BitIter;
         typedef HuffmanTree<uint16_t>::Decoder Decoder;
 
         void parseHeader(void);
