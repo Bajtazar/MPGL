@@ -54,7 +54,7 @@ namespace ge {
         std::array<int16_t, 64> data{};
         data.front() = coeff * quantizationTables[id]->information[0];
         decodeMatrix(data, huffmanTables[true][id], quantizationTables[id], iter);
-        return inverseCosineTransform.invertVector(ZigZacRange::returnZigZac(data));
+        return inverseCosineTransform.invertVector(ZigZacRange<8>::returnZigZac(data));
     }
 
     void JPEGLoader::decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,
@@ -77,8 +77,8 @@ namespace ge {
         Iter iter{imageData.begin()};
         std::vector<int16_t> channels;
         channels.resize(componentsTable.size(), 0);
-        for (auto i : std::views::iota(static_cast<std::size_t>(0), getBoundry(pixels.getWidth()))) {
-            for (auto j : std::views::iota(static_cast<std::size_t>(0), getBoundry(pixels.getHeight()))) {
+        for (auto i : std::views::iota(std::size_t(0), getBoundry(pixels.getWidth()))) {
+            for (auto j : std::views::iota(std::size_t(0), getBoundry(pixels.getHeight()))) {
                 MatricesMap matrices;
                 auto coef = channels.begin();
                 for (const auto& [id, component] : componentsTable)

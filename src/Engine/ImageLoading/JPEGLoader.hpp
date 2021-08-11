@@ -78,16 +78,17 @@ namespace ge {
             explicit Component(uint8_t tableNumber, uint8_t samplings) noexcept;
         };
 
-        typedef std::unique_ptr<HuffmanTable>   HuffmanTablePtr;
         typedef std::unique_ptr<QuantizationTable> QuantizationTablePtr;
+        typedef std::unique_ptr<HuffmanTable>   HuffmanTablePtr;
 
-        typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)>         ChunkParser;
-        typedef std::reference_wrapper<ChunkParser>                                 ChunkParserRef;
-        typedef std::map<bool, std::map<uint8_t, std::unique_ptr<HuffmanTable>>>    HuffmanArray;
-        typedef BigEndianBitIter<std::vector<uint8_t>::const_iterator>              Iter;
-        typedef std::map<uint8_t, Matrix<int16_t, 8>>                               MatricesMap;
-        typedef std::map<uint8_t, std::unique_ptr<QuantizationTable>>               QuantizationArray;
-        typedef std::map<uint8_t, std::unique_ptr<Component>>                       ComponentArray;
+        typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)> ChunkParser;
+        typedef BigEndianBitIter<std::vector<uint8_t>::const_iterator>      Iter;
+        typedef std::map<bool, std::map<uint8_t, HuffmanTablePtr>>          HuffmanArray;
+        typedef std::map<uint8_t, std::unique_ptr<Component>>               ComponentArray;
+        typedef std::map<uint8_t, QuantizationTablePtr>                     QuantizationArray;
+        typedef std::map<uint8_t, Matrix<int16_t, 8>>                       MatricesMap;
+        typedef std::reference_wrapper<ChunkParser>                         ChunkParserRef;
+
         template <typename T>
         using PixelMatrix = std::tuple<Matrix<T, 8>, Matrix<T, 8>, Matrix<T, 8>>;
 
