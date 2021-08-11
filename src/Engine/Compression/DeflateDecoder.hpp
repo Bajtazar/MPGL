@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Utility/BitIterator.hpp"
+#include "../Collections/BitIterator.hpp"
 #include "HuffmanTree.hpp"
 
 #include <deque>

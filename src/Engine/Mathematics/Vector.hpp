@@ -65,24 +65,24 @@ namespace ge {
             constexpr explicit Iterator(void) noexcept = default;
 
             constexpr Iterator& operator++(void) noexcept { ++iter; return *this; }
-            constexpr Iterator& operator++(int) noexcept { auto tmp = *this; ++iter; return tmp; }
+            constexpr Iterator operator++(int) noexcept { auto tmp = *this; ++iter; return tmp; }
 
             constexpr Iterator& operator--(void) noexcept { --iter; return *this; }
-            constexpr Iterator& operator--(int) noexcept { auto tmp = *this; --iter; return tmp; }
+            constexpr Iterator operator--(int) noexcept { auto tmp = *this; --iter; return tmp; }
 
             constexpr reference operator*(void) const noexcept { return *iter; }
             constexpr pointer operator->(void) noexcept { return iter; }
 
-            constexpr Iterator& operator+=(std::size_t offset) noexcept { iter += offset; return *this; }
-            constexpr Iterator& operator-=(std::size_t offset) noexcept { iter -= offset; return *this; }
-            constexpr reference operator[](std::size_t offset) const noexcept { return *(iter + offset); }
+            constexpr Iterator& operator+=(difference_type offset) noexcept { iter += offset; return *this; }
+            constexpr Iterator& operator-=(difference_type offset) noexcept { iter -= offset; return *this; }
+            constexpr Iterator operator[](difference_type offset) const noexcept { auto temp = *this; temp += offset; return temp; }
 
             friend constexpr bool operator== (const Iterator& right, const Iterator& left) noexcept { return right.iter == left.iter; }
             friend constexpr bool operator!= (const Iterator& right, const Iterator& left) noexcept { return right.iter != left.iter; }
 
-            friend constexpr Iterator operator+ (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
-            friend constexpr Iterator operator+ (std::size_t right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
-            friend constexpr Iterator operator- (const Iterator& right, std::size_t left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
+            friend constexpr Iterator operator+ (const Iterator& right, difference_type left) noexcept { auto tmp = right; tmp.iter += left; return tmp; }
+            friend constexpr Iterator operator+ (difference_type right, const Iterator& left) noexcept { auto tmp = left; tmp.iter += right; return tmp; }
+            friend constexpr Iterator operator- (const Iterator& right, difference_type left) noexcept { auto tmp = right; tmp.iter -= left; return tmp; }
             friend constexpr difference_type operator- (const Iterator& right, const Iterator& left) noexcept { return right.iter - left.iter; }
 
             friend constexpr bool operator> (const Iterator& right, const Iterator& left) noexcept { return right.iter > left.iter; }

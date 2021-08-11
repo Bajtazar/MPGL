@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Mathematics/Matrix.hpp"
 #include "../Compression/HuffmanTree.hpp"
-#include "../Utility/BitIterator.hpp"
+#include "../Collections/BitIterator.hpp"
+#include "../Mathematics/Matrix.hpp"
 #include "../Compression/IDCT.hpp"
 #include "LoaderInterface.hpp"
 

@@ -20,8 +20,8 @@ namespace ge {
         bool operator() (const_reference left, const_reference right) const noexcept { return (*left) > (*right); }
     };
 
-    template <typename T>
-    using PtrComparable = std::conditional_t<IsSmartPtr<T>, ComparePtr<T>, std::greater<T>>;
+    template <typename T, class Comparator = std::greater<T>>
+    using PtrComparable = std::conditional_t<IsSmartPtr<T>, ComparePtr<T>, Comparator>;
 
     template <typename T, std::predicate<T, T> Compare = PtrComparable<T>,
         std::ranges::forward_range Sequence = std::vector<T>>
