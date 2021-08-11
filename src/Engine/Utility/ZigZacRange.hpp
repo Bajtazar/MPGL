@@ -10,11 +10,15 @@
 
 namespace ge {
 
-    template <Arithmetic T>
     class ZigZacRange {
     public:
         ZigZacRange(void) noexcept = delete;
-        static Matrix<T, 8> returnZigZac(const std::vector<T>& range) noexcept;
+
+        template <class Range>
+        using RangeMatrix = Matrix<std::ranges::range_value_t<Range>, 8>;
+
+        template <std::ranges::random_access_range Range>
+        static RangeMatrix<Range> returnZigZac(Range const& range) noexcept;
     private:
         constexpr static std::array<std::array<std::size_t, 8>, 8> zigzac {{
             {0,  1,  5,  6,  14, 15, 27, 28},
@@ -28,9 +32,9 @@ namespace ge {
         }};
     };
 
-    template <Arithmetic T>
-    Matrix<T, 8> ZigZacRange<T>::returnZigZac(const std::vector<T>& range) noexcept {
-        Matrix<T, 8> matrix;
+    template <std::ranges::random_access_range Range>
+    ZigZacRange::RangeMatrix<Range> ZigZacRange::returnZigZac(Range const& range) noexcept {
+        RangeMatrix<Range> matrix;
         for (auto i : std::views::iota(0, 8))
             for (auto j : std::views::iota(0, 8))
                 matrix[i][j] = range[zigzac[i][j]];

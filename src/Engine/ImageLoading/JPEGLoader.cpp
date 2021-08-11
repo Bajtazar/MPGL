@@ -5,14 +5,12 @@
 #include "../Exceptions/ImageLoadingFileOpenException.hpp"
 #include "../Exceptions/NotSupportedException.hpp"
 #include "../Utility/FunctionalWrapper.hpp"
-#include "../Utility/Ranges.hpp"
-
 #include "../Utility/ZigZacRange.hpp"
+#include "../Utility/Ranges.hpp"
 
 #include <algorithm>
 #include <bitset>
 #include <array>
-#include <iostream>
 
 namespace ge {
 
@@ -37,7 +35,7 @@ namespace ge {
     }
 
     void JPEGLoader::parseChunks(std::ifstream& file) {
-        if (readType<uint16_t>(file) != 0xD8FF)
+        if (readType<uint16_t, true>(file) != 0xFFD8)
             throw ImageLoadingInvalidTypeException{fileName};
         while (!endOfImage) {
             parseNextChunk(file, readType<uint16_t, true>(file));
@@ -47,6 +45,62 @@ namespace ge {
                 std::invoke(*std::invoke(chunk, std::ref(*this)), file);
             }
         };
+    }
+
+    Matrix<int16_t, 8> JPEGLoader::readMatrix(Iter& iter, uint8_t id, int16_t& coeff) noexcept {
+        uint8_t code = huffmanTables[false][id]->decoder.decodeToken(iter);
+        uint16_t bits = readRNBits<uint16_t>(code, iter);
+        coeff += decodeNumber(code, bits);
+        std::array<int16_t, 64> data{};
+        data.front() = coeff * quantizationTables[id]->information[0];
+        decodeMatrix(data, huffmanTables[true][id], quantizationTables[id], iter);
+        return inverseCosineTransform.invertVector(ZigZacRange::returnZigZac(data));
+    }
+
+    void JPEGLoader::decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,
+        QuantizationTablePtr const& quant, Iter& iter) noexcept
+    {
+        uint16_t bits;
+        for (uint8_t length = 1, code; code = table->decoder.decodeToken(iter); ++length) {
+            if (code > 15) {
+                length += code >> 4;
+                code &= 0xF;
+            }
+            bits = readRNBits<uint16_t>(code, iter);
+            if (length >= 64)
+                break;
+            data[length] = decodeNumber(code, bits) * quant->information[length];
+        }
+    }
+
+    void JPEGLoader::decodeImage(void) {
+        Iter iter{imageData.begin()};
+        std::vector<int16_t> channels;
+        channels.resize(componentsTable.size(), 0);
+        for (auto i : std::views::iota(static_cast<std::size_t>(0), getBoundry(pixels.getWidth()))) {
+            for (auto j : std::views::iota(static_cast<std::size_t>(0), getBoundry(pixels.getHeight()))) {
+                MatricesMap matrices;
+                auto coef = channels.begin();
+                for (const auto& [id, component] : componentsTable)
+                    matrices[id] = std::move(readMatrix(iter, component->tableNumber, *coef++));
+                drawYCbCrOnImage(matrices, i, j);
+            }
+        }
+    }
+
+    JPEGLoader::PixelMatrix<uint8_t> JPEGLoader::convertYCbCrToRGB(PixelMatrix<int16_t> yCbCr) noexcept {
+        PixelMatrix<uint8_t> rgbColors;
+        for (uint8_t i = 0; i < 8; ++i) {
+            for (uint8_t j = 0; j < 8; ++j) {
+                int16_t red = (double) std::get<2>(yCbCr)[i][j] * 1.402 + std::get<0>(yCbCr)[i][j];
+                int16_t blue = (double) std::get<1>(yCbCr)[i][j] * 1.772 + std::get<0>(yCbCr)[i][j];
+                int16_t green = (double) (std::get<0>(yCbCr)[i][j] - 0.114 * blue - 0.299 * red) * 1.703577;
+                std::get<0>(rgbColors)[i][j] = adjustPixelColor(red + 128);
+                std::get<1>(rgbColors)[i][j] = adjustPixelColor(green + 128);
+                std::get<2>(rgbColors)[i][j] = adjustPixelColor(blue + 128);
+            }
+        }
+        return rgbColors;
     }
 
     void JPEGLoader::DHTChunk::operator() (std::istream& data) {
@@ -69,7 +123,8 @@ namespace ge {
         uint16_t length = readType<uint16_t, true>(data) - 3;
         uint8_t header = readType<uint8_t>(data);
         QuantizationTable table;
-        table.precision = (0xF0 & header) >> 4;
+        if (table.precision = header >> 4)
+            throw NotSupportedException{"Only 8-pixels quantization tables are supported."};
         table.information.resize(length);
         std::ranges::for_each(table.information, [&data](uint8_t& quant)
             { data.get(reinterpret_cast<char&>(quant)); });
@@ -107,6 +162,17 @@ namespace ge {
             loader.endOfImage = true;
     }
 
+    void JPEGLoader::drawYCbCrOnImage(MatricesMap& matrices, std::size_t row, std::size_t column) noexcept {
+        auto [redMatrix, greenMatrix, blueMatrix] = convertYCbCrToRGB({matrices[1], matrices[2], matrices[3]});
+        for (std::size_t iBase = row * 8, i = iBase; i < iBase + 8 && i < pixels.getHeight(); ++i) {
+            for (std::size_t jBase = column * 8, j = jBase; j < jBase + 8 && j < pixels.getWidth(); ++j) {
+                pixels[pixels.getHeight() - 1 - i][j].red = redMatrix[i - iBase][j - jBase];
+                pixels[pixels.getHeight() - 1 - i][j].green = greenMatrix[i - iBase][j - jBase];
+                pixels[pixels.getHeight() - 1 - i][j].blue = blueMatrix[i - iBase][j - jBase];
+            }
+        }
+    }
+
     int32_t JPEGLoader::decodeNumber(uint8_t code, uint16_t bits) noexcept {
         uint16_t coeff = 1 << code - 1;
         return bits >= coeff ? bits : (int32_t) bits - (2 * coeff - 1);
@@ -120,73 +186,6 @@ namespace ge {
         return color > 0xff ? 0xff : (color < 0 ? 0 : color);
     }
 
-    Matrix<int16_t, 8> JPEGLoader::readMatrix(Iter& iter, uint8_t id, int32_t coeff) noexcept {
-        uint8_t code = huffmanTables[false][id]->decoder.decodeToken(iter);
-        uint16_t bits = readRNBits<uint16_t>(code, iter);
-        int32_t dcoefficent = coeff + decodeNumber(code, bits);
-        std::vector<int16_t> data;
-        data.resize(64, 0);
-        data.front() = dcoefficent * quantizationTables[id]->information[0];
-        uint8_t length = 1;
-        while (length < 64) {
-            code = huffmanTables[true][id]->decoder.decodeToken(iter);
-            if (!code)
-                break;
-            if (code > 15) {
-                length += code >> 4;
-                code &= 0xF;
-            }
-            bits = readRNBits<uint16_t>(code, iter);
-            if (length < 64) {
-                data[length] = decodeNumber(code, bits) * quantizationTables[id]->information[length];
-                ++length;
-            }
-        }
-        coeff = dcoefficent;
-        return inverseCosineTransform.invertVector(ZigZacRange<int16_t>::returnZigZac(data));
-    }
-
-    void JPEGLoader::decodeImage(void) {
-        Iter iter{imageData.begin()};
-        std::vector<int16_t> channels;
-        channels.resize(componentsTable.size(), 0);
-        for (auto i : std::views::iota(static_cast<std::size_t>(0), getBoundry(pixels.getWidth()))) {
-            for (auto j : std::views::iota(static_cast<std::size_t>(0), getBoundry(pixels.getHeight()))) {
-                MatricesMap matrices;
-                auto coef = channels.begin();
-                for (const auto& [id, component] : componentsTable)
-                    matrices[id] = std::move(readMatrix(iter, component->tableNumber, *coef++));
-                drawYCbCrOnImage(matrices, i, j);
-            }
-        }
-    }
-
-    JPEGLoader::PixelMatrix<uint8_t> JPEGLoader::convertYCbCrToRGB(PixelMatrix<int16_t> yCbCr) noexcept {
-        PixelMatrix<uint8_t> rgbColors;
-        for (uint8_t i = 0; i < 8; ++i) {
-            for (uint8_t j = 0; j < 8; ++j) {
-                int16_t red = (double) std::get<2>(yCbCr)[i][j] * 1.402 + std::get<0>(yCbCr)[i][j];
-                int16_t blue = (double) std::get<1>(yCbCr)[i][j] * 1.772 + std::get<0>(yCbCr)[i][j];
-                int16_t green = (double) (std::get<0>(yCbCr)[i][j] - 0.114 * blue - 0.299 * red) * 1.703577;
-                std::get<0>(rgbColors)[i][j] = adjustPixelColor(red + 128);
-                std::get<1>(rgbColors)[i][j] = adjustPixelColor(green + 128);
-                std::get<2>(rgbColors)[i][j] = adjustPixelColor(blue + 128);
-            }
-        }
-        return rgbColors;
-    }
-
-    void JPEGLoader::drawYCbCrOnImage(MatricesMap& matrices, std::size_t row, std::size_t column) noexcept {
-        auto [redMatrix, greenMatrix, blueMatrix] = convertYCbCrToRGB({matrices[1], matrices[2], matrices[3]});
-        for (std::size_t iBase = row * 8, i = iBase; i < iBase + 8 && i < pixels.getHeight(); ++i) {
-            for (std::size_t jBase = column * 8, j = jBase; j < jBase + 8 && j < pixels.getWidth(); ++j) {
-                pixels[pixels.getHeight() - 1 - i][j].red = redMatrix[i - iBase][j - jBase];
-                pixels[pixels.getHeight() - 1 - i][j].green = greenMatrix[i - iBase][j - jBase];
-                pixels[pixels.getHeight() - 1 - i][j].blue = blueMatrix[i - iBase][j - jBase];
-            }
-        }
-    }
-
     void JPEGLoader::EmptyChunk::operator() (std::istream& data) {
         ignoreNBytes(readType<uint16_t, true>(data) - 2, data);
     }
@@ -195,7 +194,7 @@ namespace ge {
 
     JPEGLoader::Component::Component(uint8_t tableNumber, uint8_t samplings) noexcept
         : verticalSampling{static_cast<uint8_t>(0xF & samplings)},
-            horizontalSampling{static_cast<uint8_t>((0xF0 & samplings) >> 4)},tableNumber{tableNumber} {}
+            horizontalSampling{static_cast<uint8_t>(samplings >> 4)},tableNumber{tableNumber} {}
 
     const JPEGLoader::ChunkParser JPEGLoader::emptyChunk = FunctionalWrapper<JPEGLoader::EmptyChunk, JPEGLoader::ChunkInterface>{};
 

@@ -1,12 +1,13 @@
 #pragma once
 
-#include <type_traits>
+#include "../Utility/Concepts.hpp"
+
 #include <algorithm>
 #include <istream>
 
 namespace ge {
 
-    template <typename T, bool BigEndian = false>
+    template <NotSameSize<std::byte> T, bool BigEndian = false>
         requires std::is_trivially_constructible_v<T>
     T readType(std::istream& file) noexcept {
         T data;
@@ -22,8 +23,15 @@ namespace ge {
         return data;
     }
 
-    std::string readNChars(std::size_t length, std::istream& file) noexcept;
+    template <SameSize<std::byte> T, bool BigEndian = false>
+        requires std::is_trivially_constructible_v<T>
+    T readType(std::istream& file) noexcept {
+        T data;
+        file.get(reinterpret_cast<char&>(data));
+        return data;
+    }
 
+    std::string readNChars(std::size_t length, std::istream& file) noexcept;
     void ignoreNBytes(std::size_t length, std::istream& is) noexcept;
 
 }

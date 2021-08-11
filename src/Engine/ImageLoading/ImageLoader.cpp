@@ -1,8 +1,9 @@
 #include "ImageLoader.hpp"
+
 #include "../Exceptions/ImageLoadingUnsuportedFileType.hpp"
+#include "JPEGLoader.hpp"
 #include "BMPLoader.hpp"
 #include "PNGLoader.hpp"
-
 
 #include <algorithm>
 
@@ -27,7 +28,10 @@ namespace ge {
     std::map<std::string, std::function<std::unique_ptr<LoaderInterface> (const std::string&)>>
     ImageLoader::loaders {
         {"bmp", {FunctionalWrapper<BMPLoader, LoaderInterface>{}}},
-        {"png", {FunctionalWrapper<PNGLoader, LoaderInterface>{}}}
+        {"png", {FunctionalWrapper<PNGLoader, LoaderInterface>{}}},
+        {"jpg", {FunctionalWrapper<JPEGLoader, LoaderInterface>{}}},
+        {"jpe", {FunctionalWrapper<JPEGLoader, LoaderInterface>{}}},
+        {"jpeg", {FunctionalWrapper<JPEGLoader, LoaderInterface>{}}}
     };
 
 }

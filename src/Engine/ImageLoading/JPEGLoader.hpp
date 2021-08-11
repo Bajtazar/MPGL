@@ -78,6 +78,9 @@ namespace ge {
             explicit Component(uint8_t tableNumber, uint8_t samplings) noexcept;
         };
 
+        typedef std::unique_ptr<HuffmanTable>   HuffmanTablePtr;
+        typedef std::unique_ptr<QuantizationTable> QuantizationTablePtr;
+
         typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)>         ChunkParser;
         typedef std::reference_wrapper<ChunkParser>                                 ChunkParserRef;
         typedef std::map<bool, std::map<uint8_t, std::unique_ptr<HuffmanTable>>>    HuffmanArray;
@@ -95,7 +98,9 @@ namespace ge {
 
         void parseChunks(std::ifstream& file);
         void parseNextChunk(std::istream& file, uint16_t signature);
-        Matrix<int16_t, 8> readMatrix(Iter& iter, uint8_t id, int32_t coeff) noexcept;
+        Matrix<int16_t, 8> readMatrix(Iter& iter, uint8_t id, int16_t& coeff) noexcept;
+        void decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,
+            QuantizationTablePtr const& quant, Iter& iter) noexcept;
         void decodeImage(void);
         void drawYCbCrOnImage(MatricesMap& matrices, std::size_t row, std::size_t column) noexcept;
 
