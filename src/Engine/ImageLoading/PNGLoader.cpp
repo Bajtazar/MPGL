@@ -1,10 +1,12 @@
 #include "PNGLoader.hpp"
 
 #include "../Exceptions/ImageLoadingFileCorruptionException.hpp"
-#include "../Exceptions/ImageLoadingFileOpenException.hpp"
 #include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
+#include "../Exceptions/ImageLoadingFileOpenException.hpp"
+#include "../Exceptions/DeflateDecoderException.hpp"
 #include "../Exceptions/NotSupportedException.hpp"
 #include "../Compression/DeflateDecoder.hpp"
+#include <iostream>
 
 #include <numeric>
 #include <ranges>
@@ -18,10 +20,16 @@ namespace ge {
         std::ifstream file{this->fileName.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
             throw ImageLoadingFileOpenException{this->fileName};
-        readImage(file);
+        try {
+            readImage(FileIter{StreamBuf{file}, StreamBuf{}});
+        } catch (std::out_of_range&) {
+            throw ImageLoadingFileCorruptionException{this->fileName};
+        } catch (DeflateDecoderException&) {
+            throw ImageLoadingFileCorruptionException{this->fileName};
+        }
     }
 
-    void PNGLoader::readImage(std::ifstream& file) {
+    void PNGLoader::readImage(FileIter file) {
         if (readType<uint64_t>(file) != 0x0A1A0A0D474E5089)
             throw ImageLoadingInvalidTypeException{fileName};
         while (auto length = readType<uint32_t, true>(file)) {
@@ -55,20 +63,21 @@ namespace ge {
             throw ImageLoadingFileCorruptionException{loader.fileName};
     }
 
-    void PNGLoader::IHDRChunk::operator() ([[maybe_unused]] std::size_t length, std::istream& data) {
-        loader.pixels.resize(readType<uint32_t, true>(data), readType<uint32_t, true>(data));
+    void PNGLoader::IHDRChunk::operator() ([[maybe_unused]] std::size_t length, FileIter& data) {
+        uint32_t width = readType<uint32_t, true>(data);
+        loader.pixels.resize(width, readType<uint32_t, true>(data));
         readCRCCode(crcCode, static_cast<uint32_t>(loader.pixels.getWidth()));
         readCRCCode(crcCode, static_cast<uint32_t>(loader.pixels.getHeight()));
         parseBitDepth(readType<uint8_t>(data));
         parseColorType(readType<uint8_t>(data));
-        readCRCCode(crcCode, readType<uint16_t, true>(data)); // compresion method and filter method
+        readCRCCode(crcCode, readType<uint16_t, true>(data)); // compression method and filter method
         parseInterlance(readType<uint8_t>(data));
         checkCRCCode(readType<uint32_t, true>(data));
     }
 
     void PNGLoader::IHDRChunk::parseBitDepth(const uint8_t& bitDepth) {
         if (bitDepth != 0x08)
-            throw NotSupportedException{"not 8-bit pixel fortmats are not supported"};
+            throw NotSupportedException{"Not 8-bit pixel fortmats are not supported"};
         readCRCCode(crcCode, bitDepth);
     }
 
@@ -88,7 +97,7 @@ namespace ge {
                 loader.headerData.setter = &PNGLoader::setRGBAPixels;
                 return;
             default:
-                throw NotSupportedException{"following PNG image type is not supported"};
+                throw NotSupportedException{"Following PNG image type is not supported"};
         }
     }
 
@@ -98,10 +107,10 @@ namespace ge {
         readCRCCode(crcCode, interlance);
     }
 
-    void PNGLoader::IDATChunk::operator() (std::size_t length, std::istream& data) {
+    void PNGLoader::IDATChunk::operator() (std::size_t length, FileIter& data) {
         loader.rawFileData.resize(length);
         for (char& byte : loader.rawFileData) {
-            data.get(byte);
+            byte = *data++;
             crcCode = crcTable[(crcCode ^ byte) & 0xFF] ^ (crcCode >> 8);
         }
         checkCRCCode(readType<uint32_t, true>(data));

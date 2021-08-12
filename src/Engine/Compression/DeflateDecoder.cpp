@@ -13,7 +13,18 @@ namespace ge {
     HuffmanTree<uint16_t>::Decoder DeflateDecoder::fixedCodeDecoder{};
 
     DeflateDecoder::DeflateDecoder(std::deque<char>& rawData) : rawData{rawData} {
-        parseHeader();
+        if (rawData.size() < 6)
+            throw DeflateDecoderDataCorruptionException{};
+        try {
+            parseHeader();
+        } catch (HuffmanTreeException&) {
+            if (diagnostics)
+                throw;
+            else
+                throw DeflateDecoderDataCorruptionException{};
+        }
+        if (rawData.size() < 4)
+            throw DeflateDecoderDataCorruptionException{};
         saveAdler32Code();
     }
 
@@ -45,7 +56,7 @@ namespace ge {
     }
 
     std::vector<char>& DeflateDecoder::decompress(void) {
-        BitIter iterator {rawData.begin()};
+        BitIter iterator {SafeIter{rawData.begin(), rawData.end()}};
         while (readBlock(iterator));
         // adler32
         return outputStream;
@@ -78,14 +89,14 @@ namespace ge {
     }
 
     void DeflateDecoder::decompressFixedDistance(uint16_t token, BitIter& iterator) {
-        auto [lenBits, length] = extraLength[token];
+        auto [lenBits, length] = extraLength.at(token);
         length += readNBits<uint16_t>(lenBits, iterator);
         uint16_t distanceToken = readRNBits<uint8_t>(5, iterator);
-        auto [distBits, distance] = distances[distanceToken];
+        auto [distBits, distance] = distances.at(distanceToken);
         distance += readNBits<uint32_t>(distBits, iterator);
         uint32_t offset = outputStream.size() - distance;
         for (auto i : std::views::iota(0u, length))
-            outputStream.push_back(outputStream[offset + i]);
+            outputStream.push_back(outputStream.at(offset + i));
     }
 
     std::pair<DeflateDecoder::Decoder, DeflateDecoder::Decoder> DeflateDecoder::generateDynamicTrees(
@@ -141,14 +152,14 @@ namespace ge {
     }
 
     void DeflateDecoder::decompressDynamicDistance(uint16_t token, BitIter& iterator, const HuffmanTree<uint16_t>::Decoder& distanceDecoder) {
-        auto [addbits, addLength] = extraLength[token];
+        auto [addbits, addLength] = extraLength.at(token);
         uint32_t length = addLength + readNBits<uint32_t>(addbits, iterator);
         uint32_t distanceToken = distanceDecoder.decodeToken(iterator);
-        auto [distBits, distLength] = distances[distanceToken];
+        auto [distBits, distLength] = distances.at(distanceToken);
         uint32_t distance = distLength + readNBits<uint32_t>(distBits, iterator);
         std::size_t offset = outputStream.size() - distance;
         for (auto i : std::views::iota(0u, length))
-            outputStream.push_back(outputStream[offset + i]);
+            outputStream.push_back(outputStream.at(offset + i));
     }
 
     void DeflateDecoder::copyNotCompressed(BitIter& iterator) {
@@ -178,5 +189,7 @@ namespace ge {
         }
         return (s2 << 16) + s1;
     }
+
+    bool DeflateDecoder::diagnostics = false;
 
 }

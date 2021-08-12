@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Collections/SafeIterator.hpp"
 #include "../Collections/BitIterator.hpp"
 #include "HuffmanTree.hpp"
 
@@ -22,8 +23,11 @@ namespace ge {
 
         CompressionLevel getCompressionLevel(void) const noexcept;
         std::vector<char>& decompress(void);
+        bool getDiagnosticStatus(void) const noexcept { return diagnostics; }
+        void setDiagnostic(bool status) noexcept { diagnostics = status; }
     private:
-        typedef LittleEndianBitIter<std::deque<char>::iterator>  BitIter;
+        typedef SafeIterator<std::deque<char>::iterator>         SafeIter;
+        typedef LittleEndianBitIter<SafeIter>                    BitIter;
         typedef HuffmanTree<uint16_t>::Decoder Decoder;
 
         void parseHeader(void);
@@ -66,6 +70,7 @@ namespace ge {
         static constexpr const std::array<uint8_t, 19> dynamicCodesOrder = {
             16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15
         };
+        static bool diagnostics;
     };
 
 }

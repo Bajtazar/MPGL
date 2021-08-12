@@ -41,4 +41,9 @@ namespace ge {
     concept SameSizeInputIterator = std::input_iterator<Iter>
         && requires (Iter iter) { {*iter} -> SameSize<std::byte>; };
 
+    template <class Iter, typename... Args>
+    concept NothrowReadable = std::indirectly_readable<std::remove_cvref_t<Iter>> &&
+        std::is_nothrow_invocable_v<decltype(&std::remove_cvref_t<Iter>::operator*),
+            std::remove_cvref_t<Iter>, Args...>;
+
 }

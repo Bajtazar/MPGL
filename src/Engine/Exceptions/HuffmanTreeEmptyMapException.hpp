@@ -1,11 +1,10 @@
 #pragma once
 
-#include <exception>
-#include <string>
+#include "HuffmanTreeException.hpp"
 
 namespace ge {
 
-    class HuffmanTreeEmptyMapException : public std::exception {
+    class HuffmanTreeEmptyMapException : public HuffmanTreeException {
     public:
         explicit HuffmanTreeEmptyMapException(void) noexcept = default;
         const char* what (void) const noexcept{ return "CharacterMap given to HuffmanTree is empty."; }

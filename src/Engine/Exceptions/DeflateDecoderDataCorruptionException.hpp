@@ -1,10 +1,10 @@
 #pragma once
 
-#include <exception>
+#include "DeflateDecoderException.hpp"
 
 namespace ge {
 
-    struct DeflateDecoderDataCorruptionException : public std::exception {
+    struct DeflateDecoderDataCorruptionException : public DeflateDecoderException {
         explicit DeflateDecoderDataCorruptionException(void) = default;
         const char* what (void) const noexcept { return "Data corruption has been detected during stream parsing."; }
     };

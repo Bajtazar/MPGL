@@ -21,11 +21,17 @@ namespace ge {
         std::ifstream file{this->fileName.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
             throw ImageLoadingFileOpenException{this->fileName};
-        parseChunks(file);
-        decodeImage();
+        try {
+            parseChunks(FileIter{StreamBuf{file}, StreamBuf{}});
+            decodeImage();
+        } catch (std::out_of_range&) {
+            throw ImageLoadingFileCorruptionException{this->fileName};
+        } catch (HuffmanTreeException&) {
+            throw ImageLoadingFileCorruptionException{this->fileName};
+        }
     }
 
-    void JPEGLoader::parseNextChunk(std::istream& file, uint16_t signature) {
+    void JPEGLoader::parseNextChunk(FileIter& file, uint16_t signature) {
         if (signature == 0xFFD9) {
             endOfImage = true;
             return;
@@ -34,7 +40,7 @@ namespace ge {
         parsingQueue.push(iter != chunkParser.end() ? iter->second : emptyChunk);
     }
 
-    void JPEGLoader::parseChunks(std::ifstream& file) {
+    void JPEGLoader::parseChunks(FileIter file) {
         if (readType<uint16_t, true>(file) != 0xFFD8)
             throw ImageLoadingInvalidTypeException{fileName};
         while (!endOfImage) {
@@ -47,18 +53,18 @@ namespace ge {
         };
     }
 
-    Matrix<int16_t, 8> JPEGLoader::readMatrix(Iter& iter, uint8_t id, int16_t& coeff) noexcept {
-        uint8_t code = huffmanTables[false][id]->decoder.decodeToken(iter);
+    Matrix<int16_t, 8> JPEGLoader::readMatrix(Iter& iter, uint8_t id, int16_t& coeff) {
+        uint8_t code = huffmanTables.at(false).at(id)->decoder.decodeToken(iter);
         uint16_t bits = readRNBits<uint16_t>(code, iter);
         coeff += decodeNumber(code, bits);
         std::array<int16_t, 64> data{};
-        data.front() = coeff * quantizationTables[id]->information[0];
-        decodeMatrix(data, huffmanTables[true][id], quantizationTables[id], iter);
+        data.front() = coeff * quantizationTables.at(id)->information.at(0);
+        decodeMatrix(data, huffmanTables.at(true).at(id), quantizationTables.at(id), iter);
         return inverseCosineTransform.invertVector(ZigZacRange<8>::returnZigZac(data));
     }
 
     void JPEGLoader::decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,
-        QuantizationTablePtr const& quant, Iter& iter) noexcept
+        QuantizationTablePtr const& quant, Iter& iter)
     {
         uint16_t bits;
         for (uint8_t length = 1, code; code = table->decoder.decodeToken(iter); ++length) {
@@ -69,12 +75,12 @@ namespace ge {
             bits = readRNBits<uint16_t>(code, iter);
             if (length >= 64)
                 break;
-            data[length] = decodeNumber(code, bits) * quant->information[length];
+            data[length] = decodeNumber(code, bits) * quant->information.at(length);
         }
     }
 
     void JPEGLoader::decodeImage(void) {
-        Iter iter{imageData.begin()};
+        Iter iter{SafeIter{imageData.begin(), imageData.end()}};
         std::vector<int16_t> channels;
         channels.resize(componentsTable.size(), 0);
         for (auto i : std::views::iota(std::size_t(0), getBoundry(pixels.getWidth()))) {
@@ -103,23 +109,23 @@ namespace ge {
         return rgbColors;
     }
 
-    void JPEGLoader::DHTChunk::operator() (std::istream& data) {
+    void JPEGLoader::DHTChunk::operator() (FileIter& data) {
         uint16_t length = readType<uint16_t, true>(data) - 19;
         uint8_t header = readType<uint8_t>(data); // parse
         std::array<uint8_t, 17> symbolsLengths{};
         std::ranges::for_each(symbolsLengths | std::views::drop(1), [&data](auto& symbol)
-            { data.get(reinterpret_cast<char&>(symbol)); });
+            { symbol = *data; ++data; });
         if (ge::accumulate(symbolsLengths, 0u) != length)
             throw ImageLoadingFileCorruptionException{loader.fileName};
         std::vector<uint8_t> characters(length, 0);
-        std::ranges::for_each(characters, [&data](auto& symbol){ data.get(reinterpret_cast<char&>(symbol)); });
+        std::ranges::for_each(characters, [&data](auto& symbol){ symbol = *data; ++data; });
         if (0xe0 & header)
             throw ImageLoadingFileCorruptionException{loader.fileName};
         loader.huffmanTables[static_cast<bool>((0x10 & header) >> 4)].emplace(static_cast<uint8_t>(0xF & header),
             std::make_unique<HuffmanTable>(HuffmanTree<uint16_t>{symbolsLengths, characters}));
     }
 
-    void JPEGLoader::DQTChunk::operator() (std::istream& data) {
+    void JPEGLoader::DQTChunk::operator() (FileIter& data) {
         uint16_t length = readType<uint16_t, true>(data) - 3;
         uint8_t header = readType<uint8_t>(data);
         QuantizationTable table;
@@ -127,12 +133,12 @@ namespace ge {
             throw NotSupportedException{"Only 8-pixels quantization tables are supported."};
         table.information.resize(length);
         std::ranges::for_each(table.information, [&data](uint8_t& quant)
-            { data.get(reinterpret_cast<char&>(quant)); });
+            { quant = *data; ++data; });
         loader.quantizationTables.emplace(
             0xF & header, std::make_unique<QuantizationTable>(std::move(table)));
     }
 
-    void JPEGLoader::SOF0Chunk::operator() (std::istream& data) {
+    void JPEGLoader::SOF0Chunk::operator() (FileIter& data) {
         uint16_t length = readType<uint16_t, true>(data) - 8;
         if (readType<uint8_t>(data) != 8)
             throw NotSupportedException{"Other JPEG data precisions than 8 are not supported."};
@@ -148,22 +154,20 @@ namespace ge {
         }
     }
 
-    void JPEGLoader::SOSChunk::operator() (std::istream& data) {
+    void JPEGLoader::SOSChunk::operator() (FileIter& data) {
         uint16_t length = readType<uint16_t, true>(data) - 2;
         ignoreNBytes(length, data); // progressive jpegs are not used
-        while (!data.eof()) {
+        while (data.isSafe()) {
             auto byte = readType<uint8_t>(data);
             if (byte == 0xFF)
                 if (uint8_t header = readType<uint8_t>(data))
                     return loader.parseNextChunk(data, 0xFF00 | header);
             loader.imageData.push_back(byte);
         }
-        if (data.eof())
-            loader.endOfImage = true;
     }
 
-    void JPEGLoader::drawYCbCrOnImage(MatricesMap& matrices, std::size_t row, std::size_t column) noexcept {
-        auto [redMatrix, greenMatrix, blueMatrix] = convertYCbCrToRGB({matrices[1], matrices[2], matrices[3]});
+    void JPEGLoader::drawYCbCrOnImage(MatricesMap& matrices, std::size_t row, std::size_t column) {
+        auto [redMatrix, greenMatrix, blueMatrix] = convertYCbCrToRGB({matrices.at(1), matrices.at(2), matrices.at(3)});
         for (std::size_t iBase = row * 8, i = iBase; i < iBase + 8 && i < pixels.getHeight(); ++i) {
             for (std::size_t jBase = column * 8, j = jBase; j < jBase + 8 && j < pixels.getWidth(); ++j) {
                 pixels[pixels.getHeight() - 1 - i][j].red = redMatrix[i - iBase][j - jBase];
@@ -186,7 +190,7 @@ namespace ge {
         return color > 0xff ? 0xff : (color < 0 ? 0 : color);
     }
 
-    void JPEGLoader::EmptyChunk::operator() (std::istream& data) {
+    void JPEGLoader::EmptyChunk::operator() (FileIter& data) {
         ignoreNBytes(readType<uint16_t, true>(data) - 2, data);
     }
 

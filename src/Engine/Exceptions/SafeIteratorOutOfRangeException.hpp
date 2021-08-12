@@ -5,8 +5,7 @@
 namespace ge {
 
     struct SafeIteratorOutOfRangeException : public std::out_of_range {
-        explicit SafeIteratorOutOfRangeException(void) noexcept = default;
-        const char* what (void) const noexcept { return "SafeIterator out of range access attempt."; }
+        explicit SafeIteratorOutOfRangeException(void) noexcept : std::out_of_range{"SafeIterator out of range access attempt."} {}
     };
 
 }

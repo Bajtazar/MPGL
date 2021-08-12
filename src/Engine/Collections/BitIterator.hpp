@@ -35,8 +35,8 @@ namespace ge {
         using value_type =              bit;
         using iterator_category =       BitIteratorTag;
 
-        explicit constexpr LittleEndianBitIter(Iter&& iter) noexcept : iter{std::move(iter)}, bitIter{0} {}
         explicit constexpr LittleEndianBitIter(Iter const& iter) noexcept : iter{iter}, bitIter{0} {}
+        explicit constexpr LittleEndianBitIter(Iter&& iter) noexcept : iter{std::move(iter)}, bitIter{0} {}
         explicit constexpr LittleEndianBitIter(void) noexcept = default;
 
         constexpr bit operator* (void) const noexcept { return ((1 << bitIter) & (*iter)) >> bitIter; }
