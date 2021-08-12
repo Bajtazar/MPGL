@@ -2,6 +2,7 @@
 
 #include "../Exceptions/ImageLoadingFileOpenException.hpp"
 #include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
+#include "../Exceptions/ImageLoadingFileCorruptionException.hpp"
 
 namespace ge {
 
@@ -11,11 +12,16 @@ namespace ge {
         std::ifstream file{this->fileName.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
             throw ImageLoadingFileOpenException{this->fileName};
-        readHeader(file);
-        readImage(file);
+        FileIter iter{StreamBuf{file}, StreamBuf{}};
+        try {
+            readHeader(iter);
+            readImage(iter);
+        } catch (std::out_of_range&) {
+            throw ImageLoadingFileCorruptionException{this->fileName};
+        }
     }
 
-    void BMPLoader::readHeader(std::ifstream& file) {
+    void BMPLoader::readHeader(FileIter& file) {
         if (readType<uint16_t>(file) != 0x4D42)
             throw ImageLoadingInvalidTypeException{fileName};
         readType<uint64_t>(file);   // file size and two reserved fields
@@ -26,7 +32,7 @@ namespace ge {
             readType<std::byte>(file);
     }
 
-    void BMPLoader::readImage(std::ifstream& file) noexcept {
+    void BMPLoader::readImage(FileIter& file) {
         for (auto row : pixels) {
             for (auto& pixel : row)
                 Image::Manip::RGB(file, pixel);

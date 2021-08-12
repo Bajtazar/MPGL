@@ -41,6 +41,9 @@ namespace ge {
         struct Manip {
             static std::istream& RGB(std::istream& is, Pixel& pixel) noexcept;
             static std::ostream& RGB(std::ostream& os, const Pixel& pixel) noexcept;
+
+            template <std::input_iterator Iter>
+            static void RGB(Iter& iter, Pixel& pixel) noexcept;
         };
 
         template <class BaseType>
@@ -231,6 +234,13 @@ namespace ge {
                 return alpha;
         }
         return red;
+    }
+
+    template <std::input_iterator Iter>
+    void Image::Manip::RGB(Iter& iter, Image::Pixel& pixel) noexcept {
+        pixel.blue = *iter++;
+        pixel.green = *iter++;
+        pixel.red = *iter++;
     }
 
 }

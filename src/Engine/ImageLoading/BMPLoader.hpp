@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Collections/SafeIterator.hpp"
 #include "LoaderInterface.hpp"
 
 namespace ge {
@@ -12,8 +13,11 @@ namespace ge {
 
         ~BMPLoader(void) noexcept = default;
     private:
-        void readHeader(std::ifstream& file);
-        void readImage(std::ifstream& file) noexcept;
+        typedef std::istreambuf_iterator<char>      StreamBuf;
+        typedef SafeIterator<StreamBuf>             FileIter;
+
+        void readHeader(FileIter& file);
+        void readImage(FileIter& file);
     };
 
 }
