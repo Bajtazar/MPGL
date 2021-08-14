@@ -85,9 +85,9 @@ namespace ge {
         std::ranges::transform(array, preprocessing, array.begin(),
             [](const auto& value, const auto& polar) -> Complex { return value.real() * polar; });
         fastFourierTransformation(array);
-        for (uint8_t i = 0; i < std::ceil((double) Precision / 2); ++i)
+        for (uint8_t i = 0; i < Precision / 2; ++i)
             output[2 * i] = array[i].real();
-        for (uint8_t i = 0; i < std::floor((double) Precision / 2); ++i)
+        for (uint8_t i = 0; i < Precision / 2; ++i)
             output[2* i + 1] = array[Precision - i - 1].real();
     }
 
