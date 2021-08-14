@@ -60,7 +60,7 @@ namespace ge {
         std::array<int16_t, 64> data{};
         data.front() = coeff * quantizationTables.at(id)->information.at(0);
         decodeMatrix(data, huffmanTables.at(true).at(id), quantizationTables.at(id), iter);
-        return inverseCosineTransform.invertVector(ZigZacRange<8>::returnZigZac(data));
+        return inverseCosineTransform(ZigZacRange<8>::returnZigZac(data));
     }
 
     void JPEGLoader::decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,

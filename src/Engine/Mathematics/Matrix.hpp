@@ -133,6 +133,9 @@ namespace ge {
             constexpr Row& operator*= (const T& left) noexcept;
             constexpr Row& operator/= (const T& left);
 
+            constexpr Row& operator= (const Row& row) noexcept requires NotConstant<BaseType>
+            { std::ranges::copy(row.begin(), row.end(), begin()); return *this; }
+
             friend class Matrix<T, Rows>;
         private:
             constexpr explicit Row(const std::reference_wrapper<BaseType>& reference, std::size_t row) noexcept : row{row}, reference{reference} {}

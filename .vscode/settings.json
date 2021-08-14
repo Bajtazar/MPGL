@@ -62,6 +62,7 @@
         "semaphore": "cpp",
         "stop_token": "cpp",
         "bitset": "cpp",
-        "climits": "cpp"
+        "climits": "cpp",
+        "complex": "cpp"
     }
 }

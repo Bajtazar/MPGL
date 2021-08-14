@@ -46,4 +46,12 @@ namespace ge {
         std::is_nothrow_invocable_v<decltype(&std::remove_cvref_t<Iter>::operator*),
             std::remove_cvref_t<Iter>, Args...>;
 
+    template <std::integral T, T Size>
+    constexpr T log2N(void) noexcept {
+        return Size == 1 ? 0 : 1 + log2N<T, (Size >> 1)>();
+    }
+
+    template <typename T, T Size>
+    concept IsPowerOf2 = std::integral<T> && (Size == (1 << log2N<T, Size>()));
+
 }

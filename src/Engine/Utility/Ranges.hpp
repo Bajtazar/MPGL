@@ -10,7 +10,7 @@ namespace ge {
 
     struct AccumulateFn {
 
-        template <std::weakly_incrementable Iter, std::sentinel_for<Iter> Sent, Addable Init, typename Proj = std::identity>
+        template <std::incrementable Iter, std::sentinel_for<Iter> Sent, Addable Init, typename Proj = std::identity>
             requires std::convertible_to<typename std::iterator_traits<Iter>::value_type, Init>
         constexpr Init operator() (Iter iter, Sent sent, Init init, Proj proj = {}) const noexcept {
             for (; iter != sent; ++iter)
@@ -18,7 +18,7 @@ namespace ge {
             return init;
         }
 
-        template <std::weakly_incrementable Iter, std::sentinel_for<Iter> Sent, typename Init, typename Proj = std::identity,
+        template <std::incrementable Iter, std::sentinel_for<Iter> Sent, typename Init, typename Proj = std::identity,
                 std::indirect_binary_predicate<Init, std::projected<Iter, Proj>> Pred>
             requires std::convertible_to<typename std::iterator_traits<Iter>::value_type, Init>
                 && std::is_nothrow_invocable_v<Pred, Init, std::projected<Iter, Proj>>
@@ -89,5 +89,23 @@ namespace ge {
     };
 
     inline constexpr FindFirstAndLastIfFn findFirstAndLastIf;
+
+    struct CopyToFn {
+
+        template <std::incrementable Iter, std::sentinel_for<Iter> Sent,
+            std::weakly_incrementable TargetIter, typename Proj = std::identity>
+        constexpr void operator() (Iter iter, Sent sent, TargetIter target, Proj proj = {}) const noexcept {
+            for (; iter != sent; ++iter, ++target)
+                *target = std::move(std::invoke(proj, *iter));
+        }
+
+        template <std::ranges::input_range Range, std::incrementable TargetIter, typename Proj = std::identity>
+        constexpr void operator() (Range&& range, TargetIter iter, Proj proj = {}) const noexcept {
+            (*this)(std::ranges::begin(range), std::ranges::end(range), std::move(iter), std::move(proj));
+        }
+
+    };
+
+    inline constexpr CopyToFn copyTo;
 
 }
