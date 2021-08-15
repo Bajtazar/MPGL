@@ -64,6 +64,9 @@
         "bitset": "cpp",
         "climits": "cpp",
         "complex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "mutex": "cpp",
+        "queue": "cpp",
+        "condition_variable": "cpp"
     }
 }

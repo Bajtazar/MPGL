@@ -67,4 +67,7 @@ namespace ge {
             { alloc.deallocate(ptr, size) } -> std::same_as<void>;
         };
 
+    template <typename T>
+    concept NotReference = !std::is_reference_v<T>;
+
 }

@@ -9,7 +9,7 @@ namespace ge {
         : verticalWrapping{verticalWrapping}, horizontalWrapping{horizontalWrapping}, minifyingFilter{minifyingFilter}, magnifyingFilter{magnifyingFilter}, borderColor{borderColor} {}
 
     template <Allocator Alloc>
-    Texture<Alloc>::Texture(const Options& options, const Alloc& alloc) : alloc{alloc},
+    Texture<Alloc>::Texture(const Options& options, const Alloc& alloc) noexcept : alloc{alloc},
         textureID{std::allocator_traits<Alloc>::allocate(this->alloc, 1), TextureDeleter{this->alloc}, this->alloc}
     {
         glGenTextures(1, textureID.get());
@@ -31,7 +31,7 @@ namespace ge {
     }
 
     template <Allocator Alloc>
-    Texture<Alloc>::Texture(const Image& image, const Options& options, const Alloc& alloc) : Texture{options, alloc} {
+    Texture<Alloc>::Texture(const Image& image, const Options& options, const Alloc& alloc) noexcept : Texture{options, alloc} {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
         glGenerateMipmap(GL_TEXTURE_2D);
     }

@@ -47,7 +47,7 @@ namespace ge {
                     Color borderColor = {}) noexcept;
         };
         explicit Texture(const std::string& fileName, const Options& options = {}, const Alloc& alloc = {});
-        explicit Texture(const Image& image, const Options& options = {}, const Alloc& alloc = {});
+        explicit Texture(const Image& image, const Options& options = {}, const Alloc& alloc = {}) noexcept;
 
         Texture(const Texture& texture) = default;
         Texture(Texture&& texture) = default;
@@ -68,7 +68,7 @@ namespace ge {
             [[no_unique_address]] mutable Alloc alloc;
         };
 
-        explicit Texture(const Options& options, const Alloc& alloc);
+        explicit Texture(const Options& options, const Alloc& alloc) noexcept;
 
         [[no_unique_address]] Alloc alloc;
         std::shared_ptr<uint32_t> textureID;
