@@ -49,9 +49,9 @@ namespace ge {
     Matrix<T, Precision> IDCT<Precision>::operator() (Matrix<T, Precision> const& matrix) const noexcept {
         Matrix<double, Precision> helper;
         Matrix<T, Precision> output;
-        for (uint8_t y = 0; y < Precision; ++y)
+        for (uint8_t y : std::views::iota(uint8_t(0), Precision))
             idct(matrix[y], std::move(helper[y]));
-        for (uint8_t x = 0; x < Precision; ++x) {
+        for (uint8_t x : std::views::iota(uint8_t(0), Precision)) {
             Column column;
             idct(helper.getColumn(x), column);
             column *= 2. / Precision;
@@ -73,9 +73,7 @@ namespace ge {
         requires IsPowerOf2<uint8_t, Precision>
     template <typename T, typename U>
     void IDCT<Precision>::idct(T const& array, U&& output) const noexcept {
-        ComplexArray complexArray;
-        std::ranges::transform(array, complexArray.begin(), [](const auto& v) -> Complex { return v; });
-        prepareForFFT(complexArray, output);
+        idct(array, output);
     }
 
     template <uint8_t Precision>
@@ -83,12 +81,12 @@ namespace ge {
     template <typename T>
     void IDCT<Precision>::prepareForFFT(ComplexArray& array, T& output) const noexcept {
         std::ranges::transform(array, preprocessing, array.begin(),
-            [](const auto& value, const auto& polar) -> Complex { return value.real() * polar; });
+            [](auto const& value, auto const& polar) -> Complex { return value.real() * polar; });
         fastFourierTransformation(array);
-        for (uint8_t i = 0; i < Precision / 2; ++i)
+        for (uint8_t i : std::views::iota(uint8_t(0), uint8_t(Precision / 2))) {
             output[2 * i] = array[i].real();
-        for (uint8_t i = 0; i < Precision / 2; ++i)
-            output[2* i + 1] = array[Precision - i - 1].real();
+            output[2 * i + 1] = array[Precision - i - 1].real();
+        }
     }
 
     template <uint8_t Precision>

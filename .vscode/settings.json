@@ -63,6 +63,7 @@
         "stop_token": "cpp",
         "bitset": "cpp",
         "climits": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "valarray": "cpp"
     }
 }
