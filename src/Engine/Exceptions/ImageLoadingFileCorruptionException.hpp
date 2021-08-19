@@ -1,19 +1,12 @@
 #pragma once
 
-#include <exception>
-#include <string>
+#include "ImageLoadingException.hpp"
 
 namespace ge {
 
-    class ImageLoadingFileCorruptionException : public std::exception {
+    class ImageLoadingFileCorruptionException : public ImageLoadingException {
     public:
-        explicit ImageLoadingFileCorruptionException(const std::string& fileName) noexcept : fileName{fileName}, message{"File " + fileName + " is corrupted\n"} {}
-        const char* what (void) const noexcept{ return message.c_str(); }
-        const std::string& getMessage(void) const noexcept { return message; }
-        const std::string& getFileName(void) const noexcept { return fileName; }
-    protected:
-        std::string fileName;
-        std::string message;
+        explicit ImageLoadingFileCorruptionException(const std::string& fileName) noexcept : ImageLoadingException{fileName, "File " + fileName + " is corrupted\n"} {}
     };
 
 }

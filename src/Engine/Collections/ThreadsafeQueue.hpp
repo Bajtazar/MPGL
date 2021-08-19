@@ -12,10 +12,10 @@ namespace ge {
     public:
         typedef std::shared_ptr<T>  DataPtr;
 
-        explicit ThreadsafeQueue(void) : head{std::make_unique<Node>()}, tail{std::ref(head)} {}
-        template <std::bidirectional_iterator Iter, std::sentinel_for<Iter> Sent>
+        explicit ThreadsafeQueue(void);
+        template <std::input_iterator Iter, std::sentinel_for<Iter> Sent>
         explicit ThreadsafeQueue(Iter begin, Sent end);
-        template <std::ranges::bidirectional_range Range>
+        template <std::ranges::input_range Range>
         explicit ThreadsafeQueue(Range&& range);
 
         ThreadsafeQueue(ThreadsafeQueue&& queue) noexcept;
@@ -40,7 +40,7 @@ namespace ge {
         };
 
         typedef std::unique_ptr<Node>               NodePtr;
-        typedef std::reference_wrapper<NodePtr>     NodeRef;
+        typedef std::reference_wrapper<Node>        NodeRef;
 
         mutable std::mutex headMutex;
         mutable std::mutex tailMutex;
@@ -72,15 +72,15 @@ namespace ge {
     void ThreadsafeQueue<T>::addNode(DataPtr&& dataNode) {
         auto node = std::make_unique<Node>();
         std::lock_guard<std::mutex> tailLock{tailMutex};
-        tail.get()->data = dataNode;
-        tail.get()->nextNode = std::move(node);
-        tail = std::ref(tail.get()->nextNode);
+        tail.get().data = dataNode;
+        tail.get().nextNode = std::move(node);
+        tail = std::ref(*tail.get().nextNode);
     }
 
     template <NotReference T>
     std::shared_ptr<T> ThreadsafeQueue<T>::pop(void) {
         std::lock_guard<std::mutex> headLock{headMutex};
-        if (head->nextNode.get() == nullptr)
+        if (!head->nextNode.get())
             return {nullptr};
         auto oldHead = std::move(head);
         head = std::move(oldHead->nextNode);
@@ -94,19 +94,22 @@ namespace ge {
     }
 
     template <NotReference T>
-    template <std::bidirectional_iterator Iter, std::sentinel_for<Iter> Sent>
+    ThreadsafeQueue<T>::ThreadsafeQueue(void) : head{std::make_unique<Node>()}, tail{std::ref(*head)} {}
+
+    template <NotReference T>
+    template <std::input_iterator Iter, std::sentinel_for<Iter> Sent>
     ThreadsafeQueue<T>::ThreadsafeQueue(Iter iter, Sent sentinel) : ThreadsafeQueue{} {
         std::scoped_lock<std::mutex, std::mutex> lock{headMutex, tailMutex};
         for (; iter != sentinel; ++iter) {
             auto node = std::make_unique<Node>();
-            tail.get()->data = std::make_shared<T>(*iter);
-            tail.get()->nextNode = std::move(node);
-            tail = std::ref(tail.get()->nextNode);
+            tail.get().data = std::make_shared<T>(*iter);
+            tail.get().nextNode = std::move(node);
+            tail = std::ref(*tail.get().nextNode);
         }
     }
 
     template <NotReference T>
-    template <std::ranges::bidirectional_range Range>
+    template <std::ranges::input_range Range>
     ThreadsafeQueue<T>::ThreadsafeQueue(Range&& range) : ThreadsafeQueue{
         std::ranges::begin(range), std::ranges::end(range)} {}
 
@@ -119,9 +122,8 @@ namespace ge {
         std::scoped_lock<std::mutex, std::mutex, std::mutex, std::mutex>
             lock{headMutex, tailMutex, queue.headMutex, queue.tailMutex};
         head = std::move(queue.head);
-        tail = std::move(queue.tail);
+        tail = queue.tail;
+        return *this;
     }
-
-
 
 }

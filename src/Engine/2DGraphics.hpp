@@ -11,3 +11,4 @@
 #include "Core/Figures/Primitives/Points.hpp"
 #include "Core/Figures/DrawableArray.hpp"
 #include "Core/Figures/Views.hpp"
+#include "Core/TextureLoader.hpp"

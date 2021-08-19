@@ -17,12 +17,16 @@ int main(void) noexcept {
         iter += 2 * std::numbers::pi_v<double> / (circle.size() - 1);
     }
 
+    TextureLoader loader{"textures"};
+    loader.loadAll();
+    auto pack = loader.getTextures();
+
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[1]);
     array.emplaceBack(400_x + 400_y, 300_x + 300_y, 400_x + 300_y, Color::literals::White);
     array.emplaceBack(200_x + 200_y, 200_x + 300_y, 300_x + 200_y, Color::literals::Green);
 
-    window.emplaceDrawable<DefaultSprite>( Texture<>{"pad.jpeg"}, 100_x + 100_y, 100_x + 100_y);
+    window.emplaceDrawable<DefaultSprite>(pack["pad.jpeg"], 100_x + 100_y, 100_x + 100_y);
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[2]);
     sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
 

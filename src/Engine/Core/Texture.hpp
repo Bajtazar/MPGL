@@ -57,6 +57,13 @@ namespace ge {
 
         const uint32_t& getTexture(void) const noexcept { return *textureID; }
 
+        static Texture defaultTexture(const Options& options = {
+            Options::TextureWrapper::ClampToEdge,
+            Options::TextureWrapper::ClampToEdge,
+            Options::MinifyingTextureFilter::Nearest,
+            Options::MagnifyingTextureFilter::Nearest
+        });
+
         ~Texture(void) = default;
     private:
         class TextureDeleter {

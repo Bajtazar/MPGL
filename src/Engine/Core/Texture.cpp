@@ -42,4 +42,18 @@ namespace ge {
         std::allocator_traits<Alloc>::deallocate(alloc, ptr, 1);
     }
 
+    template <Allocator Alloc>
+    Texture<Alloc> Texture<Alloc>::defaultTexture(const Options& options) {
+        Image image{8, 8};
+        for (uint8_t i = 0; i != 4; ++i) {
+            for (uint8_t j = 0; j != 4; ++j) {
+                image[2*i][2*j] = Image::Pixel(0x7F, 0x7F, 0x7F, 0xFF);
+                image[2*i][2*j+1] = Image::Pixel(0x99, 0xD9, 0xEA, 0xFF);
+                image[2*i+1][2*j] = Image::Pixel(0x99, 0xD9, 0xEA, 0xFF);
+                image[2*i+1][2*j+1] = Image::Pixel(0x7F, 0x7F, 0x7F, 0xFF);
+            }
+        }
+        return Texture<Alloc>{image, options};
+    }
+
 }
