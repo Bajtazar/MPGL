@@ -5,6 +5,7 @@
 #include "../Utility/FileIO.hpp"
 #include "../Collections/ThreadsafeQueue.hpp"
 #include "../Exceptions/ImageLoadingException.hpp"
+#include "../Exceptions/TextureLoaderMovedTexturesException.hpp"
 
 #include <stdexcept>
 #include <thread>
@@ -14,10 +15,12 @@
 
 namespace ge {
 
-    template <Allocator Alloc = std::allocator<uint32_t>>
+    template <execution::ExecutionPolicy Policy = Sequenced, Allocator Alloc = std::allocator<uint32_t>>
     class TextureLoader {
     public:
         explicit TextureLoader(std::string const& directory);
+
+        explicit TextureLoader(Policy policy, std::string const& directory);
 
         TextureLoader(TextureLoader const&) = delete;
         TextureLoader(TextureLoader&&) = delete;
@@ -30,7 +33,7 @@ namespace ge {
         void tryLoad(void);
         void loadAll(void);
 
-        auto getTextures(void) noexcept { return TexturePack<>{std::move(textures)}; }
+        auto getTextures(void);
         std::vector<std::string>& getInvalidPaths(void) const noexcept;
 
         ~TextureLoader(void) = default;
@@ -55,47 +58,67 @@ namespace ge {
         std::size_t const allTextures;
         std::size_t const prefix;
 
+        bool available;
+
+        [[no_unique_address]] Policy policy;
+
         class ParallelLoader {
         public:
-            explicit ParallelLoader(TextureLoader<Alloc>& loader) noexcept : loader{loader} {}
+            explicit ParallelLoader(TextureLoader& loader) noexcept : loader{loader} {}
             void operator() (void) noexcept;
         private:
-            TextureLoader<Alloc>& loader;
+            TextureLoader& loader;
         };
 
-        void startParallelLoading(void);
+        void startParallelLoading(std::size_t threadpoolSize);
+        std::size_t threadpoolSize(void);
     };
 
-    template <Allocator Alloc>
-    TextureLoader<Alloc>::TextureLoader(std::string const& directory)
-        : counter{0}, allTextures{0}, prefix{directory.size() + 1}
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    TextureLoader<Policy, Alloc>::TextureLoader(std::string const& directory)
+        : TextureLoader<Policy, Alloc>{Policy{}, directory} {}
+
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    TextureLoader<Policy, Alloc>::TextureLoader(Policy policy, std::string const& directory)
+        : counter{0}, allTextures{0}, prefix{directory.size() + 1}, policy{policy}, available{true}
     {
         auto files = FileIO::getRecursiveDirFiles(directory);
         const_cast<std::size_t&>(allTextures) = files.size();
         imagePaths = ThreadsafeQueue<std::string>{files};
-        startParallelLoading();
+        startParallelLoading(threadpoolSize());
     }
 
-    template <Allocator Alloc>
-    double TextureLoader<Alloc>::loadingStatus(void) const noexcept {
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    std::size_t TextureLoader<Policy, Alloc>::threadpoolSize(void) {
+        if constexpr (execution::isParallelPolicy<Policy>) {
+            std::size_t availableThreads = std::thread::hardware_concurrency();
+            return availableThreads > allTextures ? allTextures : availableThreads > 0 ? availableThreads : 1;
+        } else if constexpr (execution::isSequencedPolicy<Policy>)
+            return allTextures ? 1 : 0;
+        else
+            throw ExecusionUnknownPolicyException{};
+    }
+
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    double TextureLoader<Policy, Alloc>::loadingStatus(void) const noexcept {
         return (double) textures.size() * counter.load(std::memory_order_relaxed)
             / (allTextures * allTextures);
     }
 
-    template <Allocator Alloc>
-    void TextureLoader<Alloc>::tryLoad(void) {
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    void TextureLoader<Policy, Alloc>::tryLoad(void) {
         if (loadingStatus() != 1.)
             load();
     }
 
-    template <Allocator Alloc>
-    void TextureLoader<Alloc>::loadAll(void) {
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    void TextureLoader<Policy, Alloc>::loadAll(void) {
         while (loadingStatus() != 1.)
             load();
     }
 
-    template <Allocator Alloc>
-    void TextureLoader<Alloc>::load(void) {
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    void TextureLoader<Policy, Alloc>::load(void) {
         if (exception)
             std::rethrow_exception(exception);
         if (auto ptr = loadedImages.pop()) {
@@ -104,8 +127,8 @@ namespace ge {
         }
     }
 
-    template <Allocator Alloc>
-    void TextureLoader<Alloc>::ParallelLoader::operator() (void) noexcept {
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    void TextureLoader<Policy, Alloc>::ParallelLoader::operator() (void) noexcept {
         while (auto path = loader.imagePaths.pop()) {
             try {
                 loader.loadedImages.emplace(
@@ -121,15 +144,25 @@ namespace ge {
         }
     }
 
-    template <Allocator Alloc>
-    void TextureLoader<Alloc>::startParallelLoading(void) {
-        threadpool.emplace_back(ParallelLoader{*this});
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    void TextureLoader<Policy, Alloc>::startParallelLoading(std::size_t threadpoolSize) {
+        threadpool.reserve(threadpoolSize);
+        for (auto i : std::views::iota(std::size_t(0), threadpoolSize))
+            threadpool.emplace_back(ParallelLoader{*this});
     }
 
-    template <Allocator Alloc>
-    std::vector<std::string>& TextureLoader<Alloc>::getInvalidPaths(void) const noexcept {
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    std::vector<std::string>& TextureLoader<Policy, Alloc>::getInvalidPaths(void) const noexcept {
         std::lock_guard<std::mutex> lock{invalidPaths.mutex};
         return invalidPaths.paths;
+    }
+
+    template <execution::ExecutionPolicy Policy, Allocator Alloc>
+    auto TextureLoader<Policy, Alloc>::getTextures(void) {
+        if (!available)
+            throw TextureLoaderMovedTexturesException{};
+        available = false;
+        return TexturePack<>{policy, std::move(textures)};
     }
 
 }

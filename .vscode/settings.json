@@ -67,6 +67,7 @@
         "valarray": "cpp",
         "mutex": "cpp",
         "queue": "cpp",
-        "condition_variable": "cpp"
+        "condition_variable": "cpp",
+        "future": "cpp"
     }
 }

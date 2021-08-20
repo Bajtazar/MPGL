@@ -17,7 +17,7 @@ int main(void) noexcept {
         iter += 2 * std::numbers::pi_v<double> / (circle.size() - 1);
     }
 
-    TextureLoader loader{"textures"};
+    TextureLoader loader{execution::parallel, "textures"};
     loader.loadAll();
     auto pack = loader.getTextures();
 
