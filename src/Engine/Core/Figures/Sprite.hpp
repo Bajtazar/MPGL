@@ -66,6 +66,9 @@ namespace ge {
 
         // Default constructor
         Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture) noexcept;
+        // Default constructor with color
+        Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
+               const Color& color) noexcept requires IsColorable;
         // parallelogram
         Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture,
                const Vector2f& firstVertex,            const Vector2f& secondVertex,
@@ -98,6 +101,8 @@ namespace ge {
         virtual void rotate(const Vector2f& center, float angle) noexcept final;
 
         std::size_t size(void) const noexcept { return vertices.size(); }
+
+        void replaceTexture(const Texture<>& texture);
 
         using iterator = std::array<Vertex, 4>::iterator;
         using const_iterator = std::array<Vertex, 4>::const_iterator;
@@ -132,6 +137,11 @@ namespace ge {
         uint32_t vertexBuffer;
         uint32_t vertexArrayObject;
 
+        void setVerticesPoisition(const Vector2f& firstVertex, const Vector2f& dimmensions) noexcept;
+        void setVerticesPoisition(const Vector2f& firstVertex, const Vector2f& secondVertex,
+                                  const Vector2f& thirdVertex) noexcept;
+        void generateBuffers(void) noexcept;
+
         static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2i>& scene) noexcept;
         static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept requires IsColorable;
     };
@@ -141,36 +151,5 @@ namespace ge {
 
     typedef Sprite<false> DefaultSprite;
     typedef Sprite<true> ColorableSprite;
-
-    template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
-        requires (IsColorable)
-    :  Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
-        glGenVertexArrays(1, &vertexArrayObject);
-        glGenBuffers(1, &vertexBuffer);
-        glGenBuffers(1, &elementArrayBuffer);
-        vertices[0].position = firstVertex;
-        vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
-        vertices[2].position = firstVertex + dimmensions;
-        vertices[3].position = firstVertex + Vector2f{dimmensions[0], 0.f};
-    }
-
-    template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
-        requires (IsColorable)
-    : Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture} {
-        glGenVertexArrays(1, &vertexArrayObject);
-        glGenBuffers(1, &vertexBuffer);
-        glGenBuffers(1, &elementArrayBuffer);
-        vertices[0].position = firstVertex;
-        vertices[1].position = secondVertex;
-        vertices[2].position = thirdVertex;
-        vertices[3].position = firstVertex - secondVertex + thirdVertex;
-    }
-
-    template <bool IsColorable>
-    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept requires IsColorable {
-        return {Vertex{{}, color, {0.f, 0.f}, scene}, Vertex{{}, color, {0.f, 1.f}, scene}, Vertex{{}, color, {1.f, 1.f}, scene}, Vertex{{}, color, {1.f, 0.f}, scene}};
-    }
 
 }
