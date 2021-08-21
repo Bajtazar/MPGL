@@ -8,6 +8,7 @@ namespace ge {
     struct TupleHelperFn {
 
         template <std::constructible_from T, std::size_t Size>
+            requires (Size > 0)
         static constexpr decltype(auto) tupleConstructor(void) noexcept {
             if constexpr (Size > 1)
                 return std::tuple_cat(tupleConstructor<T, Size-1>(), std::tuple<T>{});
@@ -16,6 +17,7 @@ namespace ge {
         }
 
         template <std::constructible_from T, std::size_t Size, std::size_t Dimmensions>
+            requires (Size > 0)
         static constexpr decltype(auto) tensorConstructor(void) noexcept {
             if constexpr (Dimmensions)
                 return tupleConstructor<decltype(
