@@ -1,36 +1,39 @@
 #include "Shader.hpp"
+
+#include "../../Utility/FileIO.hpp"
 #include "../../Utility/Logger.hpp"
 #include "../../Exceptions/ShaderCompilationException.hpp"
 
 #include <algorithm>
 #include <iterator>
 #include <fstream>
-#include <sstream>
 
 namespace ge {
 
     template <bool ShaderType>
-    Shader<ShaderType>::Shader(std::string shaderPath) {
+    constexpr auto Shader<ShaderType>::shaderType(void) const noexcept {
         if constexpr (ShaderType)
-            shaderID = glCreateShader(GL_VERTEX_SHADER);
+            return GL_VERTEX_SHADER;
         else
-            shaderID = glCreateShader(GL_FRAGMENT_SHADER);
-        loadShaderFromFile(std::move(shaderPath));
-        glShaderSource(shaderID, 1, &handle, nullptr);
-        glCompileShader(shaderID);
-        int32_t success;
-        glGetProgramiv(shaderID, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            std::string info = Logger::loggingString(512, 0);
-            glGetProgramInfoLog(shaderID, 512, nullptr, info.data());
-            Logger::saveOpenGl(info, "Shader compiler");
-            throw ShaderCompilationException{info};
-        }
+            return GL_FRAGMENT_SHADER;
+    }
+
+    template <bool ShaderType>
+    Shader<ShaderType>::Shader(std::string shaderPath) : shaderID{glCreateShader(shaderType())} {
+        if (auto shaderCode = FileIO::readFile(shaderPath)) {
+            std::string stream = std::move(shaderCode->str());
+            const char* codePointer = stream.c_str();
+            glShaderSource(shaderID, 1, &codePointer, nullptr);
+            glCompileShader(shaderID);
+            Logger::checkCompilationStatus<ShaderCompilationException>(
+                shaderID, GL_COMPILE_STATUS, "Shader compiler");
+        } else
+            throw ShaderCompilationException{"Shader cannot be loaded from a file"};
     }
 
     template <bool ShaderType>
     Shader<ShaderType>& Shader<ShaderType>::operator= (Shader&& shader) noexcept {
-        shaderID = std::move(shaderID);
+        shaderID = shader.shaderID;
         shader.shaderID = 0;
         return *this;
     }
@@ -38,17 +41,6 @@ namespace ge {
     template <bool ShaderType>
     Shader<ShaderType>::~Shader(void) noexcept {
         glDeleteShader(shaderID);
-    }
-
-    template <bool ShaderType>
-    void Shader<ShaderType>::loadShaderFromFile(std::string&& shaderPath) noexcept {
-        std::ifstream file(shaderPath.c_str(), std::ios_base::binary);
-        if (file.is_open() && file.good()) {
-            std::stringstream oss;
-            std::copy(std::istreambuf_iterator<char>(file), {}, std::ostreambuf_iterator<char>(oss));
-            shaderCode = std::move(oss.str());
-            handle = shaderCode.c_str();
-        }
     }
 
 }

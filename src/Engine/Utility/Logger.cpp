@@ -1,6 +1,5 @@
 #include "Logger.hpp"
 #include "FileIO.hpp"
-#include "Ranges.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -10,8 +9,6 @@
 namespace ge {
 
     void Logger::saveOpenGl(const std::string& infoLog, const std::string& title) noexcept {
-        if (!accumulate(infoLog, 0u))
-            return;
         std::stringstream ss = getTimeInString();
         ss << '[' << title << ']' << ' ' << infoLog << '\n';
         std::cout << ss.rdbuf();

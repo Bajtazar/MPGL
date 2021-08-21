@@ -10,7 +10,7 @@ namespace ge {
     public:
         explicit Shader(std::string shaderPath);
         Shader(const Shader& shader) noexcept = delete;
-        Shader(Shader&& shader) noexcept : shaderID(std::move(shader.shaderID)) { shader.shaderID = 0; }
+        Shader(Shader&& shader) noexcept : shaderID{shader.shaderID} { shader.shaderID = 0; }
 
         Shader& operator= (const Shader& shader) noexcept = delete;
         Shader& operator= (Shader&& shader) noexcept;
@@ -18,10 +18,9 @@ namespace ge {
         const uint32_t& getShader(void) const noexcept { return shaderID; }
         ~Shader(void) noexcept;
     private:
-        std::string shaderCode;
         uint32_t shaderID;
-        const char* handle;
-        void loadShaderFromFile(std::string&& shaderPath) noexcept;
+
+        constexpr auto shaderType(void) const noexcept;
     };
 
     template class Shader<true>;

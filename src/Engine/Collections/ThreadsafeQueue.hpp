@@ -28,13 +28,12 @@ namespace ge {
         template <typename... Args>
             requires std::is_constructible_v<T, Args...>
         void emplace(Args&&... args);
-        void push(T&& value);
         void push(T value);
 
         bool empty(void) const;
     private:
         struct Node {
-            std::shared_ptr<T> data;
+            DataPtr data;
             std::unique_ptr<Node> nextNode;
             explicit Node(void) : data{nullptr}, nextNode{nullptr} {}
         };
@@ -52,33 +51,28 @@ namespace ge {
     };
 
     template <NotReference T>
-    void ThreadsafeQueue<T>::push(T&& value) {
-        addNode(std::move(std::make_shared<T>(std::move(value))));
-    }
-
-    template <NotReference T>
     void ThreadsafeQueue<T>::push(T value) {
-        push(std::move(value));
+        addNode(std::make_shared<T>(std::move(value)));
     }
 
     template <NotReference T>
     template <typename... Args>
         requires std::is_constructible_v<T, Args...>
     void ThreadsafeQueue<T>::emplace(Args&&... args) {
-        addNode(std::move(std::make_shared<T>(std::forward<Args>(args)...)));
+        addNode(std::make_shared<T>(std::forward<Args>(args)...));
     }
 
     template <NotReference T>
     void ThreadsafeQueue<T>::addNode(DataPtr&& dataNode) {
         auto node = std::make_unique<Node>();
         std::lock_guard<std::mutex> tailLock{tailMutex};
-        tail.get().data = dataNode;
+        tail.get().data = std::move(dataNode);
         tail.get().nextNode = std::move(node);
         tail = std::ref(*tail.get().nextNode);
     }
 
     template <NotReference T>
-    std::shared_ptr<T> ThreadsafeQueue<T>::pop(void) {
+    ThreadsafeQueue<T>::DataPtr ThreadsafeQueue<T>::pop(void) {
         std::lock_guard<std::mutex> headLock{headMutex};
         if (!head->nextNode.get())
             return {nullptr};

@@ -1,4 +1,5 @@
 #include "ShaderLibrary.hpp"
+
 #include "../../Utility/FileIO.hpp"
 #include "../../Utility/Logger.hpp"
 #include "../../Exceptions/ShaderLibraryInvalidShadersException.hpp"
@@ -16,14 +17,8 @@ namespace ge {
             glAttachShader(programID, vertex.getShader());
             glAttachShader(programID, fragment.getShader());
             glLinkProgram(programID);
-            int32_t success;
-            glGetProgramiv(programID, GL_LINK_STATUS, &success);
-            if (!success) {
-                std::string info = Logger::loggingString(512, 0);
-                glGetProgramInfoLog(programID, 512, nullptr, info.data());
-                Logger::saveOpenGl(info, "Shader linker");
-                throw ShaderProgramLinkingException{info};
-            }
+            Logger::checkCompilationStatus<ShaderProgramLinkingException>(
+                programID, GL_LINK_STATUS, "Shader linker");
             programs[shader.substr(0, shader.find('.'))] = programID;
         }
     }
