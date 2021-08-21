@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Utility/Concepts.hpp"
+#include "../Traits/Concepts.hpp"
 
 #include <memory>
 #include <mutex>

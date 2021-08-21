@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Color.hpp"
-#include "../Utility/Concepts.hpp"
+#include "../Traits/Concepts.hpp"
 #include "../ImageLoading/ImageLoader.hpp"
 
 namespace ge {

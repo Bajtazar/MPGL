@@ -12,12 +12,12 @@ namespace ge {
     }
 
     template <Mathematical T>
-    inline constexpr Vector<T, T> cartesianToPolar(const Vector<T, T>& vector) noexcept {
+    inline constexpr TwoVector<T> cartesianToPolar(const TwoVector<T>& vector) noexcept {
         return { norm(vector), std::atan2(vector[1], vector[0]) };
     }
 
     template <Mathematical T>
-    inline constexpr Vector<T, T> polarToCartesian(const Vector<T, T>& vector) noexcept {
+    inline constexpr TwoVector<T> polarToCartesian(const TwoVector<T>& vector) noexcept {
         return { vector[0] * std::cos(vector[1]), vector[0] * std::sin(vector[1]) };
     }
 

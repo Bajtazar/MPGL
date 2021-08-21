@@ -6,7 +6,7 @@
 namespace ge {
 
     template <typename T>
-    concept Arithmetic = std::is_arithmetic_v<T>;
+    concept Arithmetic = std::is_arithmetic_v<T> && std::constructible_from<T>;
 
     template <typename T, typename... Args>
     concept AllSame = std::conjunction_v<std::is_same<T, Args>...>;

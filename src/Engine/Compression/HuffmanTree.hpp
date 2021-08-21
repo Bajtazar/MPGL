@@ -4,7 +4,7 @@
 #include "../Exceptions/HuffmanTreeDecoderException.hpp"
 #include "../Collections/BitIterator.hpp"
 #include "../Collections/MinHeap.hpp"
-#include "../Utility/Concepts.hpp"
+#include "../Traits/Concepts.hpp"
 #include "../Utility/Ranges.hpp"
 
 #include <unordered_map>

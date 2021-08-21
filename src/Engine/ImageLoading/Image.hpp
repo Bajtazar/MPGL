@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "../Utility/Concepts.hpp"
+#include "../Traits/Concepts.hpp"
 
 #if __cplusplus > 202002L
 #define VEC_CONSTEXPR constexpr

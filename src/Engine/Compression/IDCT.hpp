@@ -2,7 +2,7 @@
 
 #include "../Utility/BitReversion.hpp"
 #include "../Mathematics/Matrix.hpp"
-#include "../Utility/Concepts.hpp"
+#include "../Traits/Concepts.hpp"
 
 #include <numeric>
 #include <complex>

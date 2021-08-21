@@ -1,39 +1,39 @@
 #pragma once
 
-#include <tuple>
-#include <concepts>
 #include <algorithm>
 #include <iterator>
 #include <numeric>
-#include <vector>
 
-#include "../Utility/Concepts.hpp"
+#include "../Traits/TupleTraits.hpp"
+#include "../Traits/Concepts.hpp"
 
 namespace ge {
 
-    template <Arithmetic T, AllSame<T>... Args>
-    class Vector : public std::tuple<T, Args...> {
+    template <Arithmetic T, std::size_t Size>
+    class Vector : public UniformTuple<T, Size> {
     public:
         using value_type = T;
 
-        constexpr Vector(const T& first, const Args&... args) noexcept : std::tuple<T, Args...>{first, args...} {
-            std::reverse(reinterpret_cast<T*>(this), reinterpret_cast<T*>(this) + sizeof...(Args) + 1);
+        template <Arithmetic... Args>
+            requires (sizeof...(Args) == Size)
+        constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{args...} {
+            std::reverse(reinterpret_cast<T*>(this), reinterpret_cast<T*>(this) + sizeof...(Args));
         }
         constexpr Vector(void) noexcept = default;
 
         template <std::size_t Index>
-            requires (Index <= sizeof...(Args))
-        constexpr T& get(void) noexcept { return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&>(*this)); }
+            requires (Index < Size)
+        constexpr T& get(void) noexcept { return std::get<Size - 1 - Index>(static_cast<UniformTuple<T, Size>&>(*this)); }
 
         template <std::size_t Index>
-            requires (Index <= sizeof...(Args))
-        constexpr const T& get(void) const noexcept { return std::get<sizeof...(Args) - Index>(static_cast<const std::tuple<T, Args...>&>(*this)); }
+            requires (Index < Size)
+        constexpr const T& get(void) const noexcept { return std::get<Size - 1 - Index>(static_cast<const UniformTuple<T, Size>&>(*this)); }
 
         template <std::size_t Index>
-            requires (Index <= sizeof...(Args))
-        constexpr T&& get(void) noexcept { return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&&>(*this)); }
+            requires (Index < Size)
+        constexpr T&& get(void) noexcept { return std::get<Size - 1 - Index>(static_cast<UniformTuple<T, Size>&&>(*this)); }
 
-        constexpr std::size_t size(void) const noexcept { return sizeof...(Args) + 1; }
+        consteval std::size_t size(void) const noexcept { return Size; }
 
         constexpr Vector& operator+=(const Vector& right) noexcept;
         constexpr Vector& operator-=(const Vector& right) noexcept;
@@ -45,13 +45,12 @@ namespace ge {
         constexpr Vector& operator*=(const T& right) noexcept;
         constexpr Vector& operator/=(const T& right);
 
-        template <Arithmetic U, AllSame<U>... UArgs>
-            requires (sizeof...(UArgs) == sizeof...(Args))
-        constexpr operator Vector<U, UArgs...>() const noexcept;
+        template <Arithmetic U>
+        constexpr operator Vector<U, Size>() const noexcept;
 
-        template <AllSame<T>... TArgs>
-            requires (sizeof...(TArgs) > sizeof...(Args))
-        constexpr operator Vector<T, TArgs...>() const noexcept;
+        template <std::size_t USize>
+            requires (USize > Size)
+        constexpr operator Vector<T, USize>() const noexcept;
 
         template <Arithmetic value_type>
         class Iterator : public std::iterator<std::contiguous_iterator_tag, value_type, std::ptrdiff_t, value_type*, value_type&> {
@@ -97,13 +96,13 @@ namespace ge {
         using const_iterator = Iterator<const T>;
 
         iterator begin(void) noexcept { return iterator{ reinterpret_cast<T*>(this) }; }
-        iterator end(void) noexcept { return iterator{ reinterpret_cast<T*>(this) + sizeof...(Args) + 1 }; }
+        iterator end(void) noexcept { return iterator{ reinterpret_cast<T*>(this) + Size }; }
 
         const_iterator begin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
-        const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
+        const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + Size }; }
 
         const_iterator cbegin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
-        const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + sizeof...(Args) + 1 }; }
+        const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + Size }; }
 
         auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
         auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
@@ -117,187 +116,177 @@ namespace ge {
         T& operator[] (std::size_t index) noexcept { return *(reinterpret_cast<T*>(this) + index); }
         const T& operator[] (std::size_t index) const noexcept { return *(reinterpret_cast<const T*>(this) + index); }
 
-        explicit constexpr Vector(std::tuple<T, Args...>&& tuple) noexcept : std::tuple<T, Args...> { std::move(tuple) } {}
+        explicit constexpr Vector(UniformTuple<T, Size>&& tuple) noexcept : UniformTuple<T, Size>{ std::move(tuple) } {}
     };
 
-    template <Arithmetic T, AllSame<T>... Args>
-    template <Arithmetic U, AllSame<U>... UArgs>
-        requires (sizeof...(UArgs) == sizeof...(Args))
-    constexpr Vector<T, Args...>::operator Vector<U, UArgs...>() const noexcept {
-        return std::apply([]<typename... IArgs>(const IArgs&... args) -> Vector<U, UArgs...> {
-            return Vector<U, UArgs...>{ std::move(std::tuple{ static_cast<U>(args)... }) };
-        }, static_cast<const std::tuple<T, Args...>&>(*this));
+    template <Arithmetic T, std::size_t Size>
+    template <Arithmetic U>
+    constexpr Vector<T, Size>::operator Vector<U, Size>() const noexcept {
+        return std::apply([]<typename... IArgs>(const IArgs&... args) -> Vector<U, Size> {
+            return Vector<U, Size>{ std::move(std::tuple{ static_cast<U>(args)... }) };
+        }, static_cast<const UniformTuple<T, Size>&>(*this));
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    template <AllSame<T>... TArgs>
-        requires (sizeof...(TArgs) > sizeof...(Args))
-    constexpr Vector<T, Args...>::operator Vector<T, TArgs...>() const noexcept {
-        Vector<T, TArgs...> base;
+    template <Arithmetic T, std::size_t Size>
+    template <std::size_t USize>
+        requires (USize > Size)
+    constexpr Vector<T, Size>::operator Vector<T, USize>() const noexcept {
+        Vector<T, USize> base;
         std::ranges::copy(*this, base);
         return base;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr T dotProduct(const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
+    template <Arithmetic T, std::size_t Size>
+    constexpr T dotProduct(const Vector<T, Size>& left, const Vector<T, Size>& right) noexcept {
         return std::inner_product(left.begin(), left.end(), right.begin(), static_cast<T>(0));
     }
 
-    template <std::size_t Index, Arithmetic T, AllSame<T>... Args>
-        requires (sizeof...(Args) >= Index)
-    constexpr decltype(auto) get(Vector<T, Args...>&& vector) noexcept {
-        return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&&>(vector));
-    }
-
-    template <std::size_t Index, Arithmetic T, AllSame<T>... Args>
-        requires (sizeof...(Args) >= Index)
-    constexpr decltype(auto) get(Vector<T, Args...>& vector) noexcept {
-        return std::get<sizeof...(Args) - Index>(static_cast<std::tuple<T, Args...>&>(vector));
-    }
-
-    template <std::size_t Index, Arithmetic T, AllSame<T>... Args>
-        requires (sizeof...(Args) >= Index)
-    constexpr decltype(auto) get(const Vector<T, Args...>& vector) noexcept {
-        return std::get<sizeof...(Args) - Index>(static_cast<const std::tuple<T, Args...>&>(vector));
-    }
-
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator+= (const Vector& right) noexcept {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator+= (const Vector& right) noexcept {
         std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left + right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator-= (const Vector& right) noexcept {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator-= (const Vector& right) noexcept {
         std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left - right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator*= (const Vector& right) noexcept {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator*= (const Vector& right) noexcept {
         std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left * right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator/= (const Vector& right) {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator/= (const Vector& right) {
         std::ranges::transform(*this, right, begin(), [](const T& left, const T& right)->T{ return left / right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator+= (const T& right) noexcept {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator+= (const T& right) noexcept {
         std::ranges::for_each(*this, [&right](T& value) -> void { value += right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator-= (const T& right) noexcept {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator-= (const T& right) noexcept {
         std::ranges::for_each(*this, [&right](T& value) -> void { value -= right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator*= (const T& right) noexcept {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator*= (const T& right) noexcept {
         std::ranges::for_each(*this, [&right](T& value) -> void { value *= right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...>& Vector<T, Args...>::operator/= (const T& right) {
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size>& Vector<T, Size>::operator/= (const T& right) {
         std::ranges::for_each(*this, [&right](T& value) -> void { value /= right; });
         return *this;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator+ (const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator+ (const Vector<T, Size>& left, const Vector<T, Size>& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left + right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator- (const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator- (const Vector<T, Size>& left, const Vector<T, Size>& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left - right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator* (const Vector<T, Args...>& left, const Vector<T, Args...>& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator* (const Vector<T, Size>& left, const Vector<T, Size>& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left * right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator/ (const Vector<T, Args...>& left, const Vector<T, Args...>& right) {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator/ (const Vector<T, Size>& left, const Vector<T, Size>& right) {
+        Vector<T, Size> result;
         std::ranges::transform(left, right, result.begin(), [](const T& left, const T& right)->T{ return left / right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator+ (const Vector<T, Args...>& left, const T& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator+ (const Vector<T, Size>& left, const T& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left + right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator- (const Vector<T, Args...>& left, const T& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator- (const Vector<T, Size>& left, const T& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left - right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator* (const Vector<T, Args...>& left, const T& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator* (const Vector<T, Size>& left, const T& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left * right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator/ (const Vector<T, Args...>& left, const T& right) {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator/ (const Vector<T, Size>& left, const T& right) {
+        Vector<T, Size> result;
         std::ranges::transform(left, result.begin(), [&right](const T& left) -> T { return left / right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator+ (const T& left, const Vector<T, Args...>& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator+ (const T& left, const Vector<T, Size>& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left + right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator- (const T& left, const Vector<T, Args...>& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator- (const T& left, const Vector<T, Size>& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left - right; });
         return result;
     }
 
-    template <Arithmetic T, AllSame<T>... Args>
-    constexpr Vector<T, Args...> operator* (const T& left, const Vector<T, Args...>& right) noexcept {
-        Vector<T, Args...> result;
+    template <Arithmetic T, std::size_t Size>
+    constexpr Vector<T, Size> operator* (const T& left, const Vector<T, Size>& right) noexcept {
+        Vector<T, Size> result;
         std::ranges::transform(right, result.begin(), [&left](const T& right) -> T { return left * right; });
         return result;
     }
 
-    template class Vector<float, float>;
-    template class Vector<uint32_t, uint32_t>;
+    template class Vector<float, 2>;
+    template class Vector<uint32_t, 2>;
 
-    typedef Vector<float, float> Vector2f;
-    typedef Vector<uint32_t, uint32_t> Vector2i;
+    typedef Vector<float, 2> Vector2f;
+    typedef Vector<uint32_t, 2> Vector2i;
+
+    template <Arithmetic T>
+    using TwoVector = Vector<T, 2>;
+
+    template <Arithmetic T>
+    using ThreeVector = Vector<T, 3>;
+
+    template <Arithmetic T>
+    using FourVector = Vector<T, 4>;
 
     constexpr Vector2f operator"" _x(long double value) noexcept {
         return Vector2f{static_cast<float>(value), 0.f};
     }
 
     constexpr Vector2i operator"" _x(unsigned long long int value) noexcept {
-        return Vector2i{static_cast<uint32_t>(value), 0};
+        return Vector2i{static_cast<uint32_t>(value), 0u};
     }
 
     constexpr Vector2f operator"" _y(long double value) noexcept {

@@ -4,7 +4,7 @@
 #include <iterator>
 #include <functional>
 
-#include "Concepts.hpp"
+#include "../Traits/Concepts.hpp"
 
 namespace ge {
 

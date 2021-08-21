@@ -3,7 +3,7 @@
 #include <iterator>
 #include <climits>
 
-#include "../Utility/Concepts.hpp"
+#include "../Traits/Concepts.hpp"
 
 namespace ge {
 

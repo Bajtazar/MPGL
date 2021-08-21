@@ -8,29 +8,15 @@
 
 namespace ge {
 
-    template <typename T, std::size_t Rows>
-    constexpr decltype(auto) tupleConstructor(void) noexcept {
-        if constexpr (Rows > 1)
-            return std::tuple_cat(tupleConstructor<T, Rows-1>(), std::tuple<T>{});
-        else
-            return std::tuple<T>{};
-    }
-
-    template <AllSame... Args>
-    constexpr Vector<Args...> vectorConverter(const std::tuple<Args...>& tuple) noexcept;
-
-    template <Arithmetic T, std::size_t Rows>
-    using MatrixTuple = decltype(tupleConstructor<decltype(vectorConverter(tupleConstructor<T, Rows>())), Rows>());
-
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
-    class Matrix : public MatrixTuple<T, Rows> {
+    class Matrix : public TensorTuple<T, Rows, 2> {
     public:
-        using column_value_type = decltype(vectorConverter(tupleConstructor<T, Rows>()));
+        using column_value_type = Vector<T, Rows>;
 
         template <AllSame<column_value_type>... Args>
             requires (sizeof...(Args) == Rows)
-        constexpr Matrix(const Args&... args) noexcept : MatrixTuple<T, Rows>{ args... } { std::reverse(columnBegin(), columnEnd()); transpose(); }
+        constexpr Matrix(const Args&... args) noexcept : TensorTuple<T, Rows, 2>{ args... } { std::reverse(columnBegin(), columnEnd()); transpose(); }
         constexpr Matrix(void) noexcept = default;
 
         static Matrix<T, Rows> identityMatrix(void) noexcept;

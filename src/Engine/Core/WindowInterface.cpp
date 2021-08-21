@@ -1,4 +1,5 @@
 #include "WindowInterface.hpp"
+
 #include "../Exceptions/RenderWindowInitException.hpp"
 #include "../Exceptions/RenderWindowInvalidArgsException.hpp"
 #include "../Exceptions/RenderWindowGladException.hpp"
@@ -13,7 +14,7 @@ namespace ge {
         if (!glfwInit())
             throw RenderWindowInitException(title);
         setWindowOptions(options);
-        window = glfwCreateWindow(get<0>(dimmensions), get<1>(dimmensions), title.c_str(), monitor, share);
+        window = glfwCreateWindow(dimmensions[0], dimmensions[1], title.c_str(), monitor, share);
         glfwMakeContextCurrent(window);
         if (!window)
             throw RenderWindowInvalidArgsException(title);
