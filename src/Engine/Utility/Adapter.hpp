@@ -1,12 +1,10 @@
 #pragma once
 
-#include <ranges>
 #include <memory>
 
-namespace ge {
+#include "../Traits/Concepts.hpp"
 
-    template <typename T>
-    concept Adaptable = requires(T& a, typename T::value_type b) { a / a; a * a; a * b; a / b; a - b; a + b; } && std::is_convertible_v<uint32_t, typename T::value_type>;
+namespace ge {
 
     template <Adaptable T, Adaptable U>
     class Adapter {

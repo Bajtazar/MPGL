@@ -2,6 +2,7 @@
 
 #include <inttypes.h>
 #include <utility>
+#include <tuple>
 
 namespace ge {
 
@@ -21,19 +22,29 @@ namespace ge {
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto& get(void) noexcept { return std::get<3 - Index>(reinterpret_cast<std::tuple<float, float, float, float>&>(*this)); }
+        inline constexpr auto& get(void) & noexcept { return getHelper<Index>(*this); }
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr const auto& get(void) const noexcept { return std::get<3 - Index>(reinterpret_cast<const std::tuple<float, float, float, float>&>(*this)); }
+        inline constexpr auto const& get(void) const& noexcept { return getHelper<Index>(*this); }
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto&& get(void) noexcept { return std::get<3 - Index>(reinterpret_cast<std::tuple<float, float, float, float>&&>(*this)); }
+        inline constexpr auto&& get(void) && noexcept { return getHelper<Index>(*this); }
 
-        template <std::size_t Index>
+    private:
+        template <std::size_t Index, class Base>
             requires (Index < 4)
-        inline constexpr const auto&& get(void) const noexcept { return std::get<3 - Index>(reinterpret_cast<const std::tuple<float, float, float, float>&&>(*this)); }
+        inline constexpr auto&& getHelper(Base&& base) {
+            if constexpr (Index == 0)
+                return std::forward<Base>(base).red;
+            else if constexpr (Index == 1)
+                return std::forward<Base>(base).green;
+            else if constexpr (Index == 2)
+                return std::forward<Base>(base).blue;
+            else
+                return std::forward<Base>(base).alpha;
+        }
     };
 
     struct Color::literals {
@@ -77,5 +88,15 @@ namespace ge {
         return {left.red / right, left.green / right, left.blue / right, left.alpha / right};
     }
 
+}
+
+namespace std {
+
+    template <>
+    struct tuple_size<ge::Color> : integral_constant<size_t, 4> {};
+
+    template <size_t Index>
+        requires (Index < 4)
+    struct tuple_element<Index, ge::Color> { using type = float; };
 
 }

@@ -70,4 +70,8 @@ namespace ge {
     template <typename T>
     concept NotReference = !std::is_reference_v<T>;
 
+    template <typename T>
+    concept Adaptable = requires(T& a, typename T::value_type b) { a / a; a * a; a * b; a / b; a - b; a + b; }
+        && std::is_convertible_v<uint32_t, typename T::value_type>;
+
 }
