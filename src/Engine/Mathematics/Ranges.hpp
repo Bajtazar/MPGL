@@ -20,7 +20,7 @@ namespace ge {
 
         };
 
-        template <std::weakly_incrementable Iter, std::sentinel_for<Iter> Sent, std::invocable<iterator_value_type_t<Iter>, double> Pred = powerInvocable>
+        template <std::incrementable Iter, std::sentinel_for<Iter> Sent, std::invocable<iterator_value_type_t<Iter>, double> Pred = powerInvocable>
             requires requires (iterator_value_type_t<Iter> a) { a += a; }
         constexpr iterator_value_type_t<Iter> operator() (Iter first, Sent last, double norm = 2., Pred pred = {}) const noexcept {
             iterator_value_type_t<Iter> sum {};
@@ -49,7 +49,7 @@ namespace ge {
 
     struct InnerProductFn {
 
-        template <std::weakly_incrementable LeftIter, std::sentinel_for<LeftIter> LeftSent, std::weakly_incrementable RightIter,
+        template <std::incrementable LeftIter, std::sentinel_for<LeftIter> LeftSent, std::weakly_incrementable RightIter,
                 typename Init, typename LeftProj = std::identity, typename RightProj = std::identity>
             requires Convertible<LeftIter, LeftProj, Init> && Convertible<RightIter, RightProj, Init> && requires (Init a) { a + a; a * a; }
         constexpr Init operator()(LeftIter leftIter, LeftSent leftSent, RightIter rightIter, Init init, LeftProj leftProj = {}, RightProj rightProj = {}) const noexcept {
@@ -58,7 +58,7 @@ namespace ge {
             return init;
         }
 
-        template <std::weakly_incrementable LeftIter, std::sentinel_for<LeftIter> LeftSent, std::weakly_incrementable RightIter,
+        template <std::incrementable LeftIter, std::sentinel_for<LeftIter> LeftSent, std::weakly_incrementable RightIter,
                 typename Init, typename LeftProj = std::identity, typename RightProj = std::identity,
                 std::indirect_binary_predicate<std::projected<LeftIter, LeftProj>, std::projected<RightIter, RightProj>> RightPred,
                 std::indirect_binary_predicate<Init, decltype(RightPred{}())> LeftPred>

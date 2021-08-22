@@ -16,10 +16,22 @@ namespace ge {
 
         template <AllSame<column_value_type>... Args>
             requires (sizeof...(Args) == Rows)
-        constexpr Matrix(const Args&... args) noexcept : TensorTuple<T, Rows, 2>{ args... } { std::reverse(columnBegin(), columnEnd()); transpose(); }
+        constexpr Matrix(const Args&... args) noexcept : TensorTuple<T, Rows, 2>{ args... } { ge::reverse(columnBegin(), columnEnd()); transpose(); }
         constexpr Matrix(void) noexcept = default;
 
-        static Matrix<T, Rows> identityMatrix(void) noexcept;
+        template <std::size_t Index>
+            requires (Index < Rows)
+        constexpr column_value_type& get(void) & noexcept;
+
+        template <std::size_t Index>
+            requires (Index < Rows)
+        constexpr column_value_type const& get(void) const& noexcept;
+
+        template <std::size_t Index>
+            requires (Index < Rows)
+        constexpr column_value_type&& get(void) && noexcept;
+
+        static consteval Matrix<T, Rows> identityMatrix(T diagonal = {1}, T nonDiagonal = {0}) noexcept;
 
         constexpr std::size_t size(void) const noexcept { return Rows; }
 
@@ -75,21 +87,21 @@ namespace ge {
 
             constexpr T& operator[] (std::size_t index) noexcept
                 requires NotConstant<BaseType>
-            { return *(reinterpret_cast<T*>(&reference.get()) + row + index * Rows); }
-            constexpr const T& operator[] (std::size_t index) const noexcept { return *(reinterpret_cast<const T*>(&reference.get()) + row + index * Rows); }
+            { return *(first() + row + index * Rows); }
+            constexpr const T& operator[] (std::size_t index) const noexcept { return *(first() + row + index * Rows); }
 
             constexpr iterator begin(void) noexcept
                 requires NotConstant<BaseType>
-            { return iterator{ reinterpret_cast<T*>(&reference.get()) + row }; }
-            constexpr const_iterator begin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row }; }
+            { return iterator{ &reference.get() + row }; }
+            constexpr const_iterator begin(void) const noexcept { return const_iterator{ first() + row }; }
 
             constexpr iterator end(void) noexcept
                 requires NotConstant<BaseType>
-            { return iterator{ reinterpret_cast<T*>(&reference.get()) + row + Rows * Rows }; }
-            constexpr const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row + Rows * Rows }; }
+            { return iterator{ first() + row + Rows * Rows }; }
+            constexpr const_iterator end(void) const noexcept { return const_iterator{ first() + row + Rows * Rows }; }
 
-            constexpr const_iterator cbegin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row }; }
-            constexpr const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(&reference.get()) + row + Rows * Rows }; }
+            constexpr const_iterator cbegin(void) const noexcept { return const_iterator{ first() + row }; }
+            constexpr const_iterator cend(void) const noexcept { return const_iterator{ first() + row + Rows * Rows }; }
 
             constexpr reverse_iterator rbegin(void) noexcept
                 requires NotConstant<BaseType>
@@ -126,6 +138,9 @@ namespace ge {
         private:
             constexpr explicit Row(const std::reference_wrapper<BaseType>& reference, std::size_t row) noexcept : row{row}, reference{reference} {}
 
+            constexpr T* first(void) noexcept requires NotConstant<BaseType> { return &static_cast<Matrix<T, Rows>&>(reference.get()).get<0>()[0]; }
+            constexpr T const* first(void) const noexcept { return &static_cast<Matrix<T, Rows> const&>(reference.get()).get<0>()[0]; }
+
             std::size_t row;
             std::reference_wrapper<BaseType> reference;
         };
@@ -150,10 +165,10 @@ namespace ge {
             constexpr explicit Iterator(std::reference_wrapper<BaseType> ref, std::size_t row = 0) noexcept : row{row}, ref{ref} {}
 
             constexpr Iterator& operator++(void) noexcept { ++row; return *this; }
-            constexpr Iterator& operator++(int) noexcept { auto tmp = *this; ++row; return tmp; }
+            constexpr Iterator  operator++(int) noexcept { auto tmp = *this; ++row; return tmp; }
 
             constexpr Iterator& operator--(void) noexcept { --row; return *this; }
-            constexpr Iterator& operator--(int) noexcept { auto tmp = *this; --row; return tmp; }
+            constexpr Iterator  operator--(int) noexcept { auto tmp = *this; --row; return tmp; }
 
             constexpr reference operator*(void) const noexcept { return value_type{ref, row}; }
 
@@ -213,10 +228,10 @@ namespace ge {
             constexpr explicit ColumnIterator(void) noexcept = default;
 
             constexpr ColumnIterator& operator++(void) noexcept { ++iter; return *this; }
-            constexpr ColumnIterator& operator++(int)  noexcept { auto tmp = *this; ++iter; return tmp; }
+            constexpr ColumnIterator  operator++(int)  noexcept { auto tmp = *this; ++iter; return tmp; }
 
             constexpr ColumnIterator& operator--(void) noexcept { --iter; return *this; }
-            constexpr ColumnIterator& operator--(int)  noexcept { auto tmp = *this; --iter; return tmp; }
+            constexpr ColumnIterator  operator--(int)  noexcept { auto tmp = *this; --iter; return tmp; }
 
             constexpr reference operator*(void) const noexcept { return *iter; }
             constexpr pointer operator->(void)  const noexcept { return iter; }
@@ -245,14 +260,14 @@ namespace ge {
         using reverse_column_iterator = std::reverse_iterator<column_iterator>;
         using const_reverse_column_iterator = std::reverse_iterator<const_column_iterator>;
 
-        constexpr column_iterator columnBegin(void) noexcept { return column_iterator{ reinterpret_cast<column_value_type*>(this) }; }
-        constexpr column_iterator columnEnd(void) noexcept { return column_iterator{ reinterpret_cast<column_value_type*>(this) + Rows }; }
+        constexpr column_iterator columnBegin(void) noexcept { return column_iterator{ &get<0>() }; }
+        constexpr column_iterator columnEnd(void) noexcept { return column_iterator{ &get<0>() + Rows }; }
 
-        constexpr const_column_iterator columnBegin(void) const noexcept { return const_column_iterator{ reinterpret_cast<const column_value_type*>(this) }; }
-        constexpr const_column_iterator columnEnd(void) const noexcept { return const_column_iterator{ reinterpret_cast<const column_value_type*>(this) + Rows }; }
+        constexpr const_column_iterator columnBegin(void) const noexcept { return const_column_iterator{ &get<0>() }; }
+        constexpr const_column_iterator columnEnd(void) const noexcept { return const_column_iterator{ &get<0>() + Rows }; }
 
-        constexpr const_column_iterator columnCBegin(void) const noexcept { return const_column_iterator{ reinterpret_cast<const column_value_type*>(this) }; }
-        constexpr const_column_iterator columnCEnd(void) const noexcept { return const_column_iterator{ reinterpret_cast<const column_value_type*>(this) + Rows }; }
+        constexpr const_column_iterator columnCBegin(void) const noexcept { return const_column_iterator{ &get<0>() }; }
+        constexpr const_column_iterator columnCEnd(void) const noexcept { return const_column_iterator{ &get<0>() + Rows }; }
 
         constexpr reverse_column_iterator columnRBegin(void) noexcept { return std::reverse_iterator{ columnEnd() - 1 }; }
         constexpr reverse_column_iterator columnREnd(void) noexcept { return std::reverse_iterator{ columnBegin() - 1 }; }
@@ -263,8 +278,8 @@ namespace ge {
         constexpr const_reverse_column_iterator columnCRBegin(void) const noexcept { return std::reverse_iterator{ columnEnd() - 1 }; }
         constexpr const_reverse_column_iterator columnCREnd(void) const noexcept { return std::reverse_iterator{ columnBegin() - 1 }; }
 
-        constexpr column_value_type& getColumn(std::size_t index) noexcept { return *(reinterpret_cast<column_value_type*>(this) + index); }
-        constexpr const column_value_type& getColumn(std::size_t index) const noexcept { return *(reinterpret_cast<const column_value_type*>(this) + index); }
+        constexpr column_value_type& getColumn(std::size_t index) noexcept { return *(&get<0>() + index); }
+        constexpr const column_value_type& getColumn(std::size_t index) const noexcept { return *(&get<0>() + index); }
 
         template <typename U = T, std::size_t MinorRows = Rows - 1>
             requires (MinorRows > 1)
@@ -276,7 +291,7 @@ namespace ge {
         constexpr U determinent(U init = {0}, U positive = {1}, U negative = {-1}) const noexcept;
 
         template <typename U = T>
-        std::optional<Matrix<U, Rows>> inverse(void) const noexcept;
+        constexpr std::optional<Matrix<U, Rows>> inverse(void) const noexcept;
 
         constexpr Matrix& operator+= (const Matrix& right) noexcept;
         constexpr Matrix& operator-= (const Matrix& right) noexcept;
@@ -289,7 +304,7 @@ namespace ge {
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
-    std::optional<MatVector<T, Rows>> luDecomposition(Matrix<T, Rows>& matrix) noexcept {
+    constexpr std::optional<MatVector<T, Rows>> luDecomposition(Matrix<T, Rows>& matrix) noexcept {
         MatVector<T, Rows> permutations;
         std::iota(permutations.begin(), permutations.end(), 0);
         for (std::size_t k = 0, kp; k < Rows; ++k) {
@@ -315,7 +330,7 @@ namespace ge {
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
-    MatVector<T, Rows> lupSolve(const Matrix<T, Rows>& luMatrix, const MatVector<T, Rows>& permutations, const MatVector<T, Rows>& vector) noexcept {
+    constexpr MatVector<T, Rows> lupSolve(const Matrix<T, Rows>& luMatrix, const MatVector<T, Rows>& permutations, const MatVector<T, Rows>& vector) noexcept {
         MatVector<T, Rows> result;
         MatVector<T, Rows> helper;
         for (std::size_t i = 0; i < Rows; ++i) {
@@ -336,7 +351,7 @@ namespace ge {
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
     template <typename U>
-    std::optional<Matrix<U, Rows>> Matrix<T, Rows>::inverse(void) const noexcept {
+    constexpr std::optional<Matrix<U, Rows>> Matrix<T, Rows>::inverse(void) const noexcept {
         Matrix<U, Rows> luMatrix = *this;
         auto idMatrix = Matrix<U, Rows>::identityMatrix();
         if (auto permutations = luDecomposition(luMatrix)) {
@@ -350,12 +365,36 @@ namespace ge {
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
-    Matrix<T, Rows> Matrix<T, Rows>::identityMatrix(void) noexcept {
+    consteval Matrix<T, Rows> Matrix<T, Rows>::identityMatrix(T diagonal, T nonDiagonal) noexcept {
         Matrix<T, Rows> matrix;
         for (std::size_t i = 0;i < Rows; ++i)
             for (std::size_t j = 0;j < Rows; ++j)
-                matrix.getColumn(i)[j] = i == j ? T{1} : T{0};
+                matrix.getColumn(i)[j] = i == j ? diagonal : nonDiagonal;
         return matrix;
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <std::size_t Index>
+        requires (Index < Rows)
+    constexpr Matrix<T, Rows>::column_value_type& Matrix<T, Rows>::get(void) & noexcept {
+        return static_cast<column_value_type&>(std::get<Rows - 1 - Index>(static_cast<TensorTuple<T, Rows, 2>&>(*this)));
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <std::size_t Index>
+        requires (Index < Rows)
+    constexpr Matrix<T, Rows>::column_value_type const& Matrix<T, Rows>::get(void) const& noexcept {
+        return static_cast<column_value_type const&>(std::get<Rows - 1 - Index>(static_cast<TensorTuple<T, Rows, 2>const&>(*this)));
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <std::size_t Index>
+        requires (Index < Rows)
+    constexpr Matrix<T, Rows>::column_value_type&& Matrix<T, Rows>::get(void) && noexcept {
+        return static_cast<column_value_type&&>(std::get<Rows - 1 - Index>(static_cast<TensorTuple<T, Rows, 2>&&>(*this)));
     }
 
     template <Arithmetic T, std::size_t Rows>
@@ -363,8 +402,8 @@ namespace ge {
     template <Arithmetic U>
     constexpr Matrix<T, Rows>::operator Matrix<U, Rows>() const noexcept {
         Matrix<U, Rows> base;
-        std::copy(reinterpret_cast<const T*>(this), reinterpret_cast<const T*>(this) + Rows * Rows,
-            reinterpret_cast<U*>(&base));
+        std::copy(&get<0>()[0], &get<0>()[0] + Rows * Rows,
+            &base[0][0]);
         return base;
     }
 
@@ -374,8 +413,8 @@ namespace ge {
         requires (URows > Rows)
     constexpr Matrix<T, Rows>::operator Matrix<T, URows>() const noexcept {
         Matrix<T, URows> base;
-        std::copy(reinterpret_cast<const T*>(this), reinterpret_cast<const T*>(this) + Rows * Rows,
-            reinterpret_cast<T*>(&base));
+        std::copy(&get<0>()[0], &get<0>()[0] + Rows * Rows,
+            &base[0][0]);
         return base;
     }
 
@@ -684,5 +723,16 @@ namespace ge {
         return init;
     }
 
+
+}
+
+namespace std {
+
+    template <ge::Arithmetic T, std::size_t Size>
+    struct tuple_size<ge::Matrix<T, Size>> : integral_constant<size_t, Size> {};
+
+    template <ge::Arithmetic T, std::size_t Size, std::size_t Index>
+        requires (Index < Size)
+    struct tuple_element<Index, ge::Matrix<T, Size>> { using type = ge::Vector<T, Size>; };
 
 }

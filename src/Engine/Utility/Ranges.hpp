@@ -108,4 +108,24 @@ namespace ge {
 
     inline constexpr CopyToFn copyTo;
 
+    struct ReverseFn {
+
+        template <std::bidirectional_iterator Iter, std::sentinel_for<Iter> Sent>
+        constexpr void operator() (Iter iter, Sent sent) const noexcept {
+            if (iter == sent)
+                return;
+            --sent;
+            for (; iter < sent; ++iter, --sent)
+                std::iter_swap(iter, sent);
+        }
+
+        template <std::ranges::bidirectional_range Range>
+        constexpr void operator() (Range&& range) const noexcept {
+            (*this)(std::ranges::begin(range), std::ranges::end(range));
+        }
+
+    };
+
+    inline constexpr ReverseFn reverse;
+
 }

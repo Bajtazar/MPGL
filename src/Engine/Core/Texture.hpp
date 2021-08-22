@@ -46,6 +46,8 @@ namespace ge {
                     MagnifyingTextureFilter magnifyingFilter = MagnifyingTextureFilter::Linear,
                     Color borderColor = {}) noexcept;
         };
+        typedef Alloc                           allocator_type;
+
         explicit Texture(const std::string& fileName, const Options& options = {}, const Alloc& alloc = {});
         explicit Texture(const Image& image, const Options& options = {}, const Alloc& alloc = {}) noexcept;
 

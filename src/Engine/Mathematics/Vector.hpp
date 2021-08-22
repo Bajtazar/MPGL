@@ -6,6 +6,7 @@
 
 #include "../Traits/TupleTraits.hpp"
 #include "../Traits/Concepts.hpp"
+#include "../Utility/Ranges.hpp"
 
 namespace ge {
 
@@ -16,22 +17,21 @@ namespace ge {
 
         template <Arithmetic... Args>
             requires (sizeof...(Args) == Size)
-        constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{args...} {
-            std::reverse(reinterpret_cast<T*>(this), reinterpret_cast<T*>(this) + sizeof...(Args));
-        }
+        constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{args...} { ge::reverse(*this); }
+
         constexpr Vector(void) noexcept = default;
 
         template <std::size_t Index>
             requires (Index < Size)
-        constexpr T& get(void) noexcept { return std::get<Size - 1 - Index>(static_cast<UniformTuple<T, Size>&>(*this)); }
+        constexpr T& get(void) & noexcept { return std::get<Size - 1 - Index>(static_cast<UniformTuple<T, Size>&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < Size)
-        constexpr const T& get(void) const noexcept { return std::get<Size - 1 - Index>(static_cast<const UniformTuple<T, Size>&>(*this)); }
+        constexpr const T& get(void) const& noexcept { return std::get<Size - 1 - Index>(static_cast<const UniformTuple<T, Size>&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < Size)
-        constexpr T&& get(void) noexcept { return std::get<Size - 1 - Index>(static_cast<UniformTuple<T, Size>&&>(*this)); }
+        constexpr T&& get(void) && noexcept { return std::get<Size - 1 - Index>(static_cast<UniformTuple<T, Size>&&>(*this)); }
 
         consteval std::size_t size(void) const noexcept { return Size; }
 
@@ -95,14 +95,14 @@ namespace ge {
         using iterator = Iterator<T>;
         using const_iterator = Iterator<const T>;
 
-        iterator begin(void) noexcept { return iterator{ reinterpret_cast<T*>(this) }; }
-        iterator end(void) noexcept { return iterator{ reinterpret_cast<T*>(this) + Size }; }
+        iterator begin(void) noexcept { return iterator{ &get<0>() }; }
+        iterator end(void) noexcept { return iterator{ &get<0>() + Size }; }
 
-        const_iterator begin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
-        const_iterator end(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + Size }; }
+        const_iterator begin(void) const noexcept { return const_iterator{ &get<0>() }; }
+        const_iterator end(void) const noexcept { return const_iterator{ &get<0>() + Size }; }
 
-        const_iterator cbegin(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) }; }
-        const_iterator cend(void) const noexcept { return const_iterator{ reinterpret_cast<const T*>(this) + Size }; }
+        const_iterator cbegin(void) const noexcept { return const_iterator{ &get<0>() }; }
+        const_iterator cend(void) const noexcept { return const_iterator{ &get<0>() + Size }; }
 
         auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
         auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
@@ -113,8 +113,8 @@ namespace ge {
         auto crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
         auto crend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
-        T& operator[] (std::size_t index) noexcept { return *(reinterpret_cast<T*>(this) + index); }
-        const T& operator[] (std::size_t index) const noexcept { return *(reinterpret_cast<const T*>(this) + index); }
+        T& operator[] (std::size_t index) noexcept { return *(&get<0>() + index); }
+        const T& operator[] (std::size_t index) const noexcept { return *(&get<0>() + index); }
 
         explicit constexpr Vector(UniformTuple<T, Size>&& tuple) noexcept : UniformTuple<T, Size>{ std::move(tuple) } {}
     };
@@ -296,5 +296,16 @@ namespace ge {
     constexpr Vector2i operator"" _y(unsigned long long int value) noexcept {
         return Vector2i{0, static_cast<uint32_t>(value)};
     }
+
+}
+
+namespace std {
+
+    template <ge::Arithmetic T, std::size_t Size>
+    struct tuple_size<ge::Vector<T, Size>> : integral_constant<size_t, Size> {};
+
+    template <ge::Arithmetic T, std::size_t Size, std::size_t Index>
+        requires (Index < Size)
+    struct tuple_element<Index, ge::Vector<T, Size>> { using type = T; };
 
 }
