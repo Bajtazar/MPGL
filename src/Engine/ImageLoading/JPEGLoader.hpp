@@ -5,6 +5,7 @@
 #include "../Collections/BitIterator.hpp"
 #include "../Mathematics/Matrix.hpp"
 #include "../Compression/IDCT.hpp"
+#include "../Utility/Security.hpp"
 #include "LoaderInterface.hpp"
 
 #include <functional>
@@ -15,21 +16,26 @@
 
 namespace ge {
 
+    template <security::SecurityPolicy Policy = Secured>
     class JPEGLoader : public LoaderInterface {
     public:
         explicit JPEGLoader(const std::string& fileName);
+        explicit JPEGLoader(Policy policy, const std::string& fileName);
 
         static const std::string Tag;
 
         ~JPEGLoader(void) noexcept = default;
     private:
-        typedef SafeIterator<std::vector<uint8_t>::const_iterator>  SafeIter;
+        typedef std::conditional_t<security::isSecurePolicy<Policy>,
+            SafeIterator<std::vector<uint8_t>::const_iterator>,
+            std::vector<uint8_t>::const_iterator>                   SafeIter;
         typedef std::istreambuf_iterator<char>                      StreamBuf;
-        typedef SafeIterator<StreamBuf>                             FileIter;
+        typedef std::conditional_t<security::isSecurePolicy<Policy>,
+            SafeIterator<StreamBuf>, StreamBuf>                     FileIter;
 
         class ChunkInterface {
         public:
-            explicit ChunkInterface(JPEGLoader& loader) noexcept : loader{loader} {}
+            explicit ChunkInterface(JPEGLoader<Policy>& loader) noexcept : loader{loader} {}
             virtual void operator() (FileIter& data) = 0;
             virtual ~ChunkInterface(void) noexcept = default;
         protected:
@@ -37,31 +43,34 @@ namespace ge {
         };
 
         struct DHTChunk : public ChunkInterface {
-            explicit DHTChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+            explicit DHTChunk(JPEGLoader<Policy>& loader) noexcept : ChunkInterface{loader} {}
             virtual void operator() (FileIter& data) final;
             ~DHTChunk(void) noexcept = default;
         };
 
         struct DQTChunk : public ChunkInterface {
-            explicit DQTChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+            explicit DQTChunk(JPEGLoader<Policy>& loader) noexcept : ChunkInterface{loader} {}
             virtual void operator() (FileIter& data) final;
             ~DQTChunk(void) noexcept = default;
         };
 
         struct SOF0Chunk : public ChunkInterface {
-            explicit SOF0Chunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+            explicit SOF0Chunk(JPEGLoader<Policy>& loader) noexcept : ChunkInterface{loader} {}
             virtual void operator() (FileIter& data) final;
             ~SOF0Chunk(void) noexcept = default;
         };
 
-        struct SOSChunk : public ChunkInterface {
-            explicit SOSChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+        class SOSChunk : public ChunkInterface {
+        public:
+            explicit SOSChunk(JPEGLoader<Policy>& loader) noexcept : ChunkInterface{loader} {}
             virtual void operator() (FileIter& data) final;
             ~SOSChunk(void) noexcept = default;
+        private:
+            bool iterable(FileIter& data) const noexcept;
         };
 
         struct EmptyChunk : public ChunkInterface {
-            explicit EmptyChunk(JPEGLoader& loader) noexcept : ChunkInterface{loader} {}
+            explicit EmptyChunk(JPEGLoader<Policy>& loader) noexcept : ChunkInterface{loader} {}
             virtual void operator() (FileIter& data) final;
             ~EmptyChunk(void) noexcept = default;
         };
@@ -102,11 +111,13 @@ namespace ge {
         static uint8_t adjustPixelColor(int16_t color) noexcept;
         static int32_t decodeNumber(uint8_t code, uint16_t bits) noexcept;
 
+        void setPolicy(std::istream& file);
         void parseChunks(FileIter file);
         void parseNextChunk(FileIter& file, uint16_t signature);
         Matrix<int16_t, 8> readMatrix(Iter& iter, uint8_t id, int16_t& coeff);
         void decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,
             QuantizationTablePtr const& quant, Iter& iter);
+        Iter getDecodeIterator(void) noexcept;
         void decodeImage(void);
         void drawYCbCrOnImage(MatricesMap& matrices, std::size_t row, std::size_t column);
 
@@ -121,5 +132,8 @@ namespace ge {
         static const ChunkParser emptyChunk;
         static const std::map<uint16_t, ChunkParser> chunkParser;
     };
+
+    template class JPEGLoader<Secured>;
+    template class JPEGLoader<Unsecured>;
 
 }

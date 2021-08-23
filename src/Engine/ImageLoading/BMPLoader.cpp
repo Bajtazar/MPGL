@@ -1,18 +1,23 @@
 #include "BMPLoader.hpp"
 
 #include "../Exceptions/ImageLoadingFileOpenException.hpp"
+#include "../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
 #include "../Exceptions/ImageLoadingFileCorruptionException.hpp"
 
 namespace ge {
 
-    const std::string BMPLoader::Tag{"bmp"};
+    template <security::SecurityPolicy Policy>
+    const std::string BMPLoader<Policy>::Tag{"bmp"};
 
-    BMPLoader::BMPLoader(const std::string& fileName) : LoaderInterface(std::move(fileName)) {
+    template <security::SecurityPolicy Policy>
+    BMPLoader<Policy>::BMPLoader([[maybe_unused]] Policy policy, const std::string& fileName)
+        : LoaderInterface{std::move(fileName)}
+    {
         std::ifstream file{this->fileName.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
             throw ImageLoadingFileOpenException{this->fileName};
-        FileIter iter{StreamBuf{file}, StreamBuf{}};
+        FileIter iter = setPolicy(file);
         try {
             readHeader(iter);
             readImage(iter);
@@ -21,7 +26,21 @@ namespace ge {
         }
     }
 
-    void BMPLoader::readHeader(FileIter& file) {
+    template <security::SecurityPolicy Policy>
+    BMPLoader<Policy>::BMPLoader(const std::string& fileName) : BMPLoader{Policy{}, fileName} {}
+
+    template <security::SecurityPolicy Policy>
+    BMPLoader<Policy>::FileIter BMPLoader<Policy>::setPolicy(std::istream& file) {
+        if constexpr (security::isSecurePolicy<Policy>)
+            return FileIter{StreamBuf{file}, StreamBuf{}};
+        else if constexpr (security::isUnsecuredPolicy<Policy>)
+            return FileIter{file};
+        else
+            throw SecurityUnknownPolicyException{};
+    }
+
+    template <security::SecurityPolicy Policy>
+    void BMPLoader<Policy>::readHeader(FileIter& file) {
         if (readType<uint16_t>(file) != 0x4D42)
             throw ImageLoadingInvalidTypeException{fileName};
         readType<uint64_t>(file);   // file size and two reserved fields
@@ -32,7 +51,8 @@ namespace ge {
             readType<std::byte>(file);
     }
 
-    void BMPLoader::readImage(FileIter& file) {
+    template <security::SecurityPolicy Policy>
+    void BMPLoader<Policy>::readImage(FileIter& file) {
         for (auto row : pixels) {
             for (auto& pixel : row)
                 Image::Manip::RGB(file, pixel);

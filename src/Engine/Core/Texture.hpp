@@ -49,6 +49,8 @@ namespace ge {
         typedef Alloc                           allocator_type;
 
         explicit Texture(const std::string& fileName, const Options& options = {}, const Alloc& alloc = {});
+        template <security::SecurityPolicy Policy>
+        explicit Texture(Policy policy, const std::string& fileName, const Options& options = {}, const Alloc& alloc = {});
         explicit Texture(const Image& image, const Options& options = {}, const Alloc& alloc = {}) noexcept;
 
         Texture(const Texture& texture) = default;
@@ -79,10 +81,20 @@ namespace ge {
 
         explicit Texture(const Options& options, const Alloc& alloc) noexcept;
 
+        void loadImage(const Image& image) const;
+
         [[no_unique_address]] Alloc alloc;
         std::shared_ptr<uint32_t> textureID;
     };
 
     template class Texture<>;
+
+    template <Allocator Alloc>
+    template <security::SecurityPolicy Policy>
+    Texture<Alloc>::Texture(Policy policy, const std::string& fileName, const Options& options, const Alloc& alloc)
+        : Texture{options, alloc}
+    {
+        loadImage(ImageLoader{policy, fileName}.getImage());
+    }
 
 }

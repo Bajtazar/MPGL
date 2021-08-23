@@ -22,24 +22,26 @@ namespace ge {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(options.magnifyingFilter));
     }
 
-    // RGBA detection will be added
     template <Allocator Alloc>
     Texture<Alloc>::Texture(const std::string& fileName, const Options& options, const Alloc& alloc) : Texture{options, alloc} {
-        ImageLoader loader{fileName};
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, loader.getWidth(), loader.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, loader.memoryPointer());
-        glGenerateMipmap(GL_TEXTURE_2D);
+        loadImage(ImageLoader<>{fileName}.getImage());
     }
 
     template <Allocator Alloc>
     Texture<Alloc>::Texture(const Image& image, const Options& options, const Alloc& alloc) noexcept : Texture{options, alloc} {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
-        glGenerateMipmap(GL_TEXTURE_2D);
+        loadImage(image);
     }
 
     template <Allocator Alloc>
     void Texture<Alloc>::TextureDeleter::operator() (uint32_t* ptr) const noexcept {
         glDeleteTextures(1, ptr);
         std::allocator_traits<Alloc>::deallocate(alloc, ptr, 1);
+    }
+
+    template <Allocator Alloc>
+    void Texture<Alloc>::loadImage(const Image& image) const {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     template <Allocator Alloc>

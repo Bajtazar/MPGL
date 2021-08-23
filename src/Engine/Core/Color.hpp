@@ -35,7 +35,7 @@ namespace ge {
     private:
         template <std::size_t Index, class Base>
             requires (Index < 4)
-        inline constexpr auto&& getHelper(Base&& base) {
+        inline constexpr auto&& getHelper(Base&& base) const noexcept {
             if constexpr (Index == 0)
                 return std::forward<Base>(base).red;
             else if constexpr (Index == 1)

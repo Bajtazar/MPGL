@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LoaderInterface.hpp"
+#include "../Utility/Security.hpp"
 #include "../Collections/SafeIterator.hpp"
 #include "../Utility/FunctionalWrapper.hpp"
 
@@ -12,9 +13,11 @@
 
 namespace ge {
 
+    template <security::SecurityPolicy Policy = Secured>
     class PNGLoader : public LoaderInterface {
     public:
         explicit PNGLoader(const std::string& fileName);
+        explicit PNGLoader(Policy policy, const std::string& fileName);
 
         static const std::string Tag;
 
@@ -23,7 +26,8 @@ namespace ge {
         typedef std::vector<char>::const_iterator                                   CharIter;
         typedef void(PNGLoader::*PixelsSetter)(std::size_t, std::size_t, uint8_t, CharIter&);
         typedef std::istreambuf_iterator<char>                                      StreamBuf;
-        typedef SafeIterator<StreamBuf>                                             FileIter;
+        typedef std::conditional_t<security::isSecurePolicy<Policy>,
+            SafeIterator<StreamBuf>, StreamBuf>                                     FileIter;
 
         template <typename T>
         static void readCRCCode(uint32_t& crc, const T& data) noexcept;
@@ -45,7 +49,8 @@ namespace ge {
 
         class IHDRChunk : public ChunkInterface {
         public:
-            explicit IHDRChunk(PNGLoader& loader) noexcept : ChunkInterface{ loader } { readCRCCode(crcCode, "RDHI"); }
+            explicit IHDRChunk(PNGLoader& loader) noexcept : ChunkInterface{ loader }
+            { PNGLoader<Policy>::readCRCCode(this->crcCode, "RDHI"); }
             virtual void operator() (std::size_t length, FileIter& data) final;
             ~IHDRChunk(void) = default;
         private:
@@ -56,7 +61,8 @@ namespace ge {
 
         class IDATChunk : public ChunkInterface {
         public:
-            explicit IDATChunk(PNGLoader& loader) noexcept : ChunkInterface{ loader } { readCRCCode(crcCode, "TADI"); }
+            explicit IDATChunk(PNGLoader& loader) noexcept : ChunkInterface
+            { loader } { PNGLoader<Policy>::readCRCCode(this->crcCode, "TADI"); }
             virtual void operator() (std::size_t length, FileIter& data) final;
             ~IDATChunk(void) = default;
         };
@@ -66,7 +72,8 @@ namespace ge {
             PixelsSetter setter;
         } headerData;
 
-        void readImage(FileIter file);
+        void setPolicy(std::istream& file, Policy policy = {});
+        void readImage(Policy policy, FileIter file);
         uint8_t paethPredictor(uint8_t a, uint8_t b, uint8_t c) const noexcept;
         uint8_t reconstructA(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
         uint8_t reconstructB(std::size_t row, std::size_t column, uint8_t pixel) const noexcept;
@@ -82,18 +89,23 @@ namespace ge {
         static const std::array<uint32_t, 256> crcTable;
     };
 
+    template <security::SecurityPolicy Policy>
     template <typename T>
-    void PNGLoader::readCRCCode(uint32_t& crc, const T& data) noexcept {
+    void PNGLoader<Policy>::readCRCCode(uint32_t& crc, const T& data) noexcept {
         const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&data) + sizeof(T) - 1;
         for (uint16_t i = sizeof(T); i != 0; --i, --ptr)
-            crc = crcTable[(crc ^ (*ptr)) & 0xFF] ^ (crc >> 8);
+            crc = PNGLoader<Policy>::crcTable[(crc ^ (*ptr)) & 0xFF] ^ (crc >> 8);
     }
 
+    template <security::SecurityPolicy Policy>
     template <std::size_t N>
-    void PNGLoader::readCRCCode(uint32_t& crc, const char (&data)[N]) noexcept {
+    void PNGLoader<Policy>::readCRCCode(uint32_t& crc, const char (&data)[N]) noexcept {
         const char* ptr = &data[N - 2];
         for (uint16_t i = N - 1; i != 0; --i, --ptr)
-            crc = crcTable[(crc ^ (*ptr)) & 0xFF] ^ (crc >> 8);
+            crc = PNGLoader<Policy>::crcTable[(crc ^ (*ptr)) & 0xFF] ^ (crc >> 8);
     }
+
+    template class PNGLoader<Secured>;
+    template class PNGLoader<Unsecured>;
 
 }

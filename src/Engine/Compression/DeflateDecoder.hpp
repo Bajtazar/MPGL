@@ -2,6 +2,7 @@
 
 #include "../Collections/SafeIterator.hpp"
 #include "../Collections/BitIterator.hpp"
+#include "../Utility/Security.hpp"
 #include "HuffmanTree.hpp"
 
 #include <deque>
@@ -10,9 +11,11 @@
 
 namespace ge {
 
+    template <security::SecurityPolicy Policy = Secured>
     class DeflateDecoder {
     public:
         explicit DeflateDecoder(std::deque<char>& rawData);
+        explicit DeflateDecoder(Policy policy, std::deque<char>& rawData);
 
         enum class CompressionLevel : uint8_t {
             Fastest,
@@ -26,10 +29,13 @@ namespace ge {
         bool getDiagnosticStatus(void) const noexcept { return diagnostics; }
         void setDiagnostic(bool status) noexcept { diagnostics = status; }
     private:
-        typedef SafeIterator<std::deque<char>::iterator>         SafeIter;
-        typedef LittleEndianBitIter<SafeIter>                    BitIter;
-        typedef HuffmanTree<uint16_t>::Decoder Decoder;
+        typedef std::conditional_t<security::isSecurePolicy<Policy>,
+            SafeIterator<std::deque<char>::iterator>,
+            std::deque<char>::iterator>                         SafeIter;
+        typedef LittleEndianBitIter<SafeIter>                   BitIter;
+        typedef HuffmanTree<uint16_t>::Decoder                  Decoder;
 
+        SafeIter getIterator(void);
         void parseHeader(void);
         void saveAdler32Code(void);
         bool readBlock(BitIter& iterator);
@@ -72,5 +78,8 @@ namespace ge {
         };
         static bool diagnostics;
     };
+
+    template class DeflateDecoder<Secured>;
+    template class DeflateDecoder<Unsecured>;
 
 }

@@ -1,6 +1,7 @@
 #include "DeflateDecoder.hpp"
 
 #include "../Exceptions/NotSupportedException.hpp"
+#include "../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../Exceptions/DeflateDecoderInvalidHeaderException.hpp"
 #include "../Exceptions/DeflateDecoderDataCorruptionException.hpp"
 
@@ -10,14 +11,18 @@
 
 namespace ge {
 
-    HuffmanTree<uint16_t>::Decoder DeflateDecoder::fixedCodeDecoder{};
+    template <security::SecurityPolicy Policy>
+    HuffmanTree<uint16_t>::Decoder DeflateDecoder<Policy>::fixedCodeDecoder{};
 
-    DeflateDecoder::DeflateDecoder(std::deque<char>& rawData) : rawData{rawData} {
+    template <security::SecurityPolicy Policy>
+    DeflateDecoder<Policy>::DeflateDecoder([[maybe_unused]] Policy policy, std::deque<char>& rawData)
+        : rawData{rawData}
+    {
         if (rawData.size() < 6)
             throw DeflateDecoderDataCorruptionException{};
         try {
             parseHeader();
-        } catch (HuffmanTreeException&) {
+        } catch (HuffmanTreeException const&) {
             if (diagnostics)
                 throw;
             else
@@ -28,7 +33,12 @@ namespace ge {
         saveAdler32Code();
     }
 
-    DeflateDecoder::CompressionLevel DeflateDecoder::getCompressionLevel(void) const noexcept {
+    template <security::SecurityPolicy Policy>
+    DeflateDecoder<Policy>::DeflateDecoder(std::deque<char>& rawData)
+        : DeflateDecoder{Policy{}, rawData} {}
+
+    template <security::SecurityPolicy Policy>
+    DeflateDecoder<Policy>::CompressionLevel DeflateDecoder<Policy>::getCompressionLevel(void) const noexcept {
         switch(compressionMethod) {
             case 0:
                 return CompressionLevel::Fastest;
@@ -42,7 +52,8 @@ namespace ge {
         return CompressionLevel::Default;
     }
 
-    void DeflateDecoder::parseHeader(void) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::parseHeader(void) {
         uint8_t cmf = rawData[0], flg = rawData[1];
         rawData.erase(rawData.begin(), rawData.begin() + 2);
         if (cmf != 0x78)    // @TODO add later more indepth info
@@ -55,14 +66,26 @@ namespace ge {
         compressionMethod = bits[6] + 2 * bits[7];
     }
 
-    std::vector<char>& DeflateDecoder::decompress(void) {
-        BitIter iterator {SafeIter{rawData.begin(), rawData.end()}};
+    template <security::SecurityPolicy Policy>
+    DeflateDecoder<Policy>::SafeIter DeflateDecoder<Policy>::getIterator(void) {
+        if constexpr (security::isSecurePolicy<Policy>)
+            return SafeIter{rawData.begin(), rawData.end()};
+        else if constexpr (security::isUnsecuredPolicy<Policy>)
+            return rawData.begin();
+        else
+            throw SecurityUnknownPolicyException{};
+    }
+
+    template <security::SecurityPolicy Policy>
+    std::vector<char>& DeflateDecoder<Policy>::decompress(void) {
+        BitIter iterator{getIterator()};
         while (readBlock(iterator));
         // adler32
         return outputStream;
     }
 
-    bool DeflateDecoder::readBlock(BitIter& iterator) {
+    template <security::SecurityPolicy Policy>
+    bool DeflateDecoder<Policy>::readBlock(BitIter& iterator) {
         bool isFinal = *iterator++;
         if (*iterator++) {
             if (*iterator++)
@@ -78,7 +101,8 @@ namespace ge {
         return !isFinal;
     }
 
-    void DeflateDecoder::decompressFixedBlock(BitIter& iterator) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::decompressFixedBlock(BitIter& iterator) {
         auto token = fixedCodeDecoder.decodeToken(iterator);
         for (;token != BlockEnd; token = fixedCodeDecoder.decodeToken(iterator)) {
             if (token < BlockEnd)
@@ -88,7 +112,8 @@ namespace ge {
         }
     }
 
-    void DeflateDecoder::decompressFixedDistance(uint16_t token, BitIter& iterator) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::decompressFixedDistance(uint16_t token, BitIter& iterator) {
         auto [lenBits, length] = extraLength.at(token);
         length += readNBits<uint16_t>(lenBits, iterator);
         uint16_t distanceToken = readRNBits<uint8_t>(5, iterator);
@@ -99,8 +124,10 @@ namespace ge {
             outputStream.push_back(outputStream.at(offset + i));
     }
 
-    std::pair<DeflateDecoder::Decoder, DeflateDecoder::Decoder> DeflateDecoder::generateDynamicTrees(
-        const Decoder& decoder, uint32_t literals, uint32_t distances, BitIter& iterator) const
+    template <security::SecurityPolicy Policy>
+    std::pair<typename DeflateDecoder<Policy>::Decoder, typename DeflateDecoder<Policy>::Decoder>
+        DeflateDecoder<Policy>::generateDynamicTrees(const Decoder& decoder, uint32_t literals,
+            uint32_t distances, BitIter& iterator) const
     {
         std::vector<uint16_t> bitLengths, distanceLength;
         bitLengths.reserve(MaxAlphabetLength);
@@ -129,7 +156,8 @@ namespace ge {
         return {HuffmanTree<uint16_t>{bitLengths}, HuffmanTree<uint16_t>{distanceLength}};
     }
 
-    void DeflateDecoder::dynamicBlockLoop(const Decoder& mainDecoder, const Decoder& distanceDecoder, BitIter& iterator) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::dynamicBlockLoop(const Decoder& mainDecoder, const Decoder& distanceDecoder, BitIter& iterator) {
         auto token = mainDecoder.decodeToken(iterator);
         for (;token != BlockEnd; token = mainDecoder.decodeToken(iterator)) {
             if (token < BlockEnd)
@@ -139,7 +167,8 @@ namespace ge {
         }
     }
 
-    void DeflateDecoder::decompressDynamicBlock(BitIter& iterator) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::decompressDynamicBlock(BitIter& iterator) {
         uint16_t literals = 257 + readNBits<uint16_t>(5, iterator);
         uint8_t distances = 1 + readNBits<uint8_t>(5, iterator);
         uint8_t codeLength = 4 + readNBits<uint8_t>(4, iterator);
@@ -151,7 +180,8 @@ namespace ge {
         dynamicBlockLoop(treeDecoder, distanceDecoder, iterator);
     }
 
-    void DeflateDecoder::decompressDynamicDistance(uint16_t token, BitIter& iterator, const HuffmanTree<uint16_t>::Decoder& distanceDecoder) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::decompressDynamicDistance(uint16_t token, BitIter& iterator, const HuffmanTree<uint16_t>::Decoder& distanceDecoder) {
         auto [addbits, addLength] = extraLength.at(token);
         uint32_t length = addLength + readNBits<uint32_t>(addbits, iterator);
         uint32_t distanceToken = distanceDecoder.decodeToken(iterator);
@@ -162,7 +192,8 @@ namespace ge {
             outputStream.push_back(outputStream.at(offset + i));
     }
 
-    void DeflateDecoder::copyNotCompressed(BitIter& iterator) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::copyNotCompressed(BitIter& iterator) {
         iterator.skipToNextByte();
         uint16_t length = readType<uint16_t, true>(iterator);
         uint16_t complement = readType<uint16_t, true>(iterator);
@@ -173,7 +204,8 @@ namespace ge {
             outputStream.push_back(static_cast<char>(iterator.readByte()));
     }
 
-    void DeflateDecoder::saveAdler32Code(void) {
+    template <security::SecurityPolicy Policy>
+    void DeflateDecoder<Policy>::saveAdler32Code(void) {
         uint8_t* ptr = reinterpret_cast<uint8_t*>(&adler32Code);
         for (uint8_t* end = ptr + 4; ptr != end; ++ptr) {
             *ptr = rawData.back();
@@ -181,7 +213,8 @@ namespace ge {
         }
     }
 
-    uint32_t DeflateDecoder::calculateAlder32(void) const noexcept {
+    template <security::SecurityPolicy Policy>
+    uint32_t DeflateDecoder<Policy>::calculateAlder32(void) const noexcept {
         uint32_t s1 = 1, s2 = 0;
         for (const auto& value : outputStream) {
             s1 = (s1 + value) % DeflateDecoder::AdlerBase;
@@ -190,6 +223,7 @@ namespace ge {
         return (s2 << 16) + s1;
     }
 
-    bool DeflateDecoder::diagnostics = false;
+    template <security::SecurityPolicy Policy>
+    bool DeflateDecoder<Policy>::diagnostics = false;
 
 }
