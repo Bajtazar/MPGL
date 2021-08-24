@@ -43,7 +43,7 @@ namespace ge {
         auto getTextures(void);
         std::vector<std::string>& getInvalidPaths(void) const noexcept;
 
-        ~TextureLoader(void) = default;
+        ~TextureLoader(void);
     private:
         typedef std::vector<std::pair<std::string, Texture<Alloc>>> TextureVector;
         typedef ThreadsafeQueue<std::pair<std::string, Image>>      LoaderQueue;
@@ -166,6 +166,7 @@ namespace ge {
                 loader.invalidPaths.paths.push_back(*path);
             } catch(...) {
                 loader.exception = std::current_exception();
+                loader.imagePaths = ImageQueue{};   // stops other threads
                 break;
             }
             loader.counter.fetch_add(1, std::memory_order_relaxed);
@@ -194,6 +195,12 @@ namespace ge {
             throw TextureLoaderMovedTexturesException{};
         available = false;
         return TexturePack<>{executionPolicy, std::move(textures)};
+    }
+
+    template <execution::ExecutionPolicy ExecutionPolicy,
+        security::SecurityPolicy SecurityPolicy, Allocator Alloc>
+    TextureLoader<ExecutionPolicy, SecurityPolicy, Alloc>::~TextureLoader(void) {
+        imagePaths = ImageQueue{};
     }
 
 }
