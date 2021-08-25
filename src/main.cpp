@@ -2,6 +2,8 @@
 #include <math.h>
 #include <numbers>
 
+#include "Engine/Core/Text/TTFLoader.hpp"
+
 using namespace ge;
 
 int main(void) noexcept {
@@ -20,6 +22,8 @@ int main(void) noexcept {
     TextureLoader loader{execution::parallel, "textures"};
     loader.loadAll();
     auto pack = loader.getTextures();
+
+    TTFLoader<> font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
 
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[1]);

@@ -31,6 +31,12 @@ namespace ge {
         return static_cast<T>(*iterator++);
     }
 
+    template < bool BigEndian = false, std::floating_point T = float,
+        std::size_t Shift = 16, std::input_iterator Iter>
+    inline T readFixed(Iter& iterator) noexcept(NothrowReadable<Iter>) {
+        return static_cast<T>(readType<T, BigEndian>(iterator)) / (1 << Shift);
+    }
+
     template <std::input_iterator Iter>
         requires (std::same_as<std::iter_value_t<Iter>, char>)
     std::string readNChars(std::size_t length, Iter& iter) noexcept(NothrowReadable<Iter>) {
