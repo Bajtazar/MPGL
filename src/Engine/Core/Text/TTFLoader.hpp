@@ -139,16 +139,18 @@ namespace ge {
                 std::vector<int16_t>    idDelta;
                 std::vector<uint16_t>   idRangeOffsets;
                 Iter                    rangeOffsets;
+
+                void getGlyphID(void);
             };
             explicit Cmap(void) noexcept = default;
             explicit Cmap(Iter& iter);
             uint16_t                        version;
             uint16_t                        numTables;  // +
             std::vector<EncodingRecord>     encodingRecords;
-            std::optional<uint32_t> readPlatform(void);
             Format4Subtable                 format4Subtable;
             // encoded records;
             // glyph index map?
+            std::optional<uint32_t> readPlatform(void);
         };
 
         typedef std::vector<uint16_t>           Loca16;

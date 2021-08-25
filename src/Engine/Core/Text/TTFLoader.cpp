@@ -2,6 +2,7 @@
 
 #include "../../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../../ImageLoading/LoadingHelpers.hpp"
+#include "UTF-8.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -212,6 +213,25 @@ namespace ge {
         std::ranges::transform(limit, std::back_inserter(idDelta), reader);
         rangeOffsets = iter;
         std::ranges::transform(limit, std::back_inserter(idRangeOffsets), reader);
+        getGlyphID();
+    }
+
+    template <security::SecurityPolicy Policy>
+    void TTFLoader<Policy>::Cmap::Format4Subtable::getGlyphID(void) {
+        for (uint16_t i = 0;i != endCode.size() - 1; ++i) {
+            uint16_t glyphID = 0;
+            for (uint16_t j = startCode[i]; j != endCode[i]; ++j) {
+                if (idRangeOffsets[i]) {
+                    auto glyphIndexOffset = rangeOffsets + (j - startCode[i] + i) * 2
+                        + idRangeOffsets[i];
+                    glyphID = readType<uint16_t, true>(glyphIndexOffset);
+                    if (glyphID)
+                        glyphID = (glyphID + idDelta[i]) & 0xFFFF;
+                } else
+                    glyphID = (j + idDelta[i]) & 0xFFFF;
+                // j -> key, glyphID -> value;
+            }
+        }
     }
 
 }
