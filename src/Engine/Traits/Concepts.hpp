@@ -1,6 +1,7 @@
 #pragma once
 
-#include <concepts>
+#include "Traits.hpp"
+
 #include <ranges>
 
 namespace ge {
@@ -73,5 +74,8 @@ namespace ge {
     template <typename T>
     concept Adaptable = requires(T& a, typename T::value_type b) { a / a; a * a; a * b; a / b; a - b; a + b; }
         && std::is_convertible_v<uint32_t, typename T::value_type>;
+
+    template <typename T, typename... Args>
+    concept ConstexprConstructible = IsConstexprConstructibleV<T, Args...>;
 
 }
