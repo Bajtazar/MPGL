@@ -39,7 +39,7 @@ namespace ge {
         && std::convertible_to<std::ranges::range_value_t<Range>, T>;
 
     template <class Iter>
-    concept SameSizeInputIterator = std::input_iterator<Iter>
+    concept ByteInputIterator = std::input_iterator<Iter>
         && requires (Iter iter) { {*iter} -> SameSize<std::byte>; };
 
     template <class Iter, typename... Args>

@@ -28,7 +28,7 @@ namespace ge {
     template <std::integral T, BitIterator Iter>
     constexpr T readRNBits(std::size_t length, Iter& iter) noexcept;
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     class LittleEndianBitIter : public std::iterator<BitIteratorTag, bool> {
     public:
         using bit =                     bool;
@@ -55,7 +55,7 @@ namespace ge {
         uint8_t bitIter;
     };
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     class BigEndianBitIter : public std::iterator<BitIteratorTag, bool> {
     public:
         using bit =                     bool;
@@ -82,7 +82,7 @@ namespace ge {
         uint8_t bitIter;
     };
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     constexpr LittleEndianBitIter<Iter>& LittleEndianBitIter<Iter>::operator++ (void) noexcept {
         ++bitIter;
         if (bitIter == byteLength()) {
@@ -92,20 +92,20 @@ namespace ge {
         return *this;
     }
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     constexpr LittleEndianBitIter<Iter> LittleEndianBitIter<Iter>::operator++ (int) noexcept {
         auto temp = *this;
         ++(*this);
         return temp;
     }
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     constexpr std::byte LittleEndianBitIter<Iter>::readByte(void) noexcept {
         bitIter = 0;
         return static_cast<std::byte>(*iter++);
     }
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     constexpr BigEndianBitIter<Iter>& BigEndianBitIter<Iter>::operator++ (void) noexcept {
         if (!(bitIter--)) {
             ++iter;
@@ -114,14 +114,14 @@ namespace ge {
         return *this;
     }
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     constexpr BigEndianBitIter<Iter> BigEndianBitIter<Iter>::operator++ (int) noexcept {
         auto temp = *this;
         ++(*this);
         return temp;
     }
 
-    template <SameSizeInputIterator Iter>
+    template <ByteInputIterator Iter>
     constexpr std::byte BigEndianBitIter<Iter>::readByte(void) noexcept {
         bitIter = 7;
         return static_cast<std::byte>(*iter++);

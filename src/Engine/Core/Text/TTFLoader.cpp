@@ -56,11 +56,11 @@ namespace ge {
         if (std::holds_alternative<Loca16>(locaTable)) {
             auto& table = std::get<Loca16>(locaTable);
             for (uint16_t const& index : std::ranges::subrange{table.begin(), table.end()-1})
-                glyfTable.emplace_back(getIterator(buffer.begin() + index + tables["glyf"].offset));
+                glyfTable.emplace_back(getIterator(buffer.begin() + 2 * index + tables["glyf"].offset));
         } else {
             auto& table = std::get<Loca32>(locaTable);
             for (uint32_t const& index : std::ranges::subrange{table.begin(), table.end()-1})
-                glyfTable.emplace_back(getIterator(buffer.begin() + 2 * index + tables["glyf"].offset));
+                glyfTable.emplace_back(getIterator(buffer.begin() + index + tables["glyf"].offset));
         }
     }
 
@@ -74,15 +74,15 @@ namespace ge {
     template <security::SecurityPolicy Policy>
     void TTFLoader<Policy>::loadLoca(void) {
         auto iter = getIterator(buffer.begin() + tables["loca"].offset);
-        if (headTable.indexFormat) { // 16
-            Loca16 loca;
-            for (uint16_t i = 0; i < maxpTable.numGlyphs + 1; ++i)
-                loca.push_back(readType<uint16_t, true>(iter));
-            locaTable = std::move(loca);
-        } else { // 32
+        if (headTable.indexFormat) { // 32
             Loca32 loca;
             for (uint16_t i = 0; i < maxpTable.numGlyphs + 1; ++i)
                 loca.push_back(readType<uint32_t, true>(iter));
+            locaTable = std::move(loca);
+        } else { // 16
+            Loca16 loca;
+            for (uint16_t i = 0; i < maxpTable.numGlyphs + 1; ++i)
+                loca.push_back(readType<uint16_t, true>(iter));
             locaTable = std::move(loca);
         }
     }
