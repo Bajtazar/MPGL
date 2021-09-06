@@ -34,7 +34,7 @@ namespace ge {
     template < bool BigEndian = false, std::floating_point T = float,
         std::size_t Shift = 16, std::input_iterator Iter>
     inline T readFixed(Iter& iterator) noexcept(NothrowReadable<Iter>) {
-        return static_cast<T>(readType<T, BigEndian>(iterator)) / (1 << Shift);
+        return static_cast<T>(readType<int32_t, BigEndian>(iterator)) / (1 << Shift);
     }
 
     template <std::input_iterator Iter>
@@ -48,8 +48,7 @@ namespace ge {
     template <std::input_iterator Iter>
         requires (std::same_as<std::iter_value_t<Iter>, char>)
     void ignoreNBytes(std::size_t length, Iter& iter) noexcept(NothrowReadable<Iter>) {
-        for ([[maybe_unused]] auto _ : std::views::iota(std::size_t(0), length))
-            [[maybe_unused]] char c = *iter++;
+        std::advance(iter, length);
     }
 
 }

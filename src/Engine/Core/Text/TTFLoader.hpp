@@ -3,6 +3,7 @@
 #include "../../Collections/SafeIterator.hpp"
 #include "../../Utility/Security.hpp"
 #include "../../Utility/FileIO.hpp"
+#include "VectorizedGlyph.hpp"
 
 #include <variant>
 #include <vector>
@@ -15,6 +16,20 @@ namespace ge {
     public:
         explicit TTFLoader(std::string const& fileName);
         explicit TTFLoader(Policy policy, std::string const& fileName);
+
+        VectorizedGlyph getGlyph(uint16_t id) {
+            auto iter = getIterator(buffer.begin());
+            if (auto index = cmapTable.format4Subtable.glyphIndexMap.find(id);
+                index != cmapTable.format4Subtable.glyphIndexMap.end()) {
+
+                if (std::holds_alternative<Loca16>(locaTable))
+                    iter += tables["glyf"].offset + 2 * std::get<Loca16>(locaTable)[index->second];
+                else
+                    iter += tables["glyf"].offset + std::get<Loca32>(locaTable)[index->second];
+            }
+
+            return VectorizedGlyph{iter , getIterator(buffer.begin())};
+        }
 
     private:
         typedef std::string::const_iterator                 BuffIter;
@@ -107,20 +122,10 @@ namespace ge {
             std::vector<int16_t>        leftSideBearings;
         };
 
-        struct GlyfTable {
-            explicit GlyfTable(void) noexcept = default;
-            explicit GlyfTable(Iter iter);
-            int16_t         numberOfContours;
-            int16_t         xMin;
-            int16_t         yMin;
-            int16_t         xMax;
-            int16_t         yMax;
-        };
-
         struct Cmap {
             struct EncodingRecord {
-                explicit EncodingRecord(void) noexcept = default;
-                explicit EncodingRecord(Iter& iter);
+                EncodingRecord(void) noexcept = default;
+                EncodingRecord(Iter& iter);
                 uint16_t    platformID;
                 uint16_t    encodingID;
                 uint32_t    subtableOffset;
@@ -138,36 +143,30 @@ namespace ge {
                 std::vector<uint16_t>   startCode;
                 std::vector<int16_t>    idDelta;
                 std::vector<uint16_t>   idRangeOffsets;
+                std::map<uint16_t, uint16_t>    glyphIndexMap; // temporary
                 Iter                    rangeOffsets;
 
                 void getGlyphID(void);
             };
             explicit Cmap(void) noexcept = default;
             explicit Cmap(Iter& iter);
-            uint16_t                        version;
-            uint16_t                        numTables;  // +
-            std::vector<EncodingRecord>     encodingRecords;
             Format4Subtable                 format4Subtable;
-            // encoded records;
-            // glyph index map?
-            std::optional<uint32_t> readPlatform(void);
+
+            std::optional<uint32_t> readPlatform(EncodingRecord const& record);
         };
 
         typedef std::vector<uint16_t>           Loca16;
         typedef std::vector<uint32_t>           Loca32;
         typedef std::variant<Loca16, Loca32>    Loca;
-        typedef std::vector<GlyfTable>          Glyf;
 
         Head                                    headTable;
         Maxp                                    maxpTable;
         Hhea                                    hheaTable;
         Hmtx                                    hmtxTable;
         Loca                                    locaTable;
-        Glyf                                    glyfTable;
         Cmap                                    cmapTable;
 
         void loadCmap(void);
-        void loadGlyf(void);
         void loadLoca(void);
         void loadHmtx(void);
         void readTable(TableInterface& table, TableDirectory const& config);

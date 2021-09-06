@@ -45,6 +45,12 @@ namespace ge {
         Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
         const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }
 
+        Vertex& front(void) noexcept { return vertices.front(); }
+        const Vertex& front(void) const noexcept { return vertices.front(); }
+
+        Vertex& back(void) noexcept { return vertices.back(); }
+        const Vertex& back(void) const noexcept { return vertices.back(); }
+
         using iterator = std::vector<Vertex>::iterator;
         using const_iterator = std::vector<Vertex>::const_iterator;
         using reverse_iterator = std::vector<Vertex>::reverse_iterator;

@@ -39,36 +39,17 @@ namespace ge {
         readTable(headTable, tables["head"]);
         readTable(maxpTable, tables["maxp"]);
         readTable(hheaTable, tables["hhea"]);
+        std::cout << "Size: " << maxpTable.numGlyphs << '\n';
         loadHmtx();
         loadLoca();
-        loadGlyf();
         loadCmap();
+        //loadCmap();
     }
 
     template <security::SecurityPolicy Policy>
     void TTFLoader<Policy>::loadCmap(void) {
         auto iter = getIterator(buffer.begin() + tables["cmap"].offset);
         cmapTable = Cmap{iter};
-    }
-
-    template <security::SecurityPolicy Policy>
-    void TTFLoader<Policy>::loadGlyf(void) {
-        if (std::holds_alternative<Loca16>(locaTable)) {
-            auto& table = std::get<Loca16>(locaTable);
-            for (uint16_t const& index : std::ranges::subrange{table.begin(), table.end()-1})
-                glyfTable.emplace_back(getIterator(buffer.begin() + 2 * index + tables["glyf"].offset));
-        } else {
-            auto& table = std::get<Loca32>(locaTable);
-            for (uint32_t const& index : std::ranges::subrange{table.begin(), table.end()-1})
-                glyfTable.emplace_back(getIterator(buffer.begin() + index + tables["glyf"].offset));
-        }
-    }
-
-    template <security::SecurityPolicy Policy>
-    TTFLoader<Policy>::GlyfTable::GlyfTable(Iter iter) {
-        int16_t* ptr = &numberOfContours;
-        for (uint8_t i = 0;i != 5; ++i, ++ptr)
-            *ptr = readType<int16_t, true>(iter);
     }
 
     template <security::SecurityPolicy Policy>
@@ -167,29 +148,27 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     TTFLoader<Policy>::Cmap::Cmap(Iter& iter) {
-        version = readType<uint16_t, true>(iter);
-        numTables = readType<uint16_t, true>(iter);
-        for (auto i : std::views::iota(uint16_t(0), numTables))
-            encodingRecords.emplace_back(iter);
-        if (auto offset = readPlatform()) {
-            auto format = readType<uint16_t, true>(iter);
-            if (format == 4)
-                format4Subtable = Format4Subtable{iter};
-            else
-                std::cout << "Format4 exception\n";
-        } else std::cout << "Platfrom exception\n"; // throw an exception
+        auto const begin = iter;
+        if (readType<uint16_t, true>(iter)) {} // throw an error
+        for (auto i : std::views::iota(uint16_t(0), readType<uint16_t, true>(iter))) {
+            if (auto offset = readPlatform({iter})) {
+                auto subtableIter = begin + *offset;
+                if (readType<uint16_t, true>(subtableIter) == 4)
+                    format4Subtable = Format4Subtable{subtableIter};
+                else
+                    std::cout << "Format4 exception\n";
+            }
+        }
     }
 
     template <security::SecurityPolicy Policy>
-    std::optional<uint32_t> TTFLoader<Policy>::Cmap::readPlatform(void) {
-        for (EncodingRecord const& record : encodingRecords) {
-            bool windowsPlatform = (record.platformID == 3) &&
-                (record.encodingID < 2 || record.encodingID == 10);
-            bool unicodePlatform = !record.platformID &&
-                record.encodingID < 5;
-            if (windowsPlatform || unicodePlatform)
-                return {record.subtableOffset};
-        }
+    std::optional<uint32_t> TTFLoader<Policy>::Cmap::readPlatform(EncodingRecord const& record) {
+        bool windowsPlatform = (record.platformID == 3) &&
+            (record.encodingID < 2 || record.encodingID == 10);
+        /*bool unicodePlatform = !record.platformID &&
+            record.encodingID < 5;*/ // temporary disabled
+        if (windowsPlatform)
+            return {record.subtableOffset};
         return {};
     }
 
@@ -218,18 +197,19 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     void TTFLoader<Policy>::Cmap::Format4Subtable::getGlyphID(void) {
-        for (uint16_t i = 0;i != endCode.size() - 1; ++i) {
-            uint16_t glyphID = 0;
-            for (uint16_t j = startCode[i]; j != endCode[i]; ++j) {
+        for (std::size_t i = 0; i != endCode.size(); ++i) {
+            uint16_t index = 0;
+            for (std::size_t j = startCode[i]; j != endCode[i]; ++j) {
                 if (idRangeOffsets[i]) {
-                    auto glyphIndexOffset = rangeOffsets + (j - startCode[i] + i) * 2
+                    auto glyphOffset = rangeOffsets + (j - startCode[i] + i) * 2
                         + idRangeOffsets[i];
-                    glyphID = readType<uint16_t, true>(glyphIndexOffset);
-                    if (glyphID)
-                        glyphID = (glyphID + idDelta[i]) & 0xFFFF;
+                    index = readType<uint16_t, true>(glyphOffset);
+                    if (index)
+                        index = (index + idDelta[i]) & 0xFFFF;
                 } else
-                    glyphID = (j + idDelta[i]) & 0xFFFF;
-                // j -> key, glyphID -> value;
+                    index = (j + idDelta[i]) & 0xFFFF;
+                glyphIndexMap[j] = index;
+                // glyphIndexMap[j] = VectorizedGlyph{index + locaTableOffset}
             }
         }
     }

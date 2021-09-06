@@ -16,7 +16,7 @@ namespace ge {
         using value_type = T;
 
         template <Arithmetic... Args>
-            requires (sizeof...(Args) == Size)
+            requires (sizeof...(Args) == Size && AllSame<value_type, Args...>)
         constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{args...} { ge::reverse(*this); }
 
         constexpr Vector(void) noexcept = default;
@@ -294,7 +294,7 @@ namespace ge {
     }
 
     constexpr Vector2i operator"" _y(unsigned long long int value) noexcept {
-        return Vector2i{0, static_cast<uint32_t>(value)};
+        return Vector2i{0u, static_cast<uint32_t>(value)};
     }
 
 }
