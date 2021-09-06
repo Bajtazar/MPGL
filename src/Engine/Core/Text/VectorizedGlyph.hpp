@@ -103,7 +103,9 @@ namespace ge {
         };
 
         template <ByteInputIterator Iter>
-        explicit VectorizedGlyph(Iter iter, Iter const& begin);
+        explicit VectorizedGlyph(Iter iter);
+
+        explicit VectorizedGlyph(void) noexcept = default;
 
         bool exist(void) const noexcept { return !std::holds_alternative<std::monostate>(glyph); }
         bool isSimple(void) const noexcept { return std::holds_alternative<SimpleGlyph>(glyph); }
@@ -161,9 +163,7 @@ namespace ge {
     }
 
     template <ByteInputIterator Iter>
-    VectorizedGlyph::VectorizedGlyph(Iter iter, Iter const& begin) {
-        if (iter == begin)
-            return;
+    VectorizedGlyph::VectorizedGlyph(Iter iter) {
         if (auto numberOfContours = readHeader(iter); numberOfContours >= 0)
             glyph = SimpleGlyph{iter, numberOfContours};
         else

@@ -26,13 +26,11 @@ int main(void) noexcept {
     auto pack = loader.getTextures();
 
     TTFLoader<> font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
-    auto glyph = font.getGlyph('y');
+    char character;
+    std::cin >> character;
+    auto glyph = font.getGlyphs()[character].glyph;
     std::cout << glyph.exist() << ' ' << glyph.isSimple() << '\n';
     auto xChar = glyph.getSimpleGlyph();
-    std::cout << "Size: " << xChar.points.size() << '\n';
-
-    for (auto const& point : xChar.points)
-       std::cout << point.position[0] << ' ' << point.position[1] << '\n';
 
     window.emplaceDrawable<LineStrip>(xChar.points.size() + 1);
     auto& points = dynamic_cast<LineStrip&>(*window[1]);
