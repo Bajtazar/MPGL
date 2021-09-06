@@ -20,11 +20,12 @@ namespace ge {
         typedef std::vector<uint8_t>                UByteVec;
         typedef std::variant<uint8_t, uint16_t>     Argument;
         typedef TwoVector<int16_t>                  Vector2si;
+        typedef Vector<float, 6>                    ProjectionMatrix;
 
         struct Point {
             explicit Point(Vector2si const& position, bool onCurve) noexcept
                 : position{position}, onCurve{onCurve} {}
-            Vector2si                              position;
+            Vector2si                               position;
             bool                                    onCurve;
         };
 
@@ -46,7 +47,7 @@ namespace ge {
             Points                                  points;
 
             template <ByteInputIterator Iter>
-            explicit SimpleGlyph(Iter iter, int16_t numberOfContours);
+            explicit SimpleGlyph(Iter& iter, int16_t numberOfContours);
         private:
             template <ByteInputIterator Iter>
             UByteVec readFlags(Iter& iter, uint16_t points);
@@ -72,15 +73,35 @@ namespace ge {
                 UnscaledComponentOffset = 0x1000
             };
 
-            uint16_t                                flags;
-            uint16_t                                glyphIndex;
-            Argument                                argument1;
-            Argument                                argument2;
+            struct Component {
+                uint16_t                            glyphIndex;
+                int16_t                             destination;
+                int16_t                             source;
+                ProjectionMatrix                    projection;
+
+                explicit Component(uint16_t glyphIndex) noexcept : glyphIndex{glyphIndex},
+                    destination{0}, source{0}, projection{1.f, 0.f, 0.f, 1.f, 0.f, 0.f} {}
+
+                void readArgs(int16_t arg1, int16_t arg2, uint16_t const& flag) noexcept;
+
+                template <ByteInputIterator Iter>
+                void readProjection(Iter& iter, uint16_t const& flag);
+            };
+
+            typedef std::vector<Component>          Components;
+
+            Components                              components;
 
             template <ByteInputIterator Iter>
-            explicit CompositeGlyph(Iter iter, int16_t numberOfContours);
+            explicit CompositeGlyph(Iter& iter);
         private:
+            typedef std::pair<int16_t, int16_t>     Arguments;
 
+            template <ByteInputIterator Iter>
+            static float read2Dot14(Iter& iter) { return readFixed<true, int16_t, float, 14>(iter); }
+
+            template <ByteInputIterator Iter>
+            Arguments readArguments(Iter& iter, uint16_t const& flag);
         };
 
         template <ByteInputIterator Iter>
@@ -119,6 +140,18 @@ namespace ge {
         return left & static_cast<uint8_t>(right);
     }
 
+    constexpr inline uint16_t operator& (VectorizedGlyph::CompositeGlyph::Flags const& left,
+        uint16_t right) noexcept
+    {
+        return static_cast<uint16_t>(left) & right;
+    }
+
+    constexpr inline uint16_t operator& (uint16_t left,
+        VectorizedGlyph::CompositeGlyph::Flags const& right) noexcept
+    {
+        return left & static_cast<uint16_t>(right);
+    }
+
     template <ByteInputIterator Iter>
     int16_t VectorizedGlyph::readHeader(Iter& iter) {
         int16_t numberOfContours = readType<int16_t, true>(iter);
@@ -135,12 +168,12 @@ namespace ge {
             return;
         if (auto numberOfContours = readHeader(iter); numberOfContours >= 0)
             glyph = SimpleGlyph{iter, numberOfContours};
-        else {}
-            //glyph = CompositeGlyph{iter, numberOfContours};
+        else
+            glyph = CompositeGlyph{iter};
     }
 
     template <ByteInputIterator Iter>
-    VectorizedGlyph::SimpleGlyph::SimpleGlyph(Iter iter, int16_t numberOfContours) {
+    VectorizedGlyph::SimpleGlyph::SimpleGlyph(Iter& iter, int16_t numberOfContours) {
         for (auto i : std::views::iota(int16_t(0), numberOfContours))
             endPtsOfContours.push_back(readType<uint16_t, true>(iter));
         for (auto i : std::views::iota(uint16_t(0), readType<uint16_t, true>(iter)))
@@ -185,13 +218,43 @@ namespace ge {
     }
 
     template <ByteInputIterator Iter>
-    VectorizedGlyph::CompositeGlyph::CompositeGlyph(Iter iter, int16_t numberOfContours) {
-        /*uint16_t flag;
+    VectorizedGlyph::CompositeGlyph::Arguments
+        VectorizedGlyph::CompositeGlyph::readArguments(Iter& iter, uint16_t const& flag)
+    {
+        if (flag & Flags::Arg1And2AreWords)
+            return Arguments{readType<int16_t, true>(iter), readType<int16_t, true>(iter)};
+        return Arguments{readType<uint8_t>(iter), readType<uint8_t>(iter)};
+    }
+
+    template <ByteInputIterator Iter>
+    VectorizedGlyph::CompositeGlyph::CompositeGlyph(Iter& iter) {
+        uint16_t flag;
         do {
             flag = readType<uint16_t, true>(iter);
-            uint16_t componentGlyphID = readType<uint16_t, true>(iter);
+            Component component{readType<uint16_t, true>(iter)};
+            auto&& [argument2, argument1] = readArguments(iter, flag);
+            component.readArgs(argument1, argument2, flag);
+            component.readProjection(iter, flag);
+            components.push_back(std::move(component));
+        } while (flag & Flags::MoreComponents);
+    }
 
-        } while (flag & Flags::MoreComponents);*/
+    template <ByteInputIterator Iter>
+    void VectorizedGlyph::CompositeGlyph::Component::readProjection(
+        Iter& iter, uint16_t const& flag)
+    {
+        if (flag & Flags::WeHaveAScale) {
+            projection[0] = read2Dot14(iter);
+            projection[4] = projection[0];
+        } else if (flag & Flags::WeHaveAnXAndYScale) {
+            projection[0] = read2Dot14(iter);
+            projection[4] = read2Dot14(iter);
+        } else if (flag & Flags::WeHaveATwoByTwo) {
+            projection[0] = read2Dot14(iter);
+            projection[1] = read2Dot14(iter);
+            projection[3] = read2Dot14(iter);
+            projection[4] = read2Dot14(iter);
+        }
     }
 
 }

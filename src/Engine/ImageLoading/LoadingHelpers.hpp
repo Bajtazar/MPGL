@@ -31,10 +31,10 @@ namespace ge {
         return static_cast<T>(*iterator++);
     }
 
-    template < bool BigEndian = false, std::floating_point T = float,
+    template <bool BigEndian = false, std::integral U = int32_t, std::floating_point T = float,
         std::size_t Shift = 16, std::input_iterator Iter>
     inline T readFixed(Iter& iterator) noexcept(NothrowReadable<Iter>) {
-        return static_cast<T>(readType<int32_t, BigEndian>(iterator)) / (1 << Shift);
+        return static_cast<T>(readType<U, BigEndian>(iterator)) / (1 << Shift);
     }
 
     template <std::input_iterator Iter>
