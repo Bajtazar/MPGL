@@ -155,9 +155,22 @@ namespace ge {
             std::optional<uint32_t> readPlatform(EncodingRecord const& record);
         };
 
+        struct KernTable {
+            typedef std::map<uint32_t, int16_t> DistanceMap;
+
+            DistanceMap                         distance;
+            bool                                axis;
+
+            explicit KernTable(Iter& iter);
+
+            void setAxis(uint16_t const& coverage) noexcept;
+        };
+
         typedef std::vector<uint16_t>           Loca16;
         typedef std::vector<uint32_t>           Loca32;
         typedef std::variant<Loca16, Loca32>    Loca;
+        typedef std::vector<KernTable>          Kern;
+
 
         Head                                    headTable;
         Maxp                                    maxpTable;
@@ -165,7 +178,9 @@ namespace ge {
         Hmtx                                    hmtxTable;
         Loca                                    locaTable;
         Cmap                                    cmapTable;
+        Kern                                    kernTable;
 
+        void loadKern(void);
         void loadCmap(void);
         void loadLoca(void);
         void loadHmtx(void);

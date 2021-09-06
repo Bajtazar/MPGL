@@ -9,8 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include <iostream>
-
 namespace ge {
 
     class VectorizedGlyph {

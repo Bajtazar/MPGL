@@ -42,8 +42,8 @@ namespace ge {
         std::cout << "Size: " << maxpTable.numGlyphs << '\n';
         loadHmtx();
         loadLoca();
+        loadKern();
         loadCmap();
-        //loadCmap();
     }
 
     template <security::SecurityPolicy Policy>
@@ -66,6 +66,37 @@ namespace ge {
                 loca.push_back(readType<uint16_t, true>(iter));
             locaTable = std::move(loca);
         }
+    }
+
+    template <security::SecurityPolicy Policy>
+    void TTFLoader<Policy>::loadKern(void) {
+        auto iter = getIterator(buffer.begin()) + tables["kern"].offset;
+        if (readType<uint16_t, true>(iter)) {} // throw an exception
+        auto size = readType<uint16_t, true>(iter);
+        kernTable.reserve(size);
+        for (auto _ : std::views::iota(uint16_t(0), size))
+            kernTable.emplace_back(iter);
+    }
+
+    template <security::SecurityPolicy Policy>
+    TTFLoader<Policy>::KernTable::KernTable(Iter& iter) {
+        if (readType<uint16_t, true>(iter)) return;
+        std::advance(iter, 2);
+        setAxis(readType<uint16_t, true>(iter));
+        auto range = std::views::iota(uint16_t(0), readType<uint16_t, true>(iter));
+        std::advance(iter, 6);
+        for (auto _ : range) {
+            uint32_t key = readType<uint16_t, true>(iter) << 0x0010;
+            key += readType<uint16_t, true>(iter);
+            distance[key] = readType<int16_t, true>(iter);
+        }
+    }
+
+    template <security::SecurityPolicy Policy>
+    void TTFLoader<Policy>::KernTable::setAxis(uint16_t const& coverage) noexcept {
+        bool horizontal = coverage & 0x0001;
+        bool cross = coverage & 0x0002;
+        axis = cross == horizontal;
     }
 
     template <security::SecurityPolicy Policy>
