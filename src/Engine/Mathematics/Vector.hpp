@@ -36,6 +36,9 @@ namespace ge {
 
         consteval std::size_t size(void) const noexcept { return Size; }
 
+        template <Arithmetic U = T>
+        constexpr U length(void) const noexcept;
+
         constexpr Vector& operator+=(const Vector& right) noexcept;
         constexpr Vector& operator-=(const Vector& right) noexcept;
         constexpr Vector& operator*=(const Vector& right) noexcept;
@@ -145,6 +148,13 @@ namespace ge {
     template <Arithmetic U, Arithmetic T, std::size_t Size>
     constexpr Vector<U, Size> vectorCast(Vector<T, Size> const& vector) noexcept {
         return static_cast<Vector<U, Size>>(vector);
+    }
+
+    template <Arithmetic T, std::size_t Size>
+    template <Arithmetic U>
+    constexpr U Vector<T, Size>::length(void) const noexcept {
+        T sum = accumulate(*this, T{0}, [](T const& value) { return value * value; });
+        return static_cast<U>(std::sqrt(sum));
     }
 
     template <Arithmetic T, std::size_t Size>
