@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Engine/Core/Text/TTFLoader.hpp"
+#include "Engine/Core/Text/FontRasterizer.hpp"
 
 using namespace ge;
 
@@ -28,7 +29,8 @@ int main(void) noexcept {
     TTFLoader<> font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
     char character;
     std::cin >> character;
-    auto glyph = font.getGlyphs()[character].glyph;
+    /*auto glyphData = font.getGlyphs()[character];
+    auto glyph = glyphData.glyph;
     std::cout << glyph.exist() << ' ' << glyph.isSimple() << '\n';
     auto xChar = glyph.getSimpleGlyph();
 
@@ -38,7 +40,12 @@ int main(void) noexcept {
         points[i].position = static_cast<Vector2f>(xChar.points[i].position) / 10.f + Vector2f{20.f, 300.f};
     points.back().position = points.front().position;
     for (auto& color : points | views::color)
-        color = Color::literals::White;
+        color = Color::literals::White;*/
+
+    auto glyphData = font.getGlyphs()[character];
+    FontRasterizer raster{font.getFontData(), glyphData};
+    auto glyph = raster.rasterize(120);
+    window.emplaceDrawable<DefaultSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
 
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[2]);

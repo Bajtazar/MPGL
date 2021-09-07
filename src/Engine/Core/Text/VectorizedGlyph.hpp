@@ -11,13 +11,14 @@
 
 namespace ge {
 
+    typedef TwoVector<int16_t>                      Vector2si;
+
     class VectorizedGlyph {
     public:
         typedef std::vector<uint16_t>               UShortVec;
         typedef std::vector<int16_t>                ShortVec;
         typedef std::vector<uint8_t>                UByteVec;
         typedef std::variant<uint8_t, uint16_t>     Argument;
-        typedef TwoVector<int16_t>                  Vector2si;
         typedef Vector<float, 6>                    ProjectionMatrix;
 
         struct Point {

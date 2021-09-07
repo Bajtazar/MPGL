@@ -3,7 +3,7 @@
 #include "../../Collections/SafeIterator.hpp"
 #include "../../Utility/Security.hpp"
 #include "../../Utility/FileIO.hpp"
-#include "VectorizedGlyph.hpp"
+#include "FontComponents.hpp"
 
 #include <variant>
 #include <vector>
@@ -22,41 +22,7 @@ namespace ge {
         explicit TTFLoader(FileName const& fileName);
         explicit TTFLoader(Policy policy, FileName const& fileName);
 
-        struct FontData {
-            uint16_t                            unitsPerEm;
-            int16_t                             xMin;
-            int16_t                             yMin;
-            int16_t                             xMax;
-            int16_t                             yMax;
-
-            explicit FontData(void) noexcept = default;
-        };
-
-        struct Glyph {
-            VectorizedGlyph                     glyph;
-            uint16_t                            advanceWidth;
-            int16_t                             leftSideBearing;
-
-            explicit Glyph(VectorizedGlyph const& glyph,
-                uint16_t advanceWidth, int16_t leftSideBearing) noexcept
-                    : glyph{glyph}, advanceWidth{advanceWidth},
-                    leftSideBearing{leftSideBearing} {}
-            explicit Glyph(void) noexcept = default;
-        };
-
-        struct KernTable {
-            typedef std::map<uint32_t, int16_t> DistanceMap;
-
-            DistanceMap                         distance;
-            bool                                axis;
-
-            explicit KernTable(Iter& iter);
-
-            void setAxis(uint16_t const& coverage) noexcept;
-        };
-
-        typedef std::map<uint16_t, Glyph>       GlyphMap;
-        typedef std::vector<KernTable>          Kern;
+        typedef std::map<uint16_t, GlyphData>   GlyphMap;
 
         GlyphMap const& getGlyphs(void) const noexcept { return glyphMap; }
         GlyphMap&& getGlyphs(void) noexcept { return std::move(glyphMap); }
@@ -142,7 +108,7 @@ namespace ge {
         Iter getIterator(void) const;
         void parseFile(Iter iter);
         void parseHead(Iter& iter);
-        Glyph createGlyph(uint16_t index);
+        GlyphData createGlyph(uint16_t index);
         uint32_t getGlyphOffset(uint16_t index) const;
         void loadCmapSubtables(Iter& iter, Iter const& begin);
         std::optional<uint32_t> readPlatform(EncodingRecord const& record);

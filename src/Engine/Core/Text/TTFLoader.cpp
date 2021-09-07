@@ -82,15 +82,15 @@ namespace ge {
     }
 
     template <security::SecurityPolicy Policy>
-    TTFLoader<Policy>::Glyph TTFLoader<Policy>::createGlyph(uint16_t index) {
+    GlyphData TTFLoader<Policy>::createGlyph(uint16_t index) {
         auto iter = getIterator() + tables["glyf"].offset;
         auto glyphOffset = getGlyphOffset(index);
         auto nextGlyph = getGlyphOffset(index + 1);
         if (glyphOffset == nextGlyph)
-            return Glyph{VectorizedGlyph{},
+            return GlyphData{VectorizedGlyph{},
                 metrics.at(index).advanceWidth,
                 metrics.at(index).leftSideBearing};
-        return Glyph{VectorizedGlyph{iter + glyphOffset},
+        return GlyphData{VectorizedGlyph{iter + glyphOffset},
             metrics.at(index).advanceWidth,
             metrics.at(index).leftSideBearing};
     }
@@ -110,27 +110,6 @@ namespace ge {
         kernTable.reserve(size);
         for (auto _ : std::views::iota(uint16_t(0), size))
             kernTable.emplace_back(iter);
-    }
-
-    template <security::SecurityPolicy Policy>
-    TTFLoader<Policy>::KernTable::KernTable(Iter& iter) {
-        if (readType<uint16_t, true>(iter)) return;
-        std::advance(iter, 2);
-        setAxis(readType<uint16_t, true>(iter));
-        auto range = std::views::iota(uint16_t(0), readType<uint16_t, true>(iter));
-        std::advance(iter, 6);
-        for (auto _ : range) {
-            uint32_t key = readType<uint16_t, true>(iter) << 0x0010;
-            key += readType<uint16_t, true>(iter);
-            distance[key] = readType<int16_t, true>(iter);
-        }
-    }
-
-    template <security::SecurityPolicy Policy>
-    void TTFLoader<Policy>::KernTable::setAxis(uint16_t const& coverage) noexcept {
-        bool horizontal = coverage & 0x0001;
-        bool cross = coverage & 0x0002;
-        axis = cross == horizontal;
     }
 
     template <security::SecurityPolicy Policy>
@@ -263,7 +242,7 @@ namespace ge {
         std::size_t const& j, TTFLoader& loader)
     {
         uint16_t index = 0;
-        if (auto&& [iter, empty] = loader.glyphMap.try_emplace(j, Glyph{}); empty) {
+        if (auto&& [iter, empty] = loader.glyphMap.try_emplace(j, GlyphData{}); empty) {
             if (idRangeOffsets[i]) {
                 auto glyphOffset = rangeOffsets + (j - startCode[i] + i) * 2
                     + idRangeOffsets[i];
