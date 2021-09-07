@@ -55,5 +55,6 @@ namespace ge {
     }
 
     typedef std::vector<KernTable>          Kern;
+    typedef std::map<uint16_t, GlyphData>   GlyphMap;
 
 }

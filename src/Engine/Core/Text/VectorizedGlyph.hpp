@@ -24,6 +24,7 @@ namespace ge {
         struct Point {
             explicit Point(Vector2si const& position, bool onCurve) noexcept
                 : position{position}, onCurve{onCurve} {}
+            explicit Point(void) noexcept = default;
             Vector2si                               position;
             bool                                    onCurve;
         };

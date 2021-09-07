@@ -29,18 +29,6 @@ int main(void) noexcept {
     TTFLoader<> font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
     char character;
     std::cin >> character;
-    /*auto glyphData = font.getGlyphs()[character];
-    auto glyph = glyphData.glyph;
-    std::cout << glyph.exist() << ' ' << glyph.isSimple() << '\n';
-    auto xChar = glyph.getSimpleGlyph();
-
-    window.emplaceDrawable<LineStrip>(xChar.points.size() + 1);
-    auto& points = dynamic_cast<LineStrip&>(*window[1]);
-    for (uint32_t i = 0;i < xChar.points.size(); ++i)
-        points[i].position = static_cast<Vector2f>(xChar.points[i].position) / 10.f + Vector2f{20.f, 300.f};
-    points.back().position = points.front().position;
-    for (auto& color : points | views::color)
-        color = Color::literals::White;*/
 
     auto glyphData = font.getGlyphs()[character];
     FontRasterizer raster{font.getFontData(), glyphData};

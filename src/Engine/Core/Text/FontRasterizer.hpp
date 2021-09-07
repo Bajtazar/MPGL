@@ -3,6 +3,8 @@
 #include "../../ImageLoading/Image.hpp"
 #include "FontComponents.hpp"
 
+#include <array>
+
 namespace ge {
 
     class FontRasterizer {
@@ -13,14 +15,18 @@ namespace ge {
 
         Image rasterize(std::size_t size) noexcept;
     private:
-        typedef std::vector<VectorizedGlyph::Point>     Contour;
+        typedef VectorizedGlyph::Point                  Point;
+        typedef VectorizedGlyph::CompositeGlyph::Component
+                                                        Component;
+        typedef std::vector<Point>                      Contour;
         typedef std::vector<Contour>                    Contours;
 
         Contours                    contours;
+        Contour                     primitiveQueue;
         FontData const&             mainData;
         GlyphData const&            glyph;
 
-        void separateSimpleContours(void);
+        void separateSimpleContours(GlyphData const& glyph);
 
         Image prepareCanva(std::size_t size) const noexcept;
 
@@ -30,15 +36,25 @@ namespace ge {
         void drawContourAndSetFlags(Contour const& contour,
             Image& canva, std::size_t size) noexcept;
 
-        void drawLine(Image& canva, Vector2f firstVertex,
-            Vector2f secondVertex) noexcept;
+        void drawPrimitive(Image& canva, Point const& point,
+            std::size_t size) noexcept;
+
+        void drawLine(Image& canva, std::size_t size) noexcept;
+
+        void drawBezierCurve(Image& canva, std::size_t size) noexcept;
+        /// Quadratic Bezier Curve
+
+        std::size_t getBezierSamples(Vector2f const& firstVertex,
+            Vector2f const& secondVertex, Vector2f const& thirdVertex) const noexcept;
+
+        void clearQueue(void) noexcept;
 
         template <bool Axis>
         void drawLineByAxis(Image& canva, Vector2f firstVertex,
             Vector2f secondVertex) noexcept;
 
         template <bool Axis>
-        void setCanvaPixel(Image& canva, std::size_t x, float y) const noexcept;
+        void setCanvaPixel(Image& canva, std::size_t x, float y) noexcept;
     };
 
     template <bool Axis>
@@ -58,7 +74,7 @@ namespace ge {
     }
 
     template <bool Axis>
-    void FontRasterizer::setCanvaPixel(Image& canva, std::size_t x, float y) const noexcept {
+    void FontRasterizer::setCanvaPixel(Image& canva, std::size_t x, float y) noexcept {
         if constexpr (Axis)
             canva[x][std::round(y)].red = 0xFF;
         else

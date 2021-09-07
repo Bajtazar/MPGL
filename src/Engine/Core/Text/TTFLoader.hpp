@@ -6,8 +6,6 @@
 #include "FontComponents.hpp"
 
 #include <variant>
-#include <vector>
-#include <map>
 
 namespace ge {
 
@@ -21,8 +19,6 @@ namespace ge {
     public:
         explicit TTFLoader(FileName const& fileName);
         explicit TTFLoader(Policy policy, FileName const& fileName);
-
-        typedef std::map<uint16_t, GlyphData>   GlyphMap;
 
         GlyphMap const& getGlyphs(void) const noexcept { return glyphMap; }
         GlyphMap&& getGlyphs(void) noexcept { return std::move(glyphMap); }
