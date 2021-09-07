@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "../Mathematics/Vector.hpp"
 #include "../Traits/Concepts.hpp"
 
 #if __cplusplus > 202002L
@@ -18,9 +19,12 @@
 
 namespace ge {
 
+    typedef TwoVector<std::size_t>          Vector2ul;
+
     class Image {
     public:
         VEC_CONSTEXPR explicit Image(std::size_t width, std::size_t height) noexcept;
+        VEC_CONSTEXPR explicit Image(Vector2ul const& dimmensions) noexcept : Image{dimmensions[0], dimmensions[1]} {}
         VEC_CONSTEXPR explicit Image(void) noexcept = default;
 
         #pragma pack(push, 1)
@@ -131,7 +135,7 @@ namespace ge {
         };
 
         VEC_CONSTEXPR void resize(std::size_t width, std::size_t height);
-        constexpr std::pair<std::size_t, std::size_t> size(void) const noexcept { return {width, height}; }
+        constexpr Vector2ul size(void) const noexcept { return Vector2ul{width, height}; }
 
         constexpr std::size_t getWidth(void) const noexcept { return width; }
         constexpr std::size_t getHeight(void) const noexcept { return height; }

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <math.h>
 
 #include "../Traits/TupleTraits.hpp"
 #include "../Traits/Concepts.hpp"
@@ -139,6 +140,32 @@ namespace ge {
     template <Arithmetic T, std::size_t Size>
     constexpr T dotProduct(const Vector<T, Size>& left, const Vector<T, Size>& right) noexcept {
         return std::inner_product(left.begin(), left.end(), right.begin(), static_cast<T>(0));
+    }
+
+    template <Arithmetic U, Arithmetic T, std::size_t Size>
+    constexpr Vector<U, Size> vectorCast(Vector<T, Size> const& vector) noexcept {
+        return static_cast<Vector<U, Size>>(vector);
+    }
+
+    template <Arithmetic T, std::size_t Size>
+        requires std::is_floating_point_v<T>
+    constexpr Vector<T, Size> floor(Vector<T, Size> vector) {
+        std::ranges::for_each(vector, [](T& value) { value = std::floor(value); });
+        return vector;
+    }
+
+    template <Arithmetic T, std::size_t Size>
+        requires std::is_floating_point_v<T>
+    constexpr Vector<T, Size> ceil(Vector<T, Size> vector) {
+        std::ranges::for_each(vector, [](T& value) { value = std::ceil(value); });
+        return vector;
+    }
+
+    template <Arithmetic T, std::size_t Size>
+        requires std::is_floating_point_v<T>
+    constexpr Vector<T, Size> round(Vector<T, Size> vector) {
+        std::ranges::for_each(vector, [](T& value) { value = std::round(value); });
+        return vector;
     }
 
     template <Arithmetic T, std::size_t Size>
