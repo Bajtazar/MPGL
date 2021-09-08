@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Engine/Core/Text/UTF-8.hpp"
+#include "Engine/Core/Text/GlyphSprite.hpp"
 #include "Engine/Core/Text/TTFLoader.hpp"
 #include "Engine/Core/Text/FontRasterizer.hpp"
 
@@ -35,7 +36,7 @@ int main(void) noexcept {
     std::cout << glyphData.glyph.exist() << '\n';
     FontRasterizer raster{font.getFontData(), glyphData};
     auto glyph = raster.rasterize(120);
-    window.emplaceDrawable<DefaultSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
+    window.emplaceDrawable<GlyphSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
 
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[2]);

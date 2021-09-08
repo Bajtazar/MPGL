@@ -26,16 +26,16 @@ namespace ge {
         }
     }
 
-    Image FontRasterizer::rasterize(std::size_t size) noexcept {
+    Bitmap FontRasterizer::rasterize(std::size_t size) noexcept {
         auto canva = prepareCanva(size);
         for (auto const& contour : contours)
             drawContourAndSetFlags(contour, canva, size);
         return canva;
     }
 
-    Image FontRasterizer::prepareCanva(std::size_t size) const noexcept {
+    Bitmap FontRasterizer::prepareCanva(std::size_t size) const noexcept {
         auto dimmensions = remapPoint(glyph.glyph.getMaxDimmensions(), size);
-        return Image{vectorCast<std::size_t>(ceil(dimmensions + 1.f))};
+        return Bitmap{vectorCast<std::size_t>(ceil(dimmensions + 1.f))};
     }
 
     Vector2f FontRasterizer::remapPoint(Vector2si const& position
@@ -47,7 +47,7 @@ namespace ge {
     }
 
     void FontRasterizer::drawContourAndSetFlags(Contour const& contour,
-            Image& canva, std::size_t size) noexcept
+            Bitmap& canva, std::size_t size) noexcept
     {
         for (auto const& point : contour)
             drawPrimitive(canva, point, size);
@@ -55,7 +55,7 @@ namespace ge {
         primitiveQueue.clear();
     }
 
-    void FontRasterizer::drawPrimitive(Image& canva, Point const& point,
+    void FontRasterizer::drawPrimitive(Bitmap& canva, Point const& point,
         std::size_t size) noexcept
     {
         primitiveQueue.push_back(point);
@@ -71,7 +71,7 @@ namespace ge {
         primitiveQueue.erase(primitiveQueue.begin(), primitiveQueue.end() - 1);
     }
 
-    void FontRasterizer::drawLine(Image& canva, std::size_t size) noexcept
+    void FontRasterizer::drawLine(Bitmap& canva, std::size_t size) noexcept
     {
         auto firstVertex = remapPoint(primitiveQueue[0].position, size);
         auto secondVertex = remapPoint(primitiveQueue[1].position, size);
@@ -83,7 +83,7 @@ namespace ge {
         clearQueue();
     }
 
-    void FontRasterizer::drawBezierCurve(Image& canva, std::size_t size) noexcept {
+    void FontRasterizer::drawBezierCurve(Bitmap& canva, std::size_t size) noexcept {
         auto firstVertex = remapPoint(primitiveQueue[0].position, size);
         auto secondVertex = remapPoint(primitiveQueue[1].position, size);
         auto thridVertex = remapPoint(primitiveQueue[2].position, size);

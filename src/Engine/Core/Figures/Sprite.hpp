@@ -91,9 +91,9 @@ namespace ge {
         Sprite& operator= (const Sprite& sprite) noexcept;
         Sprite& operator= (Sprite&& sprite) noexcept;
 
-        virtual void setShaders(const ShaderLibrary& library) noexcept final;
-        virtual void copyToGPU(void) noexcept final;
-        virtual void draw(void) const noexcept final;
+        virtual void setShaders(const ShaderLibrary& library) noexcept;
+        void copyToGPU(void) noexcept final;
+        void draw(void) const noexcept final;
 
         virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
         virtual void translate(const Vector2f& shift) noexcept final;
@@ -128,7 +128,7 @@ namespace ge {
         const_reverse_iterator crend(void) const noexcept { return vertices.crend(); }
 
         ~Sprite(void) noexcept;
-    private:
+    protected:
         static const std::array<uint32_t, 6> indexes;
         std::array<Vertex, 4> vertices;
         Texture<> texture;
