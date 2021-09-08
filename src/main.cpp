@@ -46,5 +46,5 @@ int main(void) noexcept {
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[3]);
     sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
 
-    return window.windowLoop();
+    return window.windowLoop(Color{0.2f, 0.3f, 0.3f, 1.f});
 }

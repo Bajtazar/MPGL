@@ -6,7 +6,10 @@ namespace ge {
 
     using std::operator""us;
 
-    RenderWindow::RenderWindow(const Vector2i& dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : WindowInterface{dimmensions, title, options, monitor, share}, sleepTime{0us}, lastTime{0us} {}
+    RenderWindow::RenderWindow(const Vector2i& dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : WindowInterface{dimmensions, title, options, monitor, share}, sleepTime{0us}, lastTime{0us} {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 
     void RenderWindow::pushDrawable(const std::shared_ptr<Drawable>& drawable) noexcept {
         if (auto ptr = std::dynamic_pointer_cast<Transformable>(drawable))
@@ -50,11 +53,11 @@ namespace ge {
         return false;
     }
 
-    int32_t RenderWindow::windowLoop(void) noexcept {
+    int32_t RenderWindow::windowLoop(const Color& background) noexcept {
         setDrawablesShaders();
         copyDrawablesToGPU();
         while (!(*this)) {
-            clear();
+            clear(background);
             drawDrawables();
             draw();
         }

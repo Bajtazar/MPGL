@@ -58,7 +58,7 @@ namespace ge {
         const_reverse_iterator crbegin(void) const noexcept { return drawables.crbegin(); }
         const_reverse_iterator crend(void) const noexcept { return drawables.crend(); }
 
-        int32_t windowLoop(void) noexcept;
+        int32_t windowLoop(const Color& background = Color::literals::Black) noexcept;
 
         void draw(void) noexcept;
         void clear(const Color& = Color::literals::Black) noexcept;

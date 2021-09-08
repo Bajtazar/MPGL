@@ -37,7 +37,7 @@ namespace ge {
             constexpr uint8_t& operator[] (std::size_t index) noexcept;
             constexpr const uint8_t& operator[] (std::size_t index) const noexcept;
             constexpr Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) noexcept : red{red}, green{green}, blue{blue}, alpha{alpha} {}
-            constexpr Pixel(void) noexcept = default;
+            constexpr Pixel(void) noexcept : red{0}, green{0}, blue{0}, alpha{255} {}
         };
 
         #pragma pack(pop)
