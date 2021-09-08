@@ -55,7 +55,7 @@ namespace ge {
     void BMPLoader<Policy>::readImage(FileIter& file) {
         for (auto row : pixels) {
             for (auto& pixel : row)
-                Image::Manip::RGB(file, pixel);
+                Pixel::Manip::RGB(file, pixel);
             ignoreNBytes((4 - pixels.getWidth() % 4) % 4, file);
         }
     }
