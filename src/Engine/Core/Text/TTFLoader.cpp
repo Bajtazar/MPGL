@@ -3,7 +3,6 @@
 #include "../../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../../Exceptions/TTFLoaderFileCorruption.hpp"
 #include "../../ImageLoading/LoadingHelpers.hpp"
-#include "UTF-8.hpp"
 
 #include <fstream>
 #include <ranges>

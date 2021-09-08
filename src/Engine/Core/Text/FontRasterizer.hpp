@@ -66,7 +66,7 @@ namespace ge {
         float derivative = (secondVertex[!Axis] - firstVertex[!Axis])
             / (secondVertex[Axis] - firstVertex[Axis]);
         for (std::size_t x = std::round(firstVertex[Axis]);
-            x != std::round(secondVertex[Axis]); ++x) {
+            x != std::round(secondVertex[Axis] + 1); ++x) {
 
             float y = x * derivative + firstVertex[!Axis] - firstVertex[Axis] * derivative;
             setCanvaPixel<Axis>(canva, x, y);
@@ -80,5 +80,8 @@ namespace ge {
         else
             canva[std::round(y)][x].red = 0xFF;
     }
+
+    template void FontRasterizer::setCanvaPixel<true>(Image&, std::size_t, float);
+    template void FontRasterizer::setCanvaPixel<false>(Image&, std::size_t, float);
 
 }

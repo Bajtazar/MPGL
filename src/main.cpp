@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "Engine/Core/Text/UTF-8.hpp"
 #include "Engine/Core/Text/TTFLoader.hpp"
 #include "Engine/Core/Text/FontRasterizer.hpp"
 
@@ -27,10 +28,11 @@ int main(void) noexcept {
     auto pack = loader.getTextures();
 
     TTFLoader<> font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
-    char character;
+    std::string character;
     std::cin >> character;
 
-    auto glyphData = font.getGlyphs()[character];
+    auto glyphData = font.getGlyphs()[fromUTF8(character)];
+    std::cout << glyphData.glyph.exist() << '\n';
     FontRasterizer raster{font.getFontData(), glyphData};
     auto glyph = raster.rasterize(120);
     window.emplaceDrawable<DefaultSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));

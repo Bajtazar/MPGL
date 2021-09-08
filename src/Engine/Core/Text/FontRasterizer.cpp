@@ -104,7 +104,7 @@ namespace ge {
     {
         auto line = (secondVertex - firstVertex).length();
         line += (thirdVertex - secondVertex).length();
-        return 2 * static_cast<std::size_t>(std::ceil(line));
+        return static_cast<std::size_t>(1.41f * std::ceil(line));
     }
 
 }
