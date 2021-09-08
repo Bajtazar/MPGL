@@ -9,6 +9,7 @@
 
 #include "Color.hpp"
 #include "../Traits/Concepts.hpp"
+#include "../Collections/Bitmap.hpp"
 #include "../IO/ImageLoading/ImageLoader.hpp"
 
 namespace ge {
@@ -52,6 +53,7 @@ namespace ge {
         template <security::SecurityPolicy Policy>
         explicit Texture(Policy policy, const std::string& fileName, const Options& options = {}, const Alloc& alloc = {});
         explicit Texture(const Image& image, const Options& options = {}, const Alloc& alloc = {}) noexcept;
+        explicit Texture(const Bitmap& bitmap, const Options& options = {}, const Alloc& allo = {}) noexcept;
 
         Texture(const Texture& texture) = default;
         Texture(Texture&& texture) = default;

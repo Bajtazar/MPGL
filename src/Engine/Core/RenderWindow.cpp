@@ -9,6 +9,7 @@ namespace ge {
     RenderWindow::RenderWindow(const Vector2i& dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share) noexcept(false) : WindowInterface{dimmensions, title, options, monitor, share}, sleepTime{0us}, lastTime{0us} {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     }
 
     void RenderWindow::pushDrawable(const std::shared_ptr<Drawable>& drawable) noexcept {

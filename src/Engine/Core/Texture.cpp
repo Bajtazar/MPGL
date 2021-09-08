@@ -33,6 +33,12 @@ namespace ge {
     }
 
     template <Allocator Alloc>
+    Texture<Alloc>::Texture(const Bitmap& bitmap, const Options& options, const Alloc& alloc) noexcept : Texture{options, alloc} {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.getWidth(), bitmap.getHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.getMemoryPtr());
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    template <Allocator Alloc>
     void Texture<Alloc>::TextureDeleter::operator() (uint32_t* ptr) const noexcept {
         glDeleteTextures(1, ptr);
         std::allocator_traits<Alloc>::deallocate(alloc, ptr, 1);

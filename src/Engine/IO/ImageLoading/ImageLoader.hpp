@@ -17,7 +17,7 @@ namespace ge {
         explicit ImageLoader(Policy policy, const std::string& fileName);
 
         const Image& getImage(void) const noexcept { return opener->getImage(); }
-        const uint8_t* memoryPointer(void) const noexcept { return opener->getImage().getMemoryPtr(); }
+        const void* memoryPointer(void) const noexcept { return opener->getImage().getMemoryPtr(); }
 
         std::size_t getWidth(void) const noexcept { return opener->getWidth(); }
         std::size_t getHeight(void) const noexcept { return opener->getHeight(); }

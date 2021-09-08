@@ -117,8 +117,8 @@ namespace ge {
         constexpr std::size_t getWidth(void) const noexcept { return width; }
         constexpr std::size_t getHeight(void) const noexcept { return height; }
 
-        VEC_CONSTEXPR const uint8_t* getMemoryPtr(void) const noexcept { return &image.front().red; }
-        VEC_CONSTEXPR uint8_t* getMemoryPtr(void) noexcept { return &image.front().red; }
+        VEC_CONSTEXPR const void* getMemoryPtr(void) const noexcept { return image.data(); }
+        VEC_CONSTEXPR void* getMemoryPtr(void) noexcept { return image.data(); }
 
         constexpr Row<Canva> operator[] (std::size_t index) noexcept { return Row<Canva>{std::ref(*this), index}; }
         constexpr Row<const Canva> operator[] (std::size_t index) const noexcept { return Row<const Canva>{std::cref(*this), index}; }
@@ -192,7 +192,7 @@ namespace ge {
     template <typename Base>
         requires (NotReference<Base> && std::is_default_constructible_v<Base>)
     VEC_CONSTEXPR Canva<Base>::Canva(std::size_t width, std::size_t height) noexcept
-        : image{width * height, Base{}}, width{width}, height{height} {}
+        : image(width * height, Base{}), width{width}, height{height} {}
 
     template <typename Base>
         requires (NotReference<Base> && std::is_default_constructible_v<Base>)
