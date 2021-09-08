@@ -45,10 +45,4 @@ namespace ge {
         return data;
     }
 
-    template <std::input_iterator Iter>
-        requires (std::same_as<std::iter_value_t<Iter>, char>)
-    void ignoreNBytes(std::size_t length, Iter& iter) noexcept(NothrowReadable<Iter>) {
-        std::advance(iter, length);
-    }
-
 }

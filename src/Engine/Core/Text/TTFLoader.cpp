@@ -95,9 +95,9 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     void TTFLoader<Policy>::parseHead(Iter& iter) {
-        ignoreNBytes(4, iter);
+        std::advance(iter, 4);
         auto tablesRange = std::views::iota(uint16_t(0), readType<uint16_t, true>(iter));
-        ignoreNBytes(6, iter);
+        std::advance(iter, 6);
         auto range = tablesRange | std::views::transform([&iter](auto const& i){ return readNChars(4, iter); });
         std::ranges::for_each(range, [this, &iter](auto const& tag) { tables[tag] = TableDirectory{iter}; });
     }
@@ -194,7 +194,7 @@ namespace ge {
         std::advance(iter, 6);
         auto reader = [&iter](uint16_t const& _) { return readType<uint16_t, true>(iter); };
         std::ranges::transform(limit, std::back_inserter(endCode), reader);
-        ignoreNBytes(2, iter);
+        std::advance(iter, 2);
         std::ranges::transform(limit, std::back_inserter(startCode), reader);
         std::ranges::transform(limit, std::back_inserter(idDelta), reader);
         rangeOffsets = iter;

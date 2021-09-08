@@ -56,7 +56,7 @@ namespace ge {
         for (auto row : pixels) {
             for (auto& pixel : row)
                 Pixel::Manip::RGB(file, pixel);
-            ignoreNBytes((4 - pixels.getWidth() % 4) % 4, file);
+            std::advance(file, (4 - pixels.getWidth() % 4) % 4);
         }
     }
 }

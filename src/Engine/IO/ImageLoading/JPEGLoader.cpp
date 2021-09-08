@@ -202,7 +202,7 @@ namespace ge {
     template <security::SecurityPolicy Policy>
     void JPEGLoader<Policy>::SOSChunk::operator() (FileIter& data) {
         uint16_t length = readType<uint16_t, true>(data) - 2;
-        ignoreNBytes(length, data); // progressive jpegs are not used
+        std::advance(data, length); // progressive jpegs are not used
         while (iterable(data)) {
             auto byte = readType<uint8_t>(data);
             if (byte == 0xFF)
@@ -242,7 +242,7 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     void JPEGLoader<Policy>::EmptyChunk::operator() (FileIter& data) {
-        ignoreNBytes(readType<uint16_t, true>(data) - 2, data);
+        std::advance(data, readType<uint16_t, true>(data) - 2);
     }
 
     template <security::SecurityPolicy Policy>

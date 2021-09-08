@@ -57,7 +57,7 @@ namespace ge {
             if (auto iter = chunkParsers.find(readNChars(4, file)); iter != chunkParsers.end())
                 std::invoke(*std::invoke(iter->second, std::ref(*this)), length, file);
             else
-                ignoreNBytes(length + 4, file);
+                std::advance(file, length + 4);
         }
         if (readType<uint64_t>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
