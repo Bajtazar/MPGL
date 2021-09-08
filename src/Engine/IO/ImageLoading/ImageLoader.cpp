@@ -1,6 +1,6 @@
 #include "ImageLoader.hpp"
 
-#include "../Exceptions/ImageLoadingUnsuportedFileType.hpp"
+#include "../../Exceptions/ImageLoadingUnsuportedFileType.hpp"
 #include "JPEGLoader.hpp"
 #include "BMPLoader.hpp"
 #include "PNGLoader.hpp"

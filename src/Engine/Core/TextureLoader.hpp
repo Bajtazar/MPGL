@@ -2,7 +2,7 @@
 
 #include "Texture.hpp"
 #include "TexturePack.hpp"
-#include "../Utility/FileIO.hpp"
+#include "../IO/FileIO.hpp"
 #include "../Utility/Security.hpp"
 #include "../Collections/ThreadsafeQueue.hpp"
 #include "../Exceptions/ImageLoadingException.hpp"

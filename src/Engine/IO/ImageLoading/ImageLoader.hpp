@@ -5,8 +5,8 @@
 #include <functional>
 
 #include "LoaderInterface.hpp"
-#include "../Utility/Security.hpp"
-#include "../Utility/FunctionalWrapper.hpp"
+#include "../../Utility/Security.hpp"
+#include "../../Utility/FunctionalWrapper.hpp"
 
 namespace ge {
 

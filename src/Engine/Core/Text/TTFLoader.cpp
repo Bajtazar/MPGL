@@ -2,7 +2,6 @@
 
 #include "../../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../../Exceptions/TTFLoaderFileCorruption.hpp"
-#include "../../ImageLoading/LoadingHelpers.hpp"
 
 #include <fstream>
 #include <ranges>

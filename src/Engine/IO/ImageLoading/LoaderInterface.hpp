@@ -2,8 +2,8 @@
 
 #include <fstream>
 
-#include "Image.hpp"
-#include "LoadingHelpers.hpp"
+#include "../../Collections/Image.hpp"
+#include "../Helper.hpp"
 
 namespace ge {
 

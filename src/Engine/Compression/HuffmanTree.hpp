@@ -2,7 +2,7 @@
 
 #include "../Exceptions/HuffmanTreeEmptyMapException.hpp"
 #include "../Exceptions/HuffmanTreeDecoderException.hpp"
-#include "../Collections/BitIterator.hpp"
+#include "../Iterators/BitIterator.hpp"
 #include "../Collections/MinHeap.hpp"
 #include "../Traits/Concepts.hpp"
 #include "../Utility/Ranges.hpp"

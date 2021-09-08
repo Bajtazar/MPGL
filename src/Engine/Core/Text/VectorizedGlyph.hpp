@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../ImageLoading/LoadingHelpers.hpp"
 #include "../../Mathematics/Vector.hpp"
 #include "../../Traits/Concepts.hpp"
+#include "../../IO/Helper.hpp"
 
 #include <algorithm>
 #include <iterator>

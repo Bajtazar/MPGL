@@ -1,9 +1,9 @@
 #include "BMPLoader.hpp"
 
-#include "../Exceptions/ImageLoadingFileOpenException.hpp"
-#include "../Exceptions/SecurityUnknownPolicyException.hpp"
-#include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
-#include "../Exceptions/ImageLoadingFileCorruptionException.hpp"
+#include "../../Exceptions/ImageLoadingFileOpenException.hpp"
+#include "../../Exceptions/SecurityUnknownPolicyException.hpp"
+#include "../../Exceptions/ImageLoadingInvalidTypeException.hpp"
+#include "../../Exceptions/ImageLoadingFileCorruptionException.hpp"
 
 namespace ge {
 

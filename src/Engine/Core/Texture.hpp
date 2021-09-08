@@ -9,7 +9,7 @@
 
 #include "Color.hpp"
 #include "../Traits/Concepts.hpp"
-#include "../ImageLoading/ImageLoader.hpp"
+#include "../IO/ImageLoading/ImageLoader.hpp"
 
 namespace ge {
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Collections/SafeIterator.hpp"
-#include "../Collections/BitIterator.hpp"
+#include "../Iterators/SafeIterator.hpp"
+#include "../Iterators/BitIterator.hpp"
 #include "../Utility/Security.hpp"
 #include "HuffmanTree.hpp"
 

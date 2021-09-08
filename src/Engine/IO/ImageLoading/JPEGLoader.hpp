@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Collections/SafeIterator.hpp"
-#include "../Compression/HuffmanTree.hpp"
-#include "../Collections/BitIterator.hpp"
-#include "../Mathematics/Matrix.hpp"
-#include "../Compression/IDCT.hpp"
-#include "../Utility/Security.hpp"
+#include "../../Compression/HuffmanTree.hpp"
+#include "../../Iterators/SafeIterator.hpp"
+#include "../../Iterators/BitIterator.hpp"
+#include "../../Mathematics/Matrix.hpp"
+#include "../../Mathematics/IDCT.hpp"
+#include "../../Utility/Security.hpp"
 #include "LoaderInterface.hpp"
 
 #include <functional>

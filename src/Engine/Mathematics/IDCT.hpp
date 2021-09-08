@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../Utility/BitReversion.hpp"
-#include "../Mathematics/Matrix.hpp"
 #include "../Traits/Concepts.hpp"
+#include "Matrix.hpp"
 
 #include <numeric>
 #include <complex>

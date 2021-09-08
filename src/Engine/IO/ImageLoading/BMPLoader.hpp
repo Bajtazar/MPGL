@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Collections/SafeIterator.hpp"
-#include "../Utility/Security.hpp"
+#include "../../Iterators/SafeIterator.hpp"
+#include "../../Utility/Security.hpp"
 #include "LoaderInterface.hpp"
 
 namespace ge {

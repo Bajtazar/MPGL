@@ -1,9 +1,9 @@
 #pragma once
 
 #include "LoaderInterface.hpp"
-#include "../Utility/Security.hpp"
-#include "../Collections/SafeIterator.hpp"
-#include "../Utility/FunctionalWrapper.hpp"
+#include "../../Utility/Security.hpp"
+#include "../../Iterators/SafeIterator.hpp"
+#include "../../Utility/FunctionalWrapper.hpp"
 
 #include <map>
 #include <array>

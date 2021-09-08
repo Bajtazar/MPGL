@@ -1,13 +1,13 @@
 #include "JPEGLoader.hpp"
 
-#include "../Exceptions/ImageLoadingFileCorruptionException.hpp"
-#include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
-#include "../Exceptions/SecurityUnknownPolicyException.hpp"
-#include "../Exceptions/ImageLoadingFileOpenException.hpp"
-#include "../Exceptions/NotSupportedException.hpp"
-#include "../Utility/FunctionalWrapper.hpp"
-#include "../Utility/ZigZacRange.hpp"
-#include "../Utility/Ranges.hpp"
+#include "../../Exceptions/ImageLoadingFileCorruptionException.hpp"
+#include "../../Exceptions/ImageLoadingInvalidTypeException.hpp"
+#include "../../Exceptions/SecurityUnknownPolicyException.hpp"
+#include "../../Exceptions/ImageLoadingFileOpenException.hpp"
+#include "../../Exceptions/NotSupportedException.hpp"
+#include "../../Utility/FunctionalWrapper.hpp"
+#include "../../Utility/ZigZacRange.hpp"
+#include "../../Utility/Ranges.hpp"
 
 #include <algorithm>
 #include <bitset>

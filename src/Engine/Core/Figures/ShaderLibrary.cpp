@@ -1,6 +1,6 @@
 #include "ShaderLibrary.hpp"
 
-#include "../../Utility/FileIO.hpp"
+#include "../../IO/FileIO.hpp"
 #include "../../Utility/Logger.hpp"
 #include "../../Exceptions/ShaderLibraryInvalidShadersException.hpp"
 #include "../../Exceptions/ShaderProgramLinkingException.hpp"

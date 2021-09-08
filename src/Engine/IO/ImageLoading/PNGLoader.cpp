@@ -1,12 +1,12 @@
 #include "PNGLoader.hpp"
 
-#include "../Exceptions/ImageLoadingFileCorruptionException.hpp"
-#include "../Exceptions/ImageLoadingInvalidTypeException.hpp"
-#include "../Exceptions/SecurityUnknownPolicyException.hpp"
-#include "../Exceptions/ImageLoadingFileOpenException.hpp"
-#include "../Exceptions/DeflateDecoderException.hpp"
-#include "../Exceptions/NotSupportedException.hpp"
-#include "../Compression/DeflateDecoder.hpp"
+#include "../../Exceptions/ImageLoadingFileCorruptionException.hpp"
+#include "../../Exceptions/ImageLoadingInvalidTypeException.hpp"
+#include "../../Exceptions/SecurityUnknownPolicyException.hpp"
+#include "../../Exceptions/ImageLoadingFileOpenException.hpp"
+#include "../../Exceptions/DeflateDecoderException.hpp"
+#include "../../Exceptions/NotSupportedException.hpp"
+#include "../../Compression/DeflateDecoder.hpp"
 #include <iostream>
 
 #include <numeric>

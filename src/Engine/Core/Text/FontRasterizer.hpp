@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../ImageLoading/Image.hpp"
+#include "../../Collections/Image.hpp"
 #include "FontComponents.hpp"
 
 #include <array>
