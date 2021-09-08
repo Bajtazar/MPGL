@@ -16,8 +16,6 @@ namespace ge {
         Image rasterize(std::size_t size) noexcept;
     private:
         typedef VectorizedGlyph::Point                  Point;
-        typedef VectorizedGlyph::CompositeGlyph::Component
-                                                        Component;
         typedef std::vector<Point>                      Contour;
         typedef std::vector<Contour>                    Contours;
 
@@ -26,7 +24,7 @@ namespace ge {
         FontData const&             mainData;
         GlyphData const&            glyph;
 
-        void separateSimpleContours(GlyphData const& glyph);
+        void separateContours(GlyphData const& glyph);
 
         Image prepareCanva(std::size_t size) const noexcept;
 

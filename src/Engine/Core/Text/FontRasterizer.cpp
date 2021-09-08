@@ -9,14 +9,12 @@ namespace ge {
         GlyphData const& glyph) : mainData{mainData}, glyph{glyph}
     {
         primitiveQueue.reserve(3);
-        if (glyph.glyph.isSimple())
-            separateSimpleContours(glyph);
-        else {}
+        separateContours(glyph);
     }
 
-    void FontRasterizer::separateSimpleContours(GlyphData const& glyph) {
-        auto const& points = glyph.glyph.getSimpleGlyph().points;
-        auto const& ends = glyph.glyph.getSimpleGlyph().endPtsOfContours;
+    void FontRasterizer::separateContours(GlyphData const& glyph) {
+        auto const& points = glyph.glyph.getGlyph().points;
+        auto const& ends = glyph.glyph.getGlyph().endPtsOfContours;
         Contour contour;
         for (uint16_t i = 0, counter = 0; i != points.size(); ++i) {
             contour.push_back(points[i]);

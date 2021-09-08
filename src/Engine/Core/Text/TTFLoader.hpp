@@ -74,9 +74,6 @@ namespace ge {
                 std::size_t const& j, TTFLoader& loader);
         };
 
-        typedef std::vector<uint16_t>           Loca16;
-        typedef std::vector<uint32_t>           Loca32;
-        typedef std::variant<Loca16, Loca32>    Loca;
         typedef std::vector<LongHorMatrix>      Metrics;
         typedef std::string                     Buffer;
         typedef std::map<Buffer, TableDirectory>
@@ -86,7 +83,7 @@ namespace ge {
         FileName                                fileName;
         Tables                                  tables;
         Metrics                                 metrics;
-        Loca                                    locaTable;
+        LocaTable                               locaTable;
         Kern                                    kernTable;
         GlyphMap                                glyphMap;
         FontData                                fontData;
@@ -105,7 +102,6 @@ namespace ge {
         void parseFile(Iter iter);
         void parseHead(Iter& iter);
         GlyphData createGlyph(uint16_t index);
-        uint32_t getGlyphOffset(uint16_t index) const;
         void loadCmapSubtables(Iter& iter, Iter const& begin);
         std::optional<uint32_t> readPlatform(EncodingRecord const& record);
     };

@@ -66,39 +66,22 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     void TTFLoader<Policy>::loadLoca(void) {
-        auto iter = getIterator() + tables["loca"].offset;
-        if (indexFormat) { // 32
-            Loca32 loca;
-            for (uint16_t i = 0; i < numGlyphs + 1; ++i)
-                loca.push_back(readType<uint32_t, true>(iter));
-            locaTable = std::move(loca);
-        } else { // 16
-            Loca16 loca;
-            for (uint16_t i = 0; i < numGlyphs + 1; ++i)
-                loca.push_back(readType<uint16_t, true>(iter));
-            locaTable = std::move(loca);
-        }
+        locaTable = LocaTable{getIterator() + tables["loca"].offset,
+            indexFormat, numGlyphs};
     }
 
     template <security::SecurityPolicy Policy>
     GlyphData TTFLoader<Policy>::createGlyph(uint16_t index) {
         auto iter = getIterator() + tables["glyf"].offset;
-        auto glyphOffset = getGlyphOffset(index);
-        auto nextGlyph = getGlyphOffset(index + 1);
+        auto glyphOffset = locaTable(index);
+        auto nextGlyph = locaTable(index + 1);
         if (glyphOffset == nextGlyph)
             return GlyphData{VectorizedGlyph{},
                 metrics.at(index).advanceWidth,
                 metrics.at(index).leftSideBearing};
-        return GlyphData{VectorizedGlyph{iter + glyphOffset},
+        return GlyphData{VectorizedGlyph{iter, glyphOffset, locaTable},
             metrics.at(index).advanceWidth,
             metrics.at(index).leftSideBearing};
-    }
-
-    template <security::SecurityPolicy Policy>
-    uint32_t TTFLoader<Policy>::getGlyphOffset(uint16_t index) const {
-        if (std::holds_alternative<Loca16>(locaTable))
-            return 2 * std::get<Loca16>(locaTable).at(index);
-        return std::get<Loca32>(locaTable).at(index);
     }
 
     template <security::SecurityPolicy Policy>
