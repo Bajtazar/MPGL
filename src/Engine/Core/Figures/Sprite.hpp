@@ -95,10 +95,13 @@ namespace ge {
         void copyToGPU(void) noexcept final;
         void draw(void) const noexcept final;
 
-        virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
-        virtual void translate(const Vector2f& shift) noexcept final;
-        virtual void scale(const Vector2f& center, float factor) noexcept final;
-        virtual void rotate(const Vector2f& center, float angle) noexcept final;
+        void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
+        void translate(const Vector2f& shift) noexcept final;
+        void scale(const Vector2f& center, float factor) noexcept final;
+        void rotate(const Vector2f& center, float angle) noexcept final;
+
+        Vertex& operator[] (std::size_t index) { return vertices[index]; }
+        const Vertex& operator[] (std::size_t index) { return vertices[index]; }
 
         std::size_t size(void) const noexcept { return vertices.size(); }
 
