@@ -215,7 +215,7 @@ namespace ge {
     template <security::SecurityPolicy Policy>
     void TTFLoader<Policy>::Format4Subtable::getGlyphID(TTFLoader& loader) {
         for (std::size_t i = 0; i != endCode.size(); ++i)
-            for (std::size_t j = startCode[i]; j != endCode[i]; ++j)
+            for (std::size_t j = startCode[i]; j != endCode[i] + 1; ++j)
                 tryReadGlyph(i, j, loader);
     }
 
