@@ -18,15 +18,15 @@ namespace ge {
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto&& get(void) & noexcept { return getHelper<Index>(); }
+        inline constexpr auto&& get(void) & noexcept { return getHelper<Index>(*this); }
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto&& get(void) && noexcept { return getHelper<Index>(); }
+        inline constexpr auto&& get(void) && noexcept { return getHelper<Index>(*this); }
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto&& get(void) const& noexcept { return getHelper<Index>(); }
+        inline constexpr auto&& get(void) const& noexcept { return getHelper<Index>(*this); }
 
     private:
         template <std::size_t Index, class Base>

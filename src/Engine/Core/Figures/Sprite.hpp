@@ -91,7 +91,7 @@ namespace ge {
         Sprite& operator= (const Sprite& sprite) noexcept;
         Sprite& operator= (Sprite&& sprite) noexcept;
 
-        virtual void setShaders(const ShaderLibrary& library) noexcept;
+        void setShaders(const ShaderLibrary& library) noexcept final;
         void copyToGPU(void) noexcept final;
         void draw(void) const noexcept final;
 
@@ -103,7 +103,7 @@ namespace ge {
         Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
         const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }
 
-        std::size_t size(void) const noexcept { return vertices.size(); }
+        consteval std::size_t size(void) const noexcept { return 4; }
 
         void replaceTexture(const Texture<>& texture);
 

@@ -35,13 +35,13 @@ int main(void) noexcept {
     auto glyphData = font.getGlyphs()[fromUTF8(character)];
     std::cout << glyphData.glyph.exist() << '\n';
     auto glyph = FontRasterizer{font.getFontData(), glyphData, 120}();
-    window.emplaceDrawable<GlyphSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
+    window.emplaceDrawable<PoliGlyphSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
 
-    /*auto& text = dynamic_cast<GlyphSprite&>(*window[1]);
+    auto& text = dynamic_cast<PoliGlyphSprite&>(*window[1]);
     text[0].color = Color::literals::Red;
     text[1].color = Color::literals::Green;
     text[2].color = Color::literals::Blue;
-    text[3].color = Color::literals::Yellow;*/
+    text[3].color = Color::literals::Yellow;
 
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[2]);
