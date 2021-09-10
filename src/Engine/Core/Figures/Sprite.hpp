@@ -100,8 +100,8 @@ namespace ge {
         void scale(const Vector2f& center, float factor) noexcept final;
         void rotate(const Vector2f& center, float angle) noexcept final;
 
-        Vertex& operator[] (std::size_t index) { return vertices[index]; }
-        const Vertex& operator[] (std::size_t index) { return vertices[index]; }
+        Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
+        const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }
 
         std::size_t size(void) const noexcept { return vertices.size(); }
 

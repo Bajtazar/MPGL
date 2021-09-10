@@ -38,6 +38,12 @@ int main(void) noexcept {
     auto glyph = raster.rasterize(120);
     window.emplaceDrawable<GlyphSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
 
+    /*auto& text = dynamic_cast<GlyphSprite&>(*window[1]);
+    text[0].color = Color::literals::Red;
+    text[1].color = Color::literals::Green;
+    text[2].color = Color::literals::Blue;
+    text[3].color = Color::literals::Yellow;*/
+
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[2]);
     array.emplaceBack(400_x + 400_y, 300_x + 300_y, 400_x + 300_y, Color::literals::White);

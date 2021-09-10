@@ -4,6 +4,7 @@
 #include "FontComponents.hpp"
 
 #include <array>
+#include <iostream>
 
 namespace ge {
 
@@ -19,10 +20,16 @@ namespace ge {
         typedef std::vector<Point>                      Contour;
         typedef std::vector<Contour>                    Contours;
 
+        using PixelSetter = void (FontRasterizer::*)
+            (Bitmap& canva, TwoVector<uint16_t> const& position);
+
         Contours                    contours;
         Contour                     primitiveQueue;
         FontData const&             mainData;
         GlyphData const&            glyph;
+        TwoVector<uint16_t>         lastPosition;
+        PixelSetter                 pixelSetter;
+        bool                        ascending : 1;
 
         void separateContours(GlyphData const& glyph);
 
@@ -51,35 +58,103 @@ namespace ge {
         void drawLineByAxis(Bitmap& canva, Vector2f firstVertex,
             Vector2f secondVertex) noexcept;
 
+        template <bool Axis, std::invocable<uint16_t> Function>
+        void positiveContour(Vector2f const& firstVertex,
+            Vector2f const& secondVertex, Function function) noexcept;
+
+        template <bool Axis, std::invocable<uint16_t> Function>
+        void negativeContour(Vector2f const& firstVertex,
+            Vector2f const& secondVertex,  Function function) noexcept;
+
         template <bool Axis>
-        void setCanvaPixel(Bitmap& canva, std::size_t x, float y) noexcept;
+        void setCanvaPixel(Bitmap& canva, uint16_t x, float y) noexcept;
+
+        template <bool Axis>
+        TwoVector<uint16_t> getCoords(uint16_t x, float y) const noexcept;
+
+        template <std::relation<uint16_t, uint16_t> Compare>
+        void correctWhenTrue(Bitmap& bitmap, TwoVector<uint16_t> const& lastPosition,
+            TwoVector<uint16_t> const& position, Compare compare) noexcept;
+
+        void defaultPixelSetter(Bitmap& canva,
+            TwoVector<uint16_t> const& position) noexcept;
+
+        void deducingPixelSetter(Bitmap& canva,
+            TwoVector<uint16_t> const& position) noexcept;
+
+        void fillContour(Bitmap& canva) const noexcept;
+
+        static constexpr const uint8_t                      Hit = 0xFF;
+        static constexpr const uint8_t                      Flag = 0x0F;
+        static constexpr const uint8_t                      Mask = 0xF0;
     };
 
     template <bool Axis>
     void FontRasterizer::drawLineByAxis(Bitmap& canva, Vector2f firstVertex,
             Vector2f secondVertex) noexcept
     {
-        if (firstVertex[Axis] > secondVertex[Axis])
-            std::swap(firstVertex, secondVertex);
         float derivative = (secondVertex[!Axis] - firstVertex[!Axis])
             / (secondVertex[Axis] - firstVertex[Axis]);
-        for (std::size_t x = std::round(firstVertex[Axis]);
-            x != std::round(secondVertex[Axis] + 1); ++x) {
-
-            float y = x * derivative + firstVertex[!Axis] - firstVertex[Axis] * derivative;
+        auto func = [&] (uint16_t x) {
+            float y = x * derivative + firstVertex[!Axis]
+                - firstVertex[Axis] * derivative;
             setCanvaPixel<Axis>(canva, x, y);
+        };
+        if (firstVertex[Axis] > secondVertex[Axis])
+            negativeContour<Axis>(firstVertex, secondVertex, func);
+        else
+            positiveContour<Axis>(firstVertex, secondVertex, func);
+    }
+
+    template <bool Axis, std::invocable<uint16_t> Function>
+    void FontRasterizer::positiveContour(Vector2f const& firstVertex,
+        Vector2f const& secondVertex, Function function) noexcept
+    {
+        for (uint16_t x = std::round(firstVertex[Axis]);
+            x != std::round(secondVertex[Axis] + 1); ++x)
+                function(x);
+    }
+
+    template <bool Axis, std::invocable<uint16_t> Function>
+    void FontRasterizer::negativeContour(Vector2f const& firstVertex,
+        Vector2f const& secondVertex, Function function) noexcept
+    {
+        for (int32_t x = std::round(firstVertex[Axis]);
+            x != int32_t(std::round(secondVertex[Axis]) - 1); --x)
+                function(static_cast<uint16_t>(x));
+    }
+
+
+    template <bool Axis>
+    TwoVector<uint16_t> FontRasterizer::getCoords(
+        uint16_t x, float y) const noexcept
+    {
+        if constexpr (Axis)
+            return {std::round(y), x};
+        else
+            return {x, std::round(y)};
+    }
+
+    template <std::relation<uint16_t, uint16_t> Compare>
+    void FontRasterizer::correctWhenTrue(Bitmap& canva,
+        TwoVector<uint16_t> const& lastPosition,
+        TwoVector<uint16_t> const& position,
+        Compare compare) noexcept
+    {
+        if (compare(position, lastPosition)) {
+            canva.from(lastPosition) ^= Mask;
+            ascending = !ascending;
         }
     }
 
     template <bool Axis>
-    void FontRasterizer::setCanvaPixel(Bitmap& canva, std::size_t x, float y) noexcept {
-        if constexpr (Axis)
-            canva[x][std::round(y)] = 0xFF;
-        else
-            canva[std::round(y)][x] = 0xFF;
+    void FontRasterizer::setCanvaPixel(Bitmap& canva, uint16_t x, float y) noexcept {
+        auto position = getCoords<Axis>(x, y);
+        (this->*pixelSetter)(canva, position);
+        lastPosition = position;
     }
 
-    template void FontRasterizer::setCanvaPixel<true>(Bitmap&, std::size_t, float);
-    template void FontRasterizer::setCanvaPixel<false>(Bitmap&, std::size_t, float);
+    template void FontRasterizer::setCanvaPixel<true>(Bitmap&, uint16_t, float);
+    template void FontRasterizer::setCanvaPixel<false>(Bitmap&, uint16_t, float);
 
 }

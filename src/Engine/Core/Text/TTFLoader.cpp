@@ -132,8 +132,9 @@ namespace ge {
         metrics.reserve(numGlyphs);
         for (uint16_t i = 0; i != numberOfHMetrics; ++i)
             metrics.emplace_back(std::ref(iter));
+        auto advanceWidth = metrics.size() ? metrics.back().advanceWidth : 0;
         for (uint16_t i = 0; i != (numGlyphs - numberOfHMetrics); ++i)
-            metrics.emplace_back(metrics.back().advanceWidth,
+            metrics.emplace_back(advanceWidth,
                 readType<int16_t, true>(iter));
     }
 

@@ -17,7 +17,7 @@ namespace ge {
         using value_type = T;
 
         template <Arithmetic... Args>
-            requires (sizeof...(Args) == Size && AllSame<value_type, Args...>)
+            requires (sizeof...(Args) == Size && AllConvertible<value_type, Args...>)
         constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{args...} { ge::reverse(*this); }
 
         constexpr Vector(void) noexcept = default;
