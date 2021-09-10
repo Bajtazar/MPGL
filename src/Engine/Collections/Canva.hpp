@@ -126,10 +126,10 @@ namespace ge {
         constexpr Row<const Canva> operator[] (std::size_t index) const noexcept { return Row<const Canva>{std::cref(*this), index}; }
 
         template <std::integral T>
-        constexpr Base& from(Vector<T, 2> const& dimmensions) noexcept { return image[dimmensions[1] * width + dimmensions[0]]; }
+        constexpr Base& operator[](Vector<T, 2> const& dimmensions) noexcept { return image[dimmensions[1] * width + dimmensions[0]]; }
 
         template <std::integral T>
-        constexpr Base const& from(Vector<T, 2> const& dimmensions) const noexcept { return image[dimmensions[1] * width + dimmensions[0]]; }
+        constexpr Base const& operator[](Vector<T, 2> const& dimmensions) const noexcept { return image[dimmensions[1] * width + dimmensions[0]]; }
 
         template <class BaseType>
         class Iterator {

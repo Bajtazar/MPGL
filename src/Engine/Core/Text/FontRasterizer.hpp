@@ -14,7 +14,7 @@ namespace ge {
             GlyphData const& glyph,
             std::size_t size);
 
-        Bitmap rasterize(void) noexcept;
+        Bitmap operator() (void) noexcept;
     private:
         struct Point {
             Vector2f                position;
@@ -169,7 +169,7 @@ namespace ge {
         Compare compare) noexcept
     {
         if (compare(position, lastPosition)) {
-            canva.from(lastPosition) ^= Mask;
+            canva[lastPosition] ^= Mask;
             ascending = !ascending;
         }
     }

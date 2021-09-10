@@ -37,7 +37,7 @@ namespace ge {
         contour.emplace_back(remapPoint(point.position, size), point.onCurve);
     }
 
-    Bitmap FontRasterizer::rasterize(void) noexcept {
+    Bitmap FontRasterizer::operator() (void) noexcept {
         auto canva = prepareCanva(size);
         for (auto const& contour : contours) {
             lastPosition = vectorCast<uint16_t>(round(contour.front().position));
@@ -124,14 +124,14 @@ namespace ge {
         TwoVector<uint16_t> const& position) noexcept
     {
         if (position[1] == lastPosition[1]) {
-            if (!canva.from(position))
-                canva.from(position) = Hit;
+            if (!canva[position])
+                canva[position] = Hit;
         } else {
             if (ascending)
                 correctWhenTrue(canva, lastPosition, position, std::less<>{});
             else
                 correctWhenTrue(canva, lastPosition, position, std::greater<>{});
-            canva.from(position) = canva.from(position) == Flag ? Hit : Flag;
+            canva[position] = canva[position] == Flag ? Hit : Flag;
         }
     }
 
@@ -139,11 +139,11 @@ namespace ge {
         TwoVector<uint16_t> const& position) noexcept
     {
         if (position[1] == lastPosition[1]) {
-            if (!canva.from(position))
-                canva.from(position) = Hit;
+            if (!canva[position])
+                canva[position] = Hit;
         } else {
             ascending = lastPosition[1] < position[1];
-            canva.from(position) = canva.from(position) == Flag ? Hit : Flag;
+            canva[position] = canva[position] == Flag ? Hit : Flag;
             pixelSetter = &FontRasterizer::defaultPixelSetter;
         }
     }
