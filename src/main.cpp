@@ -34,8 +34,8 @@ int main(void) noexcept {
 
     auto glyphData = font.getGlyphs()[fromUTF8(character)];
     std::cout << glyphData.glyph.exist() << '\n';
-    FontRasterizer raster{font.getFontData(), glyphData};
-    auto glyph = raster.rasterize(120);
+    FontRasterizer raster{font.getFontData(), glyphData, 120};
+    auto glyph = raster.rasterize();
     window.emplaceDrawable<GlyphSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
 
     /*auto& text = dynamic_cast<GlyphSprite&>(*window[1]);

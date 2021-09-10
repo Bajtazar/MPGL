@@ -77,6 +77,8 @@ namespace ge {
             using reverse_iterator = std::reverse_iterator<iterator>;
             using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
+            constexpr std::size_t size(void) const noexcept { return reference.get().width; }
+
             template <NotConstant Type = BaseType>
             constexpr Base& operator[] (std::size_t index) noexcept { return reference.get().image[reference.get().width * rowID + index]; }
             constexpr const Base& operator[] (std::size_t index) const noexcept { return reference.get().image[reference.get().width * rowID + index]; }

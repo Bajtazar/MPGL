@@ -4,7 +4,6 @@
 #include "FontComponents.hpp"
 
 #include <array>
-#include <iostream>
 
 namespace ge {
 
@@ -12,26 +11,42 @@ namespace ge {
     public:
         explicit FontRasterizer(
             FontData const& mainData,
-            GlyphData const& glyph);
+            GlyphData const& glyph,
+            std::size_t size);
 
-        Bitmap rasterize(std::size_t size) noexcept;
+        Bitmap rasterize(void) noexcept;
     private:
-        typedef VectorizedGlyph::Point                  Point;
+        struct Point {
+            Vector2f                position;
+            bool                    onCurve;
+            explicit Point(Vector2f position, bool onCurve) noexcept
+                : position{position}, onCurve{onCurve} {}
+        };
+
+        typedef VectorizedGlyph::Point                  GlyphPoint;
+        typedef std::vector<GlyphPoint>                 GlyphContour;
         typedef std::vector<Point>                      Contour;
         typedef std::vector<Contour>                    Contours;
+        typedef std::vector<uint8_t>                    PixelRow;
+        typedef std::optional<PixelRow>                 CanvaRow;
+        typedef Bitmap::iterator::value_type            BitmapRow;
 
         using PixelSetter = void (FontRasterizer::*)
             (Bitmap& canva, TwoVector<uint16_t> const& position);
 
         Contours                    contours;
         Contour                     primitiveQueue;
+        TwoVector<uint16_t>         lastPosition;
+        TwoVector<uint16_t>         firstConoturPixel;
+        PixelSetter                 pixelSetter;
+        std::size_t                 size;
         FontData const&             mainData;
         GlyphData const&            glyph;
-        TwoVector<uint16_t>         lastPosition;
-        PixelSetter                 pixelSetter;
         bool                        ascending : 1;
 
         void separateContours(GlyphData const& glyph);
+
+        void addPoint(Contour& contour, GlyphPoint const& point);
 
         Bitmap prepareCanva(std::size_t size) const noexcept;
 
@@ -55,16 +70,18 @@ namespace ge {
         void clearQueue(void) noexcept;
 
         template <bool Axis>
-        void drawLineByAxis(Bitmap& canva, Vector2f firstVertex,
-            Vector2f secondVertex) noexcept;
+        void drawLineByAxis(Bitmap& canva, Vector2f const& firstVertex,
+            Vector2f const& secondVertex) noexcept;
 
-        template <bool Axis, std::invocable<uint16_t> Function>
-        void positiveContour(Vector2f const& firstVertex,
-            Vector2f const& secondVertex, Function function) noexcept;
+        template <bool Axis>
+        auto getLinearFunction(Bitmap& canva, Vector2f const& firstVertex,
+            Vector2f const& secondVertex) noexcept;
 
-        template <bool Axis, std::invocable<uint16_t> Function>
-        void negativeContour(Vector2f const& firstVertex,
-            Vector2f const& secondVertex,  Function function) noexcept;
+        template <std::invocable<uint16_t> Function>
+        void positiveContour(float begin, float end, Function function) noexcept;
+
+        template <std::invocable<uint16_t> Function>
+        void negativeContour(float begin, float end, Function function) noexcept;
 
         template <bool Axis>
         void setCanvaPixel(Bitmap& canva, uint16_t x, float y) noexcept;
@@ -84,44 +101,54 @@ namespace ge {
 
         void fillContour(Bitmap& canva) const noexcept;
 
+        CanvaRow rasterizeLine(BitmapRow& row) const noexcept;
+
+        void tryRepairBrokenPixel(BitmapRow& row, std::size_t index) const noexcept;
+
         static constexpr const uint8_t                      Hit = 0xFF;
         static constexpr const uint8_t                      Flag = 0x0F;
         static constexpr const uint8_t                      Mask = 0xF0;
     };
 
     template <bool Axis>
-    void FontRasterizer::drawLineByAxis(Bitmap& canva, Vector2f firstVertex,
-            Vector2f secondVertex) noexcept
+    auto FontRasterizer::getLinearFunction(Bitmap& canva, Vector2f const& firstVertex,
+        Vector2f const& secondVertex) noexcept
     {
         float derivative = (secondVertex[!Axis] - firstVertex[!Axis])
             / (secondVertex[Axis] - firstVertex[Axis]);
-        auto func = [&] (uint16_t x) {
+        return [&, derivative] (uint16_t x) {
             float y = x * derivative + firstVertex[!Axis]
                 - firstVertex[Axis] * derivative;
             setCanvaPixel<Axis>(canva, x, y);
         };
-        if (firstVertex[Axis] > secondVertex[Axis])
-            negativeContour<Axis>(firstVertex, secondVertex, func);
+    }
+
+    template <bool Axis>
+    void FontRasterizer::drawLineByAxis(Bitmap& canva, Vector2f const& firstVertex,
+        Vector2f const& secondVertex) noexcept
+    {
+        auto func = getLinearFunction<Axis>(canva, firstVertex, secondVertex);
+        float begin = firstVertex[Axis], end = secondVertex[Axis];
+        if (begin > end)
+            negativeContour(begin, end, func);
         else
-            positiveContour<Axis>(firstVertex, secondVertex, func);
+            positiveContour(begin, end, func);
     }
 
-    template <bool Axis, std::invocable<uint16_t> Function>
-    void FontRasterizer::positiveContour(Vector2f const& firstVertex,
-        Vector2f const& secondVertex, Function function) noexcept
+    template <std::invocable<uint16_t> Function>
+    void FontRasterizer::positiveContour(float begin, float end
+        , Function function) noexcept
     {
-        for (uint16_t x = std::round(firstVertex[Axis]);
-            x != std::round(secondVertex[Axis] + 1); ++x)
-                function(x);
+        for (uint16_t x = std::round(begin); x != std::round(end) + 1; ++x)
+            function(x);
     }
 
-    template <bool Axis, std::invocable<uint16_t> Function>
-    void FontRasterizer::negativeContour(Vector2f const& firstVertex,
-        Vector2f const& secondVertex, Function function) noexcept
+    template <std::invocable<uint16_t> Function>
+    void FontRasterizer::negativeContour(float begin, float end,
+        Function function) noexcept
     {
-        for (int32_t x = std::round(firstVertex[Axis]);
-            x != int32_t(std::round(secondVertex[Axis]) - 1); --x)
-                function(static_cast<uint16_t>(x));
+        for (int32_t x = std::round(begin); x != int32_t(std::round(end) - 1); --x)
+            function(static_cast<uint16_t>(x));
     }
 
 
