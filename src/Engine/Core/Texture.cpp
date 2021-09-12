@@ -5,8 +5,8 @@
 namespace ge {
 
     template <Allocator Alloc>
-    Texture<Alloc>::Options::Options(TextureWrapper verticalWrapping, TextureWrapper horizontalWrapping, MinifyingTextureFilter minifyingFilter, MagnifyingTextureFilter magnifyingFilter, Color borderColor) noexcept
-        : verticalWrapping{verticalWrapping}, horizontalWrapping{horizontalWrapping}, minifyingFilter{minifyingFilter}, magnifyingFilter{magnifyingFilter}, borderColor{borderColor} {}
+    Texture<Alloc>::Options::Options(TextureWrapper verticalWrapping, TextureWrapper horizontalWrapping, MinifyingTextureFilter minifyingFilter, MagnifyingTextureFilter magnifyingFilter, Color borderColor, bool mipmaps) noexcept
+        : verticalWrapping{verticalWrapping}, horizontalWrapping{horizontalWrapping}, minifyingFilter{minifyingFilter}, magnifyingFilter{magnifyingFilter}, borderColor{borderColor}, mipmaps(mipmaps) {}
 
     template <Allocator Alloc>
     Texture<Alloc>::Texture(const Options& options, const Alloc& alloc) noexcept : alloc{alloc},
@@ -24,18 +24,24 @@ namespace ge {
 
     template <Allocator Alloc>
     Texture<Alloc>::Texture(const std::string& fileName, const Options& options, const Alloc& alloc) : Texture{options, alloc} {
-        loadImage(ImageLoader<>{fileName}.getImage());
+        loadImage(ImageLoader<>{fileName}.getImage(), options);
     }
 
     template <Allocator Alloc>
     Texture<Alloc>::Texture(const Image& image, const Options& options, const Alloc& alloc) noexcept : Texture{options, alloc} {
-        loadImage(image);
+        loadImage(image, options);
+    }
+
+    template <Allocator Alloc>
+    void Texture<Alloc>::generateMipmaps(const Options& options) const noexcept {
+        if (options.mipmaps)
+            glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     template <Allocator Alloc>
     Texture<Alloc>::Texture(const Bitmap& bitmap, const Options& options, const Alloc& alloc) noexcept : Texture{options, alloc} {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.getWidth(), bitmap.getHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.getMemoryPtr());
-        glGenerateMipmap(GL_TEXTURE_2D);
+        generateMipmaps(options);
     }
 
     template <Allocator Alloc>
@@ -45,9 +51,9 @@ namespace ge {
     }
 
     template <Allocator Alloc>
-    void Texture<Alloc>::loadImage(const Image& image) const {
+    void Texture<Alloc>::loadImage(const Image& image, const Options& options) const {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
-        glGenerateMipmap(GL_TEXTURE_2D);
+        generateMipmaps(options);
     }
 
     template <Allocator Alloc>

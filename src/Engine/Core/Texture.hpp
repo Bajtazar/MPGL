@@ -36,16 +36,17 @@ namespace ge {
                 Nearest = GL_NEAREST,
                 Linear = GL_LINEAR
             };
-            TextureWrapper verticalWrapping;
-            TextureWrapper horizontalWrapping;
-            MinifyingTextureFilter minifyingFilter;
-            MagnifyingTextureFilter magnifyingFilter;
-            Color borderColor;
+            TextureWrapper              verticalWrapping;
+            TextureWrapper              horizontalWrapping;
+            MinifyingTextureFilter      minifyingFilter;
+            MagnifyingTextureFilter     magnifyingFilter;
+            Color                       borderColor;
+            bool                        mipmaps;
             Options(TextureWrapper verticalWrapping = TextureWrapper::Repeat,
                     TextureWrapper horizontalWrapping = TextureWrapper::Repeat,
                     MinifyingTextureFilter minifyingFilter = MinifyingTextureFilter::Linear,
                     MagnifyingTextureFilter magnifyingFilter = MagnifyingTextureFilter::Linear,
-                    Color borderColor = {}) noexcept;
+                    Color borderColor = {}, bool mipmaps = true) noexcept;
         };
         typedef Alloc                           allocator_type;
 
@@ -78,15 +79,17 @@ namespace ge {
 
             void operator()(uint32_t* ptr) const noexcept;
         private:
-            [[no_unique_address]] mutable Alloc alloc;
+            [[no_unique_address]] mutable Alloc     alloc;
         };
 
         explicit Texture(const Options& options, const Alloc& alloc) noexcept;
 
-        void loadImage(const Image& image) const;
+        void loadImage(const Image& image, const Options& options) const;
 
-        [[no_unique_address]] Alloc alloc;
-        std::shared_ptr<uint32_t> textureID;
+        void generateMipmaps(const Options& options) const noexcept;
+
+        [[no_unique_address]] Alloc                 alloc;
+        std::shared_ptr<uint32_t>                   textureID;
     };
 
     template class Texture<>;
