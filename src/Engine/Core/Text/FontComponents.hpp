@@ -37,6 +37,8 @@ namespace ge {
         template <ByteInputIterator Iter>
         explicit KernTable(Iter& iter);
 
+        explicit KernTable(void) noexcept = default;
+
         void setAxis(uint16_t const& coverage) noexcept;
     };
 

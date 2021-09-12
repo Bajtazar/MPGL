@@ -6,8 +6,7 @@
 
 #include "Engine/Core/Text/UTF-8.hpp"
 #include "Engine/Core/Text/GlyphSprite.hpp"
-#include "Engine/Core/Text/TTFLoader.hpp"
-#include "Engine/Core/Text/FontRasterizer.hpp"
+#include "Engine/Core/Text/Subfont.hpp"
 
 using namespace ge;
 
@@ -28,14 +27,14 @@ int main(void) noexcept {
     loader.loadAll();
     auto pack = loader.getTextures();
 
-    TTFLoader<> font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
+    Subfont font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
     std::string character;
     std::cin >> character;
 
-    auto glyphData = font.getGlyphs()[fromUTF8(character)];
-    std::cout << glyphData.glyph.exist() << '\n';
-    auto glyph = FontRasterizer{font.getFontData(), glyphData, 120}();
-    window.emplaceDrawable<PoliGlyphSprite>(Texture<>{glyph}, 20_x + 300_y, static_cast<Vector2f>(glyph.size()));
+    auto refglyph = font(fromUTF8(character), 128);
+    auto glyph = refglyph->get();
+
+    window.emplaceDrawable<PoliGlyphSprite>(glyph.getTexture(), 20_x + 300_y, vectorCast<float>(glyph.dimmensions));
 
     auto& text = dynamic_cast<PoliGlyphSprite&>(*window[1]);
     text[0].color = Color::literals::Red;

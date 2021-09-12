@@ -3,20 +3,28 @@
 #include "../Texture.hpp"
 #include "../../Mathematics/Vector.hpp"
 
+#include <variant>
+
 namespace ge {
 
     template <Allocator Alloc = Texture<>::allocator_type>
     struct Glyph {
-        Texture<Alloc>      texture;
+        typedef std::variant<std::monostate, Texture<Alloc>>    TextureVar;
+
+        TextureVar          texture;
         Vector2ui           dimmensions;
         Vector2i            bearing;
         uint32_t            advance;
 
-        explicit Glyph(Texture<Alloc> const& texture,
+        explicit Glyph(TextureVar const& texture,
             Vector2ui const& dimmensions, Vector2i const& bearing,
             uint32_t advance) noexcept : texture{texture},
                 dimmensions{dimmensions}, bearing{bearing},
                 advance{advance} {}
+
+        bool hasOutline(void) const noexcept { return std::holds_alternative<Texture<Alloc>>(texture); }
+
+        Texture<Alloc> const& getTexture(void) const noexcept { return std::get<Texture<Alloc>>(texture); }
 
         template <std::size_t Index>
             requires (Index < 4)
@@ -53,7 +61,7 @@ namespace std {
     struct tuple_size<ge::Glyph<Alloc>> : integral_constant<size_t, 4> {};
 
     template <ge::Allocator Alloc>
-    struct tuple_element<0, ge::Glyph<Alloc>> { using type = ge::Texture<Alloc>; };
+    struct tuple_element<0, ge::Glyph<Alloc>> { using type = ge::Glyph<Alloc>::TextureVar; };
 
     template <ge::Allocator Alloc>
     struct tuple_element<1, ge::Glyph<Alloc>> { using type = ge::Vector2ui; };
