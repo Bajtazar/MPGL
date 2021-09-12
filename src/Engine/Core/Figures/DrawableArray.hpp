@@ -11,7 +11,7 @@
 namespace ge {
 
     template <class T>
-    concept DrawableType = std::is_base_of_v<Drawable, T> && std::is_base_of_v<Transformable, T> && std::is_constructible_v<T, const std::shared_ptr<Vector2i>&>;
+    concept DrawableType = std::is_base_of_v<Drawable, T> && std::is_base_of_v<Transformable, T> && std::is_constructible_v<T, const std::shared_ptr<Vector2ui>&>;
 
     template <class T, class Alloc>
     using DrawableVector = std::vector<std::unique_ptr<T>, Alloc>;
@@ -19,8 +19,8 @@ namespace ge {
     template <DrawableType Base, class Allocator = std::allocator<std::unique_ptr<Base>>>
     class DrawableArray : private DrawableVector<Base, Allocator>, public Drawable, public Transformable {
     public:
-        explicit DrawableArray(const std::shared_ptr<Vector2i>& scene) noexcept;
-        explicit DrawableArray(const std::shared_ptr<Vector2i>& scene, std::size_t size, const Base& base) noexcept;
+        explicit DrawableArray(const std::shared_ptr<Vector2ui>& scene) noexcept;
+        explicit DrawableArray(const std::shared_ptr<Vector2ui>& scene, std::size_t size, const Base& base) noexcept;
 
         DrawableArray(const DrawableArray& drawableArray) noexcept = default;
         DrawableArray(DrawableArray&& drawableArray) noexcept = default;
@@ -38,7 +38,7 @@ namespace ge {
         void pushBack(const Base& drawable) noexcept;
         void pushBack(Base&& drawable) noexcept;
         template <typename... Args>
-            requires std::is_constructible_v<Base, const std::shared_ptr<Vector2i>&, Args...>
+            requires std::is_constructible_v<Base, const std::shared_ptr<Vector2ui>&, Args...>
         void emplaceBack(Args&&... args) noexcept;
 
         template <class InnerIterator, typename value_type>
@@ -100,7 +100,7 @@ namespace ge {
         virtual void copyToGPU(void) noexcept final;
         virtual void draw(void) const noexcept final;
 
-        virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
+        virtual void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
         virtual void translate(const Vector2f& shift) noexcept final;
         virtual void scale(const Vector2f& center, float factor) noexcept final;
         virtual void rotate(const Vector2f& center, float angle) noexcept final;
@@ -111,10 +111,10 @@ namespace ge {
     // templates
 
     template <DrawableType Base, class Allocator>
-    DrawableArray<Base, Allocator>::DrawableArray(const std::shared_ptr<Vector2i>& scene) noexcept : DrawableVector<Base, Allocator>{}, Drawable{scene} {}
+    DrawableArray<Base, Allocator>::DrawableArray(const std::shared_ptr<Vector2ui>& scene) noexcept : DrawableVector<Base, Allocator>{}, Drawable{scene} {}
 
     template <DrawableType Base, class Allocator>
-    DrawableArray<Base, Allocator>::DrawableArray(const std::shared_ptr<Vector2i>& scene, std::size_t size, const Base& base) noexcept : DrawableVector<Base, Allocator>{}, Drawable{scene} {
+    DrawableArray<Base, Allocator>::DrawableArray(const std::shared_ptr<Vector2ui>& scene, std::size_t size, const Base& base) noexcept : DrawableVector<Base, Allocator>{}, Drawable{scene} {
         DrawableVector<Base, Allocator>::reserve(size);
         for (std::size_t i = 0;i < size; ++i)
             this->push_back(std::move(std::make_unique<Base>(base)));
@@ -132,7 +132,7 @@ namespace ge {
 
     template <DrawableType Base, class Allocator>
     template <typename... Args>
-        requires std::is_constructible_v<Base, const std::shared_ptr<Vector2i>&, Args...>
+        requires std::is_constructible_v<Base, const std::shared_ptr<Vector2ui>&, Args...>
     void DrawableArray<Base, Allocator>::emplaceBack(Args&&... args) noexcept {
         this->emplace_back(std::move(std::make_unique<Base>(scene, std::forward<Args>(args)...)));
     }
@@ -153,7 +153,7 @@ namespace ge {
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::onScreenTransformation(const Vector2i& oldDimmensions) noexcept {
+    void DrawableArray<Base, Allocator>::onScreenTransformation(const Vector2ui& oldDimmensions) noexcept {
         std::ranges::for_each(*this, [&oldDimmensions](auto& transformable){ transformable.onScreenTransformation(oldDimmensions); });
     }
 

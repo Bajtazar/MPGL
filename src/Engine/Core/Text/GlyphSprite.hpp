@@ -16,10 +16,10 @@ namespace ge {
     class MonochromaticFontVertex {
     public:
         constexpr explicit MonochromaticFontVertex(Vector2f const& position,
-            Vector2f const& textureCoords, std::shared_ptr<Vector2i> const& scene) noexcept
+            Vector2f const& textureCoords, std::shared_ptr<Vector2ui> const& scene) noexcept
             : position{position, scene}, textureCoords{textureCoords} {}
 
-        Adapter<Vector2f, Vector2i>         position;
+        Adapter<Vector2f, Vector2ui>         position;
         Vector2f                            textureCoords;
 
         template <std::size_t Index>
@@ -47,10 +47,10 @@ namespace ge {
     public:
         constexpr explicit PolichromaticFontVertex(Vector2f const& position,
             Color const& color, Vector2f const& textureCoords,
-            std::shared_ptr<Vector2i> const& scene) noexcept
+            std::shared_ptr<Vector2ui> const& scene) noexcept
             : position{position, scene}, color{color}, textureCoords{textureCoords} {}
 
-        Adapter<Vector2f, Vector2i>         position;
+        Adapter<Vector2f, Vector2ui>         position;
         Vector2f                            textureCoords;
         Color                               color;
 
@@ -93,7 +93,7 @@ namespace ge {
 
         typedef std::array<Vertex, 4>               Vertices;
         typedef std::array<uint32_t, 6>             Indexes;
-        typedef std::shared_ptr<Vector2i>           ScenePtr;
+        typedef std::shared_ptr<Vector2ui>           ScenePtr;
         typedef Texture<>                           GlyphTexture;
 
         GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
@@ -128,7 +128,7 @@ namespace ge {
         void copyToGPU(void) noexcept final;
         void draw(void) const noexcept final;
 
-        void onScreenTransformation(Vector2i const& oldDimmensions) noexcept final;
+        void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center, float factor) noexcept final;
         void rotate(Vector2f const& center, float angle) noexcept final;
@@ -199,7 +199,7 @@ namespace std {
 
     template <>
     struct tuple_element<0, ge::MonochromaticFontVertex> {
-        using type = ge::Adapter<ge::Vector2f, ge::Vector2i>;
+        using type = ge::Adapter<ge::Vector2f, ge::Vector2ui>;
     };
 
     template <>
@@ -212,7 +212,7 @@ namespace std {
 
     template <>
     struct tuple_element<0, ge::PolichromaticFontVertex> {
-        using type = ge::Adapter<ge::Vector2f, ge::Vector2i>;
+        using type = ge::Adapter<ge::Vector2f, ge::Vector2ui>;
     };
 
     template <>

@@ -6,7 +6,7 @@ namespace ge {
     constexpr std::size_t VertexSizeTriangle = 18 * sizeof(float);
 
     template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(const std::shared_ptr<Vector2i>& scene, const Vector2f& firstVertex,
+    Triangle<PolygonMode>::Triangle(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex,
         const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
         : Shape{scene, 3} {
             vertices[0].position = firstVertex;
@@ -17,7 +17,7 @@ namespace ge {
         }
 
     template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(const std::shared_ptr<Vector2i>& scene) noexcept : Shape{scene, 3} {}
+    Triangle<PolygonMode>::Triangle(const std::shared_ptr<Vector2ui>& scene) noexcept : Shape{scene, 3} {}
 
     template <bool PolygonMode>
     Triangle<PolygonMode>::Triangle(const Triangle& triangle) noexcept : Shape{triangle.scene, 3} {

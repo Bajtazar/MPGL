@@ -6,8 +6,8 @@ namespace ge {
 
     class Points : public Shape {
     public:
-        Points(const std::shared_ptr<Vector2i>& scene, std::size_t vertices, const Color& color) noexcept;
-        Points(const std::shared_ptr<Vector2i>& scene, std::size_t vertices) noexcept;
+        Points(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices, const Color& color) noexcept;
+        Points(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices) noexcept;
 
         Points(const Points& points) noexcept;
         Points(Points&& points) noexcept;

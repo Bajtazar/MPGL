@@ -9,8 +9,8 @@ namespace ge {
     WindowInterface::Options::Options(uint16_t major,uint16_t minor,bool floating,bool maximised,bool resizable) noexcept
     : openGLMajorVersion(major), openGLMinorVersion(minor), floating(floating), maximised(maximised), resizable(resizable) {}
 
-    WindowInterface::WindowInterface(Vector2i dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share)
-    : dimmensions{std::move(std::make_shared<Vector2i>(dimmensions))} {
+    WindowInterface::WindowInterface(Vector2ui dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share)
+    : dimmensions{std::move(std::make_shared<Vector2ui>(dimmensions))} {
         if (!glfwInit())
             throw RenderWindowInitException(title);
         setWindowOptions(options);
@@ -26,8 +26,8 @@ namespace ge {
     void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        Vector2i oldDimmensions = *(render->dimmensions);
-        *(render->dimmensions) = Vector2i{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        Vector2ui oldDimmensions = *(render->dimmensions);
+        *(render->dimmensions) = Vector2ui{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
         std::ranges::for_each(render->transformables, [&oldDimmensions](auto& ptr){ ptr->onScreenTransformation(oldDimmensions); });
     }
 

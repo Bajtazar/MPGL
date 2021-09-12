@@ -7,7 +7,7 @@
 
 namespace ge {
 
-    Circle::Circle(const std::shared_ptr<Vector2i>& scene, const Vector2f& center, float radius, const Color& color, std::size_t segments) noexcept : Shape{scene, segments + 1}, center{center} {
+    Circle::Circle(const std::shared_ptr<Vector2ui>& scene, const Vector2f& center, float radius, const Color& color, std::size_t segments) noexcept : Shape{scene, segments + 1}, center{center} {
         float increment = 2.f * std::numbers::pi_v<float> / (segments - 1), angle = 0.f;
         vertices.front().position = center;
         for (auto& position : vertices | std::views::drop(1) | ge::views::position) {

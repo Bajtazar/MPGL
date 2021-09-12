@@ -4,12 +4,12 @@
 
 namespace ge {
 
-    Points::Points(const std::shared_ptr<Vector2i>& scene, std::size_t vertices, const Color& color) noexcept : Shape{scene, vertices} {
+    Points::Points(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices, const Color& color) noexcept : Shape{scene, vertices} {
         for (auto& color_ : this->vertices | views::color)
             color_ = color;
     }
 
-    Points::Points(const std::shared_ptr<Vector2i>& scene, std::size_t vertices) noexcept : Shape{scene, vertices} {}
+    Points::Points(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices) noexcept : Shape{scene, vertices} {}
 
     Points::Points(const Points& points) noexcept : Shape{points.scene, points.vertices.size()} {
         shaderProgram = points.shaderProgram;

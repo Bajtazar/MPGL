@@ -12,7 +12,7 @@ namespace ge {
 
     class RenderWindow : virtual private WindowInterface {
     public:
-        explicit RenderWindow(const Vector2i& dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr) noexcept(false);
+        explicit RenderWindow(const Vector2ui& dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr) noexcept(false);
         RenderWindow(const RenderWindow& window) noexcept = delete;
         RenderWindow(RenderWindow&& window) noexcept = delete;
 
@@ -21,13 +21,13 @@ namespace ge {
 
         operator bool() const noexcept { return shouldWindowClose(); }
 
-        const std::shared_ptr<Vector2i>& getWindowDimmensions(void) const noexcept { return WindowInterface::getWindowDimmensions(); }
+        const std::shared_ptr<Vector2ui>& getWindowDimmensions(void) const noexcept { return WindowInterface::getWindowDimmensions(); }
         const std::string& getWindowTitle(void) const noexcept { return WindowInterface::getWindowTitle(); }
 
         void pushDrawable(const std::shared_ptr<Drawable>& drawable) noexcept;
         void pushDrawable(std::shared_ptr<Drawable>&& drawable) noexcept;
         template <std::derived_from<Drawable> T, typename... Args>
-            requires std::is_constructible_v<T, const std::shared_ptr<Vector2i>&, Args...>
+            requires std::is_constructible_v<T, const std::shared_ptr<Vector2ui>&, Args...>
         void emplaceDrawable(Args&&... args) noexcept;
 
         void setDrawablesShaders(void) noexcept;
@@ -73,7 +73,7 @@ namespace ge {
     };
 
     template <std::derived_from<Drawable> T, typename... Args>
-        requires std::is_constructible_v<T, const std::shared_ptr<Vector2i>&, Args...>
+        requires std::is_constructible_v<T, const std::shared_ptr<Vector2ui>&, Args...>
     void RenderWindow::emplaceDrawable(Args&&... args) noexcept {
         auto ptr = std::make_shared<T>(WindowInterface::getWindowDimmensions(), std::forward<Args>(args)...);
         if constexpr (std::is_base_of_v<Transformable, T>)

@@ -11,33 +11,33 @@ namespace ge {
     class Shape : public Drawable, public Transformable {
     public:
         struct Vertex {
-            constexpr explicit Vertex(const Vector2f& position, const Color& color, const std::shared_ptr<Vector2i>& scene) noexcept : position{position, scene}, color{color} {}
+            constexpr explicit Vertex(const Vector2f& position, const Color& color, const std::shared_ptr<Vector2ui>& scene) noexcept : position{position, scene}, color{color} {}
 
-            Adapter<Vector2f, Vector2i> position;
+            Adapter<Vector2f, Vector2ui> position;
             Color color;
 
             template <std::size_t Index>
                 requires (Index < 2)
-            inline constexpr auto& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Color, Adapter<Vector2f, Vector2i>>&>(*this)); }
+            inline constexpr auto& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Color, Adapter<Vector2f, Vector2ui>>&>(*this)); }
 
             template <std::size_t Index>
                 requires (Index < 2)
-            inline constexpr const auto& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Color, Adapter<Vector2f, Vector2i>>&>(*this)); }
+            inline constexpr const auto& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Color, Adapter<Vector2f, Vector2ui>>&>(*this)); }
 
             template <std::size_t Index>
                 requires (Index < 2)
-            inline constexpr auto&& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Color, Adapter<Vector2f, Vector2i>>&&>(*this)); }
+            inline constexpr auto&& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Color, Adapter<Vector2f, Vector2ui>>&&>(*this)); }
 
             template <std::size_t Index>
                 requires (Index < 2)
-            inline constexpr const auto&& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Color, Adapter<Vector2f, Vector2i>>&&>(*this)); }
+            inline constexpr const auto&& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Color, Adapter<Vector2f, Vector2ui>>&&>(*this)); }
         };
 
         virtual void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
         virtual void copyToGPU(void) noexcept = 0;
         virtual void draw(void) const noexcept = 0;
 
-        virtual void onScreenTransformation(const Vector2i& oldDimmensions) noexcept final;
+        virtual void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
         virtual void translate(const Vector2f& shift) noexcept final;
         virtual void scale(const Vector2f& center, float factor) noexcept final;
         virtual void rotate(const Vector2f& center, float angle) noexcept final;
@@ -78,8 +78,8 @@ namespace ge {
 
         virtual ~Shape(void) noexcept;
     protected:
-        explicit Shape(const std::shared_ptr<Vector2i>& scene, size_t size) noexcept;
-        explicit Shape(const std::shared_ptr<Vector2i>& scene, std::vector<Vertex>&& vertices) noexcept;
+        explicit Shape(const std::shared_ptr<Vector2ui>& scene, size_t size) noexcept;
+        explicit Shape(const std::shared_ptr<Vector2ui>& scene, std::vector<Vertex>&& vertices) noexcept;
 
         std::vector<Vertex> vertices;
         uint32_t shaderProgram;

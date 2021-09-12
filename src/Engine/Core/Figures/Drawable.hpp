@@ -9,7 +9,7 @@ namespace ge {
 
     class Drawable {
     public:
-        explicit Drawable(const std::shared_ptr<Vector2i>&  scene) noexcept : scene{scene} {}
+        explicit Drawable(const std::shared_ptr<Vector2ui>&  scene) noexcept : scene{scene} {}
         /*friend RenderWindow& operator<< (RenderWindow& target, Drawable& drawable) noexcept{
             //drawable.draw(target);
             return target;
@@ -21,7 +21,7 @@ namespace ge {
 
         virtual ~Drawable(void) noexcept = default;
     protected:
-        const std::shared_ptr<Vector2i>& scene;
+        const std::shared_ptr<Vector2ui>& scene;
     };
 
 }

@@ -36,16 +36,16 @@ namespace ge {
 
         virtual ~WindowInterface(void) noexcept { glfwTerminate(); }
     protected:
-        explicit WindowInterface(Vector2i dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
+        explicit WindowInterface(Vector2ui dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
         explicit WindowInterface(GLFWwindow* window) noexcept : window(window) {}
         bool shouldWindowClose(void) const noexcept  { return glfwWindowShouldClose(window); }
         void clear(const Color& color) const noexcept;
         void draw(void) const noexcept;
-        constexpr const std::shared_ptr<Vector2i>& getWindowDimmensions(void) const noexcept { return dimmensions; }
+        constexpr const std::shared_ptr<Vector2ui>& getWindowDimmensions(void) const noexcept { return dimmensions; }
         constexpr const std::string& getWindowTitle(void) const noexcept { return name; }
         std::vector<std::shared_ptr<Transformable>> transformables;
     private:
-        std::shared_ptr<Vector2i> dimmensions;
+        std::shared_ptr<Vector2ui> dimmensions;
         std::string name;
         GLFWwindow* window;
         void setWindowOptions(const Options&) const noexcept;

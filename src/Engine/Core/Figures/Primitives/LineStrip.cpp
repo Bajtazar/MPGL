@@ -4,12 +4,12 @@
 
 namespace ge {
 
-    LineStrip::LineStrip(const std::shared_ptr<Vector2i>& scene, std::size_t vertices, const Color& color) noexcept : Shape{scene, vertices} {
+    LineStrip::LineStrip(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices, const Color& color) noexcept : Shape{scene, vertices} {
         for (auto& color_ : this->vertices | views::color)
             color_ = color;
     }
 
-    LineStrip::LineStrip(const std::shared_ptr<Vector2i>& scene, std::size_t vertices) noexcept : Shape{scene, vertices} {}
+    LineStrip::LineStrip(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices) noexcept : Shape{scene, vertices} {}
 
     LineStrip::LineStrip(const LineStrip& lineStrip) noexcept : Shape{lineStrip.scene, lineStrip.vertices.size()} {
         shaderProgram = lineStrip.shaderProgram;

@@ -3,18 +3,18 @@
 
 namespace ge {
 
-    Shape::Shape(const std::shared_ptr<Vector2i>& scene, size_t size) noexcept : Drawable{scene}, vertices{size, Vertex{{}, {}, scene}} {
+    Shape::Shape(const std::shared_ptr<Vector2ui>& scene, size_t size) noexcept : Drawable{scene}, vertices{size, Vertex{{}, {}, scene}} {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
     }
 
-    Shape::Shape(const std::shared_ptr<Vector2i>& scene, std::vector<Vertex>&& vertices) noexcept : Drawable{scene}, vertices{std::move(vertices)} {}
+    Shape::Shape(const std::shared_ptr<Vector2ui>& scene, std::vector<Vertex>&& vertices) noexcept : Drawable{scene}, vertices{std::move(vertices)} {}
 
     void Shape::setShaders(const ShaderLibrary& shaderLibrary) noexcept {
         shaderProgram = shaderLibrary["2DDefault"];
     }
 
-    void Shape::onScreenTransformation(const Vector2i& oldDimmensions) noexcept {
+    void Shape::onScreenTransformation(const Vector2ui& oldDimmensions) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position)) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * vectorCast<float>(oldDimmensions) / vectorCast<float>(*scene) - 1.f;

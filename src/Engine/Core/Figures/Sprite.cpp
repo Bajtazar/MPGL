@@ -7,7 +7,7 @@
 namespace ge {
 
     template <bool IsColorable>
-    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const std::shared_ptr<Vector2i>& scene, const Color& color) noexcept requires IsColorable {
+    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const std::shared_ptr<Vector2ui>& scene, const Color& color) noexcept requires IsColorable {
         return {Vertex{{}, color, {0.f, 0.f}, scene}, Vertex{{}, color, {0.f, 1.f}, scene}, Vertex{{}, color, {1.f, 1.f}, scene}, Vertex{{}, color, {1.f, 0.f}, scene}};
     }
 
@@ -15,36 +15,36 @@ namespace ge {
     const std::array<uint32_t, 6> Sprite<IsColorable>::indexes {0, 1, 2, 0, 3, 2};
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture) noexcept : Drawable{scene}, vertices{std::move(makeVertexArray(scene))}, texture{texture} {
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture) noexcept : Drawable{scene}, vertices{std::move(makeVertexArray(scene))}, texture{texture} {
         generateBuffers();
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Color& color) noexcept requires (IsColorable)
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture, const Color& color) noexcept requires (IsColorable)
         : Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture}
     {
         generateBuffers();
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex) noexcept : Sprite{scene, texture} {
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex) noexcept : Sprite{scene, texture} {
         setVerticesPoisition(firstVertex, secondVertex, thirdVertex);
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
         requires (IsColorable) : Sprite{scene, texture, color}
     {
         setVerticesPoisition(firstVertex, secondVertex, thirdVertex);
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions) noexcept : Sprite{scene, texture} {
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions) noexcept : Sprite{scene, texture} {
         setVerticesPoisition(firstVertex, dimmensions);
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2i>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
+    Sprite<IsColorable>::Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
         requires (IsColorable) : Sprite{scene, texture, color}
     {
         setVerticesPoisition(firstVertex, dimmensions);
@@ -135,7 +135,7 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::onScreenTransformation(const Vector2i& oldDimmensions) noexcept {
+    void Sprite<IsColorable>::onScreenTransformation(const Vector2ui& oldDimmensions) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position)) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * static_cast<Vector2f>(oldDimmensions) / static_cast<Vector2f>(*scene) - 1.f;
@@ -175,7 +175,7 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const std::shared_ptr<Vector2i>& scene) noexcept {
+    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const std::shared_ptr<Vector2ui>& scene) noexcept {
         if constexpr (IsColorable)
             return {Vertex{{}, {}, {0.f, 0.f}, scene}, Vertex{{}, {}, {0.f, 1.f}, scene}, Vertex{{}, {}, {1.f, 1.f}, scene}, Vertex{{}, {}, {1.f, 0.f}, scene}};
         else

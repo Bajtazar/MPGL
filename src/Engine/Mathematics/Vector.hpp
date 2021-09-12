@@ -306,8 +306,9 @@ namespace ge {
     template class Vector<float, 2>;
     template class Vector<uint32_t, 2>;
 
-    typedef Vector<float, 2> Vector2f;
-    typedef Vector<uint32_t, 2> Vector2i;
+    typedef Vector<float, 2>    Vector2f;
+    typedef Vector<uint32_t, 2> Vector2ui;
+    typedef Vector<int32_t, 2>  Vector2i;
 
     template <Arithmetic T>
     using TwoVector = Vector<T, 2>;
@@ -322,16 +323,16 @@ namespace ge {
         return Vector2f{static_cast<float>(value), 0.f};
     }
 
-    constexpr Vector2i operator"" _x(unsigned long long int value) noexcept {
-        return Vector2i{static_cast<uint32_t>(value), 0u};
+    constexpr Vector2ui operator"" _x(unsigned long long int value) noexcept {
+        return Vector2ui{static_cast<uint32_t>(value), 0u};
     }
 
     constexpr Vector2f operator"" _y(long double value) noexcept {
         return Vector2f{0.f, static_cast<float>(value)};
     }
 
-    constexpr Vector2i operator"" _y(unsigned long long int value) noexcept {
-        return Vector2i{0u, static_cast<uint32_t>(value)};
+    constexpr Vector2ui operator"" _y(unsigned long long int value) noexcept {
+        return Vector2ui{0u, static_cast<uint32_t>(value)};
     }
 
 }
