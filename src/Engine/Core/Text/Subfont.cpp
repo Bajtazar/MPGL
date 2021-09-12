@@ -12,20 +12,7 @@ namespace ge {
         kern = std::move(loader.getKern());
     }
 
-    Subfont::FontGlyph Subfont::operator() (uint16_t number, std::size_t size) {
-        std::size_t level = std::ceil(std::log2(size));
-        uint8_t scaled = level < 3 ? 0 : level - 3;
-        return getGlyph(number, scaled);
-    }
-
-    Subfont::RasterMap& Subfont::getMap(uint8_t level) {
-        auto iter = sizeMap.find(level);
-        if (iter == sizeMap.end())
-            iter = sizeMap.emplace(level, RasterMap{}).first;
-        return iter->second;
-    }
-
-    Subfont::FontGlyph Subfont::getGlyph(uint16_t number, uint8_t level) {
+    Subfont::FontGlyph Subfont::operator() (uint16_t number, uint8_t level) {
         auto& map = getMap(level);
         auto iter = map.find(number);
         if (iter == map.end()) {
@@ -35,6 +22,13 @@ namespace ge {
             iter = map.emplace(number, createGlyph(glpyhIter, level)).first;
         }
         return {std::cref(iter->second)};
+    }
+
+    Subfont::RasterMap& Subfont::getMap(uint8_t level) {
+        auto iter = sizeMap.find(level);
+        if (iter == sizeMap.end())
+            iter = sizeMap.emplace(level, RasterMap{}).first;
+        return iter->second;
     }
 
     Vector2ui Subfont::getDimmensions(GlyphData const& glyph,

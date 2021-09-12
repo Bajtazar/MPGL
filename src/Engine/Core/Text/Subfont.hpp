@@ -12,7 +12,7 @@ namespace ge {
 
         explicit Subfont(std::string const& path);
 
-        FontGlyph operator() (uint16_t number, std::size_t size);
+        FontGlyph operator() (uint16_t number, uint8_t level);
 
         Kern const& getKern(void) const noexcept { return kern; }
     private:
@@ -22,8 +22,6 @@ namespace ge {
         typedef typename GlyphMap::const_iterator   Iter;
 
         RasterMap& getMap(uint8_t level);
-
-        FontGlyph getGlyph(uint16_t number, uint8_t level);
 
         Glyph<> createGlyph(Iter const& iter, uint8_t level);
 
