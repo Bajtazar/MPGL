@@ -34,7 +34,7 @@ int main(void) noexcept {
     auto refglyph = font(fromUTF8(character), 128);
     auto glyph = refglyph->get();
 
-    window.emplaceDrawable<PoliGlyphSprite>(glyph.getTexture(), 20_x + 300_y, vectorCast<float>(glyph.dimmensions));
+    window.emplaceDrawable<PoliGlyphSprite>(*glyph.texture, 20_x + 300_y, vectorCast<float>(glyph.dimmensions));
 
     auto& text = dynamic_cast<PoliGlyphSprite&>(*window[1]);
     text[0].color = Color::literals::Red;

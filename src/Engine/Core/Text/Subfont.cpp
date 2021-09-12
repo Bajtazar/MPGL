@@ -64,7 +64,7 @@ namespace ge {
 
     Subfont::TextureVar Subfont::renderTexture(Iter const& iter, std::size_t size) const {
         if (!iter->second.glyph.exist())
-            return TextureVar{};
+            return {};
         FontRasterizer raster{fontData, iter->second, size};
         Texture<>::Options options;
         options.mipmaps = false;

@@ -3,13 +3,13 @@
 #include "../Texture.hpp"
 #include "../../Mathematics/Vector.hpp"
 
-#include <variant>
+#include <optional>
 
 namespace ge {
 
     template <Allocator Alloc = Texture<>::allocator_type>
     struct Glyph {
-        typedef std::variant<std::monostate, Texture<Alloc>>    TextureVar;
+        typedef std::optional<Texture<Alloc>>    TextureVar;
 
         TextureVar          texture;
         Vector2ui           dimmensions;
@@ -22,9 +22,7 @@ namespace ge {
                 dimmensions{dimmensions}, bearing{bearing},
                 advance{advance} {}
 
-        bool hasOutline(void) const noexcept { return std::holds_alternative<Texture<Alloc>>(texture); }
-
-        Texture<Alloc> const& getTexture(void) const noexcept { return std::get<Texture<Alloc>>(texture); }
+        bool hasOutline(void) const noexcept { return bool(texture); }
 
         template <std::size_t Index>
             requires (Index < 4)
