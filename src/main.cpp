@@ -6,7 +6,7 @@
 
 #include "Engine/Core/Text/UTF-8.hpp"
 #include "Engine/Core/Text/GlyphSprite.hpp"
-#include "Engine/Core/Text/Subfont.hpp"
+#include "Engine/Core/Text/Font.hpp"
 
 using namespace ge;
 
@@ -27,11 +27,11 @@ int main(void) noexcept {
     loader.loadAll();
     auto pack = loader.getTextures();
 
-    Subfont font{"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"};
+    Font font{"Hack", "/usr/share/fonts/truetype/hack/"};
     std::string character;
     std::cin >> character;
 
-    auto refglyph = font(fromUTF8(character), 4);
+    auto refglyph = font(Font::Type::Regular)(fromUTF8(character), 4);
     auto glyph = refglyph->get();
 
     window.emplaceDrawable<PoliGlyphSprite>(*glyph.texture, 20_x + 300_y, vectorCast<float>(glyph.dimmensions));

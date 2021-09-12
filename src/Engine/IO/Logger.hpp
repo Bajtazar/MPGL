@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Ranges.hpp"
+#include "../Utility/Ranges.hpp"
 
 #include <concepts>
 #include <sstream>
@@ -16,6 +16,7 @@ namespace ge {
         static void checkCompilationStatus(uint32_t bufferID, uint32_t operation, const std::string& title);
         static std::string loggingString(std::size_t size, char fill) noexcept;
         static void saveOpenGl(const std::string& data, const std::string& title) noexcept;
+        static void logInvalidFont(const std::string& fontName, const std::string& subtype);
     private:
         static std::stringstream getTimeInString(void) noexcept;
         static std::string getCurrentDay(void) noexcept;

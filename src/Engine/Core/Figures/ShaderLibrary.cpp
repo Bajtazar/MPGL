@@ -1,7 +1,7 @@
 #include "ShaderLibrary.hpp"
 
 #include "../../IO/FileIO.hpp"
-#include "../../Utility/Logger.hpp"
+#include "../../IO/Logger.hpp"
 #include "../../Exceptions/ShaderLibraryInvalidShadersException.hpp"
 #include "../../Exceptions/ShaderProgramLinkingException.hpp"
 

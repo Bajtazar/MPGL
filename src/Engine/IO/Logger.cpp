@@ -1,5 +1,5 @@
 #include "Logger.hpp"
-#include "../IO/FileIO.hpp"
+#include "FileIO.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -11,6 +11,14 @@ namespace ge {
     void Logger::saveOpenGl(const std::string& infoLog, const std::string& title) noexcept {
         std::stringstream ss = getTimeInString();
         ss << '[' << title << ']' << ' ' << infoLog << '\n';
+        std::cout << ss.rdbuf();
+        FileIO::saveFile("logs/" + getCurrentDay() + ".log", std::move(ss), std::ios_base::app);
+    }
+
+    void Logger::logInvalidFont(const std::string& fontName, const std::string& subtype)  {
+        std::stringstream ss = getTimeInString();
+        ss << "[Font] {" << subtype << "} font type has not been found in {" <<
+            fontName << "} family\n";
         std::cout << ss.rdbuf();
         FileIO::saveFile("logs/" + getCurrentDay() + ".log", std::move(ss), std::ios_base::app);
     }
