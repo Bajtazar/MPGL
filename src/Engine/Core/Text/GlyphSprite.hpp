@@ -135,7 +135,7 @@ namespace ge {
         iterator begin(void) noexcept { return vertices.begin(); }
         iterator end(void) noexcept { return vertices.end(); }
 
-        void setColor(Color const& color = {}) noexcept requires IsMonochromatic;
+        void setColor(Color const& color = {}) noexcept;
         Color const& getColor(void) const noexcept requires IsMonochromatic;
 
         const_iterator begin(void) const noexcept { return vertices.begin(); }

@@ -31,6 +31,8 @@ int main(void) noexcept {
 
     window.emplaceDrawable<Text<>>(font, 18, "Witaj świecie!", 20_x + 300_y);
 
+    auto& text = dynamic_cast<Text<>&>(*window[1]);
+
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[2]);
     array.emplaceBack(400_x + 400_y, 300_x + 300_y, 400_x + 300_y, Color::literals::White);

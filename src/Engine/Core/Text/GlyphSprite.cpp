@@ -106,13 +106,14 @@ namespace ge {
 
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::setColor(Color const& color) noexcept
-        requires IsMonochromatic
     {
-        GlyphBase<IsMonochromatic>::color = color;
-        if constexpr (IsMonochromatic)
+        if constexpr (IsMonochromatic) {
+            GlyphBase<IsMonochromatic>::color = color;
             if (shaderProgram)
                 glUniform4f(glGetUniformLocation(shaderProgram, "color"),
                     color.red, color.green, color.blue, color.alpha);
+        } else
+            std::ranges::for_each(vertices, [&color](auto& vertex){ vertex.color = color; });
     }
 
     template <bool IsMonochromatic>

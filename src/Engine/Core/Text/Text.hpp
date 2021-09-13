@@ -6,6 +6,9 @@
 
 namespace ge {
 
+    // add colours view
+    // remove trailing bug
+
     template <bool isPolichromatic = false>
     class Text : public Drawable {
     public:
@@ -18,32 +21,31 @@ namespace ge {
             Color const& color = {},
             Font::Type const& type = Font::Type::Regular);
 
-        //Text(Text const& text);
-        //Text(Text&& text);
+        Text(Text const& text) = default;
+        Text(Text&& text) = default;
 
-        //Text& operator= (Text const& text);
-        //Text& operator= (Text&& text);
+        Text& operator= (Text const& text) = default;
+        Text& operator= (Text&& text) = default;
 
-        //Text& operator= (std::string const& text);
-        //Text& operator= (std::string&& text);
+        Text& operator= (std::string const& text);
+        Text& operator= (std::string&& text);
 
-        //operator std::string() const& noexcept;
+        operator std::string() const& noexcept { return text; }
 
-        //void setFont(Font& font);
-        //void setStyle(Font::Type const& type);
-        //void setString(std::string const& information);
-        //void setColor(Color const& color);
-        //void setSize(std::size_t size);
+        void setFont(Font& font);
+        void setStyle(Font::Type const& type);
+        void setString(std::string const& text);
+        void setColor(Color const& color);
+        void setSize(std::size_t size);
 
-        //void clear(void) noexcept;
+        void clear(void) noexcept;
 
-        //Text& operator+= (Text const& left);
-        //Text& operator+= (std::string const& left);
+        Text& operator+= (std::string const& left);
 
-        //std::string const& getString(void) const noexcept;
+        std::string const& getString(void) const noexcept { return text; }
 
-        //Vector2f const& getDimmensions(void) const noexcept;
-        //Vector2f const& getPosition(void) const noexcept;
+        Vector2f getDimmensions(void) const noexcept;
+        Vector2f getPosition(void) const noexcept;
         float getAngle(void) const noexcept { return angle; }
 
         void setShaders(ShaderLibrary const& library) noexcept final;
@@ -55,25 +57,26 @@ namespace ge {
         typedef GlyphSprite<!isPolichromatic>       FontGlyph;
         typedef std::vector<FontGlyph>              GlyphsArray;
         typedef std::vector<uint16_t>               IDArray;
+        typedef std::reference_wrapper<Font>        FontRef;
 
         std::string                 text;
         GlyphsArray                 glyphs;
-        //Color                       color;
+        Color                       color;
         Vector2f                    position;
         std::size_t                 size;
         float                       angle;
-        Font&                       font;
+        FontRef                     font;
         Font::Type                  type;
 
         uint8_t getLevel(void) const;
         IDArray parseString(std::string string);
-        void drawSingleGlyph(uint16_t const& index);
         void drawGlyph(Subfont& subfont, uint8_t level, float scale,
-        uint16_t const& index, Matrix<float, 2> const& rotation);
+            uint16_t const& index, Matrix<float, 2> const& rotation);
         void drawGlyphs(IDArray const& array);
+        void redrawGlyphs(void);
     };
 
-    //template class Text<true>;
+    template class Text<true>;
     template class Text<false>;
 
 }
