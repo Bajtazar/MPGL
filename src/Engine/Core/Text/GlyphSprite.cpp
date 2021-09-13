@@ -91,8 +91,8 @@ namespace ge {
     {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
-        vertices[2].position = thirdVertex;
-        vertices[3].position = firstVertex - secondVertex + thirdVertex;
+        vertices[2].position = thirdVertex + secondVertex - firstVertex;
+        vertices[3].position = thirdVertex;
     }
 
     template <bool IsMonochromatic>

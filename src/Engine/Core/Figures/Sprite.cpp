@@ -199,8 +199,8 @@ namespace ge {
     void Sprite<IsColorable>::setVerticesPoisition(const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex) noexcept {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
-        vertices[2].position = thirdVertex;
-        vertices[3].position = firstVertex - secondVertex + thirdVertex;
+        vertices[2].position = thirdVertex + secondVertex - thirdVertex;
+        vertices[3].position = firstVertex;
     }
 
     template <bool IsColorable>
