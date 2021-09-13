@@ -42,13 +42,13 @@ namespace ge {
     Vector2i Subfont::getBearings(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
-        return {static_cast<int32_t>(glyph.leftSideBearing),
-            static_cast<int32_t>(glyph.glyph.getMinDimmensions()[1])
-            * static_cast<int32_t>(size) / static_cast<int32_t>(fontData.unitsPerEm)};
+        return vectorCast<int32_t>(TwoVector<int16_t>{glyph.leftSideBearing,
+            glyph.glyph.getMinDimmensions()[1]}) * static_cast<int32_t>(size)
+            / static_cast<int32_t>(fontData.unitsPerEm);
     }
 
     Glyph<> Subfont::createGlyph(Iter const& iter, uint8_t level) {
-        std::size_t size = 8 << level;
+        std::size_t size = 128 << level;
         auto const& glyphData = iter->second;
         auto&& dimmensions = getDimmensions(glyphData, size);
         auto&& bearings = getBearings(glyphData, size);

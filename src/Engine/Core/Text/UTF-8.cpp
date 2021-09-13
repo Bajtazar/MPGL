@@ -16,4 +16,18 @@ namespace ge {
         return sum;
     }
 
+    uint8_t getUTF8SequenceLength(char const& firstChar) {
+        if (!(firstChar & 0x80))
+            return 1;
+        if ((firstChar & 0xE0) == 0xC0)
+            return 2;
+        if ((firstChar & 0xF0) == 0xE0)
+            return 3;
+        if ((firstChar & 0xF8) == 0xF0)
+            return 4;
+        if ((firstChar & 0xFC) == 0xF8)
+            return 5;
+        return 6;
+    }
+
 }

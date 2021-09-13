@@ -5,8 +5,7 @@
 #include <iostream>
 
 #include "Engine/Core/Text/UTF-8.hpp"
-#include "Engine/Core/Text/GlyphSprite.hpp"
-#include "Engine/Core/Text/Font.hpp"
+#include "Engine/Core/Text/Text.hpp"
 
 using namespace ge;
 
@@ -28,19 +27,8 @@ int main(void) noexcept {
     auto pack = loader.getTextures();
 
     Font font{"Hack", "/usr/share/fonts/truetype/hack/"};
-    std::string character;
-    std::cin >> character;
 
-    auto refglyph = font(Font::Type::Regular)(fromUTF8(character), 4);
-    auto glyph = refglyph->get();
-
-    window.emplaceDrawable<PoliGlyphSprite>(*glyph.texture, 20_x + 300_y, vectorCast<float>(glyph.dimmensions));
-
-    auto& text = dynamic_cast<PoliGlyphSprite&>(*window[1]);
-    text[0].color = Color::literals::Red;
-    text[1].color = Color::literals::Green;
-    text[2].color = Color::literals::Blue;
-    text[3].color = Color::literals::Yellow;
+    window.emplaceDrawable<Text<>>(font, 18, "Witaj świecie!", 20_x + 300_y);
 
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[2]);

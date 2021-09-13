@@ -55,8 +55,28 @@ namespace ge {
         return {char(0x7F & unicodeID)};
     }
 
+    template <std::random_access_iterator Iter>
+        requires std::same_as<std::iter_value_t<Iter>, char>
+    uint32_t decodeTail(Iter iter, Iter end) noexcept {
+        uint32_t sum = 0;
+        for (; iter != end; ++iter)
+            sum = (sum << 6) + (*iter & 0x3F);
+        return sum;
+    }
+
+    template <std::random_access_iterator Iter>
+        requires std::same_as<std::iter_value_t<Iter>, char>
+    uint32_t fromUTF8(Iter iter, Iter end) {
+        auto size = std::distance(iter, end);
+        uint8_t bitmask = size != 1 ? (1 << (7 - size)) - 1 : 0x7F;
+        uint32_t front = (*iter & bitmask) << (6 * (size - 1));
+        return front + decodeTail(++iter, end);
+    }
+
     uint32_t decodeTail(std::string const& unicode) noexcept;
 
     uint32_t fromUTF8(std::string unicodeString);
+
+    uint8_t getUTF8SequenceLength(char const& firstChar);
 
 }

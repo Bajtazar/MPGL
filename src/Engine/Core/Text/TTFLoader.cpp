@@ -59,7 +59,7 @@ namespace ge {
     template <security::SecurityPolicy Policy>
     void TTFLoader<Policy>::loadHhea(void) {
         auto iter = getIterator() + tables["hhea"].offset;
-        std::advance(iter, 26);
+        std::advance(iter, 48);
         numberOfHMetrics = readType<uint16_t, true>(iter);
     }
 
@@ -131,7 +131,7 @@ namespace ge {
         auto iter = getIterator() + tables["hmtx"].offset;
         metrics.reserve(numGlyphs);
         for (uint16_t i = 0; i != numberOfHMetrics; ++i)
-            metrics.emplace_back(std::ref(iter));
+            metrics.emplace_back(iter);
         auto advanceWidth = metrics.size() ? metrics.back().advanceWidth : 0;
         for (uint16_t i = 0; i != (numGlyphs - numberOfHMetrics); ++i)
             metrics.emplace_back(advanceWidth,

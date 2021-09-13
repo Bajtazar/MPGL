@@ -10,10 +10,6 @@ namespace ge {
     class Drawable {
     public:
         explicit Drawable(const std::shared_ptr<Vector2ui>&  scene) noexcept : scene{scene} {}
-        /*friend RenderWindow& operator<< (RenderWindow& target, Drawable& drawable) noexcept{
-            //drawable.draw(target);
-            return target;
-        }*/
 
         virtual void setShaders(const ShaderLibrary&) noexcept = 0;
         virtual void copyToGPU(void) noexcept = 0;
