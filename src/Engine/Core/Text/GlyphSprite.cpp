@@ -4,95 +4,50 @@ namespace ge {
 
     template <bool IsMonochromatic>
         GlyphSprite<IsMonochromatic>::Vertices
-    GlyphSprite<IsMonochromatic>::makeVertexArray(ScenePtr const& scene) noexcept
+    GlyphSprite<IsMonochromatic>::makeVertexArray(ScenePtr const& scene, Color const& color) noexcept
     {
-        if constexpr (IsMonochromatic)
+        if constexpr (IsMonochromatic) {
+            GlyphBase<IsMonochromatic>::color = color;
             return {Vertex{{}, {0.f, 0.f}, scene}, Vertex{{}, {0.f, 1.f}, scene},
                 Vertex{{}, {1.f, 1.f}, scene}, Vertex{{}, {1.f, 0.f}, scene}};
-        else
-            return {Vertex{{}, {}, {0.f, 0.f}, scene}, Vertex{{}, {}, {0.f, 1.f}, scene},
-                Vertex{{}, {}, {1.f, 1.f}, scene}, Vertex{{}, {}, {1.f, 0.f}, scene}};
+        } else
+            return {Vertex{{}, color, {0.f, 0.f}, scene}, Vertex{{}, color, {0.f, 1.f}, scene},
+                Vertex{{}, color, {1.f, 1.f}, scene}, Vertex{{}, color, {1.f, 0.f}, scene}};
     }
 
     template <bool IsMonochromatic>
     GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture) requires (!IsMonochromatic)
-        : Drawable{scene}, vertices{std::move(makeVertexArray(scene))}, texture{texture}
+        GlyphTexture const& texture, Color const& color)
+        : Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture}
     {
-        generateBuffers();
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Color const& color) requires (IsMonochromatic)
-        : Drawable{scene}, MonochromaticBase{color}, vertices{std::move(makeVertexArray(scene))},
-        texture{texture}
-    {
-        generateBuffers();
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Vector2f const& firstVertex,
-        Vector2f const& secondVertex, Vector2f const& thirdVertex)
-        requires (!IsMonochromatic) : GlyphSprite{scene, texture}
-    {
-        setVerticesPoisition(firstVertex, secondVertex, thirdVertex);
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Vector2f const& firstVertex,
-        Vector2f const& secondVertex, Vector2f const& thirdVertex,
-        Color const& color) requires (IsMonochromatic)
-        : GlyphSprite{scene, texture, color}
-    {
-        setVerticesPoisition(firstVertex, secondVertex, thirdVertex);
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Vector2f const& firstVertex,
-        Vector2f const& dimmensions) requires (!IsMonochromatic)
-        : GlyphSprite{scene, texture}
-    {
-        setVerticesPoisition(firstVertex, dimmensions);
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Vector2f const& firstVertex,
-        Vector2f const& dimmensions, Color const& color)
-        requires (IsMonochromatic) : GlyphSprite{scene, texture, color}
-    {
-        setVerticesPoisition(firstVertex, dimmensions);
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::generateBuffers(void) noexcept {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
         glGenBuffers(1, &elementArrayBuffer);
     }
 
     template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::setVerticesPoisition(
-        Vector2f const& firstVertex, Vector2f const& dimmensions) noexcept
-    {
-        vertices[0].position = firstVertex;
-        vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
-        vertices[2].position = firstVertex + dimmensions;
-        vertices[3].position = firstVertex + Vector2f{dimmensions[0], 0.f};
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::setVerticesPoisition(Vector2f const& firstVertex,
-        Vector2f const& secondVertex, Vector2f const& thirdVertex) noexcept
+    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
+        GlyphTexture const& texture, Vector2f const& firstVertex,
+        Vector2f const& secondVertex, Vector2f const& thirdVertex,
+        Color const& color)
+        : GlyphSprite{scene, texture, color}
     {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
         vertices[2].position = thirdVertex + secondVertex - firstVertex;
         vertices[3].position = thirdVertex;
+    }
+
+    template <bool IsMonochromatic>
+    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
+        GlyphTexture const& texture, Vector2f const& firstVertex,
+        Vector2f const& dimmensions, Color const& color)
+        : GlyphSprite{scene, texture, color}
+    {
+        vertices[0].position = firstVertex;
+        vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
+        vertices[2].position = firstVertex + dimmensions;
+        vertices[3].position = firstVertex + Vector2f{dimmensions[0], 0.f};
     }
 
     template <bool IsMonochromatic>

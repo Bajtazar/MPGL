@@ -19,7 +19,7 @@ namespace ge {
             Vector2f const& textureCoords, std::shared_ptr<Vector2ui> const& scene) noexcept
             : position{position, scene}, textureCoords{textureCoords} {}
 
-        Adapter<Vector2f, Vector2ui>         position;
+        Adapter<Vector2f, Vector2ui>        position;
         Vector2f                            textureCoords;
 
         template <std::size_t Index>
@@ -50,7 +50,7 @@ namespace ge {
             std::shared_ptr<Vector2ui> const& scene) noexcept
             : position{position, scene}, color{color}, textureCoords{textureCoords} {}
 
-        Adapter<Vector2f, Vector2ui>         position;
+        Adapter<Vector2f, Vector2ui>        position;
         Vector2f                            textureCoords;
         Color                               color;
 
@@ -97,26 +97,15 @@ namespace ge {
         typedef Texture<>                           GlyphTexture;
 
         GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
-            Color const& color = {}) requires IsMonochromatic;
-        GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture)
-            requires (!IsMonochromatic);
-        // parallelogram (monochromatic)
+            Color const& color = {});
+        // parallelogram
         GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
             Vector2f const& firstVertex,    Vector2f const& secondVertex,
-            Vector2f const& thirdVertex,    Color const& color = {})
-            requires IsMonochromatic;
-        // parallelogram (polichromatic)
-        GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
-            Vector2f const& firstVertex,    Vector2f const& secondVertex,
-            Vector2f const& thirdVertex) requires (!IsMonochromatic);
-        //rectangle parallel to x and y axis (monochromatic)
+            Vector2f const& thirdVertex,    Color const& color = {});
+        //rectangle parallel to x and y axis
         GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
             Vector2f const& firstVertex,    Vector2f const& dimmensions,
-            Color const& color = {}) requires IsMonochromatic;
-        //rectangle parallel to x and y axis (polichromatic)
-        GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
-            Vector2f const& firstVertex,    Vector2f const& dimmensions)
-            requires (!IsMonochromatic);
+            Color const& color = {});
 
         GlyphSprite(GlyphSprite const& sprite) noexcept;
         GlyphSprite(GlyphSprite&& sprite) noexcept;
@@ -173,13 +162,7 @@ namespace ge {
         uint32_t                            vertexBuffer;
         uint32_t                            vertexArrayObject;
 
-        void setVerticesPoisition(Vector2f const& firstVertex,
-            Vector2f const& dimmensions) noexcept;
-        void setVerticesPoisition(Vector2f const& firstVertex,
-            Vector2f const& secondVertex, Vector2f const& thirdVertex) noexcept;
-        void generateBuffers(void) noexcept;
-
-        static Vertices makeVertexArray(ScenePtr const& scene) noexcept;
+        Vertices makeVertexArray(ScenePtr const& scene, Color const& color) noexcept;
 
         constexpr static Indexes            indexes = {{0, 1, 2, 0, 3, 2}};
     };
