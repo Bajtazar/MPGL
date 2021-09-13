@@ -44,7 +44,7 @@ namespace ge {
 
         //Vector2f const& getDimmensions(void) const noexcept;
         //Vector2f const& getPosition(void) const noexcept;
-        //float getAngle(void) const noexcept;
+        float getAngle(void) const noexcept { return angle; }
 
         void setShaders(ShaderLibrary const& library) noexcept final;
         void copyToGPU(void) noexcept final;
@@ -61,15 +61,16 @@ namespace ge {
         //Color                       color;
         Vector2f                    position;
         std::size_t                 size;
-        //float                       angle;
+        float                       angle;
         Font&                       font;
         Font::Type                  type;
 
         uint8_t getLevel(void) const;
         IDArray parseString(std::string string);
+        void drawSingleGlyph(uint16_t const& index);
         void drawGlyph(Subfont& subfont, uint8_t level, float scale,
-            uint16_t const& index);
-        void drawGlyphs(IDArray const& array, Vector2f position);
+        uint16_t const& index, Matrix<float, 2> const& rotation);
+        void drawGlyphs(IDArray const& array);
     };
 
     //template class Text<true>;

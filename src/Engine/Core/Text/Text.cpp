@@ -8,10 +8,10 @@ namespace ge {
         Font& font, std::size_t size, std::string const& text,
         Vector2f const& position, Color const& color, Font::Type const& type)
             : Drawable{scene}, text{text}, /*(color{color},*/ position{position},
-            size{size}, /*angle{0},*/ font{font}, type{type}
+            size{size}, angle{0.f}, font{font}, type{type}
     {
         auto indexes = parseString(text);
-        drawGlyphs(indexes, position);
+        drawGlyphs(indexes);
     }
 
     template <bool isPolichromatic>
@@ -34,24 +34,37 @@ namespace ge {
     }
 
     template <bool isPolichromatic>
-    void Text<isPolichromatic>::drawGlyphs(IDArray const& indexes, Vector2f position) {
+    void Text<isPolichromatic>::drawGlyphs(IDArray const& indexes) {
         auto& subfont = font(type);
         auto level = getLevel();
+        auto rotation = rotationMatrix<float>(angle);
         float scale = (float) size / (128 << level);
         for (uint16_t const& index : indexes)
-            drawGlyph(subfont, level, scale, index);
+            drawGlyph(subfont, level, scale, index, rotation);
+    }
+
+    template <bool isPolichromatic>
+    void Text<isPolichromatic>::drawSingleGlyph(uint16_t const& index) {
+        auto& subfont = font(type);
+        auto level = getLevel();
+        auto rotation = rotationMatrix<float>(angle);
+        float scale = (float) size / (128 << level);
+        drawGlyph(subfont, level, scale, index, rotation);
     }
 
     template <bool isPolichromatic>
     void Text<isPolichromatic>::drawGlyph(Subfont& subfont, uint8_t level,
-        float scale, uint16_t const& index)
+        float scale, uint16_t const& index, Matrix<float, 2> const& rotation)
     {
         if (auto glyph = subfont(index, level)) {
-            if (auto texture = glyph->get().texture)
-                glyphs.emplace_back(scene, *texture,
-                    position + (vectorCast<float>(glyph->get().bearing) * scale),
-                    vectorCast<float>(glyph->get().dimmensions) * scale);
-            position[0] += glyph->get().advance * scale;
+            if (auto texture = glyph->get().texture) {
+                Vector2f xVersor = rotation * Vector2f{float(glyph->get().dimmensions[0]), 0.f} * scale;
+                Vector2f yVersor = rotation * Vector2f{0.f, float(glyph->get().dimmensions[1])} * scale;
+                Vector2f bearing = rotation * vectorCast<float>(glyph->get().bearing) * scale;
+                glyphs.emplace_back(scene, *texture, position + bearing,
+                    position + bearing + yVersor, position + bearing + xVersor);
+            }
+            position += rotation * Vector2f{float(glyph->get().advance * scale), 0.f};
         }
     }
 
