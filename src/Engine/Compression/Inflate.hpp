@@ -12,10 +12,10 @@
 namespace ge {
 
     template <security::SecurityPolicy Policy = Secured>
-    class DeflateDecoder {
+    class Inflate {
     public:
-        explicit DeflateDecoder(std::deque<char>& rawData);
-        explicit DeflateDecoder(Policy policy, std::deque<char>& rawData);
+        explicit Inflate(std::deque<char>& rawData);
+        explicit Inflate(Policy policy, std::deque<char>& rawData);
 
         enum class CompressionLevel : uint8_t {
             Fastest,
@@ -48,6 +48,10 @@ namespace ge {
         std::pair<Decoder, Decoder> generateDynamicTrees(const Decoder& decoder, uint32_t literals,
             uint32_t distances, BitIter& iterator) const;
         void dynamicBlockLoop(const Decoder& mainDecoder, const Decoder& distanceDecoder, BitIter& iterator);
+        uint16_t readCodeLengthAlphabet(std::size_t& repeater, BitIter& iter,
+            std::vector<uint16_t>& bitlengths, uint16_t token) const;
+        std::vector<uint16_t> readBitLengths(const Decoder& decoder, uint32_t literals,
+            uint32_t distances, BitIter& iterator) const;
 
         uint32_t calculateAlder32(void) const noexcept;
 
@@ -79,7 +83,7 @@ namespace ge {
         static bool diagnostics;
     };
 
-    template class DeflateDecoder<Secured>;
-    template class DeflateDecoder<Unsecured>;
+    template class Inflate<Secured>;
+    template class Inflate<Unsecured>;
 
 }

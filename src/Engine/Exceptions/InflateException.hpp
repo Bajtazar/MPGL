@@ -4,9 +4,9 @@
 
 namespace ge {
 
-    struct DeflateDecoderException : public std::exception {
+    struct InflateException : public std::exception {
         virtual const char* what(void) const noexcept { return std::exception::what(); }
-        virtual ~DeflateDecoderException(void) noexcept = default;
+        virtual ~InflateException(void) noexcept = default;
     };
 
 }

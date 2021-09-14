@@ -4,9 +4,9 @@
 #include "../../Exceptions/ImageLoadingInvalidTypeException.hpp"
 #include "../../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../../Exceptions/ImageLoadingFileOpenException.hpp"
-#include "../../Exceptions/DeflateDecoderException.hpp"
+#include "../../Exceptions/InflateException.hpp"
 #include "../../Exceptions/NotSupportedException.hpp"
-#include "../../Compression/DeflateDecoder.hpp"
+#include "../../Compression/Inflate.hpp"
 #include <iostream>
 
 #include <numeric>
@@ -31,7 +31,7 @@ namespace ge {
             setPolicy(file, policy);
         } catch (std::out_of_range&) {
             throw ImageLoadingFileCorruptionException{this->fileName};
-        } catch (DeflateDecoderException&) {
+        } catch (InflateException&) {
             throw ImageLoadingFileCorruptionException{this->fileName};
         }
     }
@@ -61,7 +61,7 @@ namespace ge {
         }
         if (readType<uint64_t>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
-        DeflateDecoder decoder{policy, rawFileData};
+        Inflate decoder{policy, rawFileData};
         filterPixels(decoder.decompress());
     }
 
