@@ -15,10 +15,10 @@ namespace ge {
     using coords_t = decltype(std::declval<T>().textureCoords);
 
     template <std::ranges::input_range Range>
-    using iterator_value_type_t = typename std::iterator_traits<std::ranges::iterator_t<Range>>::value_type;
+    using iterator_value_type_t = std::iter_value_t<std::ranges::iterator_t<Range>>;
 
     template <std::ranges::input_range Range>
-        requires std::ranges::view<Range> && requires (iterator_value_type_t<Range> vertex) { vertex.position; }
+        requires (std::ranges::view<Range> && requires (iterator_value_type_t<Range> vertex) { vertex.position; })
     class PositionView : public std::ranges::view_interface<PositionView<Range>> {
     public:
         constexpr explicit PositionView(void) noexcept = default;
@@ -57,7 +57,7 @@ namespace ge {
     PositionView(Range&& base) -> PositionView<std::views::all_t<Range>>;
 
     template <std::ranges::input_range Range>
-        requires std::ranges::view<Range> && requires (iterator_value_type_t<Range> vertex) { vertex.color; }
+        requires (std::ranges::view<Range> && requires (iterator_value_type_t<Range> vertex) { vertex.color; })
     class ColorView : public std::ranges::view_interface<ColorView<Range>> {
     public:
         constexpr explicit ColorView(void) noexcept = default;
@@ -96,7 +96,7 @@ namespace ge {
     ColorView(Range&& base) -> ColorView<std::views::all_t<Range>>;
 
     template <std::ranges::input_range Range>
-        requires std::ranges::view<Range> && requires (iterator_value_type_t<Range> vertex) { vertex.textureCoords; }
+        requires (std::ranges::view<Range> && requires (iterator_value_type_t<Range> vertex) { vertex.textureCoords; })
     class TextureCoordsView : public std::ranges::view_interface<TextureCoordsView<Range>> {
     public:
         constexpr explicit TextureCoordsView(void) noexcept = default;

@@ -1,5 +1,6 @@
 #include "Text.hpp"
 #include "UTF-8.hpp"
+#include "../Figures/Views.hpp"
 
 namespace ge {
 
@@ -168,6 +169,34 @@ namespace ge {
     void Text<isPolichromatic>::setFont(Font& font) {
         this->font = std::ref(font);
         redrawGlyphs();
+    }
+
+    template <bool isPolichromatic>
+    void Text<isPolichromatic>::translate(Vector2f const& shift) noexcept {
+        std::ranges::for_each(glyphs, [&shift](auto& glyph){ glyph.translate(shift); });
+        position += shift;
+    }
+
+    template <bool isPolichromatic>
+    void Text<isPolichromatic>::rotate(Vector2f const& center, float angle) noexcept {
+        std::ranges::for_each(glyphs, [&center, &angle](auto& glyph){ glyph.rotate(center, angle); });
+        position = rotationMatrix<float>(angle) * (position - center) + center;
+        auto twoPi = std::numbers::pi_v<float> * 2;
+        this->angle += twoPi - angle;
+        this->angle = angle > twoPi ? angle - twoPi : angle < 0.f ? twoPi + angle : angle;
+    }
+
+    template <bool isPolichromatic>
+    void Text<isPolichromatic>::scale(Vector2f const& center, float factor) noexcept {
+        std::ranges::for_each(glyphs, [&center, &factor](auto& glyph){ glyph.scale(center, factor); });
+        size *= factor;
+        position = (position - center) * factor + center;
+    }
+
+    template <bool isPolichromatic>
+    void Text<isPolichromatic>::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
+        std::ranges::for_each(glyphs, [&oldDimmensions](auto& glyph)
+            { glyph.onScreenTransformation(oldDimmensions); });
     }
 
 }

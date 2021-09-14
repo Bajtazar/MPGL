@@ -127,10 +127,10 @@ namespace ge {
 
         consteval std::size_t size(void) const noexcept { return 4; }
 
-        using iterator = Vertices::iterator;
-        using const_iterator = Vertices::const_iterator;
-        using reverse_iterator = Vertices::reverse_iterator;
-        using const_reverse_iterator = Vertices::const_reverse_iterator;
+        using iterator = typename Vertices::iterator;
+        using const_iterator = typename Vertices::const_iterator;
+        using reverse_iterator = typename Vertices::reverse_iterator;
+        using const_reverse_iterator = typename Vertices::const_reverse_iterator;
 
         iterator begin(void) noexcept { return vertices.begin(); }
         iterator end(void) noexcept { return vertices.end(); }

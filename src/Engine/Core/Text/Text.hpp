@@ -3,13 +3,14 @@
 #include "Font.hpp"
 #include "GlyphSprite.hpp"
 #include "../Figures/Drawable.hpp"
+#include "../Figures/Transformable.hpp"
 
 namespace ge {
 
     // add colours view
 
     template <bool isPolichromatic = false>
-    class Text : public Drawable {
+    class Text : public Drawable, public Transformable {
     public:
         typedef std::shared_ptr<Vector2ui>      ScenePtr;
 
@@ -50,6 +51,11 @@ namespace ge {
         void setShaders(ShaderLibrary const& library) noexcept final;
         void copyToGPU(void) noexcept final;
         void draw(void) const noexcept final;
+
+        void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
+        void translate(Vector2f const& shift) noexcept final;
+        void scale(Vector2f const& center, float factor) noexcept final;
+        void rotate(Vector2f const& center, float angle) noexcept final;
 
         ~Text(void) noexcept = default;
     private:
