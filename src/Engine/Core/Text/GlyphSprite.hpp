@@ -93,7 +93,7 @@ namespace ge {
 
         typedef std::array<Vertex, 4>               Vertices;
         typedef std::array<uint32_t, 6>             Indexes;
-        typedef std::shared_ptr<Vector2ui>           ScenePtr;
+        typedef std::shared_ptr<Vector2ui>          ScenePtr;
         typedef Texture<>                           GlyphTexture;
 
         GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
