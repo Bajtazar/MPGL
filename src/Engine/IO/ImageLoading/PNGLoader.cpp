@@ -7,7 +7,6 @@
 #include "../../Exceptions/InflateException.hpp"
 #include "../../Exceptions/NotSupportedException.hpp"
 #include "../../Compression/Inflate.hpp"
-#include <iostream>
 
 #include <numeric>
 #include <ranges>
@@ -167,7 +166,7 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     uint8_t PNGLoader<Policy>::reconstructC(std::size_t row, std::size_t column, uint8_t pixel) const noexcept {
-        return (row < pixels.getHeight() - 1) && column < pixels.getHeight() - 1 ? pixels[row + 1][column - 1][pixel] : 0;
+        return (row < pixels.getHeight() - 1) && column ? pixels[row + 1][column - 1][pixel] : 0;
 
     }
 
