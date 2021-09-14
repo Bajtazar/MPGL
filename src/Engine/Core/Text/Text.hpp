@@ -7,7 +7,6 @@
 namespace ge {
 
     // add colours view
-    // remove trailing bug
 
     template <bool isPolichromatic = false>
     class Text : public Drawable {
@@ -58,6 +57,8 @@ namespace ge {
         typedef std::vector<FontGlyph>              GlyphsArray;
         typedef std::vector<uint16_t>               IDArray;
         typedef std::reference_wrapper<Font>        FontRef;
+        typedef std::tuple<uint8_t, float, Matrix<float, 2>>
+                                                    ArgTuple;
 
         std::string                 text;
         GlyphsArray                 glyphs;
@@ -69,11 +70,17 @@ namespace ge {
         Font::Type                  type;
 
         uint8_t getLevel(void) const;
+
         IDArray parseString(std::string string);
+
         void drawGlyph(Subfont& subfont, uint8_t level, float scale,
             uint16_t const& index, Matrix<float, 2> const& rotation);
+
         void drawGlyphs(IDArray const& array);
+
         void redrawGlyphs(void);
+
+        ArgTuple getArgs(void) const noexcept;
     };
 
     template class Text<true>;

@@ -33,11 +33,18 @@ namespace ge {
     }
 
     template <bool isPolichromatic>
-    void Text<isPolichromatic>::drawGlyphs(IDArray const& indexes) {
-        auto& subfont = font.get()(type);
-        auto level = getLevel();
+    Text<isPolichromatic>::ArgTuple Text<isPolichromatic>::getArgs(void) const noexcept
+    {
+        uint8_t level = getLevel();
         auto rotation = rotationMatrix<float>(angle);
         float scale = (float) size / (64 << level);
+        return {level, scale, rotation};
+    }
+
+    template <bool isPolichromatic>
+    void Text<isPolichromatic>::drawGlyphs(IDArray const& indexes) {
+        auto& subfont = font.get()(type);
+        auto&& [level, scale, rotation] = getArgs();
         for (uint16_t const& index : indexes)
             drawGlyph(subfont, level, scale, index, rotation);
     }
@@ -75,9 +82,15 @@ namespace ge {
 
     template <bool isPolichromatic>
     Vector2f Text<isPolichromatic>::getPosition(void) const noexcept {
-        if (glyphs.size())
-            return glyphs.front()[0].position;
-        return position;
+        if (!glyphs.size())
+            return position;
+        uint8_t len = getUTF8SequenceLength(text.front());
+        uint16_t index = fromUTF8(text.begin(), std::next(text.begin(), len));
+        auto&& [level, scale, rotation] = getArgs();
+        auto const& glyph = font.get()(type)(index, level);
+        Vector2f bearing = rotation * vectorCast<float>(
+            glyph->get().bearing) * scale;
+        return Vector2f{glyphs.front()[0].position} - bearing;
     }
 
     template <bool isPolichromatic>
@@ -98,14 +111,14 @@ namespace ge {
 
     template <bool isPolichromatic>
     void Text<isPolichromatic>::clear(void) noexcept {
-        position = glyphs.size() ? glyphs.front()[0].position : position;
+        position = getPosition();
         text.clear();
         glyphs.clear();
     }
 
     template <bool isPolichromatic>
     void Text<isPolichromatic>::redrawGlyphs(void) {
-        position = glyphs.size() ? glyphs.front()[0].position : position;
+        position = getPosition();
         glyphs.clear();
         drawGlyphs(parseString(text));
     }
