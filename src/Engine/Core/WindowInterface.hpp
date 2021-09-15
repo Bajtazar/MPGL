@@ -10,6 +10,7 @@
 
 #include "../Mathematics/Vector.hpp"
 #include "Figures/Transformable.hpp"
+#include "../Events/EventBus.hpp"
 #include "Color.hpp"
 
 namespace ge {

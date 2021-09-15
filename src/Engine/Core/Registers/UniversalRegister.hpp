@@ -9,22 +9,33 @@
 
 namespace ge {
 
-    template <class T, void (T::* EventMethod)(void)>
-        requires requires (T& t) { (t->*EventMethod)(); }
+    template <class T, typename Signature, Signature Method>
     class UniversalRegister : public RegisterInterface {
+        UniversalRegister(void) noexcept = delete;
+    };
+
+    template <class T, typename... Args, void(T::*EventMethod)(Args...)>
+    class UniversalRegister<T, void(T::*)(Args...), EventMethod>
+        : public RegisterInterface
+    {
     public:
+        typedef std::shared_ptr<T>          pointer;
+        typedef std::vector<pointer>        Storage;
+        typedef T                           value_type;
+
         explicit UniversalRegister(void) noexcept = default;
 
-        void pushBack(const std::shared_ptr<T>& pointer) noexcept { storage.push_back(pointer); }
-        void pushBack(std::shared_ptr<T>&& pointer) noexcept { storage.push_back(std::move(pointer)); }
+        void pushBack(pointer const& pointer)
+            { storage.push_back(pointer); }
+        void pushBack(pointer&& pointer) noexcept
+            { storage.push_back(std::move(pointer)); }
 
-        virtual void onEvent(void) noexcept final;
+        virtual void onEvent(Args&&... args) final;
 
-        using value_type = std::shared_ptr<T>;
-        using iterator = std::vector<T>::iterator;
-        using const_iterator = std::vector<T>::const_iterator;
-        using reverse_iterator = std::vector<T>::reverse_iterator;
-        using const_reverse_iterator = std::vector<T>::const_reverse_iterator;
+        using iterator = typename Storage::iterator;
+        using const_iterator = typename Storage::const_iterator;
+        using reverse_iterator = typename Storage::reverse_iterator;
+        using const_reverse_iterator = typename Storage::const_reverse_iterator;
 
         iterator begin(void) noexcept { return storage.begin(); }
         iterator end(void) noexcept { return storage.end(); }
@@ -43,18 +54,18 @@ namespace ge {
         std::size_t size(void) const noexcept { return storage.size(); }
         bool empty(void) const noexcept { return storage.empty(); }
 
-        std::shared_ptr<T>& operator[] (std::size_t index) noexcept { return storage[index]; }
-        const std::shared_ptr<T>& operator[] (std::size_t index) const noexcept { return storage[index]; }
+        pointer& operator[] (std::size_t index) noexcept { return storage[index]; }
+        pointer const& operator[] (std::size_t index) const noexcept { return storage[index]; }
 
         ~UniversalRegister(void) noexcept = default;
     private:
-        std::vector<std::shared_ptr<T>> storage;
+        Storage                             storage;
     };
 
-    template <class T, void (T::* EventMethod)(void)>
-        requires requires (T& t) { (t->*EventMethod)(); }
-    void UniversalRegister<T, EventMethod>::onEvent(void) noexcept {
-        std::ranges::for_each(storage, [](auto& event){ (event->*EventMethod)(); });
+    template <class T, typename... Args, void(T::*EventMethod)(Args...)>
+    void UniversalRegister<T, void(T::*)(Args...), EventMethod>::onEvent(Args&&... args) {
+        std::ranges::for_each(storage, [...args = std::forward<Args>(args)]
+            (auto& event){ (event->*EventMethod)(args...); });
     }
 
 }

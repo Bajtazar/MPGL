@@ -9,7 +9,7 @@ namespace ge {
 
     template <class Iter, std::sentinel_for<Iter> Sent = Iter>
         requires (std::random_access_iterator<Iter> || std::same_as<std::istreambuf_iterator<char>, Iter>)
-    class SafeIterator {};
+    class SafeIterator;
 
     template <std::random_access_iterator Iter, std::sentinel_for<Iter> Sent>
     class SafeIterator<Iter, Sent>
