@@ -17,7 +17,6 @@ namespace ge {
 
         Vector2f getCenter(void) const noexcept;
 
-        void copyToGPU(void) noexcept final;
         void draw(void) const noexcept final;
 
         ~Points(void) noexcept = default;

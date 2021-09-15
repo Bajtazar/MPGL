@@ -28,8 +28,8 @@ namespace ge {
         std::ranges::for_each(drawables, [this](auto& drawable){ drawable->setShaders(this->shaders); });
     }
 
-    void RenderWindow::copyDrawablesToGPU(void) noexcept {
-        std::ranges::for_each(drawables, [](auto& drawable){ drawable->copyToGPU(); });
+    void RenderWindow::copyDrawablesToGPU(void) const noexcept {
+        std::ranges::for_each(drawables, [](auto const& drawable){ drawable->copyToGPU(); });
     }
 
     void RenderWindow::drawDrawables(void) const noexcept {

@@ -3,8 +3,6 @@
 
 namespace ge {
 
-    constexpr std::size_t VertexSizeRectangle = 24 * sizeof(float);
-
     const std::array<uint32_t, 6> Rectangle::indexes {0, 1, 2, 0, 3, 2};
 
     Rectangle::Rectangle(const std::shared_ptr<Vector2ui>& scene) noexcept : Shape{scene, 4} {
@@ -69,21 +67,14 @@ namespace ge {
         return *this;
     }
 
-    void Rectangle::copyToGPU(void) noexcept {
-        glBindVertexArray(vertexArrayObject);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, VertexSizeRectangle, vertices.data(), GL_STATIC_DRAW);
+    void Rectangle::bindBuffers(void) const noexcept {
+        Shape::bindBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(uint32_t), indexes.data(), GL_STATIC_DRAW);
+    }
 
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+    void Rectangle::unbindBuffers(void) const noexcept {
+        Shape::unbindBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 

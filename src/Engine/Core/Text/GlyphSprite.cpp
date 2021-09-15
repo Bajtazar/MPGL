@@ -138,13 +138,16 @@ namespace ge {
     }
 
     template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::copyToGPU(void) noexcept {
+    void GlyphSprite<IsMonochromatic>::bindBuffers(void) const noexcept {
         glBindVertexArray(vertexArrayObject);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4, vertices.data(), GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(uint32_t), indexes.data(), GL_STATIC_DRAW);
+    }
 
+    template <bool IsMonochromatic>
+    void GlyphSprite<IsMonochromatic>::copyBuffersToGPU(void) const noexcept {
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
         glEnableVertexAttribArray(0);
 
@@ -155,10 +158,20 @@ namespace ge {
             glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(4 * sizeof(float)));
             glEnableVertexAttribArray(2);
         }
+    }
 
+    template <bool IsMonochromatic>
+    void GlyphSprite<IsMonochromatic>::unbindBuffers(void) const noexcept {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    template <bool IsMonochromatic>
+    void GlyphSprite<IsMonochromatic>::copyToGPU(void) const noexcept {
+        bindBuffers();
+        copyBuffersToGPU();
+        unbindBuffers();
     }
 
     template <bool IsMonochromatic>

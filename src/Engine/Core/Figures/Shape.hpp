@@ -34,7 +34,7 @@ namespace ge {
         };
 
         void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
-        virtual void copyToGPU(void) noexcept = 0;
+        void copyToGPU(void) const noexcept final;
         virtual void draw(void) const noexcept = 0;
 
         void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
@@ -81,6 +81,10 @@ namespace ge {
     protected:
         explicit Shape(const std::shared_ptr<Vector2ui>& scene, size_t size) noexcept;
         explicit Shape(const std::shared_ptr<Vector2ui>& scene, std::vector<Vertex>&& vertices) noexcept;
+
+        virtual void bindBuffers(void) const noexcept;
+        virtual void unbindBuffers(void) const noexcept;
+        void copyBuffersToGPU(void) const noexcept;
 
         std::vector<Vertex> vertices;
         uint32_t shaderProgram;

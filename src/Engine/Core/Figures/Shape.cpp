@@ -14,6 +14,31 @@ namespace ge {
         shaderProgram = shaderLibrary["2DDefault"];
     }
 
+    void Shape::copyToGPU(void) const noexcept {
+        bindBuffers();
+        copyBuffersToGPU();
+        unbindBuffers();
+    }
+
+    void Shape::bindBuffers(void) const noexcept {
+        glBindVertexArray(vertexArrayObject);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+    }
+
+    void Shape::copyBuffersToGPU(void) const noexcept {
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+    }
+
+    void Shape::unbindBuffers(void) const noexcept {
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
     void Shape::onScreenTransformation(const Vector2ui& oldDimmensions) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position)) {
             Vector2f& position = vertexPosition.get();

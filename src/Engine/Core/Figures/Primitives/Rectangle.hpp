@@ -22,13 +22,16 @@ namespace ge {
         Rectangle& operator= (const Rectangle& rectangle) noexcept;
         Rectangle& operator= (Rectangle&& rectangle) noexcept;
 
-        void copyToGPU(void) noexcept final;
         void draw(void) const noexcept final;
 
         ~Rectangle(void) noexcept;
     private:
         static const std::array<uint32_t, 6> indexes;
+
         uint32_t elementArrayBuffer;
+
+        void bindBuffers(void) const noexcept override;
+        void unbindBuffers(void) const noexcept override;
     };
 
 }

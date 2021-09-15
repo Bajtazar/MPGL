@@ -12,7 +12,7 @@ namespace ge {
         explicit Drawable(const std::shared_ptr<Vector2ui>&  scene) noexcept : scene{scene} {}
 
         virtual void setShaders(const ShaderLibrary&) noexcept = 0;
-        virtual void copyToGPU(void) noexcept = 0;
+        virtual void copyToGPU(void) const noexcept = 0;
         virtual void draw(void) const noexcept = 0;
 
         virtual ~Drawable(void) noexcept = default;

@@ -98,7 +98,7 @@ namespace ge {
         const_reverse_iterator crend(void) const noexcept { return const_reverse_iterator{ --cbegin() }; }
 
         void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
-        void copyToGPU(void) noexcept final;
+        void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
         void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
@@ -145,8 +145,8 @@ namespace ge {
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::copyToGPU(void) noexcept {
-        std::ranges::for_each(*this, [](auto& drawable){ drawable.copyToGPU(); });
+    void DrawableArray<Base, Allocator>::copyToGPU(void) const noexcept {
+        std::ranges::for_each(*this, [](const auto& drawable){ drawable.copyToGPU(); });
     }
 
     template <DrawableType Base, class Allocator>

@@ -170,7 +170,7 @@ namespace ge {
         float getAngle(void) const noexcept { return angle; }
 
         void setShaders(ShaderLibrary const& library) noexcept final;
-        void copyToGPU(void) noexcept final;
+        void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
         void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;

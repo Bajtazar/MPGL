@@ -2,8 +2,6 @@
 
 namespace ge {
 
-    constexpr std::size_t VertexSizeLine = 12 * sizeof(float);
-
     Line::Line(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex, const Vector2f& secondVertex, const Color& color) noexcept : Shape{scene, 2} {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
@@ -48,21 +46,6 @@ namespace ge {
 
     Vector2f Line::getLineCenter(void) const noexcept {
         return (Vector2f{vertices[0].position} + Vector2f{vertices[1].position}) / 2.f;
-    }
-
-    void Line::copyToGPU(void) noexcept {
-        glBindVertexArray(vertexArrayObject);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, VertexSizeLine, vertices.data(), GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
     }
 
     void Line::draw(void) const noexcept {

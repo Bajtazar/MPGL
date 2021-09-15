@@ -72,8 +72,8 @@ namespace ge {
     }
 
     template <bool isPolichromatic>
-    void Text<isPolichromatic>::copyToGPU(void) noexcept {
-        std::ranges::for_each(glyphs, [](auto& glyph) { glyph.copyToGPU(); });
+    void Text<isPolichromatic>::copyToGPU(void) const noexcept {
+        std::ranges::for_each(glyphs, [](auto const& glyph) { glyph.copyToGPU(); });
     }
 
     template <bool isPolichromatic>

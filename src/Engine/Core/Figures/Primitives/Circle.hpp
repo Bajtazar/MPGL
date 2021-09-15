@@ -13,7 +13,6 @@ namespace ge {
         Circle& operator= (const Circle& circle) noexcept;
         Circle& operator= (Circle&& circle) noexcept;
 
-        void copyToGPU(void) noexcept;
         void draw(void) const noexcept;
 
         const Vector2f& getCenter(void) const noexcept { return center; }

@@ -92,7 +92,7 @@ namespace ge {
         Sprite& operator= (Sprite&& sprite) noexcept;
 
         void setShaders(const ShaderLibrary& library) noexcept final;
-        void copyToGPU(void) noexcept final;
+        void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
         void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
@@ -145,6 +145,9 @@ namespace ge {
         void setVerticesPoisition(const Vector2f& firstVertex, const Vector2f& secondVertex,
                                   const Vector2f& thirdVertex) noexcept;
         void generateBuffers(void) noexcept;
+        void bindBuffers(void) const noexcept;
+        void copyBuffersToGPU(void) const noexcept;
+        void unbindBuffers(void) const noexcept;
 
         static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2ui>& scene) noexcept;
         static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2ui>& scene, const Color& color) noexcept requires IsColorable;

@@ -31,7 +31,7 @@ namespace ge {
         void emplaceDrawable(Args&&... args) noexcept;
 
         void setDrawablesShaders(void) noexcept;
-        void copyDrawablesToGPU(void) noexcept;
+        void copyDrawablesToGPU(void) const noexcept;
         void drawDrawables(void) const noexcept;
 
         bool setFPSLimit(std::size_t fpsLimit) noexcept;

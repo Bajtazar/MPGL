@@ -114,7 +114,7 @@ namespace ge {
         GlyphSprite& operator= (GlyphSprite&& sprite) noexcept;
 
         void setShaders(ShaderLibrary const& library) noexcept final;
-        void copyToGPU(void) noexcept final;
+        void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
         void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
@@ -164,6 +164,9 @@ namespace ge {
         uint32_t                            vertexArrayObject;
 
         Vertices makeVertexArray(ScenePtr const& scene, Color const& color) noexcept;
+        void bindBuffers(void) const noexcept;
+        void copyBuffersToGPU(void) const noexcept;
+        void unbindBuffers(void) const noexcept;
 
         constexpr static Indexes            indexes = {{0, 1, 2, 0, 3, 2}};
     };
