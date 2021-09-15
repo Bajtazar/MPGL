@@ -17,7 +17,6 @@ namespace ge {
     concept AllPushableRegisters = AllDerives<RegisterInterface, Args...>
         && (PushableRegister<Args> && ...);
 
-    // all registers have to have pushBack method
     template <AllPushableRegisters... Registers>
     class RegistersHolder : public std::tuple<Registers...> {
     public:

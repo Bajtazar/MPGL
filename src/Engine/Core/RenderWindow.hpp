@@ -3,8 +3,9 @@
 #include <type_traits>
 
 #include "WindowInterface.hpp"
-#include "Figures/ShaderLibrary.hpp"
 #include "Figures/Drawable.hpp"
+#include "Figures/ShaderLibrary.hpp"
+#include "Registers/TickRegister.hpp"
 
 #include <chrono>
 
