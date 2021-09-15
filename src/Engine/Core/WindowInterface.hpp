@@ -41,8 +41,8 @@ namespace ge {
         bool shouldWindowClose(void) const noexcept  { return glfwWindowShouldClose(window); }
         void clear(const Color& color) const noexcept;
         void draw(void) const noexcept;
-        constexpr const std::shared_ptr<Vector2ui>& getWindowDimmensions(void) const noexcept { return dimmensions; }
-        constexpr const std::string& getWindowTitle(void) const noexcept { return name; }
+        const std::shared_ptr<Vector2ui>& getWindowDimmensions(void) const noexcept { return dimmensions; }
+        const std::string& getWindowTitle(void) const noexcept { return name; }
         std::vector<std::shared_ptr<Transformable>> transformables;
     private:
         std::shared_ptr<Vector2ui> dimmensions;
