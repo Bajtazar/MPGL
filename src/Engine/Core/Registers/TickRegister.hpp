@@ -10,12 +10,15 @@ namespace ge {
 
     class TickRegister : public RegisterInterface {
     public:
-        typedef std::chrono::milliseconds                   Duration;
+        typedef std::chrono::duration<double, std::milli>   Duration;
         typedef std::shared_ptr<TickEvent>                  pointer;
         typedef TickEvent                                   value_type;
         typedef std::vector<pointer>                        Storage;
 
-        explicit TickRegister(Duration const& period) noexcept;
+        explicit TickRegister(Duration const& period = {}) noexcept;
+
+        void setPeriod(Duration const& period) noexcept
+            { this->period = period; }
 
         void pushBack(pointer const& pointer)
             { storage.push_back(pointer); }
@@ -57,7 +60,7 @@ namespace ge {
         Clock                                               clock;
         Storage                                             storage;
         TimePoint                                           lastTime;
-        Duration const                                      period;
+        Duration                                            period;
     };
 
 }

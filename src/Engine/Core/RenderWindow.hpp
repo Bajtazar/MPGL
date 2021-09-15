@@ -30,14 +30,17 @@ namespace ge {
         std::string const& getWindowTitle(void) const noexcept
             { return WindowInterface::getWindowTitle(); }
 
-        void pushDrawable(DrawablePtr const& drawable) noexcept;
-        void pushDrawable(DrawablePtr&& drawable) noexcept;
+        template <std::derived_from<Drawable> T>
+        void pushDrawable(std::shared_ptr<T> const& drawable) noexcept;
+        template <std::derived_from<Drawable> T>
+        void pushDrawable(std::shared_ptr<T>&& drawable) noexcept;
 
         template <std::derived_from<Drawable> T, typename... Args>
             requires std::is_constructible_v<T, ScenePtr const&, Args...>
         void emplaceDrawable(Args&&... args) noexcept;
 
         bool setFPSLimit(std::size_t fpsLimit) noexcept;
+        void setTickrate(std::size_t ticks) noexcept;
 
         DrawablePtr const& operator[] (std::size_t index) const noexcept
             { return drawables[index]; }
@@ -92,6 +95,7 @@ namespace ge {
 
         ShaderLibrary                               shaders;
         Drawables                                   drawables;
+        TickRegister                                tickRegister;
         Duration                                    sleepTime;
         TimePoint                                   lastTime;
     };
@@ -103,7 +107,27 @@ namespace ge {
             std::forward<Args>(args)...);
         if constexpr (std::is_base_of_v<Transformable, T>)
             transformables.push_back(std::static_pointer_cast<Transformable>(ptr));
+        if constexpr (std::is_base_of_v<TickEvent, T>)
+            tickRegister.pushBack(std::static_pointer_cast<TickEvent>(ptr));
         drawables.push_back(std::move(ptr));
+    }
+
+    template <std::derived_from<Drawable> T>
+    void RenderWindow::pushDrawable(std::shared_ptr<T> const& drawable) noexcept {
+        if constexpr (std::is_base_of_v<Transformable, T>)
+            transformables.push_back(std::static_pointer_cast<Transformable>(drawable));
+        if constexpr (std::is_base_of_v<TickEvent, T>)
+            tickRegister.pushBack(std::static_pointer_cast<TickEvent>(drawable));
+        drawables.push_back(std::static_pointer_cast<Drawable>(drawable));
+    }
+
+    template <std::derived_from<Drawable> T>
+    void RenderWindow::pushDrawable(std::shared_ptr<T>&& drawable) noexcept {
+        if constexpr (std::is_base_of_v<Transformable, T>)
+            transformables.push_back(std::static_pointer_cast<Transformable>(drawable));
+        if constexpr (std::is_base_of_v<TickEvent, T>)
+            tickRegister.pushBack(std::static_pointer_cast<TickEvent>(drawable));
+        drawables.push_back(std::static_pointer_cast<Drawable>(std::move(drawable)));
     }
 
 }

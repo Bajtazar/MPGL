@@ -9,7 +9,7 @@ namespace ge {
 
     void TickRegister::onEvent(void) {
         TimePoint now = Clock::now();
-        Duration difference = std::chrono::duration_cast<Duration>(now - lastTime);
+        auto difference = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTime);
         if (difference < period)
             return;
         std::ranges::for_each(storage, [&difference](auto& event){ event->onTick(difference); });

@@ -17,18 +17,6 @@ namespace ge {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     }
 
-    void RenderWindow::pushDrawable(DrawablePtr const& drawable) noexcept {
-        if (auto ptr = std::dynamic_pointer_cast<Transformable>(drawable))
-            transformables.push_back(ptr);
-        drawables.push_back(drawable);
-    }
-
-    void RenderWindow::pushDrawable(DrawablePtr&& drawable) noexcept {
-        if (auto ptr = std::dynamic_pointer_cast<Transformable>(drawable))
-            transformables.push_back(ptr);
-        drawables.push_back(std::move(drawable));
-    }
-
     void RenderWindow::setDrawablesShaders(void) noexcept {
         std::ranges::for_each(drawables, [this](auto& drawable)
             { drawable->setShaders(this->shaders); });
@@ -62,11 +50,17 @@ namespace ge {
         return false;
     }
 
+    void RenderWindow::setTickrate(std::size_t ticks) noexcept {
+        using std::operator""ms;
+        tickRegister.setPeriod(ticks ? TickRegister::Duration{1'000ms} / ticks : 0ms);
+    }
+
     int32_t RenderWindow::windowLoop(const Color& background) noexcept {
         setDrawablesShaders();
         copyDrawablesToGPU();
         while (!shouldWindowClose()) {
             clear(background);
+            tickRegister.onEvent();
             drawDrawables();
             draw();
         }

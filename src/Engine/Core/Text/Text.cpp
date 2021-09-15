@@ -107,6 +107,7 @@ namespace ge {
     Text<isPolichromatic>& Text<isPolichromatic>::operator+= (std::string const& left) {
         text += left;
         drawGlyphs(parseString(left));
+        copyToGPU();
         return *this;
     }
 
@@ -115,6 +116,7 @@ namespace ge {
         position = getPosition();
         text.clear();
         glyphs.clear();
+        copyToGPU();
     }
 
     template <bool isPolichromatic>
@@ -122,6 +124,7 @@ namespace ge {
         position = getPosition();
         glyphs.clear();
         drawGlyphs(parseString(text));
+        copyToGPU();
     }
 
     template <bool isPolichromatic>
@@ -157,6 +160,7 @@ namespace ge {
     void  Text<isPolichromatic>::setColor(Color const& color) {
         this->color = color;
         std::ranges::for_each(glyphs, [&color](auto& glyph){ glyph.setColor(color); });
+        copyToGPU();
     }
 
     template <bool isPolichromatic>
