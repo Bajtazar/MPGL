@@ -159,10 +159,15 @@ namespace ge {
 
     template <bool IsColorable>
     void Sprite<IsColorable>::rotate(const Vector2f& center, float angle) noexcept {
+        rotate(center, rotationMatrix<float>(angle));
+    }
+
+    template <bool IsColorable>
+    void Sprite<IsColorable>::rotate(const Vector2f& center, const Matrix2f& rotation) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position)) {
             Vector2f position = vertexPosition;
             Vector2f radius = position - center;
-            vertexPosition = rotationMatrix<float>(angle) * radius + center;
+            vertexPosition = rotation * radius + center;
         }
         copyToGPU();
     }

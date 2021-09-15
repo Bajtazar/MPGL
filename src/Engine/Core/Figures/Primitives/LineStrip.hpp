@@ -17,8 +17,8 @@ namespace ge {
 
         Vector2f getCenter(void) const noexcept;
 
-        virtual void copyToGPU(void) noexcept final;
-        virtual void draw(void) const noexcept final;
+        void copyToGPU(void) noexcept final;
+        void draw(void) const noexcept final;
 
         ~LineStrip(void) noexcept = default;
     };

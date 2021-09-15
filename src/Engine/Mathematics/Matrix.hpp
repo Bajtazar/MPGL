@@ -92,7 +92,7 @@ namespace ge {
 
             constexpr iterator begin(void) noexcept
                 requires NotConstant<BaseType>
-            { return iterator{ &reference.get() + row }; }
+            { return iterator{ first() + row }; }
             constexpr const_iterator begin(void) const noexcept { return const_iterator{ first() + row }; }
 
             constexpr iterator end(void) noexcept
@@ -723,6 +723,9 @@ namespace ge {
         return init;
     }
 
+    template class Matrix<float, 2>;
+
+    typedef Matrix<float, 2>    Matrix2f;
 
 }
 

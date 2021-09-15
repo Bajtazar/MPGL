@@ -18,8 +18,8 @@ namespace ge {
         Triangle& operator= (const Triangle& triangle) noexcept;
         Triangle& operator= (Triangle&& triangle) noexcept;
 
-        virtual void copyToGPU(void) noexcept final;
-        virtual void draw(void) const noexcept final;
+        void copyToGPU(void) noexcept final;
+        void draw(void) const noexcept final;
 
         ~Triangle(void) noexcept = default;
     };

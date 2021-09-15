@@ -22,8 +22,8 @@ namespace ge {
         Rectangle& operator= (const Rectangle& rectangle) noexcept;
         Rectangle& operator= (Rectangle&& rectangle) noexcept;
 
-        virtual void copyToGPU(void) noexcept final;
-        virtual void draw(void) const noexcept final;
+        void copyToGPU(void) noexcept final;
+        void draw(void) const noexcept final;
 
         ~Rectangle(void) noexcept;
     private:

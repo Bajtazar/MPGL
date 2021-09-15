@@ -4,6 +4,7 @@
 #include <concepts>
 #include <algorithm>
 
+#include "../../Mathematics/Systems.hpp"
 #include "Transformable.hpp"
 #include "Drawable.hpp"
 #include "Views.hpp"
@@ -96,14 +97,15 @@ namespace ge {
         const_reverse_iterator crbegin(void) const noexcept { return const_reverse_iterator{ --cend() }; }
         const_reverse_iterator crend(void) const noexcept { return const_reverse_iterator{ --cbegin() }; }
 
-        virtual void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
-        virtual void copyToGPU(void) noexcept final;
-        virtual void draw(void) const noexcept final;
+        void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
+        void copyToGPU(void) noexcept final;
+        void draw(void) const noexcept final;
 
-        virtual void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
-        virtual void translate(const Vector2f& shift) noexcept final;
-        virtual void scale(const Vector2f& center, float factor) noexcept final;
-        virtual void rotate(const Vector2f& center, float angle) noexcept final;
+        void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
+        void translate(const Vector2f& shift) noexcept final;
+        void scale(const Vector2f& center, float factor) noexcept final;
+        void rotate(const Vector2f& center, float angle) noexcept final;
+        void rotate(const Vector2f& center, const Matrix2f& rotation) noexcept final;
 
         ~DrawableArray(void) noexcept = default;
     };
@@ -169,7 +171,12 @@ namespace ge {
 
     template <DrawableType Base, class Allocator>
     void DrawableArray<Base, Allocator>::rotate(const Vector2f& center, float angle) noexcept {
-        std::ranges::for_each(*this, [&center, &angle](auto& transformable){ transformable.rotate(center, angle); });
+        rotate(center, rotationMatrix<float>(angle));
+    }
+
+    template <DrawableType Base, class Allocator>
+    void DrawableArray<Base, Allocator>::rotate(const Vector2f& center, const Matrix2f& rotation) noexcept {
+        std::ranges::for_each(*this, [&center, &rotation](auto& transformable){ transformable.rotate(center, rotation); });
     }
 
 }

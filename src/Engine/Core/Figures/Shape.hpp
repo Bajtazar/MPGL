@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Drawable.hpp"
-#include "Transformable.hpp"
 #include "../Color.hpp"
+#include "Transformable.hpp"
 #include "../../Utility/Adapter.hpp"
 
 
@@ -33,14 +33,15 @@ namespace ge {
             inline constexpr const auto&& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Color, Adapter<Vector2f, Vector2ui>>&&>(*this)); }
         };
 
-        virtual void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
+        void setShaders(const ShaderLibrary& shaderLibrary) noexcept final;
         virtual void copyToGPU(void) noexcept = 0;
         virtual void draw(void) const noexcept = 0;
 
-        virtual void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
-        virtual void translate(const Vector2f& shift) noexcept final;
-        virtual void scale(const Vector2f& center, float factor) noexcept final;
-        virtual void rotate(const Vector2f& center, float angle) noexcept final;
+        void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
+        void translate(const Vector2f& shift) noexcept final;
+        void scale(const Vector2f& center, float factor) noexcept final;
+        void rotate(const Vector2f& center, float angle) noexcept final;
+        void rotate(const Vector2f& center, const Matrix2f& rotation) noexcept final;
 
         Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
         const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }

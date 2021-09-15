@@ -12,3 +12,4 @@
 #include "Core/Figures/DrawableArray.hpp"
 #include "Core/Figures/Views.hpp"
 #include "Core/TextureLoader.hpp"
+#include "Core/Text/Text.hpp"

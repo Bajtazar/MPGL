@@ -179,8 +179,13 @@ namespace ge {
 
     template <bool isPolichromatic>
     void Text<isPolichromatic>::rotate(Vector2f const& center, float angle) noexcept {
-        std::ranges::for_each(glyphs, [&center, &angle](auto& glyph){ glyph.rotate(center, angle); });
-        position = rotationMatrix<float>(angle) * (position - center) + center;
+        rotate(center, rotationMatrix<float>(angle));
+    }
+
+    template <bool isPolichromatic>
+    void Text<isPolichromatic>::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
+        std::ranges::for_each(glyphs, [&center, &rotation](auto& glyph){ glyph.rotate(center, rotation); });
+        position = rotation * (position - center) + center;
         auto twoPi = std::numbers::pi_v<float> * 2;
         this->angle += twoPi - angle;
         this->angle = angle > twoPi ? angle - twoPi : angle < 0.f ? twoPi + angle : angle;

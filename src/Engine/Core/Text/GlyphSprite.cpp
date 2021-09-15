@@ -202,7 +202,11 @@ namespace ge {
 
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::rotate(Vector2f const& center, float angle) noexcept {
-        auto rotation = rotationMatrix<float>(angle);
+        rotate(center, rotationMatrix<float>(angle));
+    }
+
+    template <bool IsMonochromatic>
+    void GlyphSprite<IsMonochromatic>::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position)) {
             Vector2f position = vertexPosition;
             Vector2f radius = position - center;

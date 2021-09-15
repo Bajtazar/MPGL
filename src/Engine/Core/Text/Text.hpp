@@ -177,6 +177,7 @@ namespace ge {
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center, float factor) noexcept final;
         void rotate(Vector2f const& center, float angle) noexcept final;
+        void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
 
         using iterator = PolichromaticTextIterator<false>;
         using const_iterator = PolichromaticTextIterator<true>;
