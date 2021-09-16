@@ -9,7 +9,7 @@ namespace ge {
         Font& font, std::size_t size, std::string const& text,
         Vector2f const& position, Color const& color, Font::Type const& type)
             : Drawable{scene}, text{text}, color{color}, position{position},
-            size{size}, angle{0.f}, font{font}, type{type}
+            size{size}, angle{0.f}, font{font}, library{nullptr}, type{type}
     {
         drawGlyphs(parseString(text));
     }
@@ -68,6 +68,7 @@ namespace ge {
 
     template <bool isPolichromatic>
     void Text<isPolichromatic>::setShaders(ShaderLibrary const& library) noexcept {
+        this->library = &library;
         std::ranges::for_each(glyphs, [&library](auto& glyph) { glyph.setShaders(library); });
     }
 
@@ -124,6 +125,8 @@ namespace ge {
         position = getPosition();
         glyphs.clear();
         drawGlyphs(parseString(text));
+        if (library)
+            std::ranges::for_each(glyphs, [this](auto& glyph) { glyph.setShaders(*library); });
         copyToGPU();
     }
 
@@ -160,7 +163,6 @@ namespace ge {
     void  Text<isPolichromatic>::setColor(Color const& color) {
         this->color = color;
         std::ranges::for_each(glyphs, [&color](auto& glyph){ glyph.setColor(color); });
-        copyToGPU();
     }
 
     template <bool isPolichromatic>

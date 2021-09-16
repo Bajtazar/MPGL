@@ -34,6 +34,7 @@ namespace ge {
         WindowInterface& operator= (WindowInterface&& window) noexcept = delete;
 
         friend void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept;
+        friend void keyCallback(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods);
 
         virtual ~WindowInterface(void) noexcept { glfwTerminate(); }
     protected:
@@ -44,11 +45,15 @@ namespace ge {
         void draw(void) const noexcept;
         const std::shared_ptr<Vector2ui>& getWindowDimmensions(void) const noexcept { return dimmensions; }
         const std::string& getWindowTitle(void) const noexcept { return name; }
+
+        EventBus                        events;
         std::vector<std::shared_ptr<Transformable>> transformables;
     private:
-        std::shared_ptr<Vector2ui> dimmensions;
-        std::string name;
-        GLFWwindow* window;
+        std::shared_ptr<Vector2ui>      dimmensions;
+        std::string                     name;
+        GLFWwindow*                     window;
+
+
         void setWindowOptions(const Options&) const noexcept;
         void setCallbacks(void) noexcept;
     };

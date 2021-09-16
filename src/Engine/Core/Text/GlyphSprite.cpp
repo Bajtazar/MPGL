@@ -112,9 +112,12 @@ namespace ge {
             if (shaderProgram)
                 glUniform4f(glGetUniformLocation(shaderProgram, "color"),
                     color.red, color.green, color.blue, color.alpha);
-        } else
+        } else {
             std::ranges::for_each(vertices, [&color](auto& vertex){ vertex.color = color; });
+            copyToGPU();
+        }
     }
+
 
     template <bool IsMonochromatic>
     Color const& GlyphSprite<IsMonochromatic>::getColor(void) const noexcept

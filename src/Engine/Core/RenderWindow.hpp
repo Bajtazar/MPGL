@@ -109,6 +109,7 @@ namespace ge {
             transformables.push_back(std::static_pointer_cast<Transformable>(ptr));
         if constexpr (std::is_base_of_v<TickEvent, T>)
             tickRegister.pushBack(std::static_pointer_cast<TickEvent>(ptr));
+        events.addIfDerived(ptr);
         drawables.push_back(std::move(ptr));
     }
 
@@ -118,6 +119,7 @@ namespace ge {
             transformables.push_back(std::static_pointer_cast<Transformable>(drawable));
         if constexpr (std::is_base_of_v<TickEvent, T>)
             tickRegister.pushBack(std::static_pointer_cast<TickEvent>(drawable));
+        events.addIfDerived(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable>(drawable));
     }
 
@@ -127,6 +129,7 @@ namespace ge {
             transformables.push_back(std::static_pointer_cast<Transformable>(drawable));
         if constexpr (std::is_base_of_v<TickEvent, T>)
             tickRegister.pushBack(std::static_pointer_cast<TickEvent>(drawable));
+        events.addIfDerived(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable>(std::move(drawable)));
     }
 

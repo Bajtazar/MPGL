@@ -230,6 +230,7 @@ namespace ge {
         std::size_t                 size;
         float                       angle;
         FontRef                     font;
+        ShaderLibrary const*        library;
         Font::Type                  type;
 
         uint8_t getLevel(void) const;

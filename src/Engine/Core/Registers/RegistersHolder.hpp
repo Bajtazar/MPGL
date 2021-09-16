@@ -74,14 +74,14 @@ namespace ge {
     template <AllPushableRegisters... Registers>
     template <class T>
     void RegistersHolder<Registers...>::addIfDerived(std::shared_ptr<T> const& pointer) {
-        std::apply([&](auto&... args) { (pushIfDerived(args, pointer), ...);},
-            static_cast<std::tuple<Registers...>>(*this));
+        std::apply([&]<typename... Args>(Args&... args)
+            { (pushIfDerived(args, pointer), ...); },
+            static_cast<std::tuple<Registers...>&>(*this));
     }
 
     template <AllPushableRegisters... Registers>
     template <class T, class Register>
-    void RegistersHolder<Registers...>::pushIfDerived(
-        [[maybe_unused]]Register& reg, [[maybe_unused]] std::shared_ptr<T> const& pointer)
+    void RegistersHolder<Registers...>::pushIfDerived(Register& reg, std::shared_ptr<T> const& pointer)
     {
         if constexpr (std::derived_from<T, typename Register::value_type>)
             reg.pushBack(std::static_pointer_cast<typename Register::value_type>(pointer));

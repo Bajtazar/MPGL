@@ -30,7 +30,7 @@ namespace ge {
         void pushBack(pointer&& pointer) noexcept
             { storage.push_back(std::move(pointer)); }
 
-        virtual void onEvent(Args&&... args) final;
+        void onEvent(Args&&... args);
 
         using iterator = typename Storage::iterator;
         using const_iterator = typename Storage::const_iterator;
@@ -65,7 +65,7 @@ namespace ge {
     template <class T, typename... Args, void(T::*EventMethod)(Args...)>
     void UniversalRegister<T, void(T::*)(Args...), EventMethod>::onEvent(Args&&... args) {
         std::ranges::for_each(storage, [...args = std::forward<Args>(args)]
-            (auto& event){ (event->*EventMethod)(args...); });
+            (auto& event){ (event.get()->*EventMethod)(args...); });
     }
 
 }

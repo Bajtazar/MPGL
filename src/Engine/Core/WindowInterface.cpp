@@ -31,9 +31,22 @@ namespace ge {
         std::ranges::for_each(render->transformables, [&oldDimmensions](auto& ptr){ ptr->onScreenTransformation(oldDimmensions); });
     }
 
+    void keyCallback(GLFWwindow* window, int32_t key,
+        [[maybe_unused]] int32_t scancode, int32_t action,
+        [[maybe_unused]] int32_t mods)
+    {
+        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
+        auto keyCode = static_cast<Key>(static_cast<int16_t>(key));
+        if (action == GLFW_PRESS)
+            get<KeyPressRegister>(render->events).onEvent(keyCode);
+        else if (action == GLFW_RELEASE)
+            get<KeyReleaseRegister>(render->events).onEvent(keyCode);
+    }
+
     void WindowInterface::setCallbacks(void) noexcept {
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferCallback);
+        glfwSetKeyCallback(window, keyCallback);
     }
 
     void WindowInterface::setWindowOptions(const Options& options) const noexcept {

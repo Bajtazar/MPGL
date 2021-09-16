@@ -25,7 +25,7 @@ namespace ge {
         void pushBack(pointer&& pointer) noexcept
             { storage.push_back(std::move(pointer)); }
 
-        void onEvent(void) final;
+        void onEvent(void);
 
         using iterator = typename Storage::iterator;
         using const_iterator = typename Storage::const_iterator;
