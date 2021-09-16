@@ -25,7 +25,7 @@ int main(void) noexcept {
 
     Font font{"Hack", "/usr/share/fonts/truetype/hack/"};
 
-    window.emplaceDrawable<Text<>>(font, 18, "Witaj świecie!", 20_x + 300_y);
+    window.emplaceDrawable<Text<>>(font, 18, 20_x + 300_y, "Witaj świecie!");
 
     window.emplaceDrawable<DrawableArray<Triangle<true>>>();
     auto& array = dynamic_cast<DrawableArray<Triangle<true>>&>(*window[2]);

@@ -137,8 +137,8 @@ namespace ge {
 
         explicit Text(ScenePtr const& scene,
             Font& font, std::size_t size,
-            std::string const& text = {},
             Vector2f const& position = {},
+            std::string const& text = {},
             Color const& color = {},
             Font::Type const& type = Font::Type::Regular);
 

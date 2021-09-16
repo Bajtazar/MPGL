@@ -6,8 +6,8 @@ namespace ge {
 
     template <bool isPolichromatic>
     Text<isPolichromatic>::Text(ScenePtr const& scene,
-        Font& font, std::size_t size, std::string const& text,
-        Vector2f const& position, Color const& color, Font::Type const& type)
+        Font& font, std::size_t size, Vector2f const& position,
+        std::string const& text, Color const& color, Font::Type const& type)
             : Drawable{scene}, text{text}, color{color}, position{position},
             size{size}, angle{0.f}, font{font}, library{nullptr}, type{type}
     {
