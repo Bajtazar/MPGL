@@ -13,7 +13,7 @@ namespace ge {
 
     template <class T>
     concept DrawableType = std::is_base_of_v<Drawable, T>
-        && std::is_base_of_v<Transformable2D, T>
+        && std::is_base_of_v<ScreenTransformationEvent, T>
         && std::is_constructible_v<T, std::shared_ptr<Vector2ui> const&>;
 
     template <class T, class Alloc>
@@ -21,21 +21,21 @@ namespace ge {
 
     template <DrawableType Base,
         class Allocator = std::allocator<std::unique_ptr<Base>>>
-    class DrawableArray : private DrawableVector<Base, Allocator>,
-        public Drawable, public Transformable2D
+    class DrawableArrayBase : protected DrawableVector<Base, Allocator>,
+        public Drawable, public virtual ScreenTransformationEvent
     {
     public:
         typedef std::shared_ptr<Vector2ui>                  ScenePtr;
 
-        explicit DrawableArray(ScenePtr const& scene) noexcept;
-        explicit DrawableArray(ScenePtr const& scene, std::size_t size,
+        explicit DrawableArrayBase(ScenePtr const& scene) noexcept;
+        explicit DrawableArrayBase(ScenePtr const& scene, std::size_t size,
             Base const& base) noexcept;
 
-        DrawableArray(const DrawableArray& drawableArray) noexcept = default;
-        DrawableArray(DrawableArray&& drawableArray) noexcept = default;
+        DrawableArrayBase(const DrawableArrayBase& DrawableArrayBase) noexcept = default;
+        DrawableArrayBase(DrawableArrayBase&& DrawableArrayBase) noexcept = default;
 
-        DrawableArray& operator= (const DrawableArray& drawableArray) noexcept = default;
-        DrawableArray& operator= (DrawableArray&& drawableArray) noexcept = default;
+        DrawableArrayBase& operator= (const DrawableArrayBase& DrawableArrayBase) noexcept = default;
+        DrawableArrayBase& operator= (DrawableArrayBase&& DrawableArrayBase) noexcept = default;
 
         Base& operator[] (std::size_t index) noexcept
             { return *DrawableVector<Base, Allocator>::operator[](index); }
@@ -144,26 +144,50 @@ namespace ge {
         void draw(void) const noexcept final;
 
         void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
-        void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float factor) noexcept final;
-        void rotate(Vector2f const& center, float angle) noexcept final;
-        void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
 
-        ~DrawableArray(void) noexcept = default;
+        ~DrawableArrayBase(void) noexcept = default;
     private:
         ShaderLibrary const*                    library;
 
         void setShadersIfLibrary(void) noexcept;
     };
 
+    template <DrawableType Base,
+        class Allocator = std::allocator<std::unique_ptr<Base>>>
+    class DrawableArray : public DrawableArrayBase<Base, Allocator> {
+    public:
+        using DrawableArrayBase<Base, Allocator>::DrawableArrayBase;
+
+        ~DrawableArray(void) noexcept = default;
+    };
+
+    template <typename T>
+    concept TransformableDrawble = DrawableType<T>
+        && std::derived_from<T, Transformable2D>;
+
+    template <TransformableDrawble Base, class Allocator>
+    class DrawableArray<Base, Allocator> : public DrawableArrayBase<Base, Allocator>,
+        public Transformable2D
+    {
+    public:
+        using DrawableArrayBase<Base, Allocator>::DrawableArrayBase;
+
+        void translate(Vector2f const& shift) noexcept final;
+        void scale(Vector2f const& center, float factor) noexcept final;
+        void rotate(Vector2f const& center, float angle) noexcept final;
+        void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
+
+        ~DrawableArray(void) noexcept = default;
+    };
+
     // templates
 
     template <DrawableType Base, class Allocator>
-    DrawableArray<Base, Allocator>::DrawableArray(ScenePtr const& scene) noexcept
+    DrawableArrayBase<Base, Allocator>::DrawableArrayBase(ScenePtr const& scene) noexcept
         : DrawableVector<Base, Allocator>{}, Drawable{scene}, library{nullptr} {}
 
     template <DrawableType Base, class Allocator>
-    DrawableArray<Base, Allocator>::DrawableArray(ScenePtr const& scene,
+    DrawableArrayBase<Base, Allocator>::DrawableArrayBase(ScenePtr const& scene,
         std::size_t size, const Base& base) noexcept
             : DrawableVector<Base, Allocator>{}, Drawable{scene}, library{nullptr}
     {
@@ -173,19 +197,19 @@ namespace ge {
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::setShadersIfLibrary(void) noexcept {
+    void DrawableArrayBase<Base, Allocator>::setShadersIfLibrary(void) noexcept {
         if (library)
             this->back()->setShaders(*library);
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::pushBack(Base const& drawable) noexcept {
+    void DrawableArrayBase<Base, Allocator>::pushBack(Base const& drawable) noexcept {
         this->push_back(std::move(std::make_unique<Base>(drawable)));
         setShadersIfLibrary();
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::pushBack(Base&& drawable) noexcept {
+    void DrawableArrayBase<Base, Allocator>::pushBack(Base&& drawable) noexcept {
         this->push_back(std::move(std::make_unique<Base>(std::move(drawable))));
         setShadersIfLibrary();
     }
@@ -193,55 +217,55 @@ namespace ge {
     template <DrawableType Base, class Allocator>
     template <typename... Args>
         requires std::is_constructible_v<Base, const std::shared_ptr<Vector2ui>&, Args...>
-    void DrawableArray<Base, Allocator>::emplaceBack(Args&&... args) noexcept {
+    void DrawableArrayBase<Base, Allocator>::emplaceBack(Args&&... args) noexcept {
         this->emplace_back(std::move(std::make_unique<Base>(scene,
             std::forward<Args>(args)...)));
         setShadersIfLibrary();
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::setShaders(const ShaderLibrary& shaderLibrary) noexcept {
+    void DrawableArrayBase<Base, Allocator>::setShaders(const ShaderLibrary& shaderLibrary) noexcept {
         library = &shaderLibrary;
         std::ranges::for_each(*this, [&shaderLibrary](auto& drawable)
             { drawable.setShaders(shaderLibrary); });
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::copyToGPU(void) const noexcept {
+    void DrawableArrayBase<Base, Allocator>::copyToGPU(void) const noexcept {
         std::ranges::for_each(*this, [](const auto& drawable){ drawable.copyToGPU(); });
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::draw(void) const noexcept {
+    void DrawableArrayBase<Base, Allocator>::draw(void) const noexcept {
         std::ranges::for_each(*this, [](const auto& drawable){ drawable.draw(); });
     }
 
     template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::onScreenTransformation(
+    void DrawableArrayBase<Base, Allocator>::onScreenTransformation(
         Vector2ui const& oldDimmensions) noexcept
     {
         std::ranges::for_each(*this, [&oldDimmensions](auto& transformable)
             { transformable.onScreenTransformation(oldDimmensions); });
     }
 
-    template <DrawableType Base, class Allocator>
-    void DrawableArray<Base, Allocator>::translate(const Vector2f& shift) noexcept {
+    template <TransformableDrawble Base, class Allocator>
+    void DrawableArray<Base, Allocator>::translate(Vector2f const& shift) noexcept {
         std::ranges::for_each(*this, [&shift](auto& transformable)
             { transformable.translate(shift); });
     }
 
-    template <DrawableType Base, class Allocator>
+    template <TransformableDrawble Base, class Allocator>
     void DrawableArray<Base, Allocator>::scale(Vector2f const& center, float factor) noexcept {
         std::ranges::for_each(*this, [&center, &factor](auto& transformable)
             { transformable.scale(center, factor); });
     }
 
-    template <DrawableType Base, class Allocator>
+    template <TransformableDrawble Base, class Allocator>
     void DrawableArray<Base, Allocator>::rotate(Vector2f const& center, float angle) noexcept {
         rotate(center, rotationMatrix<float>(angle));
     }
 
-    template <DrawableType Base, class Allocator>
+    template <TransformableDrawble Base, class Allocator>
     void DrawableArray<Base, Allocator>::rotate(Vector2f const& center,
         Matrix2f const& rotation) noexcept
     {
