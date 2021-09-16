@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../Utility/Adapter.hpp"
 #include "../Color.hpp"
 #include "../Texture.hpp"
-#include "Drawable.hpp"
-#include "Transformable.hpp"
+#include "../Drawable.hpp"
+#include "../../Utility/Adapter.hpp"
+#include "../Transformations/Transformable2D.hpp"
 
 #include <utility>
 #include <array>
@@ -60,7 +60,7 @@ namespace ge {
     };
 
     template <bool IsColorable = false>
-    class Sprite : public Drawable, public Transformable {
+    class Sprite : public Drawable, public Transformable2D {
     public:
         using Vertex = std::conditional_t<IsColorable, ColorableVertex, DefaultVertex>;
 

@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Drawable.hpp"
 #include "../Color.hpp"
-#include "Transformable.hpp"
+#include "../Drawable.hpp"
 #include "../../Utility/Adapter.hpp"
-
+#include "../Transformations/Transformable2D.hpp"
 
 namespace ge {
 
-    class Shape : public Drawable, public Transformable {
+    class Shape : public Drawable, public Transformable2D {
     public:
         struct Vertex {
             constexpr explicit Vertex(const Vector2f& position, const Color& color, const std::shared_ptr<Vector2ui>& scene) noexcept : position{position, scene}, color{color} {}

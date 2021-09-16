@@ -2,8 +2,6 @@
 
 #include "Font.hpp"
 #include "GlyphSprite.hpp"
-#include "../Figures/Drawable.hpp"
-#include "../Figures/Transformable.hpp"
 
 namespace ge {
 
@@ -131,7 +129,7 @@ namespace ge {
     };
 
     template <bool isPolichromatic = false>
-    class Text : public Drawable, public Transformable {
+    class Text : public Drawable, public Transformable2D {
     public:
         typedef std::shared_ptr<Vector2ui>      ScenePtr;
 

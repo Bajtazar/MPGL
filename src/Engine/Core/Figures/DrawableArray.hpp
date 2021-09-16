@@ -4,17 +4,17 @@
 #include <concepts>
 #include <algorithm>
 
+#include "../Transformations/Transformable2D.hpp"
 #include "../../Mathematics/Systems.hpp"
-#include "Transformable.hpp"
-#include "Drawable.hpp"
+#include "../Drawable.hpp"
 #include "Views.hpp"
 
 namespace ge {
 
     template <class T>
     concept DrawableType = std::is_base_of_v<Drawable, T>
-        && std::is_base_of_v<Transformable, T>
-        && std::is_constructible_v<T, const std::shared_ptr<Vector2ui>&>;
+        && std::is_base_of_v<Transformable2D, T>
+        && std::is_constructible_v<T, std::shared_ptr<Vector2ui> const&>;
 
     template <class T, class Alloc>
     using DrawableVector = std::vector<std::unique_ptr<T>, Alloc>;
@@ -22,7 +22,7 @@ namespace ge {
     template <DrawableType Base,
         class Allocator = std::allocator<std::unique_ptr<Base>>>
     class DrawableArray : private DrawableVector<Base, Allocator>,
-        public Drawable, public Transformable
+        public Drawable, public Transformable2D
     {
     public:
         typedef std::shared_ptr<Vector2ui>                  ScenePtr;

@@ -8,8 +8,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Transformations/Transformable2D.hpp"
 #include "../Mathematics/Vector.hpp"
-#include "Figures/Transformable.hpp"
 #include "../Events/EventBus.hpp"
 #include "Color.hpp"
 
@@ -47,7 +47,7 @@ namespace ge {
         const std::string& getWindowTitle(void) const noexcept { return name; }
 
         EventBus                        events;
-        std::vector<std::shared_ptr<Transformable>> transformables;
+        std::vector<std::shared_ptr<Transformable2D>> transformables;
     private:
         std::shared_ptr<Vector2ui>      dimmensions;
         std::string                     name;

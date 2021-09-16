@@ -2,10 +2,10 @@
 
 #include "../Color.hpp"
 #include "../Texture.hpp"
-#include "../Figures/Drawable.hpp"
+#include "../Drawable.hpp"
 #include "../../Utility/Adapter.hpp"
-#include "../Figures/Transformable.hpp"
 #include "../../Mathematics/Systems.hpp"
+#include "../Transformations/Transformable2D.hpp"
 
 #include <utility>
 #include <variant>
@@ -85,7 +85,7 @@ namespace ge {
 
     // custom texture allocators will be add
     template <bool IsMonochromatic>
-    class GlyphSprite : public Drawable, public Transformable,
+    class GlyphSprite : public Drawable, public Transformable2D,
         private GlyphBase<IsMonochromatic> {
     public:
         using Vertex = std::conditional_t<IsMonochromatic, MonochromaticFontVertex,

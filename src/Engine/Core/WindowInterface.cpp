@@ -1,7 +1,7 @@
 #include "WindowInterface.hpp"
 
-#include "../Exceptions/RenderWindowInitException.hpp"
 #include "../Exceptions/RenderWindowInvalidArgsException.hpp"
+#include "../Exceptions/RenderWindowInitException.hpp"
 #include "../Exceptions/RenderWindowGladException.hpp"
 
 namespace ge {

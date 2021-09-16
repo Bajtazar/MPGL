@@ -2,8 +2,8 @@
 
 #include <type_traits>
 
+#include "Drawable.hpp"
 #include "WindowInterface.hpp"
-#include "Figures/Drawable.hpp"
 #include "Figures/ShaderLibrary.hpp"
 #include "Registers/TickRegister.hpp"
 
@@ -105,8 +105,8 @@ namespace ge {
     void RenderWindow::emplaceDrawable(Args&&... args) noexcept {
         auto ptr = std::make_shared<T>(WindowInterface::getWindowDimmensions(),
             std::forward<Args>(args)...);
-        if constexpr (std::is_base_of_v<Transformable, T>)
-            transformables.push_back(std::static_pointer_cast<Transformable>(ptr));
+        if constexpr (std::is_base_of_v<Transformable2D, T>)
+            transformables.push_back(std::static_pointer_cast<Transformable2D>(ptr));
         if constexpr (std::is_base_of_v<TickEvent, T>)
             tickRegister.pushBack(std::static_pointer_cast<TickEvent>(ptr));
         events.addIfDerived(ptr);
@@ -115,8 +115,8 @@ namespace ge {
 
     template <std::derived_from<Drawable> T>
     void RenderWindow::pushDrawable(std::shared_ptr<T> const& drawable) noexcept {
-        if constexpr (std::is_base_of_v<Transformable, T>)
-            transformables.push_back(std::static_pointer_cast<Transformable>(drawable));
+        if constexpr (std::is_base_of_v<Transformable2D, T>)
+            transformables.push_back(std::static_pointer_cast<Transformable2D>(drawable));
         if constexpr (std::is_base_of_v<TickEvent, T>)
             tickRegister.pushBack(std::static_pointer_cast<TickEvent>(drawable));
         events.addIfDerived(drawable);
@@ -125,8 +125,8 @@ namespace ge {
 
     template <std::derived_from<Drawable> T>
     void RenderWindow::pushDrawable(std::shared_ptr<T>&& drawable) noexcept {
-        if constexpr (std::is_base_of_v<Transformable, T>)
-            transformables.push_back(std::static_pointer_cast<Transformable>(drawable));
+        if constexpr (std::is_base_of_v<Transformable2D, T>)
+            transformables.push_back(std::static_pointer_cast<Transformable2D>(drawable));
         if constexpr (std::is_base_of_v<TickEvent, T>)
             tickRegister.pushBack(std::static_pointer_cast<TickEvent>(drawable));
         events.addIfDerived(drawable);

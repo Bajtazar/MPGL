@@ -1,10 +1,13 @@
 #pragma once
 
 #include "../../Mathematics/Matrix.hpp"
+#include "Transformable.hpp"
 
 namespace ge {
 
-    struct Transformable {
+    template<>
+    struct Transformable<dimm::Dimm2> : public ScreenTransformationEvent {
+        explicit Transformable(void) noexcept = default;
 
         virtual void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept = 0;
 
@@ -15,5 +18,7 @@ namespace ge {
 
         virtual ~Transformable(void) noexcept = default;
     };
+
+    typedef Transformable<dimm::Dimm2>      Transformable2D;
 
 }

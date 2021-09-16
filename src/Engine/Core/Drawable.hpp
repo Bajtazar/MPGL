@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "ShaderLibrary.hpp"
-#include "../../Mathematics/Vector.hpp"
+#include "Figures/ShaderLibrary.hpp"
+#include "../Mathematics/Vector.hpp"
 
 namespace ge {
 
