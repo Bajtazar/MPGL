@@ -28,7 +28,7 @@ namespace ge {
         glViewport(0, 0, width, height);
         Vector2ui oldDimmensions = *(render->dimmensions);
         *(render->dimmensions) = Vector2ui{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
-        std::ranges::for_each(render->transformables, [&oldDimmensions](auto& ptr){ ptr->onScreenTransformation(oldDimmensions); });
+        get<ScreenTransformationRegister>(render->events).onEvent(oldDimmensions);
     }
 
     void keyCallback(GLFWwindow* window, int32_t key,

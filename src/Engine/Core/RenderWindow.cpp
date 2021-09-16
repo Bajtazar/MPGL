@@ -52,7 +52,8 @@ namespace ge {
 
     void RenderWindow::setTickrate(std::size_t ticks) noexcept {
         using std::operator""ms;
-        tickRegister.setPeriod(ticks ? TickRegister::Duration{1'000ms} / ticks : 0ms);
+        get<TickRegister>(events).setPeriod(
+            ticks ? TickRegister::Duration{1'000ms} / ticks : 0ms);
     }
 
     int32_t RenderWindow::windowLoop(const Color& background) noexcept {
@@ -60,7 +61,7 @@ namespace ge {
         copyDrawablesToGPU();
         while (!shouldWindowClose()) {
             clear(background);
-            tickRegister.onEvent();
+            get<TickRegister>(events).onEvent();
             drawDrawables();
             draw();
         }

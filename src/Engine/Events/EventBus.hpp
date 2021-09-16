@@ -2,6 +2,8 @@
 
 #include "../Core/Registers/UniversalRegister.hpp"
 #include "../Core/Registers/RegistersHolder.hpp"
+#include "../Core/Registers/TickRegister.hpp"
+#include "ScreenTransformationEvent.hpp"
 #include "MouseReleaseEvent.hpp"
 #include "MouseMotionEvent.hpp"
 #include "MousePressEvent.hpp"
@@ -11,6 +13,10 @@
 #include "ScrollEvent.hpp"
 
 namespace ge {
+
+    typedef UniversalRegister<ScreenTransformationEvent,
+        void(ScreenTransformationEvent::*)(Vector2ui const&),
+        &ScreenTransformationEvent::onScreenTransformation>     ScreenTransformationRegister;
 
     typedef UniversalRegister<MouseReleaseEvent, void(MouseReleaseEvent::*)(MouseButton const&),
         &MouseReleaseEvent::onMouseReleaseEvent>                MouseReleaseRegister;
@@ -33,9 +39,9 @@ namespace ge {
     typedef UniversalRegister<ScrollEvent, void(ScrollEvent::*)(Vector2f const&),
         &ScrollEvent::onScrollEvent>                            ScrollRegistry;
 
-    typedef RegistersHolder<MouseReleaseRegister, MouseMotionRegister, MousePressRegister,
+    typedef RegistersHolder<TickRegister, ScreenTransformationRegister,
+        MouseReleaseRegister, MouseMotionRegister, MousePressRegister,
         KeyReleaseRegister, TextWriteEventRegister, KeyPressRegister,
         ScrollRegistry>                                         EventBus;
-
 
 }

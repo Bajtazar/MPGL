@@ -47,12 +47,10 @@ namespace ge {
         const std::string& getWindowTitle(void) const noexcept { return name; }
 
         EventBus                        events;
-        std::vector<std::shared_ptr<Transformable2D>> transformables;
     private:
         std::shared_ptr<Vector2ui>      dimmensions;
         std::string                     name;
         GLFWwindow*                     window;
-
 
         void setWindowOptions(const Options&) const noexcept;
         void setCallbacks(void) noexcept;
