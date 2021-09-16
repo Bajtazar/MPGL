@@ -49,11 +49,17 @@ namespace ge {
         get<TextWriteRegister>(render->events).onEvent(toUTF8(character));
     }
 
+    void mousePosCallback(GLFWwindow* window, double xpos, double ypos) {
+        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
+        get<MouseMotionRegister>(render->events).onEvent(Vector2f{xpos, ypos});
+    }
+
     void WindowInterface::setCallbacks(void) noexcept {
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferCallback);
         glfwSetKeyCallback(window, keyCallback);
         glfwSetCharCallback(window, textCallback);
+        glfwSetCursorPosCallback(window, mousePosCallback);
     }
 
     void WindowInterface::setWindowOptions(const Options& options) const noexcept {
