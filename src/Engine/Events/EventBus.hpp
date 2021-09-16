@@ -31,7 +31,7 @@ namespace ge {
         &KeyReleaseEvent::onKeyReleaseEvent>                    KeyReleaseRegister;
 
     typedef UniversalRegister<TextWriteEvent, void(TextWriteEvent::*)(std::string const&),
-        &TextWriteEvent::onTextWirteEvent>                      TextWriteEventRegister;
+        &TextWriteEvent::onTextWirteEvent>                      TextWriteRegister;
 
     typedef UniversalRegister<KeyPressEvent, void(KeyPressEvent::*)(Key const&),
         &KeyPressEvent::onKeyPressEvent>                        KeyPressRegister;
@@ -41,7 +41,7 @@ namespace ge {
 
     typedef RegistersHolder<TickRegister, ScreenTransformationRegister,
         MouseReleaseRegister, MouseMotionRegister, MousePressRegister,
-        KeyReleaseRegister, TextWriteEventRegister, KeyPressRegister,
+        KeyReleaseRegister, TextWriteRegister, KeyPressRegister,
         ScrollRegistry>                                         EventBus;
 
 }

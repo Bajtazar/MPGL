@@ -61,7 +61,6 @@ namespace ge {
             return {};
         FontRasterizer raster{fontData, iter->second, size};
         Texture<>::Options options;
-        options.mipmaps = false;
         return {Texture<>{raster(), options}};
     }
 

@@ -3,6 +3,7 @@
 #include "../Exceptions/RenderWindowInvalidArgsException.hpp"
 #include "../Exceptions/RenderWindowInitException.hpp"
 #include "../Exceptions/RenderWindowGladException.hpp"
+#include "Text/UTF-8.hpp"
 
 namespace ge {
 
@@ -43,10 +44,16 @@ namespace ge {
             get<KeyReleaseRegister>(render->events).onEvent(keyCode);
     }
 
+    void textCallback(GLFWwindow* window, uint32_t character) {
+        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
+        get<TextWriteRegister>(render->events).onEvent(toUTF8(character));
+    }
+
     void WindowInterface::setCallbacks(void) noexcept {
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferCallback);
         glfwSetKeyCallback(window, keyCallback);
+        glfwSetCharCallback(window, textCallback);
     }
 
     void WindowInterface::setWindowOptions(const Options& options) const noexcept {
