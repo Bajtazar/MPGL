@@ -37,6 +37,7 @@ namespace ge {
         friend void keyCallback(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods);
         friend void textCallback(GLFWwindow* window, uint32_t character);
         friend void mousePosCallback(GLFWwindow* window, double xpos, double ypos);
+        friend void mouseButtonCallback(GLFWwindow* window, int32_t button, int32_t action, int32_t mods);
 
         virtual ~WindowInterface(void) noexcept { glfwTerminate(); }
     protected:

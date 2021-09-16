@@ -44,6 +44,17 @@ namespace ge {
             get<KeyReleaseRegister>(render->events).onEvent(keyCode);
     }
 
+    void mouseButtonCallback(GLFWwindow* window, int32_t button,
+        int32_t action, [[maybe_unused]] int32_t mods)
+    {
+        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
+        auto buttonCode = static_cast<MouseButton>(static_cast<uint8_t>(button));
+        if (action == GLFW_PRESS)
+            get<MousePressRegister>(render->events).onEvent(buttonCode);
+        else if (action == GLFW_RELEASE)
+            get<MouseReleaseRegister>(render->events).onEvent(buttonCode);
+    }
+
     void textCallback(GLFWwindow* window, uint32_t character) {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         get<TextWriteRegister>(render->events).onEvent(toUTF8(character));
@@ -60,6 +71,7 @@ namespace ge {
         glfwSetKeyCallback(window, keyCallback);
         glfwSetCharCallback(window, textCallback);
         glfwSetCursorPosCallback(window, mousePosCallback);
+        glfwSetMouseButtonCallback(window, mouseButtonCallback);
     }
 
     void WindowInterface::setWindowOptions(const Options& options) const noexcept {
