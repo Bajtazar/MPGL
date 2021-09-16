@@ -105,9 +105,16 @@ namespace ge {
     }
 
     template <bool isPolichromatic>
+    void Text<isPolichromatic>::setShadersIfLibrary(void) noexcept {
+        if (library)
+            std::ranges::for_each(glyphs, [this](auto& glyph) { glyph.setShaders(*library); });
+    }
+
+    template <bool isPolichromatic>
     Text<isPolichromatic>& Text<isPolichromatic>::operator+= (std::string const& left) {
         text += left;
         drawGlyphs(parseString(left));
+        setShadersIfLibrary();
         copyToGPU();
         return *this;
     }
@@ -125,8 +132,7 @@ namespace ge {
         position = getPosition();
         glyphs.clear();
         drawGlyphs(parseString(text));
-        if (library)
-            std::ranges::for_each(glyphs, [this](auto& glyph) { glyph.setShaders(*library); });
+        setShadersIfLibrary();
         copyToGPU();
     }
 

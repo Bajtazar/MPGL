@@ -244,6 +244,8 @@ namespace ge {
 
         void redrawGlyphs(void);
 
+        void setShadersIfLibrary(void) noexcept;
+
         ArgTuple getArgs(void) const noexcept;
     };
 
