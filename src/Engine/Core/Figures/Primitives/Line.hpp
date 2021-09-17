@@ -6,9 +6,9 @@ namespace ge {
 
     class Line : public Shape {
     public:
-        Line(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex,
-             const Vector2f& secondVertex, const Color& color) noexcept;
-        Line(const std::shared_ptr<Vector2ui>& scene, const Color& color) noexcept;
+        Line(const Vector2f& firstVertex, const Vector2f& secondVertex,
+             const Color& color) noexcept;
+        Line(const Color& color = {}) noexcept;
 
         Line(const Line& line) noexcept;
         Line(Line&& line) noexcept;

@@ -1,21 +1,18 @@
 #pragma once
 
-
 #include <string>
 #include <memory>
 #include <vector>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include "Transformations/Transformable2D.hpp"
 #include "../Mathematics/Vector.hpp"
 #include "../Events/EventBus.hpp"
+#include "Context.hpp"
 #include "Color.hpp"
 
 namespace ge {
 
-    class WindowInterface {
+    class WindowInterface : private GraphicalObject {
     public:
         // OpenGL Options
         struct Options {
@@ -39,24 +36,27 @@ namespace ge {
         friend void mousePosCallback(GLFWwindow* window, double xpos, double ypos);
         friend void mouseButtonCallback(GLFWwindow* window, int32_t button, int32_t action, int32_t mods);
 
-        virtual ~WindowInterface(void) noexcept { glfwTerminate(); }
+        virtual ~WindowInterface(void) noexcept = default;
     protected:
         explicit WindowInterface(Vector2ui dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
         explicit WindowInterface(GLFWwindow* window) noexcept : window(window) {}
         bool shouldWindowClose(void) const noexcept  { return glfwWindowShouldClose(window); }
         void clear(const Color& color) const noexcept;
         void draw(void) const noexcept;
-        const std::shared_ptr<Vector2ui>& getWindowDimmensions(void) const noexcept { return dimmensions; }
+        void setContextWindow(void) noexcept;
+
+        const Vector2ui& getWindowDimmensions(void) const noexcept { return dimmensions; }
         const std::string& getWindowTitle(void) const noexcept { return name; }
 
         EventBus                        events;
     private:
-        std::shared_ptr<Vector2ui>      dimmensions;
+        Vector2ui                       dimmensions;
         std::string                     name;
         GLFWwindow*                     window;
 
         void setWindowOptions(const Options&) const noexcept;
         void setCallbacks(void) noexcept;
+        void setDimmensions(Vector2ui const& dimm) noexcept;
     };
 
 }

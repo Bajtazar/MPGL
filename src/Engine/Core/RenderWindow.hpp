@@ -11,7 +11,6 @@ namespace ge {
     class RenderWindow : virtual private WindowInterface {
     public:
         typedef std::shared_ptr<Drawable>           DrawablePtr;
-        typedef std::shared_ptr<Vector2ui>          ScenePtr;
         typedef std::vector<DrawablePtr>            Drawables;
 
         explicit RenderWindow(Vector2ui const& dimmensions,
@@ -24,10 +23,9 @@ namespace ge {
         RenderWindow& operator= (const RenderWindow& window) noexcept = delete;
         RenderWindow& operator= (RenderWindow&& window) noexcept = delete;
 
-        ScenePtr const& getWindowDimmensions(void) const noexcept
-            { return WindowInterface::getWindowDimmensions(); }
-        std::string const& getWindowTitle(void) const noexcept
-            { return WindowInterface::getWindowTitle(); }
+        using WindowInterface::getWindowDimmensions;
+        using WindowInterface::getWindowTitle;
+        using WindowInterface::setContextWindow;
 
         template <std::derived_from<Drawable> T>
         void pushDrawable(std::shared_ptr<T> const& drawable) noexcept;
@@ -35,7 +33,7 @@ namespace ge {
         void pushDrawable(std::shared_ptr<T>&& drawable) noexcept;
 
         template <std::derived_from<Drawable> T, typename... Args>
-            requires std::is_constructible_v<T, ScenePtr const&, Args...>
+            requires std::is_constructible_v<T, Args...>
         void emplaceDrawable(Args&&... args) noexcept;
 
         bool setFPSLimit(std::size_t fpsLimit) noexcept;
@@ -99,10 +97,9 @@ namespace ge {
     };
 
     template <std::derived_from<Drawable> T, typename... Args>
-        requires std::is_constructible_v<T, RenderWindow::ScenePtr const&, Args...>
+        requires std::is_constructible_v<T, Args...>
     void RenderWindow::emplaceDrawable(Args&&... args) noexcept {
-        auto ptr = std::make_shared<T>(WindowInterface::getWindowDimmensions(),
-            std::forward<Args>(args)...);
+        auto ptr = std::make_shared<T>(std::forward<Args>(args)...);
         events.addIfDerived(ptr);
         drawables.push_back(std::move(ptr));
     }

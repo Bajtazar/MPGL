@@ -12,51 +12,51 @@
 namespace ge {
 
     struct ColorableVertex {
-        constexpr explicit ColorableVertex(const Vector2f& position, const Color& color, const Vector2f& textureCoords, const std::shared_ptr<Vector2ui>& scene) noexcept
-            : position{position, scene}, textureCoords{textureCoords}, color{color} {}
+        explicit ColorableVertex(const Vector2f& position, const Color& color, const Vector2f& textureCoords) noexcept
+            : position{position}, textureCoords{textureCoords}, color{color} {}
 
-        Adapter<Vector2f, Vector2ui> position;
+        Adapter<Vector2f> position;
         Vector2f textureCoords;
         Color color;
 
         template <std::size_t Index>
             requires (Index < 3)
-        inline constexpr auto& get(void) noexcept { return std::get<2 - Index>(reinterpret_cast<std::tuple<Color, Vector2f, Adapter<Vector2f, Vector2ui>>&>(*this)); }
+        inline constexpr auto& get(void) noexcept { return std::get<2 - Index>(reinterpret_cast<std::tuple<Color, Vector2f, Adapter<Vector2f>>&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < 3)
-        inline constexpr const auto& get(void) const noexcept { return std::get<2 - Index>(reinterpret_cast<const std::tuple<Color, Vector2f, Adapter<Vector2f, Vector2ui>>&>(*this)); }
+        inline constexpr const auto& get(void) const noexcept { return std::get<2 - Index>(reinterpret_cast<const std::tuple<Color, Vector2f, Adapter<Vector2f>>&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < 3)
-        inline constexpr auto&& get(void) noexcept { return std::get<2 - Index>(reinterpret_cast<std::tuple<Color, Vector2f, Adapter<Vector2f, Vector2ui>>&&>(*this)); }
+        inline constexpr auto&& get(void) noexcept { return std::get<2 - Index>(reinterpret_cast<std::tuple<Color, Vector2f, Adapter<Vector2f>>&&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < 3)
-        inline constexpr const auto&& get(void) const noexcept { return std::get<2 - Index>(reinterpret_cast<const std::tuple<Color, Vector2f, Adapter<Vector2f, Vector2ui>>&&>(*this)); }
+        inline constexpr const auto&& get(void) const noexcept { return std::get<2 - Index>(reinterpret_cast<const std::tuple<Color, Vector2f, Adapter<Vector2f>>&&>(*this)); }
     };
 
     struct DefaultVertex {
-        constexpr explicit DefaultVertex(const Vector2f& position, const Vector2f& textureCoords, const std::shared_ptr<Vector2ui>& scene) noexcept : position{position, scene}, textureCoords{textureCoords} {}
+        explicit DefaultVertex(const Vector2f& position, const Vector2f& textureCoords) noexcept : position{position}, textureCoords{textureCoords} {}
 
-        Adapter<Vector2f, Vector2ui> position;
+        Adapter<Vector2f> position;
         Vector2f textureCoords;
 
         template <std::size_t Index>
             requires (Index < 2)
-        inline constexpr auto& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Vector2f, Adapter<Vector2f, Vector2ui>>&>(*this)); }
+        inline constexpr auto& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Vector2f, Adapter<Vector2f>>&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < 2)
-        inline constexpr const auto& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Vector2f, Adapter<Vector2f, Vector2ui>>&>(*this)); }
+        inline constexpr const auto& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Vector2f, Adapter<Vector2f>>&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < 2)
-        inline constexpr auto&& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Vector2f, Adapter<Vector2f, Vector2ui>>&&>(*this)); }
+        inline constexpr auto&& get(void) noexcept { return std::get<1 - Index>(reinterpret_cast<std::tuple<Vector2f, Adapter<Vector2f>>&&>(*this)); }
 
         template <std::size_t Index>
             requires (Index < 2)
-        inline constexpr const auto&& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Vector2f, Adapter<Vector2f, Vector2ui>>&&>(*this)); }
+        inline constexpr const auto&& get(void) const noexcept { return std::get<1 - Index>(reinterpret_cast<const std::tuple<Vector2f, Adapter<Vector2f>>&&>(*this)); }
     };
 
     template <bool IsColorable = false>
@@ -65,25 +65,22 @@ namespace ge {
         using Vertex = std::conditional_t<IsColorable, ColorableVertex, DefaultVertex>;
 
         // Default constructor
-        Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture) noexcept;
+        Sprite(const Texture<>& texture) noexcept;
         // Default constructor with color
-        Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture,
-               const Color& color) noexcept requires IsColorable;
+        Sprite(const Texture<>& texture, const Color& color) noexcept requires IsColorable;
         // parallelogram
-        Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture,
-               const Vector2f& firstVertex,            const Vector2f& secondVertex,
-               const Vector2f& thirdVertex) noexcept;
+        Sprite(const Texture<>& texture,        const Vector2f& firstVertex,
+               const Vector2f& secondVertex,    const Vector2f& thirdVertex) noexcept;
         // parallelogram for colorable version
-        Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture,
-               const Vector2f& firstVertex,            const Vector2f& secondVertex,
-               const Vector2f& thirdVertex,            const Color& color) noexcept requires IsColorable;
-        // rectangle parallel to the x and y axis
-        Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture,
-               const Vector2f& firstVertex,            const Vector2f& dimmensions) noexcept;
-        // rectangle parallel to the x and y axis for colorable version
-        Sprite(const std::shared_ptr<Vector2ui>& scene, const Texture<>& texture,
-               const Vector2f& firstVertex,            const Vector2f& dimmensions,
+        Sprite(const Texture<>& texture,        const Vector2f& firstVertex,
+               const Vector2f& secondVertex,    const Vector2f& thirdVertex,
                const Color& color) noexcept requires IsColorable;
+        // rectangle parallel to the x and y axis
+        Sprite(const Texture<>& texture,        const Vector2f& firstVertex,
+               const Vector2f& dimmensions) noexcept;
+        // rectangle parallel to the x and y axis for colorable version
+        Sprite(const Texture<>& texture,        const Vector2f& firstVertex,
+               const Vector2f& dimmensions,     const Color& color) noexcept requires IsColorable;
 
         Sprite(const Sprite& sprite) noexcept;
         Sprite(Sprite&& sprite) noexcept;
@@ -149,8 +146,8 @@ namespace ge {
         void copyBuffersToGPU(void) const noexcept;
         void unbindBuffers(void) const noexcept;
 
-        static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2ui>& scene) noexcept;
-        static std::array<Vertex, 4> makeVertexArray(const std::shared_ptr<Vector2ui>& scene, const Color& color) noexcept requires IsColorable;
+        static std::array<Vertex, 4> makeVertexArray(void) noexcept;
+        static std::array<Vertex, 4> makeVertexArray(const Color& color) noexcept requires IsColorable;
     };
 
     template class Sprite<true>;

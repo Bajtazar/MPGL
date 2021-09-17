@@ -6,7 +6,7 @@ namespace ge {
 
     class Circle : public Shape {
     public:
-        Circle(const std::shared_ptr<Vector2ui>& scene, const Vector2f& center, float radius, const Color& color, std::size_t segments=360) noexcept;
+        Circle(const Vector2f& center, float radius, const Color& color, std::size_t segments=360) noexcept;
         Circle(const Circle& circle) noexcept;
         Circle(Circle&& circle) noexcept;
 

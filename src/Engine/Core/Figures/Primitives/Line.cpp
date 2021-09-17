@@ -2,19 +2,19 @@
 
 namespace ge {
 
-    Line::Line(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex, const Vector2f& secondVertex, const Color& color) noexcept : Shape{scene, 2} {
+    Line::Line(const Vector2f& firstVertex, const Vector2f& secondVertex, const Color& color) noexcept : Shape{2} {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
         vertices[0].color = color;
         vertices[1].color = color;
     }
 
-    Line::Line(const std::shared_ptr<Vector2ui>& scene, const Color& color) noexcept : Shape{scene, 2} {
+    Line::Line(const Color& color) noexcept : Shape{2} {
         vertices[0].color = color;
         vertices[1].color = color;
     }
 
-    Line::Line(const Line& line) noexcept : Shape{line.scene, 2} {
+    Line::Line(const Line& line) noexcept : Shape{2} {
         shaderProgram = line.shaderProgram;
         std::ranges::copy(line, begin());
     }
@@ -25,7 +25,7 @@ namespace ge {
         return *this;
     }
 
-    Line::Line(Line&& line) noexcept : Shape{line.scene, std::move(line.vertices)} {
+    Line::Line(Line&& line) noexcept : Shape{std::move(line.vertices)} {
         vertexArrayObject = line.vertexArrayObject;
         vertexBuffer = line.vertexBuffer;
         shaderProgram = line.shaderProgram;

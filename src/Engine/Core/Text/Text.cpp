@@ -5,10 +5,10 @@
 namespace ge {
 
     template <bool isPolichromatic>
-    Text<isPolichromatic>::Text(ScenePtr const& scene,
-        Font& font, std::size_t size, Vector2f const& position,
-        std::string const& text, Color const& color, Font::Type const& type)
-            : Drawable{scene}, text{text}, color{color}, position{position},
+    Text<isPolichromatic>::Text(Font& font, std::size_t size,
+        Vector2f const& position, std::string const& text,
+        Color const& color, Font::Type const& type)
+            : text{text}, color{color}, position{position},
             size{size}, angle{0.f}, font{font}, library{nullptr}, type{type}
     {
         drawGlyphs(parseString(text));
@@ -59,7 +59,7 @@ namespace ge {
                 Vector2f xVersor = rotation * Vector2f{float(glyph->get().dimmensions[0]), 0.f} * scale;
                 Vector2f yVersor = rotation * Vector2f{0.f, float(glyph->get().dimmensions[1])} * scale;
                 Vector2f bearing = rotation * vectorCast<float>(glyph->get().bearing) * scale;
-                glyphs.emplace_back(scene, *texture, position + bearing,
+                glyphs.emplace_back(*texture, position + bearing,
                     position + bearing + yVersor, position + bearing + xVersor, color);
             }
             position += rotation * Vector2f{float(glyph->get().advance * scale), 0.f};

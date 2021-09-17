@@ -4,21 +4,21 @@ namespace ge {
 
     template <bool IsMonochromatic>
         GlyphSprite<IsMonochromatic>::Vertices
-    GlyphSprite<IsMonochromatic>::makeVertexArray(ScenePtr const& scene, Color const& color) noexcept
+    GlyphSprite<IsMonochromatic>::makeVertexArray(Color const& color) noexcept
     {
         if constexpr (IsMonochromatic) {
             GlyphBase<IsMonochromatic>::color = color;
-            return {Vertex{{}, {0.f, 0.f}, scene}, Vertex{{}, {0.f, 1.f}, scene},
-                Vertex{{}, {1.f, 1.f}, scene}, Vertex{{}, {1.f, 0.f}, scene}};
+            return {Vertex{{}, {0.f, 0.f}}, Vertex{{}, {0.f, 1.f}},
+                Vertex{{}, {1.f, 1.f}}, Vertex{{}, {1.f, 0.f}}};
         } else
-            return {Vertex{{}, color, {0.f, 0.f}, scene}, Vertex{{}, color, {0.f, 1.f}, scene},
-                Vertex{{}, color, {1.f, 1.f}, scene}, Vertex{{}, color, {1.f, 0.f}, scene}};
+            return {Vertex{{}, color, {0.f, 0.f}}, Vertex{{}, color, {0.f, 1.f}},
+                Vertex{{}, color, {1.f, 1.f}}, Vertex{{}, color, {1.f, 0.f}}};
     }
 
     template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Color const& color)
-        : Drawable{scene}, vertices{std::move(makeVertexArray(scene, color))}, texture{texture}
+    GlyphSprite<IsMonochromatic>::GlyphSprite(GlyphTexture const& texture,
+        Color const& color)
+        : vertices{std::move(makeVertexArray(color))}, texture{texture}
     {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
@@ -26,11 +26,10 @@ namespace ge {
     }
 
     template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Vector2f const& firstVertex,
-        Vector2f const& secondVertex, Vector2f const& thirdVertex,
-        Color const& color)
-        : GlyphSprite{scene, texture, color}
+    GlyphSprite<IsMonochromatic>::GlyphSprite(GlyphTexture const& texture,
+        Vector2f const& firstVertex, Vector2f const& secondVertex,
+        Vector2f const& thirdVertex,Color const& color)
+        : GlyphSprite{texture, color}
     {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
@@ -39,10 +38,10 @@ namespace ge {
     }
 
     template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(ScenePtr const& scene,
-        GlyphTexture const& texture, Vector2f const& firstVertex,
-        Vector2f const& dimmensions, Color const& color)
-        : GlyphSprite{scene, texture, color}
+    GlyphSprite<IsMonochromatic>::GlyphSprite(GlyphTexture const& texture,
+        Vector2f const& firstVertex, Vector2f const& dimmensions,
+        Color const& color)
+        : GlyphSprite{texture, color}
     {
         vertices[0].position = firstVertex;
         vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
@@ -52,7 +51,7 @@ namespace ge {
 
     template <bool IsMonochromatic>
     GlyphSprite<IsMonochromatic>::GlyphSprite(GlyphSprite const& sprite) noexcept
-        :  GlyphSprite{sprite.scene, sprite.texture}
+        :  GlyphSprite{sprite.texture}
     {
         shaderProgram = sprite.shaderProgram;
         std::ranges::copy(sprite, begin());
@@ -62,7 +61,7 @@ namespace ge {
 
     template <bool IsMonochromatic>
     GlyphSprite<IsMonochromatic>::GlyphSprite(GlyphSprite&& sprite) noexcept
-        : Drawable{std::move(sprite.scene)}, vertices{std::move(sprite.vertices)},
+        : vertices{std::move(sprite.vertices)},
         texture{sprite.texture}
     {
         vertexArrayObject = sprite.vertexArrayObject;
@@ -195,7 +194,8 @@ namespace ge {
     {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position)) {
             Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * static_cast<Vector2f>(oldDimmensions) / static_cast<Vector2f>(*scene) - 1.f;
+            position = (position + 1.f) * static_cast<Vector2f>(oldDimmensions)
+                / static_cast<Vector2f>(context.windowDimmensions) - 1.f;
         }
         copyToGPU();
     }

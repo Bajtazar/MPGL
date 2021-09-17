@@ -133,8 +133,7 @@ namespace ge {
     public:
         typedef std::shared_ptr<Vector2ui>      ScenePtr;
 
-        explicit Text(ScenePtr const& scene,
-            Font& font, std::size_t size,
+        explicit Text(Font& font, std::size_t size,
             Vector2f const& position = {},
             std::string const& text = {},
             Color const& color = {},

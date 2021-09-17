@@ -5,33 +5,32 @@ namespace ge {
 
     const std::array<uint32_t, 6> Rectangle::indexes {0, 1, 2, 0, 3, 2};
 
-    Rectangle::Rectangle(const std::shared_ptr<Vector2ui>& scene) noexcept : Shape{scene, 4} {
+    Rectangle::Rectangle(const Color& color) noexcept : Shape{4} {
         glGenBuffers(1, &elementArrayBuffer);
+        for (auto& color_ : vertices | ge::views::color)
+            color_ = color;
     }
 
-    Rectangle::Rectangle(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex, const Vector2f& dimmensions,
-        const Color& color) noexcept : Rectangle{scene} {
-
+    Rectangle::Rectangle(const Vector2f& firstVertex, const Vector2f& dimmensions,
+        const Color& color) noexcept
+        : Rectangle{color}
+    {
         vertices[0].position = firstVertex;
         vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
         vertices[2].position = firstVertex + dimmensions;
         vertices[3].position = firstVertex + Vector2f{dimmensions[0], 0.f};
-        for (auto& color_ : vertices | ge::views::color)
-            color_ = color;
     }
 
-    Rectangle::Rectangle(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex, const Vector2f& secondVertex,
-        const Vector2f& thirdVertex, const Color& color) noexcept : Rectangle{scene} {
-
+    Rectangle::Rectangle(const Vector2f& firstVertex, const Vector2f& secondVertex,
+        const Vector2f& thirdVertex, const Color& color) noexcept : Rectangle{color}
+    {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
         vertices[2].position = thirdVertex;
         vertices[3].position = secondVertex - firstVertex + thirdVertex;
-        for (auto& color_ : vertices | ge::views::color)
-            color_ = color;
     }
 
-    Rectangle::Rectangle(const Rectangle& rectangle) noexcept : Shape{rectangle.scene, 4} {
+    Rectangle::Rectangle(const Rectangle& rectangle) noexcept : Shape{4} {
         glGenBuffers(1, &elementArrayBuffer);
         shaderProgram = rectangle.shaderProgram;
         std::ranges::copy(rectangle, begin());
@@ -43,7 +42,7 @@ namespace ge {
         return *this;
     }
 
-    Rectangle::Rectangle(Rectangle&& rectangle) noexcept : Shape{rectangle.scene, std::move(rectangle.vertices)} {
+    Rectangle::Rectangle(Rectangle&& rectangle) noexcept : Shape{std::move(rectangle.vertices)} {
         vertexArrayObject = rectangle.vertexArrayObject;
         vertexBuffer = rectangle.vertexBuffer;
         elementArrayBuffer = rectangle.elementArrayBuffer;

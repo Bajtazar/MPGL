@@ -3,38 +3,43 @@
 #include <memory>
 
 #include "../Traits/Concepts.hpp"
+#include "../Core/Context.hpp"
 
 namespace ge {
 
-    template <Adaptable T, Adaptable U>
-    class Adapter {
+    template <Adaptable T>
+    class Adapter : private GraphicalObject {
     public:
-        constexpr explicit Adapter(const T& range, const std::shared_ptr<U>& scale) noexcept : range(range) { scaleFactor = scale; }
+        explicit Adapter(T const& range) noexcept : range(range) {}
 
         using value_type = typename T::value_type;
 
-        constexpr T& operator= (const T& factor) noexcept {
-            return range = factor / static_cast<T>(*scaleFactor) * value_type{2} - value_type{1};
-        }
+        T& operator= (T const& factor) noexcept;
+        T& operator= (T&& factor) noexcept;
 
-        constexpr T& operator= (T&& factor) noexcept {
-            return range = std::move(factor) / static_cast<T>(*scaleFactor) * value_type{2} - value_type{1};
-        }
-
-        constexpr operator T() const noexcept {
-            return (range + value_type{1}) * static_cast<T>(*scaleFactor) / value_type{2};
-        }
+        operator T() const& noexcept;
 
         T& get(void) noexcept { return range; }
-        const T& get(void) const noexcept { return range; }
+        T const& get(void) const noexcept { return range; }
 
-        constexpr ~Adapter(void) noexcept = default;
+        ~Adapter(void) noexcept = default;
     private:
-        T range;
-        static std::shared_ptr<U> scaleFactor;
+        T                   range;
     };
 
-    template <Adaptable T, Adaptable U>
-    std::shared_ptr<U> Adapter<T, U>::scaleFactor {};
+    template <Adaptable T>
+    T& Adapter<T>::operator= (T const& factor) noexcept {
+        return range = factor / static_cast<T>(context.windowDimmensions) * value_type{2} - value_type{1};
+    }
+
+    template <Adaptable T>
+    T& Adapter<T>::operator= (T&& factor) noexcept {
+        return range = std::move(factor) / static_cast<T>(context.windowDimmensions) * value_type{2} - value_type{1};
+    }
+
+    template <Adaptable T>
+    Adapter<T>::operator T() const& noexcept {
+        return (range + value_type{1}) * static_cast<T>(context.windowDimmensions) / value_type{2};
+    }
 
 }

@@ -4,21 +4,23 @@
 namespace ge {
 
     template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex,
-        const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
-        : Shape{scene, 3} {
-            vertices[0].position = firstVertex;
-            vertices[1].position = secondVertex;
-            vertices[2].position = thirdVertex;
-            for (auto& color_ : vertices | ge::views::color)
-                color_ = color;
-        }
+    Triangle<PolygonMode>::Triangle(const Vector2f& firstVertex, const Vector2f& secondVertex,
+        const Vector2f& thirdVertex, const Color& color) noexcept : Triangle{color}
+    {
+        vertices[0].position = firstVertex;
+        vertices[1].position = secondVertex;
+        vertices[2].position = thirdVertex;
+
+    }
 
     template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(const std::shared_ptr<Vector2ui>& scene) noexcept : Shape{scene, 3} {}
+    Triangle<PolygonMode>::Triangle(const Color& color) noexcept : Shape{3} {
+        for (auto& color_ : vertices | ge::views::color)
+            color_ = color;
+    }
 
     template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(const Triangle& triangle) noexcept : Shape{triangle.scene, 3} {
+    Triangle<PolygonMode>::Triangle(const Triangle& triangle) noexcept : Shape{3} {
         shaderProgram = triangle.shaderProgram;
         std::ranges::copy(triangle, begin());
     }
@@ -31,7 +33,7 @@ namespace ge {
     }
 
     template <bool PolygonMode>
-    Triangle<PolygonMode>::Triangle(Triangle&& triangle) noexcept : Shape{triangle.scene, std::move(triangle.vertices)} {
+    Triangle<PolygonMode>::Triangle(Triangle&& triangle) noexcept : Shape{std::move(triangle.vertices)} {
         vertexArrayObject = triangle.vertexArrayObject;
         vertexBuffer = triangle.vertexBuffer;
         shaderProgram = triangle.shaderProgram;

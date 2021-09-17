@@ -15,11 +15,11 @@ namespace ge {
 
     class MonochromaticFontVertex {
     public:
-        constexpr explicit MonochromaticFontVertex(Vector2f const& position,
-            Vector2f const& textureCoords, std::shared_ptr<Vector2ui> const& scene) noexcept
-            : position{position, scene}, textureCoords{textureCoords} {}
+        explicit MonochromaticFontVertex(Vector2f const& position,
+            Vector2f const& textureCoords) noexcept
+            : position{position}, textureCoords{textureCoords} {}
 
-        Adapter<Vector2f, Vector2ui>        position;
+        Adapter<Vector2f>                   position;
         Vector2f                            textureCoords;
 
         template <std::size_t Index>
@@ -45,12 +45,11 @@ namespace ge {
 
     class PolichromaticFontVertex {
     public:
-        constexpr explicit PolichromaticFontVertex(Vector2f const& position,
-            Color const& color, Vector2f const& textureCoords,
-            std::shared_ptr<Vector2ui> const& scene) noexcept
-            : position{position, scene}, color{color}, textureCoords{textureCoords} {}
+        explicit PolichromaticFontVertex(Vector2f const& position,
+            Color const& color, Vector2f const& textureCoords) noexcept
+            : position{position}, color{color}, textureCoords{textureCoords} {}
 
-        Adapter<Vector2f, Vector2ui>        position;
+        Adapter<Vector2f>                   position;
         Vector2f                            textureCoords;
         Color                               color;
 
@@ -96,16 +95,13 @@ namespace ge {
         typedef std::shared_ptr<Vector2ui>          ScenePtr;
         typedef Texture<>                           GlyphTexture;
 
-        GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
-            Color const& color = {});
+        GlyphSprite(GlyphTexture const& texture, Color const& color = {});
         // parallelogram
-        GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
-            Vector2f const& firstVertex,    Vector2f const& secondVertex,
-            Vector2f const& thirdVertex,    Color const& color = {});
+        GlyphSprite(GlyphTexture const& texture, Vector2f const& firstVertex,    Vector2f const& secondVertex,
+            Vector2f const& thirdVertex,         Color const& color = {});
         //rectangle parallel to x and y axis
-        GlyphSprite(ScenePtr const& scene,  GlyphTexture const& texture,
-            Vector2f const& firstVertex,    Vector2f const& dimmensions,
-            Color const& color = {});
+        GlyphSprite(GlyphTexture const& texture, Vector2f const& firstVertex,
+            Vector2f const& dimmensions,         Color const& color = {});
 
         GlyphSprite(GlyphSprite const& sprite) noexcept;
         GlyphSprite(GlyphSprite&& sprite) noexcept;
@@ -163,7 +159,7 @@ namespace ge {
         uint32_t                            vertexBuffer;
         uint32_t                            vertexArrayObject;
 
-        Vertices makeVertexArray(ScenePtr const& scene, Color const& color) noexcept;
+        Vertices makeVertexArray(Color const& color) noexcept;
         void bindBuffers(void) const noexcept;
         void copyBuffersToGPU(void) const noexcept;
         void unbindBuffers(void) const noexcept;
@@ -186,7 +182,7 @@ namespace std {
 
     template <>
     struct tuple_element<0, ge::MonochromaticFontVertex> {
-        using type = ge::Adapter<ge::Vector2f, ge::Vector2ui>;
+        using type = ge::Adapter<ge::Vector2f>;
     };
 
     template <>
@@ -199,7 +195,7 @@ namespace std {
 
     template <>
     struct tuple_element<0, ge::PolichromaticFontVertex> {
-        using type = ge::Adapter<ge::Vector2f, ge::Vector2ui>;
+        using type = ge::Adapter<ge::Vector2f>;
     };
 
     template <>

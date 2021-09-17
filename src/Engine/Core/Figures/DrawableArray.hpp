@@ -14,7 +14,7 @@ namespace ge {
     template <class T>
     concept DrawableType = std::is_base_of_v<Drawable, T>
         && std::is_base_of_v<ScreenTransformationEvent, T>
-        && std::is_constructible_v<T, std::shared_ptr<Vector2ui> const&>;
+        && std::is_default_constructible_v<T>;
 
     template <class T, class Alloc>
     using DrawableVector = std::vector<std::unique_ptr<T>, Alloc>;
@@ -25,11 +25,8 @@ namespace ge {
         public Drawable, public virtual ScreenTransformationEvent
     {
     public:
-        typedef std::shared_ptr<Vector2ui>                  ScenePtr;
-
-        explicit DrawableArrayBase(ScenePtr const& scene) noexcept;
-        explicit DrawableArrayBase(ScenePtr const& scene, std::size_t size,
-            Base const& base) noexcept;
+        explicit DrawableArrayBase(void) noexcept;
+        explicit DrawableArrayBase(std::size_t size, Base const& base) noexcept;
 
         DrawableArrayBase(const DrawableArrayBase& DrawableArrayBase) noexcept = default;
         DrawableArrayBase(DrawableArrayBase&& DrawableArrayBase) noexcept = default;
@@ -52,7 +49,7 @@ namespace ge {
         void pushBack(const Base& drawable) noexcept;
         void pushBack(Base&& drawable) noexcept;
         template <typename... Args>
-            requires std::is_constructible_v<Base, ScenePtr const&, Args...>
+            requires std::is_constructible_v<Base, Args...>
         void emplaceBack(Args&&... args) noexcept;
 
         template <class InnerIterator, typename value_type>
@@ -183,13 +180,12 @@ namespace ge {
     // templates
 
     template <DrawableType Base, class Allocator>
-    DrawableArrayBase<Base, Allocator>::DrawableArrayBase(ScenePtr const& scene) noexcept
-        : DrawableVector<Base, Allocator>{}, Drawable{scene}, library{nullptr} {}
+    DrawableArrayBase<Base, Allocator>::DrawableArrayBase(void) noexcept
+        : DrawableVector<Base, Allocator>{}, library{nullptr} {}
 
     template <DrawableType Base, class Allocator>
-    DrawableArrayBase<Base, Allocator>::DrawableArrayBase(ScenePtr const& scene,
-        std::size_t size, const Base& base) noexcept
-            : DrawableVector<Base, Allocator>{}, Drawable{scene}, library{nullptr}
+    DrawableArrayBase<Base, Allocator>::DrawableArrayBase(std::size_t size, Base const& base) noexcept
+        : DrawableVector<Base, Allocator>{}, library{nullptr}
     {
         DrawableVector<Base, Allocator>::reserve(size);
         for (std::size_t i = 0;i < size; ++i)
@@ -216,10 +212,9 @@ namespace ge {
 
     template <DrawableType Base, class Allocator>
     template <typename... Args>
-        requires std::is_constructible_v<Base, const std::shared_ptr<Vector2ui>&, Args...>
+        requires std::is_constructible_v<Base, Args...>
     void DrawableArrayBase<Base, Allocator>::emplaceBack(Args&&... args) noexcept {
-        this->emplace_back(std::move(std::make_unique<Base>(scene,
-            std::forward<Args>(args)...)));
+        this->emplace_back(std::move(std::make_unique<Base>(std::forward<Args>(args)...)));
         setShadersIfLibrary();
     }
 

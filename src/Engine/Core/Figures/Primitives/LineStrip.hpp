@@ -6,8 +6,8 @@ namespace ge {
 
     class LineStrip : public Shape {
     public:
-        LineStrip(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices, const Color& color) noexcept;
-        LineStrip(const std::shared_ptr<Vector2ui>& scene, std::size_t vertices) noexcept;
+        LineStrip(std::size_t vertices, const Color& color) noexcept;
+        LineStrip(std::size_t vertices = 0) noexcept;
 
         LineStrip(const LineStrip& lineStrip) noexcept;
         LineStrip(LineStrip&& lineStrip) noexcept;

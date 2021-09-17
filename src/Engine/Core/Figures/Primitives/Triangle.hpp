@@ -7,10 +7,9 @@ namespace ge {
     template <bool PolygonMode = false>
     class Triangle : public Shape {
     public:
-        Triangle(const std::shared_ptr<Vector2ui>& scene, const Vector2f& firstVertex,
-                 const Vector2f& secondVertex,           const Vector2f& thirdVertex,
-                 const Color& color) noexcept;
-        Triangle(const std::shared_ptr<Vector2ui>& scene) noexcept;
+        Triangle(const Vector2f& firstVertex,   const Vector2f& secondVertex,
+                 const Vector2f& thirdVertex,   const Color& color = {}) noexcept;
+        Triangle(const Color& color = {}) noexcept;
 
         Triangle(const Triangle& triangle) noexcept;
         Triangle(Triangle&& triangle) noexcept;

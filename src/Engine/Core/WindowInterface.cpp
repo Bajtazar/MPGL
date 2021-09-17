@@ -1,7 +1,6 @@
 #include "WindowInterface.hpp"
 
 #include "../Exceptions/RenderWindowInvalidArgsException.hpp"
-#include "../Exceptions/RenderWindowInitException.hpp"
 #include "../Exceptions/RenderWindowGladException.hpp"
 #include "Text/UTF-8.hpp"
 
@@ -11,24 +10,33 @@ namespace ge {
     : openGLMajorVersion(major), openGLMinorVersion(minor), floating(floating), maximised(maximised), resizable(resizable) {}
 
     WindowInterface::WindowInterface(Vector2ui dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share)
-    : dimmensions{std::move(std::make_shared<Vector2ui>(dimmensions))} {
-        if (!glfwInit())
-            throw RenderWindowInitException(title);
+        : dimmensions{dimmensions}
+    {
+        context.windowDimmensions = dimmensions;
         setWindowOptions(options);
         window = glfwCreateWindow(dimmensions[0], dimmensions[1], title.c_str(), monitor, share);
         glfwMakeContextCurrent(window);
         if (!window)
-            throw RenderWindowInvalidArgsException(title);
+            throw RenderWindowInvalidArgsException{title};
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-            throw RenderWindowGladException(title);
+            throw RenderWindowGladException{title};
         setCallbacks();
+    }
+
+    void WindowInterface::setContextWindow(void) noexcept {
+        glfwMakeContextCurrent(window);
+        context.windowDimmensions = dimmensions;
+    }
+
+    void WindowInterface::setDimmensions(Vector2ui const& dimm) noexcept {
+        context.windowDimmensions = dimmensions = dimm;
     }
 
     void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        Vector2ui oldDimmensions = *(render->dimmensions);
-        *(render->dimmensions) = Vector2ui{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        Vector2ui oldDimmensions = render->dimmensions;
+        render->setDimmensions(vectorCast<uint32_t>(Vector2i{width, height}));
         get<ScreenTransformationRegister>(render->events).onEvent(oldDimmensions);
     }
 
