@@ -26,6 +26,19 @@ namespace ge {
                 return T{};
         }
 
+        template <typename T>
+        static constexpr std::tuple<typename std::remove_reference_t<T>>
+            tupleReverser(T&& arg) noexcept
+        {
+            return {std::forward<T>(arg)};
+        }
+
+        template <typename T, typename... Args>
+        static constexpr decltype(auto) tupleReverser(T&& arg, Args&&... args) noexcept {
+            return std::tuple_cat(tupleReverser<Args...>(std::forward<Args>(args)...),
+                tupleReverser<T>(std::forward<T>(arg)));
+        }
+
     };
 
     template <std::constructible_from T, std::size_t Size>
@@ -33,5 +46,10 @@ namespace ge {
 
     template <std::constructible_from T, std::size_t Size, std::size_t Dimmensions>
     using TensorTuple = decltype(TupleHelperFn::tensorConstructor<T, Size, Dimmensions>());
+
+    template <typename... Args>
+    constexpr auto tupleReverser(Args&&... args) noexcept {
+        return TupleHelperFn::tupleReverser(std::forward<Args>(args)...);
+    }
 
 }

@@ -16,7 +16,7 @@ namespace ge {
 
         template <AllSame<column_value_type>... Args>
             requires (sizeof...(Args) == Rows)
-        constexpr Matrix(const Args&... args) noexcept : TensorTuple<T, Rows, 2>{ args... } { ge::reverse(columnBegin(), columnEnd()); transpose(); }
+        constexpr Matrix(const Args&... args) noexcept : TensorTuple<T, Rows, 2>{tupleReverser(args...)} { transpose(); }
         constexpr Matrix(void) noexcept = default;
 
         template <std::size_t Index>

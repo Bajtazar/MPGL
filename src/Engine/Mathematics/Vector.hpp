@@ -18,7 +18,7 @@ namespace ge {
 
         template <Arithmetic... Args>
             requires (sizeof...(Args) == Size && AllConvertible<value_type, Args...>)
-        constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{args...} { ge::reverse(*this); }
+        constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{tupleReverser(args...)} { }
 
         constexpr Vector(void) noexcept = default;
 
@@ -99,26 +99,26 @@ namespace ge {
         using iterator = Iterator<T>;
         using const_iterator = Iterator<const T>;
 
-        iterator begin(void) noexcept { return iterator{ &get<0>() }; }
-        iterator end(void) noexcept { return iterator{ &get<0>() + Size }; }
+        constexpr iterator begin(void) noexcept { return iterator{ &get<0>() }; }
+        constexpr iterator end(void) noexcept { return iterator{ &get<0>() + Size }; }
 
-        const_iterator begin(void) const noexcept { return const_iterator{ &get<0>() }; }
-        const_iterator end(void) const noexcept { return const_iterator{ &get<0>() + Size }; }
+        constexpr const_iterator begin(void) const noexcept { return const_iterator{ &get<0>() }; }
+        constexpr const_iterator end(void) const noexcept { return const_iterator{ &get<0>() + Size }; }
 
-        const_iterator cbegin(void) const noexcept { return const_iterator{ &get<0>() }; }
-        const_iterator cend(void) const noexcept { return const_iterator{ &get<0>() + Size }; }
+        constexpr const_iterator cbegin(void) const noexcept { return const_iterator{ &get<0>() }; }
+        constexpr const_iterator cend(void) const noexcept { return const_iterator{ &get<0>() + Size }; }
 
-        auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
-        auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
+        constexpr auto rbegin(void) noexcept { return std::reverse_iterator{ end() - 1 }; }
+        constexpr auto rend(void) noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
-        auto rbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
-        auto rend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
+        constexpr auto rbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
+        constexpr auto rend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
-        auto crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
-        auto crend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
+        constexpr auto crbegin(void) const noexcept { return std::reverse_iterator{ end() - 1 }; }
+        constexpr auto crend(void) const noexcept { return std::reverse_iterator{ begin() - 1 }; }
 
-        T& operator[] (std::size_t index) noexcept { return *(&get<0>() + index); }
-        const T& operator[] (std::size_t index) const noexcept { return *(&get<0>() + index); }
+        constexpr T& operator[] (std::size_t index) noexcept { return *(&get<0>() + index); }
+        constexpr const T& operator[] (std::size_t index) const noexcept { return *(&get<0>() + index); }
 
         explicit constexpr Vector(UniformTuple<T, Size>&& tuple) noexcept : UniformTuple<T, Size>{ std::move(tuple) } {}
     };

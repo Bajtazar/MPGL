@@ -10,13 +10,13 @@ namespace ge {
     struct Context {
         explicit Context(void) noexcept;
 
-        Vector2ui windowDimmensions;
+        Vector2ui                       windowDimmensions;
 
         ~Context(void) noexcept;
     };
 
     struct GraphicalObject {
-        thread_local static Context context;
+        thread_local static Context     context;
     };
 
 }
