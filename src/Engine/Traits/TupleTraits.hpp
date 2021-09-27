@@ -48,6 +48,9 @@ namespace ge {
     using TensorTuple = decltype(TupleHelperFn::tensorConstructor<T, Size, Dimmensions>());
 
     template <typename... Args>
+    using ReversedTuple = decltype(TupleHelperFn::tupleReverser<Args...>(std::declval<Args>()...));
+
+    template <typename... Args>
     constexpr auto tupleReverser(Args&&... args) noexcept {
         return TupleHelperFn::tupleReverser(std::forward<Args>(args)...);
     }

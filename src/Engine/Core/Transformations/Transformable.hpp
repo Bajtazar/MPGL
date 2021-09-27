@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../../Events/ScreenTransformationEvent.hpp"
-#include "Dimmensions.hpp"
+#include "Dimensions.hpp"
 
 namespace ge {
 
-    template <Dimmension Dimm>
+    template <Dimension Dim>
     struct Transformable;
 
 }

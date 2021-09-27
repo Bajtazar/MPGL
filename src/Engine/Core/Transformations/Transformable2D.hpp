@@ -6,7 +6,7 @@
 namespace ge {
 
     template<>
-    struct Transformable<dimm::Dimm2> : public virtual ScreenTransformationEvent {
+    struct Transformable<dim::Dim2> : public virtual ScreenTransformationEvent {
         explicit Transformable(void) noexcept = default;
 
         virtual void translate(Vector2f const& shift) noexcept = 0;
@@ -17,6 +17,6 @@ namespace ge {
         virtual ~Transformable(void) noexcept = default;
     };
 
-    typedef Transformable<dimm::Dimm2>      Transformable2D;
+    typedef Transformable<dim::Dim2>      Transformable2D;
 
 }
