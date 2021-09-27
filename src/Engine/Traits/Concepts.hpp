@@ -9,8 +9,14 @@ namespace ge {
     template <typename T>
     concept Arithmetic = std::is_arithmetic_v<T> && std::constructible_from<T>;
 
+    template <typename T>
+    concept AbsolutelyArithmetic = Arithmetic<std::remove_cvref_t<T>>;
+
     template <typename T, typename... Args>
     concept AllSame = std::conjunction_v<std::is_same<T, Args>...>;
+
+    template <typename T, typename... Args>
+    concept AllAbsolutelySame = AllSame<T, std::remove_cvref_t<Args>...>;
 
     template <typename T, typename... Args>
     concept AllConvertible = std::conjunction_v<std::is_convertible<Args, T>...>;

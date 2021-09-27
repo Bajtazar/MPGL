@@ -16,9 +16,9 @@ namespace ge {
     public:
         using value_type = T;
 
-        template <Arithmetic... Args>
-            requires (sizeof...(Args) == Size && AllConvertible<value_type, Args...>)
-        constexpr Vector(const Args&... args) noexcept : UniformTuple<T, Size>{tupleReverser(args...)} { }
+        template <AbsolutelyArithmetic... Args>
+            requires (sizeof...(Args) == Size && AllConvertible<value_type, std::remove_cvref_t<Args>...>)
+        constexpr Vector(Args&&... args) noexcept;
 
         constexpr Vector(void) noexcept = default;
 
@@ -121,7 +121,30 @@ namespace ge {
         constexpr const T& operator[] (std::size_t index) const noexcept { return *(&get<0>() + index); }
 
         explicit constexpr Vector(UniformTuple<T, Size>&& tuple) noexcept : UniformTuple<T, Size>{ std::move(tuple) } {}
+    private:
+        template <typename... Args>
+        constexpr UniformTuple<T, Size> tupleBuilder(Args&&... args) const noexcept;
     };
+
+    template <Arithmetic T, std::size_t Size>
+    template <AbsolutelyArithmetic... Args>
+        requires (sizeof...(Args) == Size && AllConvertible<typename Vector<T, Size>::value_type,
+            std::remove_cvref_t<Args>...>)
+    constexpr Vector<T, Size>::Vector(Args&&... args) noexcept
+        : UniformTuple<T, Size>{tupleBuilder(std::forward<Args>(args)...)}
+    {
+        if constexpr (!std::is_constant_evaluated())
+            reverse(*this);
+    }
+
+    template <Arithmetic T, std::size_t Size>
+    template <typename... Args>
+    constexpr UniformTuple<T, Size> Vector<T, Size>::tupleBuilder(Args&&... args) const noexcept {
+        if constexpr (std::is_constant_evaluated())
+            return tupleReverser(std::forward<Args>(args)...);
+        else
+            return {std::forward<Args>(args)...};
+    }
 
     template <Arithmetic T, std::size_t Size>
     template <Arithmetic U>

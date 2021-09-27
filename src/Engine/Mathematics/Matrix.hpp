@@ -14,9 +14,9 @@ namespace ge {
     public:
         using column_value_type = Vector<T, Rows>;
 
-        template <AllSame<column_value_type>... Args>
+        template <AllAbsolutelySame<column_value_type>... Args>
             requires (sizeof...(Args) == Rows)
-        constexpr Matrix(const Args&... args) noexcept : TensorTuple<T, Rows, 2>{tupleReverser(args...)} { transpose(); }
+        constexpr Matrix(Args&&... args) noexcept;
         constexpr Matrix(void) noexcept = default;
 
         template <std::size_t Index>
@@ -296,8 +296,32 @@ namespace ge {
         constexpr Matrix& operator+= (const Matrix& right) noexcept;
         constexpr Matrix& operator-= (const Matrix& right) noexcept;
         constexpr Matrix& operator*= (const Matrix& right) noexcept;
-
+    private:
+        template <typename... Args>
+        constexpr TensorTuple<T, Rows, 2> tupleBuilder(Args&&... args) const noexcept;
     };
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <AllAbsolutelySame<typename Matrix<T, Rows>::column_value_type>... Args>
+        requires (sizeof...(Args) == Rows)
+    constexpr Matrix<T, Rows>::Matrix(Args&&... args) noexcept
+        : TensorTuple<T, Rows, 2>{tupleBuilder(std::forward<Args>(args)...)}
+    {
+        if constexpr (!std::is_constant_evaluated())
+            reverse(columnBegin(), columnEnd());
+        transpose();
+    }
+
+    template <Arithmetic T, std::size_t Rows>
+        requires (Rows > 1)
+    template <typename... Args>
+    constexpr TensorTuple<T, Rows, 2> Matrix<T, Rows>::tupleBuilder(Args&&... args) const noexcept {
+        if constexpr (std::is_constant_evaluated())
+            return tupleReverser(std::forward<Args>(args)...);
+        else
+            return {std::forward<Args>(args)...};
+    }
 
     template <Arithmetic T, std::size_t Rows>
     using MatVector = typename Matrix<T, Rows>::column_value_type;
