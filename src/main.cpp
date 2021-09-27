@@ -7,7 +7,7 @@
 using namespace ge;
 
 int main(void) noexcept {
-    RenderWindow window{640_x + 480_y, "Hello World!"};
+    Window window{640_x + 480_y, "Hello World!"};
     window.setFPSLimit(140);
 
     window.emplaceDrawable<Circle>(400_x + 200_y, 100.f, ge::Color::literals::Yellow);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/RenderWindow.hpp"
+#include "Core/Window.hpp"
 #include "Core/Figures/Shape.hpp"
 #include "Core/Figures/Sprite.hpp"
 #include "Core/Figures/Primitives/Triangle.hpp"
