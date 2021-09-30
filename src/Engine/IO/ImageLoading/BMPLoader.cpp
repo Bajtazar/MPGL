@@ -53,7 +53,7 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     void BMPLoader<Policy>::readImage(FileIter& file) {
-        for (auto row : pixels) {
+        for (auto& row : pixels) {
             for (auto& pixel : row)
                 Pixel::Manip::RGB(file, pixel);
             std::advance(file, (4 - pixels.getWidth() % 4) % 4);

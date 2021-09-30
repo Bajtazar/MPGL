@@ -15,6 +15,9 @@ namespace ge {
     template <typename T, typename... Args>
     concept AllSame = std::conjunction_v<std::is_same<T, Args>...>;
 
+    template <typename T>
+    concept Absolute = std::same_as<T, std::remove_cvref_t<T>>;
+
     template <typename T, typename... Args>
     concept AllAbsolutelySame = AllSame<T, std::remove_cvref_t<Args>...>;
 
@@ -92,5 +95,29 @@ namespace ge {
 
     template <typename T, typename... Args>
     concept ConstexprConstructible = IsConstexprConstructibleV<T, Args...>;
+
+    template <class Range>
+    concept FlexibleRange = std::ranges::random_access_range<Range>
+        && requires(Range range, std::size_t size,
+            typename Range::value_type value)
+        {
+            range.reserve(size),
+            range.resize(size, value);
+        };
+
+    template <typename T>
+    concept DefaultBaseType = Absolute<T> && std::is_default_constructible_v<T>;
+
+    template <class Range, typename Base>
+    concept UnderlyingRange = FlexibleRange<Range>
+        && std::same_as<std::ranges::range_value_t<Range>, Base>;
+
+    template <template<class, class> class Range,
+        typename Type, typename Alloc = std::allocator<Type>>
+    concept UnderlyiesType = Allocator<Alloc> &&
+        UnderlyingRange<Range<Type, Alloc>, Type>;
+
+    template <template<class, class> class Range, typename... Types>
+    concept UnderlyiesTypes = (UnderlyiesType<Range, Types> && ...);
 
 }

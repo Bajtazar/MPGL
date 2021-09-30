@@ -150,7 +150,7 @@ namespace ge {
 
     void FontRasterizer::fillContour(Bitmap& canva) const noexcept {
         for (std::size_t i = 0; i != canva.getHeight(); ++i) {
-            auto row = canva[i];
+            auto& row = canva[i];
             if (auto pixels = rasterizeLine(row))
                 std::copy(pixels->begin(), pixels->end(), row.begin());
             else {  // slow but i have no time to fix this
