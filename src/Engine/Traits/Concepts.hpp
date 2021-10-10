@@ -7,7 +7,19 @@
 namespace ge {
 
     template <typename T>
-    concept Arithmetic = std::is_arithmetic_v<T> && std::constructible_from<T>;
+    concept Arithmetic = std::constructible_from<T>
+        && requires (T left, T right)
+        {
+            {left + right} -> std::convertible_to<T>;
+            {left - right} -> std::convertible_to<T>;
+            {left * right} -> std::convertible_to<T>;
+            {left / right} -> std::convertible_to<T>;
+        }
+        && requires (std::remove_cv_t<T> number)
+        {
+            {number += number} -> std::same_as<std::remove_cv_t<T>&>;
+            {number -= number} -> std::same_as<std::remove_cv_t<T>&>;
+        };
 
     template <typename T>
     concept AbsolutelyArithmetic = Arithmetic<std::remove_cvref_t<T>>;
