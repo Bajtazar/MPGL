@@ -34,7 +34,7 @@ namespace ge {
             requires (Index < Size)
         constexpr T&& get(void) && noexcept { return std::get<Size - 1 - Index>(static_cast<UniformTuple<T, Size>&&>(*this)); }
 
-        consteval std::size_t size(void) const noexcept { return Size; }
+        static consteval std::size_t size(void) noexcept { return Size; }
 
         template <Arithmetic U = T>
         constexpr U length(void) const noexcept;

@@ -23,32 +23,17 @@ namespace ge {
     constexpr bool IsConstexprConstructibleV = IsConstexprConstructible<T, Args...>::value;
 
     template <typename Signature, Signature Function, typename... Args>
+        requires std::invocable<Signature, Args...>
     class IsConstexprEvaluable {
         template <class Invocable, int = (Invocable{}(), 0)>
         static constexpr auto helper(Invocable) -> std::true_type;
         static constexpr auto helper(...) -> std::false_type;
     public:
         static constexpr bool value = std::same_as<
-            decltype(helper([]{ std::invoke(Function, std::declval<Args>()...)); })), std::true_type>;
-    };
-
-    template <class Base, typename Return, typename... Args, Return (Base::*Signature)(Args...)>
-        requires std::is_default_constructible_v<Base>
-    class IsConstexprEvaluable<Return (Base::*)(Args...), Signature, Args...> {
-        template <class Invocable, int = (Invocable{}(), 0)>
-        static constexpr auto helper(Invocable) -> std::true_type;
-        static constexpr auto helper(...) -> std::false_type;
-
-        static constexpr void invoker(void) {
-            Base base{};
-            (base.*Signature)(std::declval<Args>...());
-        }
-    public:
-        static constexpr bool value = std::same_as<decltype(helper([]{ invoker() })), std::true_type>;
+            decltype(helper([]{ std::invoke(Function, std::declval<Args>()...); })), std::true_type>;
     };
 
     template <typename Signature, Signature Function, typename... Args>
     constexpr bool IsConstexprEvaluableV = IsConstexprEvaluable<Signature, Function, Args...>::value;
-
 
 }

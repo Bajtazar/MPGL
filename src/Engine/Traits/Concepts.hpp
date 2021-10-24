@@ -132,4 +132,7 @@ namespace ge {
     template <template<class, class> class Range, typename... Types>
     concept UnderlyiesTypes = (UnderlyiesType<Range, Types> && ...);
 
+    template <typename Signature, auto Method>
+    concept SameSignatures = std::same_as<Signature, decltype(Method)>;
+
 }

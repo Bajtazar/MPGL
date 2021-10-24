@@ -33,7 +33,7 @@ namespace ge {
 
         static consteval Matrix<T, Rows> identityMatrix(T diagonal = {1}, T nonDiagonal = {0}) noexcept;
 
-        constexpr std::size_t size(void) const noexcept { return Rows; }
+        static consteval std::size_t size(void) noexcept { return Rows; }
 
         template <class BaseType>
         class Row {
