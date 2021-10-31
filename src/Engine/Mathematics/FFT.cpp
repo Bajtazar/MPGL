@@ -39,10 +39,10 @@ namespace ge {
     FFT::ComplexVector FFT::generateLookupTable(uint16_t size) noexcept {
         ComplexVector lookupTable;
         lookupTable.reserve(size);
-        for (uint16_t i = 0; i < size; ++i) {
-            lookupTable.push_back(std::polar(1.,
-                ((uint64_t) (i * i) % (2 * size)) * std::numbers::pi / size));
-        }
+        lookupTable.emplace_back(1.);
+        for (uint16_t i = 1; i < size; ++i)
+            lookupTable.push_back(std::polar(1., (2 * i - 1) * std::numbers::pi / size)
+                * lookupTable.back());
         return lookupTable;
     }
 
@@ -66,7 +66,7 @@ namespace ge {
         cooleyTukey(rightSequence);
         std::ranges::transform(leftSequence, rightSequence,
             leftSequence.begin(), std::multiplies{});
-        cooleyTukey(leftSequence, 2.); // works like with negative omega
+        cooleyTukey(leftSequence, 1.); // inversed tranform
         std::ranges::for_each(leftSequence, [&leftSequence](auto& element)
             { element /= leftSequence.size(); });
         return leftSequence;

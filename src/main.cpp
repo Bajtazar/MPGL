@@ -2,20 +2,11 @@
 #include <math.h>
 #include <numbers>
 
-#include <iostream>
-#include "Engine/Mathematics/FFT.hpp"
-
 using namespace ge;
 
 int main(void) noexcept {
     Window window{640_x + 480_y, "Hello World!"};
     window.setFPSLimit(140);
-
-    std::array<std::complex<double>, 3> ttt{12, 143, 4};
-    FFT fft;
-    fft(ttt);
-    for (auto const& u : ttt)
-        std::cout << u << '\n';
 
     window.emplaceDrawable<Circle>(400_x + 200_y, 100.f, ge::Color::literals::Yellow);
 
