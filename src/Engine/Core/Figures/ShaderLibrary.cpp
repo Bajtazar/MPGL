@@ -13,19 +13,10 @@ namespace ge {
         for (const std::string& shader : getShaderList()) {
             VertexShader vertex{"shaders/Vertex/" + shader};
             FragmentShader fragment{"shaders/Fragment/" + shader};
-            uint32_t programID = glCreateProgram();
-            glAttachShader(programID, vertex.getShader());
-            glAttachShader(programID, fragment.getShader());
-            glLinkProgram(programID);
-            Logger::checkCompilationStatus<ShaderProgramLinkingException>(
-                programID, GL_LINK_STATUS, "Shader linker");
-            programs[shader.substr(0, shader.find('.'))] = programID;
+            ShaderProgram program{vertex, fragment};
+            program.link();
+            programs.emplace(shader.substr(0, shader.find('.')), std::move(program));
         }
-    }
-
-    ShaderLibrary& ShaderLibrary::operator=(ShaderLibrary&& shaderLib) noexcept {
-        programs = std::move(shaderLib.programs);
-        return *this;
     }
 
     std::vector<std::string> ShaderLibrary::getShaderList(void) const {
@@ -36,11 +27,6 @@ namespace ge {
         std::vector<std::string> shaders;
         std::ranges::transform(vertex, std::back_inserter(shaders), [](const auto& path){ return path.substr(15); });
         return shaders;
-    }
-
-    ShaderLibrary::~ShaderLibrary(void) noexcept {
-        for (const auto& [_, program] : programs)
-            glDeleteProgram(program);
     }
 
 }

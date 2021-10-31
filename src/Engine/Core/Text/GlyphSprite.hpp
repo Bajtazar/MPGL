@@ -154,8 +154,8 @@ namespace ge {
     private:
         Vertices                            vertices;
         GlyphTexture                        texture;
+        ShaderProgram                       shaderProgram;
         uint32_t                            elementArrayBuffer;
-        uint32_t                            shaderProgram;
         uint32_t                            vertexBuffer;
         uint32_t                            vertexArrayObject;
 

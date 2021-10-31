@@ -27,6 +27,15 @@ namespace ge {
     template <typename T, typename... Args>
     concept AllSame = std::conjunction_v<std::is_same<T, Args>...>;
 
+    template <typename... Args>
+    concept AllIntegrals = (std::integral<Args> && ...);
+
+    template <typename... Args>
+    concept AllUnsignedIntegrals = (std::unsigned_integral<Args> && ...);
+
+    template <typename... Args>
+    concept AllFloatingPoints = (std::floating_point<Args> && ...);
+
     template <typename T>
     concept Absolute = std::same_as<T, std::remove_cvref_t<T>>;
 

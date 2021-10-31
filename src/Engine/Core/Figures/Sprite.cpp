@@ -7,68 +7,101 @@
 namespace ge {
 
     template <bool IsColorable>
-    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(const Color& color) noexcept requires IsColorable {
-        return {Vertex{{}, color, {0.f, 0.f}}, Vertex{{}, color, {0.f, 1.f}}, Vertex{{}, color, {1.f, 1.f}}, Vertex{{}, color, {1.f, 0.f}}};
+    Sprite<IsColorable>::VertexArray
+        Sprite<IsColorable>::makeVertexArray(Color const& color) noexcept requires IsColorable
+    {
+        return {
+            Vertex{{}, color, {0.f, 0.f}},
+            Vertex{{}, color, {0.f, 1.f}},
+            Vertex{{}, color, {1.f, 1.f}},
+            Vertex{{}, color, {1.f, 0.f}}
+        };
+    }
+
+    template <bool IsColorable>
+    Sprite<IsColorable>::VertexArray Sprite<IsColorable>::makeVertexArray(void) noexcept {
+        if constexpr (IsColorable)
+            return {Vertex{{}, {}, {0.f, 0.f}}, Vertex{{}, {}, {0.f, 1.f}},
+                Vertex{{}, {}, {1.f, 1.f}}, Vertex{{}, {}, {1.f, 0.f}}};
+        else
+            return {Vertex{{}, {0.f, 0.f}}, Vertex{{}, {0.f, 1.f}},
+                Vertex{{}, {1.f, 1.f}}, Vertex{{}, {1.f, 0.f}}};
     }
 
     template <bool IsColorable>
     const std::array<uint32_t, 6> Sprite<IsColorable>::indexes {0, 1, 2, 0, 3, 2};
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const Texture<>& texture) noexcept : vertices{std::move(makeVertexArray())}, texture{texture} {
-        generateBuffers();
-    }
-
-    template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const Texture<>& texture, const Color& color) noexcept requires (IsColorable)
-        : vertices{std::move(makeVertexArray(color))}, texture{texture}
+    Sprite<IsColorable>::Sprite(Texture<> const& texture) noexcept
+        : vertices{makeVertexArray()}, texture{texture}
     {
         generateBuffers();
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex) noexcept : Sprite{texture} {
-        setVerticesPoisition(firstVertex, secondVertex, thirdVertex);
+    Sprite<IsColorable>::Sprite(Texture<> const& texture,
+        Color const& color) noexcept requires (IsColorable)
+            : vertices{makeVertexArray(color)}, texture{texture}
+    {
+        generateBuffers();
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex, const Color& color) noexcept
-        requires (IsColorable) : Sprite{texture, color}
+    Sprite<IsColorable>::Sprite(Texture<> const& texture,
+        Vector2f const& firstVertex, Vector2f const& secondVertex,
+        Vector2f const& thirdVertex) noexcept
+            : Sprite{texture}
     {
         setVerticesPoisition(firstVertex, secondVertex, thirdVertex);
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions) noexcept : Sprite{texture} {
-        setVerticesPoisition(firstVertex, dimmensions);
+    Sprite<IsColorable>::Sprite(Texture<> const& texture,
+        Vector2f const& firstVertex, Vector2f const& secondVertex,
+        Vector2f const& thirdVertex, Color const& color) noexcept requires (IsColorable)
+            : Sprite{texture, color}
+    {
+        setVerticesPoisition(firstVertex, secondVertex, thirdVertex);
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const Texture<>& texture, const Vector2f& firstVertex, const Vector2f& dimmensions, const Color& color) noexcept
-        requires (IsColorable) : Sprite{texture, color}
+    Sprite<IsColorable>::Sprite(Texture<> const& texture,
+        Vector2f const& firstVertex, Vector2f const& dimmensions) noexcept
+            : Sprite{texture}
     {
         setVerticesPoisition(firstVertex, dimmensions);
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(const Sprite& sprite) noexcept : Sprite{sprite.texture} {
+    Sprite<IsColorable>::Sprite(Texture<> const& texture,
+        Vector2f const& firstVertex, Vector2f const& dimmensions,
+        Color const& color) noexcept requires (IsColorable)
+            : Sprite{texture, color}
+    {
+        setVerticesPoisition(firstVertex, dimmensions);
+    }
+
+    template <bool IsColorable>
+    Sprite<IsColorable>::Sprite(Sprite const& sprite) noexcept : Sprite{sprite.texture} {
         shaderProgram = sprite.shaderProgram;
         std::ranges::copy(sprite, begin());
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>::Sprite(Sprite&& sprite) noexcept : vertices{std::move(sprite.vertices)}, texture{sprite.texture} {
+    Sprite<IsColorable>::Sprite(Sprite&& sprite) noexcept
+        : vertices{std::move(sprite.vertices)}, texture{std::move(sprite.texture)}
+    {
         vertexArrayObject = sprite.vertexArrayObject;
         vertexBuffer = sprite.vertexBuffer;
         elementArrayBuffer = sprite.elementArrayBuffer;
-        shaderProgram = sprite.shaderProgram;
+        shaderProgram = std::move(sprite.shaderProgram);
         sprite.vertexArrayObject = 0;
         sprite.vertexBuffer = 0;
         sprite.elementArrayBuffer = 0;
     }
 
     template <bool IsColorable>
-    Sprite<IsColorable>& Sprite<IsColorable>::operator= (const Sprite& sprite) noexcept {
+    Sprite<IsColorable>& Sprite<IsColorable>::operator= (Sprite const& sprite) noexcept {
         shaderProgram = sprite.shaderProgram;
         std::ranges::copy(sprite, begin());
         return *this;
@@ -77,9 +110,10 @@ namespace ge {
     template <bool IsColorable>
     Sprite<IsColorable>& Sprite<IsColorable>::operator= (Sprite&& sprite) noexcept {
         this->~Sprite();
+        texture = std::move(sprite.texture);
         vertexArrayObject = sprite.vertexArrayObject;
         vertexBuffer = sprite.vertexBuffer;
-        shaderProgram = sprite.shaderProgram;
+        shaderProgram = std::move(sprite.shaderProgram);
         elementArrayBuffer = sprite.elementArrayBuffer;
         sprite.vertexArrayObject = 0;
         sprite.vertexBuffer = 0;
@@ -88,35 +122,37 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::setShaders(const ShaderLibrary& library) noexcept {
+    void Sprite<IsColorable>::setShaders(ShaderLibrary const& library) noexcept {
         if constexpr (IsColorable)
             shaderProgram = library["2DCTexture"];
         else
             shaderProgram = library["2DTexture"];
 
-        glUseProgram(shaderProgram);
-        glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
+        shaderProgram.use();
+        shaderProgram.setUniform("tex", 0);
     }
 
     template <bool IsColorable>
     void Sprite<IsColorable>::bindBuffers(void) const noexcept {
         glBindVertexArray(vertexArrayObject);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4, vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4, vertices.data(),
+            GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(uint32_t), indexes.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(uint32_t),
+            indexes.data(), GL_STATIC_DRAW);
     }
 
     template <bool IsColorable>
     void Sprite<IsColorable>::copyBuffersToGPU(void) const noexcept {
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
         glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(float)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+            reinterpret_cast<void*>(2 * sizeof(float)));
         glEnableVertexAttribArray(1);
-
         if constexpr (IsColorable) {
-            glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(4 * sizeof(float)));
+            glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                reinterpret_cast<void*>(4 * sizeof(float)));
             glEnableVertexAttribArray(2);
         }
     }
@@ -138,7 +174,7 @@ namespace ge {
     template <bool IsColorable>
     void Sprite<IsColorable>::draw(void) const noexcept {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glUseProgram(shaderProgram);
+        shaderProgram.use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTexture());
         glBindVertexArray(vertexArrayObject);
@@ -148,7 +184,7 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::onScreenTransformation(const Vector2ui& oldDimmensions) noexcept {
+    void Sprite<IsColorable>::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position)) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * static_cast<Vector2f>(oldDimmensions)
@@ -158,26 +194,26 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::translate(const Vector2f& shift) noexcept {
+    void Sprite<IsColorable>::translate(Vector2f const& shift) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position))
             vertexPosition = Vector2f(vertexPosition) + shift;
         copyToGPU();
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::scale(const Vector2f& center, float factor) noexcept {
+    void Sprite<IsColorable>::scale(Vector2f const& center, float factor) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position))
             vertexPosition = (static_cast<Vector2f>(vertexPosition) - center) * factor + center;
         copyToGPU();
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::rotate(const Vector2f& center, float angle) noexcept {
+    void Sprite<IsColorable>::rotate(Vector2f const& center, float angle) noexcept {
         rotate(center, rotationMatrix<float>(angle));
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::rotate(const Vector2f& center, const Matrix2f& rotation) noexcept {
+    void Sprite<IsColorable>::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Vertex::position)) {
             Vector2f position = vertexPosition;
             Vector2f radius = position - center;
@@ -194,20 +230,14 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    std::array<typename Sprite<IsColorable>::Vertex, 4> Sprite<IsColorable>::makeVertexArray(void) noexcept {
-        if constexpr (IsColorable)
-            return {Vertex{{}, {}, {0.f, 0.f}}, Vertex{{}, {}, {0.f, 1.f}}, Vertex{{}, {}, {1.f, 1.f}}, Vertex{{}, {}, {1.f, 0.f}}};
-        else
-            return {Vertex{{}, {0.f, 0.f}}, Vertex{{}, {0.f, 1.f}}, Vertex{{}, {1.f, 1.f}}, Vertex{{}, {1.f, 0.f}}};
-    }
-
-    template <bool IsColorable>
-    void Sprite<IsColorable>::replaceTexture(const Texture<>& texture) {
+    void Sprite<IsColorable>::replaceTexture(Texture<> const& texture) {
         this->texture = texture;
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::setVerticesPoisition(const Vector2f& firstVertex, const Vector2f& dimmensions) noexcept {
+    void Sprite<IsColorable>::setVerticesPoisition(Vector2f const& firstVertex,
+        Vector2f const& dimmensions) noexcept
+    {
         vertices[0].position = firstVertex;
         vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
         vertices[2].position = firstVertex + dimmensions;
@@ -215,7 +245,9 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::setVerticesPoisition(const Vector2f& firstVertex, const Vector2f& secondVertex, const Vector2f& thirdVertex) noexcept {
+    void Sprite<IsColorable>::setVerticesPoisition(Vector2f const& firstVertex,
+        Vector2f const& secondVertex, Vector2f const& thirdVertex) noexcept
+    {
         vertices[0].position = firstVertex;
         vertices[1].position = secondVertex;
         vertices[2].position = thirdVertex + secondVertex - thirdVertex;

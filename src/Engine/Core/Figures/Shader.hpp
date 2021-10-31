@@ -9,16 +9,18 @@ namespace ge {
     class Shader {
     public:
         explicit Shader(std::string shaderPath);
-        Shader(const Shader& shader) noexcept = delete;
-        Shader(Shader&& shader) noexcept : shaderID{shader.shaderID} { shader.shaderID = 0; }
+        Shader(Shader const& shader) noexcept = delete;
+        Shader(Shader&& shader) noexcept
+            : shaderID{shader.shaderID} { shader.shaderID = 0; }
 
-        Shader& operator= (const Shader& shader) noexcept = delete;
+        Shader& operator= (Shader const& shader) noexcept = delete;
         Shader& operator= (Shader&& shader) noexcept;
 
-        const uint32_t& getShader(void) const noexcept { return shaderID; }
+        uint32_t const& getShader(void) const noexcept
+            { return shaderID; }
         ~Shader(void) noexcept;
     private:
-        uint32_t shaderID;
+        uint32_t                        shaderID;
 
         constexpr auto shaderType(void) const noexcept;
     };
@@ -26,7 +28,7 @@ namespace ge {
     template class Shader<true>;
     template class Shader<false>;
 
-    typedef Shader<true> VertexShader;
-    typedef Shader<false> FragmentShader;
+    typedef Shader<true>                VertexShader;
+    typedef Shader<false>               FragmentShader;
 
 }
