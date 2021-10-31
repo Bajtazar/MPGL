@@ -7,14 +7,14 @@ namespace ge {
     template <bool PolygonMode = false>
     class Triangle : public Shape {
     public:
-        Triangle(const Vector2f& firstVertex,   const Vector2f& secondVertex,
-                 const Vector2f& thirdVertex,   const Color& color = {}) noexcept;
-        Triangle(const Color& color = {}) noexcept;
+        Triangle(Vector2f const& firstVertex,   Vector2f const& secondVertex,
+                 Vector2f const& thirdVertex,   Color const& color = {}) noexcept;
+        Triangle(Color const& color = {}) noexcept;
 
-        Triangle(const Triangle& triangle) noexcept;
+        Triangle(Triangle const& triangle) noexcept;
         Triangle(Triangle&& triangle) noexcept;
 
-        Triangle& operator= (const Triangle& triangle) noexcept;
+        Triangle& operator= (Triangle const& triangle) noexcept;
         Triangle& operator= (Triangle&& triangle) noexcept;
 
         void draw(void) const noexcept final;
@@ -25,6 +25,7 @@ namespace ge {
     template class Triangle<true>;
     template class Triangle<false>;
 
-    typedef Triangle<true> PolygonTriangle;
+    typedef Triangle<true>      PolygonTriangle;
+    typedef Triangle<false>     DefaultTriangle;
 
 }

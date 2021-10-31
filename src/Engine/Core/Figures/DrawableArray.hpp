@@ -140,7 +140,7 @@ namespace ge {
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
-        void onScreenTransformation(const Vector2ui& oldDimmensions) noexcept final;
+        void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
 
         ~DrawableArrayBase(void) noexcept = default;
     private:

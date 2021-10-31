@@ -6,10 +6,10 @@ namespace ge {
 
     class Points : public Shape {
     public:
-        Points(std::size_t vertices, const Color& color) noexcept;
+        Points(std::size_t vertices, Color const& color) noexcept;
         Points(std::size_t vertices = 0) noexcept;
 
-        Points(const Points& points) noexcept;
+        Points(Points const& points) noexcept;
         Points(Points&& points) noexcept;
 
         Points& operator= (const Points& points) noexcept;
