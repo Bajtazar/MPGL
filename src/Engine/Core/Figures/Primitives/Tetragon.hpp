@@ -6,24 +6,24 @@
 
 namespace ge {
 
-    class Rectangle : public Shape {
+    class Tetragon : public Shape {
     public:
-        Rectangle(Color const& color) noexcept;
+        Tetragon(Color const& color) noexcept;
         // parallelogram
-        Rectangle(Vector2f const& firstVertex,      Vector2f const& secondVertex,
+        Tetragon(Vector2f const& firstVertex,      Vector2f const& secondVertex,
                   Vector2f const& thirdVertex,      Color const& color = {}) noexcept;
         // rectangle parallel to the x and y axis
-        Rectangle(Vector2f const& firstVertex,      Vector2f const& dimmensions,
+        Tetragon(Vector2f const& firstVertex,      Vector2f const& dimmensions,
                   Color const& color = {}) noexcept;
-        Rectangle(Rectangle const& rectangle) noexcept;
-        Rectangle(Rectangle&& rectangle) noexcept;
+        Tetragon(Tetragon const& rectangle) noexcept;
+        Tetragon(Tetragon&& rectangle) noexcept;
 
-        Rectangle& operator= (Rectangle const& rectangle) noexcept;
-        Rectangle& operator= (Rectangle&& rectangle) noexcept;
+        Tetragon& operator= (Tetragon const& rectangle) noexcept;
+        Tetragon& operator= (Tetragon&& rectangle) noexcept;
 
         void draw(void) const noexcept final;
 
-        ~Rectangle(void) noexcept;
+        ~Tetragon(void) noexcept;
     private:
         static const std::array<uint32_t, 6>        indexes;
 
