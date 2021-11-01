@@ -31,7 +31,7 @@ namespace ge {
             requires (Index < Rows)
         constexpr column_value_type&& get(void) && noexcept;
 
-        static consteval Matrix<T, Rows> identityMatrix(T diagonal = {1}, T nonDiagonal = {0}) noexcept;
+        static constexpr Matrix<T, Rows> identityMatrix(T diagonal = {1}, T nonDiagonal = {0}) noexcept;
 
         static consteval std::size_t size(void) noexcept { return Rows; }
 
@@ -328,21 +328,21 @@ namespace ge {
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
-    constexpr std::optional<MatVector<T, Rows>> luDecomposition(Matrix<T, Rows>& matrix) noexcept {
+    constexpr std::optional<MatVector<T, Rows>> lupDecomposition(Matrix<T, Rows>& matrix) noexcept {
         MatVector<T, Rows> permutations;
         std::iota(permutations.begin(), permutations.end(), 0);
-        for (std::size_t k = 0, kp; k < Rows; ++k) {
+        for (std::size_t k = 0, u; k < Rows; ++k) {
             T p{0};
             for (std::size_t i = k; i < Rows; ++i) {
                 if (T v = std::abs(matrix.getColumn(k)[i]); v > p) {
                     p = v;
-                    kp = i;
+                    u = i;
                 }
             }
             if (!p) return {};
-            std::swap(permutations[k], permutations[kp]);
-            for (std::size_t i = 0;i < Rows; ++i)
-                std::swap(matrix.getColumn(i)[k], matrix.getColumn(i)[kp]);
+            std::swap(permutations[k], permutations[u]);
+            for (std::size_t i = 0; i < Rows; ++i)
+                std::swap(matrix.getColumn(i)[k], matrix.getColumn(i)[u]);
             for (std::size_t i = k + 1; i < Rows; ++i) {
                 matrix.getColumn(k)[i] /= matrix.getColumn(k)[k];
                 for (std::size_t j = k + 1; j < Rows; ++j)
@@ -353,23 +353,25 @@ namespace ge {
     }
 
     template <Arithmetic T, std::size_t Rows>
-        requires (Rows > 1)
-    constexpr MatVector<T, Rows> lupSolve(const Matrix<T, Rows>& luMatrix, const MatVector<T, Rows>& permutations, const MatVector<T, Rows>& vector) noexcept {
-        MatVector<T, Rows> result;
-        MatVector<T, Rows> helper;
+    constexpr MatVector<T, Rows>
+        lupSolve(Matrix<T, Rows>& luMatrix,
+            MatVector<T, Rows> const& permutations,
+            MatVector<T, Rows> const& results) noexcept
+    {
+        MatVector<T, Rows> x, y;
         for (std::size_t i = 0; i < Rows; ++i) {
             T sum{0};
-            for (std::size_t j = 0;j < i - 1; ++j)
-                sum += luMatrix.getColumn(j)[i] * helper[j];
-            helper[i] = vector[permutations[i]] - sum;
+            for (std::size_t j = 0; j < i; ++j)
+                sum += luMatrix.getColumn(j)[i] * y[j];
+            y[i] = results[permutations[i]] - sum;
         }
         for (std::size_t i = Rows - 1; i < Rows; --i) {
             T sum{0};
             for (std::size_t j = i + 1; j < Rows; ++j)
-                sum += luMatrix.getColumn(j)[i] * result[j];
-            result[i] = (helper[i] - sum) / luMatrix.getColumn(i)[i];
+                sum += luMatrix.getColumn(j)[i] * x[j];
+            x[i] = (y[i] - sum) / luMatrix.getColumn(i)[i];
         }
-        return result;
+        return x;
     }
 
     template <Arithmetic T, std::size_t Rows>
@@ -377,11 +379,11 @@ namespace ge {
     template <typename U>
     constexpr std::optional<Matrix<U, Rows>> Matrix<T, Rows>::inverse(void) const noexcept {
         Matrix<U, Rows> luMatrix = *this;
-        auto idMatrix = Matrix<U, Rows>::identityMatrix();
-        if (auto permutations = luDecomposition(luMatrix)) {
+        auto identity = Matrix<U, Rows>::identityMatrix();
+        if (auto permutations = lupDecomposition(luMatrix)) {
             Matrix<U, Rows> inverseMatrix;
             for (std::size_t i = 0;i < Rows; ++i)
-                inverseMatrix.getColumn(i) = lupSolve(luMatrix, *permutations, idMatrix.getColumn(i));
+                inverseMatrix.getColumn(i) = lupSolve(luMatrix, *permutations, identity.getColumn(i));
             return { inverseMatrix };
         }
         return {};
@@ -389,7 +391,7 @@ namespace ge {
 
     template <Arithmetic T, std::size_t Rows>
         requires (Rows > 1)
-    consteval Matrix<T, Rows> Matrix<T, Rows>::identityMatrix(T diagonal, T nonDiagonal) noexcept {
+    constexpr Matrix<T, Rows> Matrix<T, Rows>::identityMatrix(T diagonal, T nonDiagonal) noexcept {
         Matrix<T, Rows> matrix;
         for (std::size_t i = 0;i < Rows; ++i)
             for (std::size_t j = 0;j < Rows; ++j)
