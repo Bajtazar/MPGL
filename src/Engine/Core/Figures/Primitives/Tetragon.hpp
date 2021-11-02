@@ -11,10 +11,10 @@ namespace ge {
         Tetragon(Color const& color) noexcept;
         // parallelogram
         Tetragon(Vector2f const& firstVertex,      Vector2f const& secondVertex,
-                  Vector2f const& thirdVertex,      Color const& color = {}) noexcept;
+                 Vector2f const& thirdVertex,      Color const& color = {}) noexcept;
         // rectangle parallel to the x and y axis
         Tetragon(Vector2f const& firstVertex,      Vector2f const& dimmensions,
-                  Color const& color = {}) noexcept;
+                 Color const& color = {}) noexcept;
         Tetragon(Tetragon const& rectangle) noexcept;
         Tetragon(Tetragon&& rectangle) noexcept;
 
@@ -25,7 +25,9 @@ namespace ge {
 
         ~Tetragon(void) noexcept;
     private:
-        static const std::array<uint32_t, 6>        indexes;
+        typedef std::array<uint32_t, 6>             Indexes;
+
+        static constexpr const Indexes              indexes{0, 1, 2, 0, 3, 2};
 
         uint32_t                                    elementArrayBuffer;
 

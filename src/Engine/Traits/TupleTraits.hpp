@@ -26,20 +26,16 @@ namespace ge {
                 return T{};
         }
 
-        template <typename T>
-        static constexpr std::tuple<typename std::remove_reference_t<T>>
-            tupleReverser(T&& arg) noexcept
-        {
-            return {std::forward<T>(arg)};
-        }
-
-        template <typename T, typename... Args>
-        static constexpr decltype(auto) tupleReverser(T&& arg, Args&&... args) noexcept {
-            return std::tuple_cat(tupleReverser<Args...>(std::forward<Args>(args)...),
-                tupleReverser<T>(std::forward<T>(arg)));
-        }
-
     };
+
+    template <typename... Args>
+    constexpr auto tupleReverser(Args&&... args) noexcept {
+        return []<std::size_t... I>(std::tuple<std::remove_reference_t<Args>...> tuple,
+                std::index_sequence<I...>)
+        {
+            return std::tuple{std::get<sizeof...(Args) - I - 1>(tuple)...};
+        }(std::tuple{std::forward<Args>(args)...}, std::make_index_sequence<sizeof...(Args)>{});
+    }
 
     template <std::constructible_from T, std::size_t Size>
     using UniformTuple = decltype(TupleHelperFn::tupleConstructor<T, Size>());
@@ -48,11 +44,6 @@ namespace ge {
     using TensorTuple = decltype(TupleHelperFn::tensorConstructor<T, Size, Dimmensions>());
 
     template <typename... Args>
-    using ReversedTuple = decltype(TupleHelperFn::tupleReverser<Args...>(std::declval<Args>()...));
-
-    template <typename... Args>
-    constexpr auto tupleReverser(Args&&... args) noexcept {
-        return TupleHelperFn::tupleReverser(std::forward<Args>(args)...);
-    }
+    using ReversedTuple = decltype(tupleReverser<Args...>(std::declval<Args>()...));
 
 }

@@ -3,8 +3,6 @@
 
 namespace ge {
 
-    const std::array<uint32_t, 6> Tetragon::indexes {0, 1, 2, 0, 3, 2};
-
     Tetragon::Tetragon(Color const& color) noexcept : Shape{4} {
         glGenBuffers(1, &elementArrayBuffer);
         for (auto& color_ : vertices | ge::views::color)

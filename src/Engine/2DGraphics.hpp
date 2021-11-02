@@ -7,6 +7,7 @@
 #include "Core/Figures/Primitives/Tetragon.hpp"
 #include "Core/Figures/Primitives/Circle.hpp"
 #include "Core/Figures/Primitives/Line.hpp"
+#include "Core/Figures/Primitives/Ellipse.hpp"
 #include "Core/Figures/Primitives/LineStrip.hpp"
 #include "Core/Figures/Primitives/Points.hpp"
 #include "Core/Figures/DrawableArray.hpp"

@@ -30,7 +30,8 @@ namespace ge {
             { glUseProgram(*shaderProgramID); }
 
         template <AllIntegrals... Ints>
-            requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0)
+            requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0
+                && !AllUnsignedIntegrals<Ints...>)
         inline void setUniform(std::string const& uniform,
             Ints... values) const noexcept;
 
@@ -79,7 +80,8 @@ namespace ge {
     }
 
     template <AllIntegrals... Ints>
-        requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0)
+        requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0
+            && !AllUnsignedIntegrals<Ints...>)
     inline void ShaderProgram::setUniform(std::string const& uniform,
         Ints... values) const noexcept
     {
@@ -128,9 +130,10 @@ namespace ge {
     inline void ShaderProgram::setUniform(std::string const& uniform,
         Vector<Tp, Size> const& vector) const noexcept
     {
-        std::apply([this, &uniform]<typename... Args>(Args&&... args) {
-            setUniform(uniform, std::forward<Args>(args)...);
-        }, vector);
+        [&]<std::size_t... Index>(std::index_sequence<Index...>) {
+            setUniform(uniform, std::get<Size - Index - 1>(
+                static_cast<UniformTuple<Tp, Size> const&>(vector))...);
+        }(std::make_index_sequence<Size>{});
     }
 
     inline void ShaderProgram::setUniform(std::string const& uniform,
@@ -144,12 +147,13 @@ namespace ge {
     inline void ShaderProgram::setUniform(std::string const& uniform,
         Matrix<float, Size> const& matrix) const noexcept
     {
+        float const* const memory = reinterpret_cast<float const* const>(&matrix);
         if constexpr (Size == 4)
-            glUniformMatrix4fv(location(uniform), 1, GL_FALSE, &matrix);
+            glUniformMatrix4fv(location(uniform), 1, GL_FALSE, memory);
         else if constexpr (Size == 3)
-            glUniformMatrix3fv(location(uniform), 1, GL_FALSE, &matrix);
+            glUniformMatrix3fv(location(uniform), 1, GL_FALSE, memory);
         else
-            glUniformMatrix2fv(location(uniform), 1, GL_FALSE, &matrix);
+            glUniformMatrix2fv(location(uniform), 1, GL_FALSE, memory);
     }
 
 }

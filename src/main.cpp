@@ -34,5 +34,8 @@ int main(void) noexcept {
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[3]);
     sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
 
+    window.emplaceDrawable<Ellipse>(200_x + 400_y, 40.f, Color::literals::Red);
+    window.emplaceDrawable<Ellipse>(200_x + 200_y, Vector2f{80.f, 100.f}, 20.f, Color::literals::Red);
+
     return window.windowLoop(Color{0.2f, 0.3f, 0.3f, 1.f});
 }
