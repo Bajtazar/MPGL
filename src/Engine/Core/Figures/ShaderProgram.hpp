@@ -26,8 +26,7 @@ namespace ge {
         operator bool() const noexcept
             { return *shaderProgramID != 0; }
 
-        inline void use(void) const noexcept
-            { glUseProgram(*shaderProgramID); }
+        inline void use(void) const noexcept;
 
         template <AllIntegrals... Ints>
             requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0
@@ -68,7 +67,16 @@ namespace ge {
         inline uint32_t location(std::string const& uniform) const noexcept;
 
         std::shared_ptr<uint32_t>           shaderProgramID;
+
+        static uint32_t                     lastProgramID;
     };
+
+    inline void ShaderProgram::use(void) const noexcept {
+        if (lastProgramID != *shaderProgramID) {
+            glUseProgram(*shaderProgramID);
+            lastProgramID = *shaderProgramID;
+        }
+    }
 
     template <bool Type>
     void ShaderProgram::attachShader(Shader<Type> const& shader) const noexcept {

@@ -4,10 +4,9 @@ namespace ge {
 
     template <bool IsMonochromatic>
         GlyphSprite<IsMonochromatic>::Vertices
-    GlyphSprite<IsMonochromatic>::makeVertexArray(Color const& color) noexcept
+    GlyphSprite<IsMonochromatic>::makeVertexArray([[maybe_unused]]Color const& color) noexcept
     {
         if constexpr (IsMonochromatic) {
-            GlyphBase<IsMonochromatic>::color = color;
             return {Vertex{{}, {0.f, 0.f}}, Vertex{{}, {0.f, 1.f}},
                 Vertex{{}, {1.f, 1.f}}, Vertex{{}, {1.f, 0.f}}};
         } else
@@ -53,10 +52,7 @@ namespace ge {
     GlyphSprite<IsMonochromatic>::GlyphSprite(GlyphSprite const& sprite) noexcept
         :  GlyphSprite{sprite.texture}
     {
-        shaderProgram = sprite.shaderProgram;
         std::ranges::copy(sprite, begin());
-        if constexpr (IsMonochromatic)
-            GlyphBase<IsMonochromatic>::color = sprite.color;
     }
 
     template <bool IsMonochromatic>
@@ -67,22 +63,16 @@ namespace ge {
         vertexArrayObject = sprite.vertexArrayObject;
         vertexBuffer = sprite.vertexBuffer;
         elementArrayBuffer = sprite.elementArrayBuffer;
-        shaderProgram = std::move(sprite.shaderProgram);
         sprite.vertexArrayObject = 0;
         sprite.vertexBuffer = 0;
         sprite.elementArrayBuffer = 0;
-        if constexpr (IsMonochromatic)
-            GlyphBase<IsMonochromatic>::color = sprite.color;
     }
 
     template <bool IsMonochromatic>
     GlyphSprite<IsMonochromatic>& GlyphSprite<IsMonochromatic>::operator=(
         GlyphSprite const& sprite) noexcept
     {
-        shaderProgram = sprite.shaderProgram;
         std::ranges::copy(sprite, begin());
-        if constexpr (IsMonochromatic)
-            GlyphBase<IsMonochromatic>::color = sprite.color;
         return *this;
     }
 
@@ -93,41 +83,17 @@ namespace ge {
         this->~GlyphSprite();
         vertexArrayObject = sprite.vertexArrayObject;
         vertexBuffer = sprite.vertexBuffer;
-        shaderProgram = std::move(sprite.shaderProgram);
         elementArrayBuffer = sprite.elementArrayBuffer;
         sprite.vertexArrayObject = 0;
         sprite.vertexBuffer = 0;
         sprite.elementArrayBuffer = 0;
-        if constexpr (IsMonochromatic)
-            GlyphBase<IsMonochromatic>::color = sprite.color;
         return *this;
     }
 
     template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::setColor(Color const& color) noexcept
-    {
-        if constexpr (IsMonochromatic)
-            GlyphBase<IsMonochromatic>::color = color;
-        else {
-            std::ranges::for_each(vertices, [&color](auto& vertex){ vertex.color = color; });
-            copyToGPU();
-        }
-    }
-
-
-    template <bool IsMonochromatic>
-    Color const& GlyphSprite<IsMonochromatic>::getColor(void) const noexcept
-        requires IsMonochromatic
-    {
-        return GlyphBase<IsMonochromatic>::color;
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::setShaders(ShaderLibrary const& library) noexcept {
-        if constexpr (IsMonochromatic)
-            shaderProgram = library["2DMonoGlyph"];
-        else
-            shaderProgram = library["2DPoliGlyph"];
+    void GlyphSprite<IsMonochromatic>::setColor(Color const& color) noexcept requires (!IsMonochromatic) {
+        std::ranges::for_each(vertices, [&color](auto& vertex){ vertex.color = color; });
+        copyToGPU();
     }
 
     template <bool IsMonochromatic>
@@ -170,10 +136,6 @@ namespace ge {
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::draw(void) const noexcept {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        shaderProgram.use();
-        shaderProgram.setUniform("tex", 0);
-        if constexpr (IsMonochromatic)
-            shaderProgram.setUniform("color", GlyphBase<IsMonochromatic>::color);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTexture());
         glBindVertexArray(vertexArrayObject);

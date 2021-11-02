@@ -127,6 +127,7 @@ namespace ge {
             shaderProgram = library["2DCTexture"];
         else
             shaderProgram = library["2DTexture"];
+        shaderProgram.setUniform("tex", 0);
     }
 
     template <bool IsColorable>
@@ -172,7 +173,6 @@ namespace ge {
     void Sprite<IsColorable>::draw(void) const noexcept {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
-        shaderProgram.setUniform("tex", 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTexture());
         glBindVertexArray(vertexArrayObject);

@@ -9,7 +9,7 @@ namespace ge {
         Vector2f const& position, std::string const& text,
         Color const& color, Font::Type const& type)
             : text{text}, color{color}, position{position},
-            size{size}, angle{0.f}, font{font}, library{nullptr}, type{type}
+            size{size}, angle{0.f}, font{font}, type{type}
     {
         drawGlyphs(parseString(text));
     }
@@ -68,8 +68,12 @@ namespace ge {
 
     template <bool isPolichromatic>
     void Text<isPolichromatic>::setShaders(ShaderLibrary const& library) noexcept {
-        this->library = &library;
-        std::ranges::for_each(glyphs, [&library](auto& glyph) { glyph.setShaders(library); });
+        if constexpr (isPolichromatic)
+            shaderProgram = library["2DPoliGlyph"];
+        else
+            shaderProgram = library["2DMonoGlyph"];
+        shaderProgram.use();
+        shaderProgram.setUniform("tex", 0);
     }
 
     template <bool isPolichromatic>
@@ -79,6 +83,9 @@ namespace ge {
 
     template <bool isPolichromatic>
     void Text<isPolichromatic>::draw(void) const noexcept {
+        shaderProgram.use();
+        if constexpr (!isPolichromatic)
+            shaderProgram.setUniform("color", color);
         std::ranges::for_each(glyphs, [](auto const& glyph) { glyph.draw(); });
     }
 
@@ -105,16 +112,9 @@ namespace ge {
     }
 
     template <bool isPolichromatic>
-    void Text<isPolichromatic>::setShadersIfLibrary(void) noexcept {
-        if (library)
-            std::ranges::for_each(glyphs, [this](auto& glyph) { glyph.setShaders(*library); });
-    }
-
-    template <bool isPolichromatic>
     Text<isPolichromatic>& Text<isPolichromatic>::operator+= (std::string const& left) {
         text += left;
         drawGlyphs(parseString(left));
-        setShadersIfLibrary();
         copyToGPU();
         return *this;
     }
@@ -132,7 +132,6 @@ namespace ge {
         position = getPosition();
         glyphs.clear();
         drawGlyphs(parseString(text));
-        setShadersIfLibrary();
         copyToGPU();
     }
 
@@ -168,7 +167,6 @@ namespace ge {
     template <bool isPolichromatic>
     void  Text<isPolichromatic>::setColor(Color const& color) {
         this->color = color;
-        std::ranges::for_each(glyphs, [&color](auto& glyph){ glyph.setColor(color); });
     }
 
     template <bool isPolichromatic>

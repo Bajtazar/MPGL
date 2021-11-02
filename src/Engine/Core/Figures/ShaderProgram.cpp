@@ -5,6 +5,8 @@
 
 namespace ge {
 
+    uint32_t ShaderProgram::lastProgramID = 0u;
+
     ShaderProgram::ShaderProgram(void) noexcept : shaderProgramID{
         new uint32_t{0}, ProgramDeleter{}} {}
 

@@ -76,16 +76,9 @@ namespace ge {
         }
     };
 
-    struct MonochromaticBase { Color color; };
-
-    template <bool IsMonochromatic>
-    using GlyphBase = std::conditional_t<IsMonochromatic,
-        MonochromaticBase, std::monostate>;
-
     // custom texture allocators will be add
     template <bool IsMonochromatic>
-    class GlyphSprite : public Drawable, public Transformable2D,
-        private GlyphBase<IsMonochromatic> {
+    class GlyphSprite : public Transformable2D, private GraphicalObject {
     public:
         using Vertex = std::conditional_t<IsMonochromatic, MonochromaticFontVertex,
             PolichromaticFontVertex>;
@@ -109,9 +102,9 @@ namespace ge {
         GlyphSprite& operator= (GlyphSprite const& sprite) noexcept;
         GlyphSprite& operator= (GlyphSprite&& sprite) noexcept;
 
-        void setShaders(ShaderLibrary const& library) noexcept final;
-        void copyToGPU(void) const noexcept final;
-        void draw(void) const noexcept final;
+        //void setShaders(ShaderLibrary const& library) noexcept final;
+        void copyToGPU(void) const noexcept;
+        void draw(void) const noexcept;
 
         void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
@@ -122,6 +115,8 @@ namespace ge {
         Vertex& operator[] (std::size_t index) noexcept { return vertices[index]; }
         const Vertex& operator[] (std::size_t index) const noexcept { return vertices[index]; }
 
+        void setColor(Color const& color = {}) noexcept requires (!IsMonochromatic);
+
         consteval std::size_t size(void) const noexcept { return 4; }
 
         using iterator = typename Vertices::iterator;
@@ -131,9 +126,6 @@ namespace ge {
 
         iterator begin(void) noexcept { return vertices.begin(); }
         iterator end(void) noexcept { return vertices.end(); }
-
-        void setColor(Color const& color = {}) noexcept;
-        Color const& getColor(void) const noexcept requires IsMonochromatic;
 
         const_iterator begin(void) const noexcept { return vertices.begin(); }
         const_iterator end(void) const noexcept { return vertices.end(); }
@@ -154,7 +146,6 @@ namespace ge {
     private:
         Vertices                            vertices;
         GlyphTexture                        texture;
-        ShaderProgram                       shaderProgram;
         uint32_t                            elementArrayBuffer;
         uint32_t                            vertexBuffer;
         uint32_t                            vertexArrayObject;

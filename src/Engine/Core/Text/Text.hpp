@@ -222,12 +222,12 @@ namespace ge {
 
         std::string                 text;
         GlyphsArray                 glyphs;
+        ShaderProgram               shaderProgram;
         Color                       color;
         Vector2f                    position;
         std::size_t                 size;
         float                       angle;
         FontRef                     font;
-        ShaderLibrary const*        library;
         Font::Type                  type;
 
         uint8_t getLevel(void) const;
@@ -240,8 +240,6 @@ namespace ge {
         void drawGlyphs(IDArray const& array);
 
         void redrawGlyphs(void);
-
-        void setShadersIfLibrary(void) noexcept;
 
         ArgTuple getArgs(void) const noexcept;
     };
