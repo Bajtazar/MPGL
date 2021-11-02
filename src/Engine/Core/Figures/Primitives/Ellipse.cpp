@@ -170,6 +170,17 @@ namespace ge {
         recalculateUniforms();
     }
 
+    Vector2f Ellipse::getCenter(void) const noexcept {
+        return (Vector2f{vertices[3]} + Vector2f{vertices[1]}) / 2.f;
+    }
+
+    Vector2f Ellipse::getSemiAxis(void) const noexcept {
+        return {
+            (Vector2f{vertices[1]} - Vector2f{vertices[0]}).length(),
+            (Vector2f{vertices[3]} - Vector2f{vertices[0]}).length()
+        };
+    }
+
     void Ellipse::draw(void) const noexcept {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();

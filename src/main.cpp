@@ -8,9 +8,9 @@ int main(void) noexcept {
     Window window{640_x + 480_y, "Hello World!"};
     window.setFPSLimit(140);
 
-    window.emplaceDrawable<Circle>(400_x + 200_y, 100.f, ge::Color::literals::Yellow);
+    window.emplaceDrawable<Polygon>(400_x + 200_y, 100.f, 10, ge::Color::literals::Yellow);
 
-    Circle& circle = dynamic_cast<Circle&>(*window[0]);
+    Polygon& circle = dynamic_cast<Polygon&>(*window[0]);
     auto iter = 0.;
     for (auto& color : circle | std::views::drop(1) | ge::views::color) {
         color = ge::Color(std::sin(iter), std::cos(iter), -std::sin(iter), 0.f);

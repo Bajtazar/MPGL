@@ -5,7 +5,7 @@
 #include "Core/Figures/Sprite.hpp"
 #include "Core/Figures/Primitives/Triangle.hpp"
 #include "Core/Figures/Primitives/Tetragon.hpp"
-#include "Core/Figures/Primitives/Circle.hpp"
+#include "Core/Figures/Primitives/Polygon.hpp"
 #include "Core/Figures/Primitives/Line.hpp"
 #include "Core/Figures/Primitives/Ellipse.hpp"
 #include "Core/Figures/Primitives/LineStrip.hpp"

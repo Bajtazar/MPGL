@@ -1,4 +1,4 @@
-#include "Circle.hpp"
+#include "Polygon.hpp"
 
 #include "../../../Mathematics/Systems.hpp"
 
@@ -7,8 +7,8 @@
 
 namespace ge {
 
-    Circle::Circle(Vector2f const& center, float radius, Color const& color,
-        std::size_t segments) noexcept : Shape{segments + 1}, center{center}
+    Polygon::Polygon(Vector2f const& center, float radius, std::size_t segments,
+        Color const& color) noexcept : Shape{segments + 1}, center{center}
     {
         float increment = 2.f * std::numbers::pi_v<float> / (segments - 1), angle = 0.f;
         vertices.front().position = center;
@@ -20,7 +20,7 @@ namespace ge {
             color_ = color;
     }
 
-    Circle::Circle(Circle const& circle) noexcept
+    Polygon::Polygon(Polygon const& circle) noexcept
         : Shape{circle.vertices.size()}, center{circle.center}
     {
         shaderProgram = circle.shaderProgram;
@@ -29,7 +29,7 @@ namespace ge {
         std::ranges::copy(circle, std::back_inserter(vertices));
     }
 
-    Circle& Circle::operator= (Circle const& circle) noexcept
+    Polygon& Polygon::operator= (Polygon const& circle) noexcept
     {
         shaderProgram = circle.shaderProgram;
         vertices.clear();
@@ -39,7 +39,7 @@ namespace ge {
     }
 
 
-    Circle::Circle(Circle&& circle) noexcept
+    Polygon::Polygon(Polygon&& circle) noexcept
         : Shape{std::move(circle.vertices)}, center{std::move(circle.center)}
     {
         vertexArrayObject = circle.vertexArrayObject;
@@ -49,7 +49,7 @@ namespace ge {
         circle.vertexBuffer = 0;
     }
 
-    Circle& Circle::operator= (Circle&& circle) noexcept {
+    Polygon& Polygon::operator= (Polygon&& circle) noexcept {
         glDeleteBuffers(1, &vertexBuffer);
         glDeleteVertexArrays(1, &vertexArrayObject);
         vertexArrayObject = circle.vertexArrayObject;
@@ -60,7 +60,7 @@ namespace ge {
         return *this;
     }
 
-    void Circle::draw(void) const noexcept {
+    void Polygon::draw(void) const noexcept {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
         glBindVertexArray(vertexArrayObject);

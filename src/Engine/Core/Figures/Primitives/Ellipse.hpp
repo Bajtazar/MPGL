@@ -29,14 +29,11 @@ namespace ge {
         void rotate(Vector2f const& center, float angle) noexcept final;
         void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
 
-        //Vector2f getCenter(void) const noexcept;
-        //Vector2f getSemiAxis(void) const noexcept;
+        Vector2f getCenter(void) const noexcept;
+        Vector2f getSemiAxis(void) const noexcept;
 
         void setColor(Color const& color = {}) noexcept
-            { this->color = color;
-                if (shaderProgram)
-                    shaderProgram.setUniform("color", color);
-            }
+            { this->color = color; }
         Color const& getColor(void) const noexcept
             { return color; }
 
