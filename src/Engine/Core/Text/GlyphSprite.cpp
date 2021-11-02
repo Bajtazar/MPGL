@@ -106,11 +106,9 @@ namespace ge {
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::setColor(Color const& color) noexcept
     {
-        if constexpr (IsMonochromatic) {
+        if constexpr (IsMonochromatic)
             GlyphBase<IsMonochromatic>::color = color;
-            if (shaderProgram)
-                shaderProgram.setUniform("color", color);
-        } else {
+        else {
             std::ranges::for_each(vertices, [&color](auto& vertex){ vertex.color = color; });
             copyToGPU();
         }
@@ -130,10 +128,6 @@ namespace ge {
             shaderProgram = library["2DMonoGlyph"];
         else
             shaderProgram = library["2DPoliGlyph"];
-        shaderProgram.use();
-        shaderProgram.setUniform("tex", 0);
-        if constexpr (IsMonochromatic)
-            shaderProgram.setUniform("color", GlyphBase<IsMonochromatic>::color);
     }
 
     template <bool IsMonochromatic>
@@ -177,6 +171,9 @@ namespace ge {
     void GlyphSprite<IsMonochromatic>::draw(void) const noexcept {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
+        shaderProgram.setUniform("tex", 0);
+        if constexpr (IsMonochromatic)
+            shaderProgram.setUniform("color", GlyphBase<IsMonochromatic>::color);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTexture());
         glBindVertexArray(vertexArrayObject);
