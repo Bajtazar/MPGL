@@ -18,7 +18,7 @@ namespace ge {
         template <bool Type>
         void attachShader(Shader<Type> const& shader) const noexcept;
 
-        void link(void) const;
+        void link(std::string const& programName = {}) const;
 
         bool exist(void) const noexcept
             { return *shaderProgramID != 0; }

@@ -102,7 +102,6 @@ namespace ge {
         GlyphSprite& operator= (GlyphSprite const& sprite) noexcept;
         GlyphSprite& operator= (GlyphSprite&& sprite) noexcept;
 
-        //void setShaders(ShaderLibrary const& library) noexcept final;
         void copyToGPU(void) const noexcept;
         void draw(void) const noexcept;
 

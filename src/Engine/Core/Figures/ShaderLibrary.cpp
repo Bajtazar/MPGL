@@ -10,11 +10,11 @@
 namespace ge {
 
     ShaderLibrary::ShaderLibrary(void) {
-        for (const std::string& shader : getShaderList()) {
+        for (std::string const& shader : getShaderList()) {
             VertexShader vertex{"shaders/Vertex/" + shader};
             FragmentShader fragment{"shaders/Fragment/" + shader};
             ShaderProgram program{vertex, fragment};
-            program.link();
+            program.link(shader);
             programs.emplace(shader.substr(0, shader.find('.')), std::move(program));
         }
     }

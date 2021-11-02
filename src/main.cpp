@@ -6,7 +6,7 @@ using namespace ge;
 
 int main(void) noexcept {
     Window window{640_x + 480_y, "Hello World!"};
-    //window.setFPSLimit(140);
+    window.setFPSLimit(140);
 
     window.emplaceDrawable<Polygon>(400_x + 200_y, 100.f, 10, ge::Color::literals::Yellow);
 

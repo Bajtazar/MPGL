@@ -23,10 +23,10 @@ namespace ge {
         delete ptr;
     }
 
-    void ShaderProgram::link(void) const {
+    void ShaderProgram::link(std::string const& programName) const {
         glLinkProgram(*shaderProgramID);
         Logger::checkCompilationStatus<ShaderProgramLinkingException>(
-            *shaderProgramID, GL_LINK_STATUS, "ShaderProgram");
+            *shaderProgramID, GL_LINK_STATUS, "Shader Program][" + programName);
     }
 
 }

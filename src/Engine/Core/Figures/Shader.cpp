@@ -26,7 +26,7 @@ namespace ge {
             glShaderSource(shaderID, 1, &codePointer, nullptr);
             glCompileShader(shaderID);
             Logger::checkCompilationStatus<ShaderCompilationException>(
-                shaderID, GL_COMPILE_STATUS, "Shader compiler");
+                shaderID, GL_COMPILE_STATUS, "Shader compiler][" + shaderPath);
         } else
             throw ShaderCompilationException{"Shader cannot be loaded from a file"};
     }
