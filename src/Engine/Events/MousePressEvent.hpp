@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../IO/Devices/Mouse.hpp"
+#include "Event.hpp"
 
 namespace ge {
 
-    struct MousePressEvent {
+    struct MousePressEvent : public EventBase {
         explicit MousePressEvent(void) noexcept = default;
 
         virtual void onMousePressEvent(MouseButton const& button) = 0;

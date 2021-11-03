@@ -2,9 +2,11 @@
 
 #include <string>
 
+#include "Event.hpp"
+
 namespace ge {
 
-    struct TextWriteEvent {
+    struct TextWriteEvent : public EventBase {
         explicit TextWriteEvent(void) noexcept = default;
 
         virtual void onTextWirteEvent(std::string const& unicodeString) = 0;

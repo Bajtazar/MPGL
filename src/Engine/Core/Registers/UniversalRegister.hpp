@@ -7,14 +7,16 @@
 
 #include "RegisterInterface.hpp"
 
+#include "../../Events/Event.hpp"
+
 namespace ge {
 
-    template <class T, typename Signature, Signature Method>
+    template <Event T, typename Signature, Signature Method>
     class UniversalRegister : public RegisterInterface {
         UniversalRegister(void) noexcept = delete;
     };
 
-    template <class T, typename... Args, void(T::*EventMethod)(Args...)>
+    template <Event T, typename... Args, void(T::*EventMethod)(Args...)>
     class UniversalRegister<T, void(T::*)(Args...), EventMethod>
         : public RegisterInterface
     {
@@ -62,7 +64,7 @@ namespace ge {
         Storage                             storage;
     };
 
-    template <class T, typename... Args, void(T::*EventMethod)(Args...)>
+    template <Event T, typename... Args, void(T::*EventMethod)(Args...)>
     void UniversalRegister<T, void(T::*)(Args...), EventMethod>::onEvent(Args&&... args) {
         std::ranges::for_each(storage, [...args = std::forward<Args>(args)]
             (auto& event){ (event.get()->*EventMethod)(args...); });

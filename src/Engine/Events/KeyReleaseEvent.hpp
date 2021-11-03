@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../IO/Devices/Keyboard.hpp"
+#include "Event.hpp"
 
 namespace ge {
 
-    struct KeyReleaseEvent {
+    struct KeyReleaseEvent : public EventBase {
         explicit KeyReleaseEvent(void) noexcept = default;
 
         virtual void onKeyReleaseEvent(Key const& key) noexcept = 0;
