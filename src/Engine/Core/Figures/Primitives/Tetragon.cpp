@@ -80,7 +80,6 @@ namespace ge {
     }
 
     void Tetragon::draw(void) const noexcept {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
         glBindVertexArray(vertexArrayObject);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

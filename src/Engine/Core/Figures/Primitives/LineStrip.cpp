@@ -59,7 +59,6 @@ namespace ge {
     }
 
     void LineStrip::draw(void) const noexcept {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_LINE_STRIP, 0,  vertices.size());

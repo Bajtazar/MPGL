@@ -171,7 +171,6 @@ namespace ge {
 
     template <bool IsColorable>
     void Sprite<IsColorable>::draw(void) const noexcept {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTexture());

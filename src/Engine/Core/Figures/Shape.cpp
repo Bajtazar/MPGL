@@ -4,8 +4,7 @@
 namespace ge {
 
     Shape::Shape(size_t size) noexcept : vertices{size, Vertex{{}, {}}} {
-        glGenVertexArrays(1, &vertexArrayObject);
-        glGenBuffers(1, &vertexBuffer);
+        generateBuffers();
     }
 
     Shape::Shape(std::vector<Vertex> vertices) noexcept
@@ -13,6 +12,11 @@ namespace ge {
 
     void Shape::setShaders(ShaderLibrary const& shaderLibrary) noexcept {
         shaderProgram = shaderLibrary["2DDefault"];
+    }
+
+    void Shape::generateBuffers(void) noexcept {
+        glGenVertexArrays(1, &vertexArrayObject);
+        glGenBuffers(1, &vertexBuffer);
     }
 
     void Shape::copyToGPU(void) const noexcept {

@@ -182,7 +182,6 @@ namespace ge {
     }
 
     void Ellipse::draw(void) const noexcept {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
         shaderProgram.setUniform("color", color);
         shaderProgram.setUniform("shift", Vector2f{vertices.front()});

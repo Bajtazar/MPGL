@@ -103,6 +103,7 @@ namespace ge {
         virtual void bindBuffers(void) const noexcept;
         virtual void unbindBuffers(void) const noexcept;
         void copyBuffersToGPU(void) const noexcept;
+        void generateBuffers(void) noexcept;
 
         std::vector<Vertex>                 vertices;
         ShaderProgram                       shaderProgram;

@@ -25,10 +25,10 @@ int main(void) noexcept {
 
     window.emplaceDrawable<Text<>>(font, 18, 20_x + 300_y, "Witaj świecie!");
 
-    window.emplaceDrawable<DrawableCollection<Triangle<true>>>();
-    auto& array = dynamic_cast<DrawableCollection<Triangle<true>>&>(*window[2]);
-    array.emplace_back(400_x + 400_y, 300_x + 300_y, 400_x + 300_y, Color::literals::White);
-    array.emplace_back(200_x + 200_y, 200_x + 300_y, 300_x + 200_y, Color::literals::Green);
+    window.emplaceDrawable<DrawableCollection<LineStrip>>();
+    auto& array = dynamic_cast<DrawableCollection<LineStrip>&>(*window[2]);
+    array.emplace_back(Color::literals::White, 400_x + 400_y, 300_x + 300_y, 400_x + 300_y);
+    array.emplace_back(Color::literals::Green, 200_x + 200_y, 200_x + 300_y, 300_x + 200_y);
 
     window.emplaceDrawable<DefaultSprite>(pack["pad.jpeg"], 100_x + 100_y, 100_x + 100_y);
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[3]);

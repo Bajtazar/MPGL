@@ -4,7 +4,6 @@
 
 namespace ge {
 
-    template <bool PolygonMode = false>
     class Triangle : public Shape {
     public:
         Triangle(Vector2f const& firstVertex,   Vector2f const& secondVertex,
@@ -21,11 +20,5 @@ namespace ge {
 
         ~Triangle(void) noexcept = default;
     };
-
-    template class Triangle<true>;
-    template class Triangle<false>;
-
-    typedef Triangle<true>      PolygonTriangle;
-    typedef Triangle<false>     DefaultTriangle;
 
 }

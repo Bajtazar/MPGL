@@ -58,7 +58,6 @@ namespace ge {
     }
 
     void Points::draw(void) const noexcept {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shaderProgram.use();
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_POINTS, 0,  vertices.size());
