@@ -4,7 +4,9 @@
 
 namespace ge {
 
-    struct EventBase {};
+    struct EventBase {
+        virtual ~EventBase(void) noexcept = default;
+    };
 
     template <typename T>
     concept Event = std::derived_from<T, EventBase>;

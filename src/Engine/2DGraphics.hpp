@@ -10,7 +10,7 @@
 #include "Core/Figures/Primitives/Ellipse.hpp"
 #include "Core/Figures/Primitives/LineStrip.hpp"
 #include "Core/Figures/Primitives/Points.hpp"
-#include "Core/Figures/DrawableArray.hpp"
+#include "Core/Figures/DrawableCollection.hpp"
 #include "Core/Figures/Views.hpp"
 #include "Core/TextureLoader.hpp"
 #include "Core/Text/UTF-8.hpp"
