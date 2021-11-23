@@ -101,4 +101,8 @@ namespace ge {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
+    WindowInterface::~WindowInterface(void) noexcept {
+        glfwDestroyWindow(window);
+    }
+
 }

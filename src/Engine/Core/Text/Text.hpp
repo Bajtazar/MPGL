@@ -2,6 +2,7 @@
 
 #include "Font.hpp"
 #include "GlyphSprite.hpp"
+#include "../Figures/Shadeable.hpp"
 
 namespace ge {
 
@@ -128,8 +129,8 @@ namespace ge {
         glyph_iter                       iter;
     };
 
-    template <bool isPolichromatic = false>
-    class Text : public Drawable, public Transformable2D {
+    template <bool IsPolichromatic = false>
+    class Text : public Drawable, public Shadeable, public Transformable2D {
     public:
         typedef std::shared_ptr<Vector2ui>      ScenePtr;
 
@@ -166,7 +167,6 @@ namespace ge {
         Vector2f getPosition(void) const noexcept;
         float getAngle(void) const noexcept { return angle; }
 
-        void setShaders(ShaderLibrary const& library) noexcept final;
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
@@ -213,16 +213,17 @@ namespace ge {
 
         ~Text(void) noexcept = default;
     private:
-        typedef GlyphSprite<!isPolichromatic>       FontGlyph;
+        typedef GlyphSprite<!IsPolichromatic>       FontGlyph;
         typedef std::vector<FontGlyph>              GlyphsArray;
         typedef std::vector<uint16_t>               IDArray;
         typedef std::reference_wrapper<Font>        FontRef;
-        typedef std::tuple<uint8_t, float, Matrix<float, 2>>
-                                                    ArgTuple;
+        typedef std::tuple<uint8_t, float,
+            Matrix<float, 2>>                       ArgTuple;
+        typedef typename ShadersContext::ProgramPtr ProgramPtr;
+        typedef typename ShadersContext::Executable Executable;
 
         std::string                 text;
         GlyphsArray                 glyphs;
-        ShaderProgram               shaderProgram;
         Color                       color;
         Vector2f                    position;
         std::size_t                 size;
@@ -236,13 +237,23 @@ namespace ge {
 
         void drawGlyph(Subfont& subfont, uint8_t level, float scale,
             uint16_t const& index, Matrix<float, 2> const& rotation);
-
         void drawGlyphs(IDArray const& array);
-
         void redrawGlyphs(void);
 
         ArgTuple getArgs(void) const noexcept;
+
+        static constexpr std::string shaderType(void) noexcept;
+
+        static const Executable     shaderExec;
     };
+
+    template <bool IsPolichromatic>
+    constexpr std::string Text<IsPolichromatic>::shaderType(void) noexcept {
+        if constexpr (IsPolichromatic)
+            return "2DPoliGlyph";
+        else
+            return "2DMonoGlyph";
+    }
 
     template class Text<true>;
     template class Text<false>;

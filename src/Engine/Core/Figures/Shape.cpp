@@ -3,20 +3,23 @@
 
 namespace ge {
 
-    Shape::Shape(size_t size) noexcept : vertices{size, Vertex{{}, {}}} {
+    Shape::Shape(size_t size) noexcept : vertices{size, Vertex{{}, {}}},
+        Shadeable{"2DDefault"}
+    {
         generateBuffers();
     }
 
     Shape::Shape(std::vector<Vertex> vertices) noexcept
         : vertices{std::move(vertices)} {}
 
-    void Shape::setShaders(ShaderLibrary const& shaderLibrary) noexcept {
-        shaderProgram = shaderLibrary["2DDefault"];
-    }
-
     void Shape::generateBuffers(void) noexcept {
         glGenVertexArrays(1, &vertexArrayObject);
         glGenBuffers(1, &vertexBuffer);
+    }
+
+    void Shape::initialize(void) noexcept {
+        generateBuffers();
+        setShader("2DDefault");
     }
 
     void Shape::copyToGPU(void) const noexcept {

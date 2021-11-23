@@ -9,17 +9,20 @@ namespace ge {
     Window::Window(Vector2ui const& dimmensions,
         std::string const& title, Options options, GLFWmonitor* monitor,
         GLFWwindow* share)
-        : WindowInterface{dimmensions, title, options, monitor, share},
-        sleepTime{0us}, lastTime{0us}
+            : WindowInterface{dimmensions, title, options, monitor, share},
+            sleepTime{0us}, lastTime{0us}
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        context.shaders.setLibrary(shaders,
+            reinterpret_cast<void*>(this));
     }
 
-    void Window::setDrawablesShaders(void) noexcept {
-        std::ranges::for_each(drawables, [this](auto& drawable)
-            { drawable->setShaders(this->shaders); });
+    void Window::setContextWindow(void) noexcept {
+        WindowInterface::setContextWindow();
+        context.shaders.setLibrary(shaders,
+            reinterpret_cast<void*>(this));
     }
 
     void Window::copyDrawablesToGPU(void) const noexcept {
@@ -57,7 +60,6 @@ namespace ge {
     }
 
     int32_t Window::windowLoop(const Color& background) noexcept {
-        setDrawablesShaders();
         copyDrawablesToGPU();
         while (!shouldWindowClose()) {
             clear(background);
@@ -66,6 +68,11 @@ namespace ge {
             draw();
         }
         return 0;
+    }
+
+    Window::~Window(void) noexcept {
+        context.shaders.removeLibrary(
+            reinterpret_cast<void*>(this));
     }
 
 }

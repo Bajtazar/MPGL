@@ -144,4 +144,28 @@ namespace ge {
     template <typename Signature, auto Method>
     concept SameSignatures = std::same_as<Signature, decltype(Method)>;
 
+    template <class... Classes>
+    concept NothrowCopyConstructible = (
+        std::is_nothrow_copy_constructible_v<Classes> &&
+        ...
+    );
+
+    template <class... Classes>
+    concept NothrowMoveConstructible = (
+        std::is_nothrow_move_constructible_v<Classes> &&
+        ...
+    );
+
+    template <class... Classes>
+    concept NothrowCopyAssignable = (
+        std::is_nothrow_copy_assignable_v<Classes> &&
+        ...
+    );
+
+    template <class... Classes>
+    concept NothrowMoveAssignable = (
+        std::is_nothrow_move_assignable_v<Classes> &&
+        ...
+    );
+
 }

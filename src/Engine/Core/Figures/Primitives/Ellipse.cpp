@@ -38,7 +38,7 @@ namespace ge {
 
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
         float angle, Color const& color) noexcept
-            : vertices{ellipseVertices(center, semiAxis, angle)},
+            : Shadeable{"2DEllipse"}, vertices{ellipseVertices(center, semiAxis, angle)},
             color{color}
     {
         generateBuffers();
@@ -47,7 +47,7 @@ namespace ge {
 
     Ellipse::Ellipse(Vector2f const& center, float radius,
         Color const& color) noexcept
-            : vertices{circleVertices(center, radius)}, color{color}
+            : Shadeable{"2DEllipse"}, vertices{circleVertices(center, radius)}, color{color}
     {
         generateBuffers();
         recalculateUniforms();
@@ -55,15 +55,15 @@ namespace ge {
 
     Ellipse::Ellipse(Ellipse const& ellipse) noexcept
         : vertices{ellipse.vertices}, transform{ellipse.transform},
-        color{ellipse.color},
-        shaderProgram{ellipse.shaderProgram}
+        color{ellipse.color}
     {
         generateBuffers();
+        shaderProgram = ellipse.shaderProgram;
     }
 
     Ellipse::Ellipse(Ellipse&& ellipse) noexcept
         : vertices{std::move(ellipse.vertices)}, transform{ellipse.transform},
-        color{ellipse.color}, shaderProgram{std::move(ellipse.shaderProgram)},
+        color{ellipse.color},
         vertexBuffer{ellipse.vertexBuffer}, vertexArrayObject{
         ellipse.vertexArrayObject}, elementArrayBuffer{
         ellipse.elementArrayBuffer}
@@ -71,6 +71,7 @@ namespace ge {
         ellipse.vertexBuffer = 0;
         ellipse.vertexArrayObject = 0;
         ellipse.elementArrayBuffer = 0;
+        shaderProgram = std::move(shaderProgram);
     }
 
     Ellipse& Ellipse::operator= (Ellipse const& ellipse) noexcept {
@@ -93,10 +94,6 @@ namespace ge {
         ellipse.vertexBuffer = 0;
         ellipse.elementArrayBuffer = 0;
         return *this;
-    }
-
-    void Ellipse::setShaders(ShaderLibrary const& library) noexcept {
-        shaderProgram = library["2DEllipse"];
     }
 
     void Ellipse::recalculateUniforms(void) noexcept {
@@ -182,10 +179,10 @@ namespace ge {
     }
 
     void Ellipse::draw(void) const noexcept {
-        shaderProgram.use();
-        shaderProgram.setUniform("color", color);
-        shaderProgram.setUniform("shift", Vector2f{vertices.front()});
-        shaderProgram.setUniform("transform", transform);
+        shaderProgram->use();
+        shaderProgram->setUniform("color", color);
+        shaderProgram->setUniform("shift", Vector2f{vertices.front()});
+        shaderProgram->setUniform("transform", transform);
         glBindVertexArray(vertexArrayObject);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);

@@ -61,7 +61,7 @@ namespace ge {
     }
 
     void Polygon::draw(void) const noexcept {
-        shaderProgram.use();
+        shaderProgram->use();
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_TRIANGLE_FAN, 0,  vertices.size());
         glBindVertexArray(0);

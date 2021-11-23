@@ -25,7 +25,8 @@ namespace ge {
 
         using WindowInterface::getWindowDimmensions;
         using WindowInterface::getWindowTitle;
-        using WindowInterface::setContextWindow;
+
+        void setContextWindow(void) noexcept;
 
         template <std::derived_from<Drawable> T>
         void pushDrawable(std::shared_ptr<T> const& drawable) noexcept;
@@ -78,13 +79,12 @@ namespace ge {
         ShaderLibrary& getShaderLib(void) noexcept
             { return shaders; }
 
-        ~Window(void) noexcept = default;
+        ~Window(void) noexcept;
     private:
         typedef std::chrono::microseconds           Duration;
         typedef std::chrono::steady_clock           ThreadClock;
         typedef ThreadClock::time_point             TimePoint;
 
-        void setDrawablesShaders(void) noexcept;
         void copyDrawablesToGPU(void) const noexcept;
         void drawDrawables(void) const noexcept;
         void draw(void) noexcept;

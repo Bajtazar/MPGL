@@ -54,7 +54,7 @@ namespace ge {
     }
 
     void Line::draw(void) const noexcept {
-        shaderProgram.use();
+        shaderProgram->use();
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_LINES, 0, 2);
         glBindVertexArray(0);

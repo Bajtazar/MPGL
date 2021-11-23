@@ -59,7 +59,7 @@ namespace ge {
     }
 
     void LineStrip::draw(void) const noexcept {
-        shaderProgram.use();
+        shaderProgram->use();
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_LINE_STRIP, 0,  vertices.size());
         glBindVertexArray(0);

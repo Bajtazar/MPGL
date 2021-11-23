@@ -1,13 +1,14 @@
 #pragma once
 
 #include "../Color.hpp"
+#include "Shadeable.hpp"
 #include "../Drawable.hpp"
 #include "../../Utility/Adapter.hpp"
 #include "../Transformations/Transformable2D.hpp"
 
 namespace ge {
 
-    class Shape : public Drawable, public Transformable2D {
+    class Shape : public Drawable, public Shadeable, public Transformable2D {
     public:
         struct Vertex {
             explicit Vertex(Vector2f const& position, Color const& color) noexcept
@@ -32,7 +33,6 @@ namespace ge {
                 { if constexpr(Index) return std::move(color); else return std::move(position); }
         };
 
-        void setShaders(ShaderLibrary const& shaderLibrary) noexcept final;
         void copyToGPU(void) const noexcept final;
         virtual void draw(void) const noexcept = 0;
 
@@ -104,9 +104,9 @@ namespace ge {
         virtual void unbindBuffers(void) const noexcept;
         void copyBuffersToGPU(void) const noexcept;
         void generateBuffers(void) noexcept;
+        void initialize(void) noexcept;
 
         std::vector<Vertex>                 vertices;
-        ShaderProgram                       shaderProgram;
         uint32_t                            vertexBuffer;
         uint32_t                            vertexArrayObject;
     };

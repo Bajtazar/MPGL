@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Shadeable.hpp"
 #include "../Color.hpp"
 #include "../Texture.hpp"
 #include "../Drawable.hpp"
@@ -55,7 +56,7 @@ namespace ge {
     };
 
     template <bool IsColorable = false>
-    class Sprite : public Drawable, public Transformable2D {
+    class Sprite : public Drawable, public Shadeable, public Transformable2D {
     public:
         using Vertex = std::conditional_t<IsColorable, ColorableVertex, DefaultVertex>;
 
@@ -85,7 +86,6 @@ namespace ge {
         Sprite& operator= (Sprite const& sprite) noexcept;
         Sprite& operator= (Sprite&& sprite) noexcept;
 
-        void setShaders(ShaderLibrary const& library) noexcept final;
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
@@ -141,11 +141,14 @@ namespace ge {
 
         ~Sprite(void) noexcept;
     protected:
+        typedef typename ShadersContext::ProgramPtr ProgramPtr;
+        typedef typename ShadersContext::Executable Executable;
+
         static const std::array<uint32_t, 6>    indexes;
+        static const Executable                 shaderExec;
 
         VertexArray                             vertices;
         Texture<>                               texture;
-        ShaderProgram                           shaderProgram;
         uint32_t                                elementArrayBuffer;
         uint32_t                                vertexBuffer;
         uint32_t                                vertexArrayObject;
@@ -160,7 +163,16 @@ namespace ge {
 
         static VertexArray makeVertexArray(void) noexcept;
         static VertexArray makeVertexArray(Color const& color) noexcept requires IsColorable;
+        static constexpr std::string shaderType(void) noexcept;
     };
+
+    template <bool IsColorable>
+    constexpr std::string Sprite<IsColorable>::shaderType(void) noexcept {
+        if constexpr (IsColorable)
+            return "2DCTexture";
+        else
+            return "2DTexture";
+    }
 
     template class Sprite<true>;
     template class Sprite<false>;

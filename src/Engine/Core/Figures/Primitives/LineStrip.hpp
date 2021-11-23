@@ -37,14 +37,14 @@ namespace ge {
     LineStrip::LineStrip(Color const& color, Args&&... points) noexcept
         : Shape{createVertices(color, std::forward<Args>(points)...)}
     {
-        generateBuffers();
+        initialize();
     }
 
     template <AllConvertible<Vector2f>... Args>
     LineStrip::LineStrip(Args&&... points) noexcept
         : Shape{createVertices({}, std::forward<Args>(points)...)}
     {
-        generateBuffers();
+        initialize();
     }
 
     template <typename... Args>

@@ -58,7 +58,7 @@ namespace ge {
     }
 
     void Points::draw(void) const noexcept {
-        shaderProgram.use();
+        shaderProgram->use();
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_POINTS, 0,  vertices.size());
         glBindVertexArray(0);

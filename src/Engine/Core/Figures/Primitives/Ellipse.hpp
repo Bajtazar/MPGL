@@ -1,13 +1,14 @@
 #pragma once
 
 #include "../../Color.hpp"
+#include "../Shadeable.hpp"
 #include "../../Drawable.hpp"
 #include "../../../Utility/Adapter.hpp"
 #include "../../Transformations/Transformable2D.hpp"
 
 namespace ge {
 
-    class Ellipse : public Drawable, public Transformable2D {
+    class Ellipse : public Drawable, public Shadeable, public Transformable2D {
     public:
         Ellipse(Vector2f const& center, Vector2f const& semiAxis,
                 float angle = 0.f, Color const& color = {}) noexcept;
@@ -19,7 +20,6 @@ namespace ge {
         Ellipse& operator= (Ellipse const& ellipse) noexcept;
         Ellipse& operator= (Ellipse&& ellipse) noexcept;
 
-        void setShaders(ShaderLibrary const& shaderLibrary) noexcept final;
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
@@ -45,7 +45,6 @@ namespace ge {
         Vertices                                    vertices;
         Matrix2f                                    transform;
         Color                                       color;
-        ShaderProgram                               shaderProgram;
         uint32_t                                    vertexBuffer;
         uint32_t                                    vertexArrayObject;
         uint32_t                                    elementArrayBuffer;

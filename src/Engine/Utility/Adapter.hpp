@@ -2,8 +2,8 @@
 
 #include <memory>
 
+#include "../Core/Context/Context.hpp"
 #include "../Traits/Concepts.hpp"
-#include "../Core/Context.hpp"
 
 namespace ge {
 

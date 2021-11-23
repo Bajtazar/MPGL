@@ -4,18 +4,19 @@
 
 namespace ge {
 
-    template <bool isPolichromatic>
-    Text<isPolichromatic>::Text(Font& font, std::size_t size,
+    template <bool IsPolichromatic>
+    Text<IsPolichromatic>::Text(Font& font, std::size_t size,
         Vector2f const& position, std::string const& text,
         Color const& color, Font::Type const& type)
-            : text{text}, color{color}, position{position},
-            size{size}, angle{0.f}, font{font}, type{type}
+            : Shadeable{shaderType(), shaderExec}, text{text},
+            color{color}, position{position}, size{size},
+            angle{0.f}, font{font}, type{type}
     {
         drawGlyphs(parseString(text));
     }
 
-    template <bool isPolichromatic>
-    Text<isPolichromatic>::IDArray Text<isPolichromatic>::parseString(std::string string)
+    template <bool IsPolichromatic>
+    Text<IsPolichromatic>::IDArray Text<IsPolichromatic>::parseString(std::string string)
     {
         auto iter = string.begin();
         IDArray array;
@@ -27,14 +28,14 @@ namespace ge {
         return array;
     }
 
-    template <bool isPolichromatic>
-    uint8_t Text<isPolichromatic>::getLevel(void) const {
+    template <bool IsPolichromatic>
+    uint8_t Text<IsPolichromatic>::getLevel(void) const {
         uint8_t level = std::ceil(log2(size));
         return level > 6 ? level - 6 : 0;
     }
 
-    template <bool isPolichromatic>
-    Text<isPolichromatic>::ArgTuple Text<isPolichromatic>::getArgs(void) const noexcept
+    template <bool IsPolichromatic>
+    Text<IsPolichromatic>::ArgTuple Text<IsPolichromatic>::getArgs(void) const noexcept
     {
         uint8_t level = getLevel();
         auto rotation = rotationMatrix<float>(angle);
@@ -42,16 +43,16 @@ namespace ge {
         return {level, scale, rotation};
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::drawGlyphs(IDArray const& indexes) {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::drawGlyphs(IDArray const& indexes) {
         auto& subfont = font.get()(type);
         auto&& [level, scale, rotation] = getArgs();
         for (uint16_t const& index : indexes)
             drawGlyph(subfont, level, scale, index, rotation);
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::drawGlyph(Subfont& subfont, uint8_t level,
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::drawGlyph(Subfont& subfont, uint8_t level,
         float scale, uint16_t const& index, Matrix<float, 2> const& rotation)
     {
         if (auto glyph = subfont(index, level)) {
@@ -66,31 +67,25 @@ namespace ge {
         }
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::setShaders(ShaderLibrary const& library) noexcept {
-        if constexpr (isPolichromatic)
-            shaderProgram = library["2DPoliGlyph"];
-        else
-            shaderProgram = library["2DMonoGlyph"];
-        shaderProgram.use();
-        shaderProgram.setUniform("tex", 0);
-    }
+    template <bool IsPolichromatic>
+    const Text<IsPolichromatic>::Executable Text<IsPolichromatic>::shaderExec =
+        [](ProgramPtr& ptr) -> void { ptr->use(); ptr->setUniform("tex", 0); };
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::copyToGPU(void) const noexcept {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::copyToGPU(void) const noexcept {
         std::ranges::for_each(glyphs, [](auto const& glyph) { glyph.copyToGPU(); });
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::draw(void) const noexcept {
-        shaderProgram.use();
-        if constexpr (!isPolichromatic)
-            shaderProgram.setUniform("color", color);
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::draw(void) const noexcept {
+        shaderProgram->use();
+        if constexpr (!IsPolichromatic)
+            shaderProgram->setUniform("color", color);
         std::ranges::for_each(glyphs, [](auto const& glyph) { glyph.draw(); });
     }
 
-    template <bool isPolichromatic>
-    Vector2f Text<isPolichromatic>::getPosition(void) const noexcept {
+    template <bool IsPolichromatic>
+    Vector2f Text<IsPolichromatic>::getPosition(void) const noexcept {
         if (!glyphs.size())
             return position;
         uint8_t len = getUTF8SequenceLength(text.front());
@@ -102,8 +97,8 @@ namespace ge {
         return Vector2f{glyphs.front()[0].position} - bearing;
     }
 
-    template <bool isPolichromatic>
-    Vector2f Text<isPolichromatic>::getDimmensions(void) const noexcept {
+    template <bool IsPolichromatic>
+    Vector2f Text<IsPolichromatic>::getDimmensions(void) const noexcept {
         if (glyphs.size())
             return {(static_cast<Vector2f>(glyphs.size() > 1 ? glyphs.back()[2].position
                 : glyphs.front()[2].position) - static_cast<Vector2f>(
@@ -111,46 +106,46 @@ namespace ge {
         return {0.f, 0.f};
     }
 
-    template <bool isPolichromatic>
-    Text<isPolichromatic>& Text<isPolichromatic>::operator+= (std::string const& left) {
+    template <bool IsPolichromatic>
+    Text<IsPolichromatic>& Text<IsPolichromatic>::operator+= (std::string const& left) {
         text += left;
         drawGlyphs(parseString(left));
         copyToGPU();
         return *this;
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::clear(void) noexcept {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::clear(void) noexcept {
         position = getPosition();
         text.clear();
         glyphs.clear();
         copyToGPU();
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::redrawGlyphs(void) {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::redrawGlyphs(void) {
         position = getPosition();
         glyphs.clear();
         drawGlyphs(parseString(text));
         copyToGPU();
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::setString(std::string const& text) {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::setString(std::string const& text) {
         this->text = text;
         redrawGlyphs();
     }
 
-    template <bool isPolichromatic>
-    Text<isPolichromatic>& Text<isPolichromatic>::operator= (
+    template <bool IsPolichromatic>
+    Text<IsPolichromatic>& Text<IsPolichromatic>::operator= (
         std::string const& text)
     {
         setString(text);
         return *this;
     }
 
-    template <bool isPolichromatic>
-    Text<isPolichromatic>& Text<isPolichromatic>::operator= (
+    template <bool IsPolichromatic>
+    Text<IsPolichromatic>& Text<IsPolichromatic>::operator= (
         std::string&& text)
     {
         this->text = std::move(text);
@@ -158,42 +153,42 @@ namespace ge {
         return *this;
     }
 
-    template <bool isPolichromatic>
-    void  Text<isPolichromatic>::setSize(std::size_t size) {
+    template <bool IsPolichromatic>
+    void  Text<IsPolichromatic>::setSize(std::size_t size) {
         this->size = size;
         redrawGlyphs();
     }
 
-    template <bool isPolichromatic>
-    void  Text<isPolichromatic>::setColor(Color const& color) {
+    template <bool IsPolichromatic>
+    void  Text<IsPolichromatic>::setColor(Color const& color) {
         this->color = color;
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::setStyle(Font::Type const& type) {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::setStyle(Font::Type const& type) {
         this->type = type;
         redrawGlyphs();
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::setFont(Font& font) {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::setFont(Font& font) {
         this->font = std::ref(font);
         redrawGlyphs();
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::translate(Vector2f const& shift) noexcept {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::translate(Vector2f const& shift) noexcept {
         std::ranges::for_each(glyphs, [&shift](auto& glyph){ glyph.translate(shift); });
         position += shift;
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::rotate(Vector2f const& center, float angle) noexcept {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::rotate(Vector2f const& center, float angle) noexcept {
         rotate(center, rotationMatrix<float>(angle));
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
         std::ranges::for_each(glyphs, [&center, &rotation](auto& glyph){ glyph.rotate(center, rotation); });
         position = rotation * (position - center) + center;
         auto twoPi = std::numbers::pi_v<float> * 2;
@@ -201,15 +196,15 @@ namespace ge {
         this->angle = angle > twoPi ? angle - twoPi : angle < 0.f ? twoPi + angle : angle;
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::scale(Vector2f const& center, float factor) noexcept {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::scale(Vector2f const& center, float factor) noexcept {
         std::ranges::for_each(glyphs, [&center, &factor](auto& glyph){ glyph.scale(center, factor); });
         size *= factor;
         position = (position - center) * factor + center;
     }
 
-    template <bool isPolichromatic>
-    void Text<isPolichromatic>::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
         std::ranges::for_each(glyphs, [&oldDimmensions](auto& glyph)
             { glyph.onScreenTransformation(oldDimmensions); });
     }

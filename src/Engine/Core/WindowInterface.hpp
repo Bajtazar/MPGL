@@ -7,12 +7,12 @@
 #include "Transformations/Transformable2D.hpp"
 #include "../Mathematics/Vector.hpp"
 #include "../Events/EventBus.hpp"
-#include "Context.hpp"
+#include "Context/Context.hpp"
 #include "Color.hpp"
 
 namespace ge {
 
-    class WindowInterface : private GraphicalObject {
+    class WindowInterface : protected GraphicalObject {
     public:
         // OpenGL Options
         struct Options {
@@ -36,7 +36,7 @@ namespace ge {
         friend void mousePosCallback(GLFWwindow* window, double xpos, double ypos);
         friend void mouseButtonCallback(GLFWwindow* window, int32_t button, int32_t action, int32_t mods);
 
-        virtual ~WindowInterface(void) noexcept = default;
+        virtual ~WindowInterface(void) noexcept;
     protected:
         explicit WindowInterface(Vector2ui dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
         explicit WindowInterface(GLFWwindow* window) noexcept : window(window) {}

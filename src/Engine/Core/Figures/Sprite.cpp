@@ -32,8 +32,12 @@ namespace ge {
     const std::array<uint32_t, 6> Sprite<IsColorable>::indexes {0, 1, 2, 0, 3, 2};
 
     template <bool IsColorable>
+    const Sprite<IsColorable>::Executable Sprite<IsColorable>::shaderExec =
+        [](ProgramPtr& ptr) -> void { ptr->use(); ptr->setUniform("tex", 0); };
+
+    template <bool IsColorable>
     Sprite<IsColorable>::Sprite(Texture<> const& texture) noexcept
-        : vertices{makeVertexArray()}, texture{texture}
+        : Shadeable{shaderType(), shaderExec}, vertices{makeVertexArray()}, texture{texture}
     {
         generateBuffers();
     }
@@ -41,7 +45,8 @@ namespace ge {
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(Texture<> const& texture,
         Color const& color) noexcept requires (IsColorable)
-            : vertices{makeVertexArray(color)}, texture{texture}
+            : Shadeable{shaderType(), shaderExec}, vertices{makeVertexArray(color)},
+            texture{texture}
     {
         generateBuffers();
     }
@@ -122,15 +127,6 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    void Sprite<IsColorable>::setShaders(ShaderLibrary const& library) noexcept {
-        if constexpr (IsColorable)
-            shaderProgram = library["2DCTexture"];
-        else
-            shaderProgram = library["2DTexture"];
-        shaderProgram.setUniform("tex", 0);
-    }
-
-    template <bool IsColorable>
     void Sprite<IsColorable>::bindBuffers(void) const noexcept {
         glBindVertexArray(vertexArrayObject);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -171,7 +167,7 @@ namespace ge {
 
     template <bool IsColorable>
     void Sprite<IsColorable>::draw(void) const noexcept {
-        shaderProgram.use();
+        shaderProgram->use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTexture());
         glBindVertexArray(vertexArrayObject);

@@ -9,7 +9,7 @@ namespace ge {
             Vertex{firstVertex, color}, Vertex{secondVertex, color},
             Vertex{thirdVertex, color}}}
     {
-        generateBuffers();
+        initialize();
     }
 
     Triangle::Triangle(Color const& color) noexcept : Shape{3} {
@@ -50,7 +50,7 @@ namespace ge {
     }
 
     void Triangle::draw(void) const noexcept {
-        shaderProgram.use();
+        shaderProgram->use();
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
