@@ -6,13 +6,19 @@ namespace ge {
         : shaderProgram{new ShaderProgram{}} {}
 
     Shadeable::Shadeable(std::string const& name) : Shadeable{} {
-        context.shaders.setOrQueue(shaderProgram, name);
+        setShader(name);
+    }
+
+    void Shadeable::setShader(std::string const& name,
+        Executable exec)
+    {
+        context.shaders.setOrQueue(shaderProgram, name, std::move(exec));
     }
 
     Shadeable::Shadeable(std::string const& name,
         ShadersContext::Executable exec) : Shadeable{}
     {
-        context.shaders.setOrQueue(shaderProgram, name, std::move(exec));
+        setShader(name, std::move(exec));
     }
 
 }

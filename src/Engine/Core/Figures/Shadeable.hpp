@@ -7,14 +7,16 @@ namespace ge {
 
     class Shadeable : virtual protected GraphicalObject {
     public:
-        typedef std::shared_ptr<ShaderProgram>  ProgramPtr;
+        typedef std::shared_ptr<ShaderProgram>      ProgramPtr;
+        typedef typename ShadersContext::Executable Executable;
 
         void setShader(ShaderProgram const& program) noexcept
             { *shaderProgram = program; }
         void setShader(ShaderProgram&& program) noexcept
             { *shaderProgram = std::move(program); }
-        void setShader(std::string const& name) noexcept
+        void setShader(std::string const& name)
             { context.shaders.setOrQueue(shaderProgram, name); }
+        void setShader(std::string const& name, Executable exec);
 
         ShaderProgram const& getProgram(void) const noexcept
             { return *shaderProgram; }
@@ -23,10 +25,10 @@ namespace ge {
     protected:
         explicit Shadeable(std::string const& programName);
         explicit Shadeable(std::string const& programName,
-            ShadersContext::Executable exec);
+            Executable exec);
         explicit Shadeable(void) noexcept;
 
-        ProgramPtr                              shaderProgram;
+        ProgramPtr                                  shaderProgram;
     };
 
 }

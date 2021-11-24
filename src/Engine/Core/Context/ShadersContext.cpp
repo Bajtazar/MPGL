@@ -21,7 +21,7 @@ namespace ge {
         ShaderLibrary const& library) noexcept
     {
         try {
-            auto const& [shader, name] = queue.front();
+            auto& [shader, name] = queue.front();
             *shader = library[name];
             queue.pop();
         } catch (...) {
