@@ -60,7 +60,7 @@ namespace ge {
 
     void Shape::translate(Vector2f const& shift) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position))
-            vertexPosition = Vector2f(vertexPosition) + shift;
+            vertexPosition = static_cast<Vector2f>(vertexPosition) + shift;
         copyToGPU();
     }
 

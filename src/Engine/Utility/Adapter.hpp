@@ -7,48 +7,57 @@
 
 namespace ge {
 
-    template <Adaptable T>
+    template <Adaptable Tp>
     class Adapter : private GraphicalObject {
     public:
-        Adapter(T const& range) noexcept;
+        typedef typename Tp::value_type value_type;
 
-        using value_type = typename T::value_type;
+        Adapter(Tp const& range) noexcept;
+        Adapter(Tp&& range) noexcept;
 
-        T& operator= (T const& factor) noexcept;
-        T& operator= (T&& factor) noexcept;
+        void operator= (Tp const& factor) noexcept;
+        void operator= (Tp&& factor) noexcept;
 
-        operator T() const& noexcept;
+        operator Tp() const noexcept;
 
-        T& get(void) noexcept { return range; }
-        T const& get(void) const noexcept { return range; }
+        Tp& get(void) noexcept
+            { return range; }
+        Tp const& get(void) const noexcept
+            { return range; }
 
         ~Adapter(void) noexcept = default;
     private:
-        T                           range;
+        Tp                              range;
     };
 
-    template <Adaptable T>
-    Adapter<T>::Adapter(T const& range) noexcept
-        : range{range / static_cast<T>(context.windowDimmensions)
+    template <Adaptable Tp>
+    Adapter<Tp>::Adapter(Tp const& range) noexcept
+        : range{range / static_cast<Tp>(context.windowDimmensions)
             * value_type{2} - value_type{1}} {}
 
-    template <Adaptable T>
-    T& Adapter<T>::operator= (T const& factor) noexcept {
-        return range = factor / static_cast<T>(context.windowDimmensions)
-            * value_type{2} - value_type{1};
-    }
+    template <Adaptable Tp>
+    Adapter<Tp>::Adapter(Tp&& range) noexcept
+        : range{std::move(range) / static_cast<Tp>(context.windowDimmensions)
+            * value_type{2} - value_type{1}} {}
 
-    template <Adaptable T>
-    T& Adapter<T>::operator= (T&& factor) noexcept {
-        return range = std::move(factor)
-            / static_cast<T>(context.windowDimmensions)
+    template <Adaptable Tp>
+    void Adapter<Tp>::operator= (Tp const& factor) noexcept {
+        range = factor
+            / static_cast<Tp>(context.windowDimmensions)
                 * value_type{2} - value_type{1};
     }
 
-    template <Adaptable T>
-    Adapter<T>::operator T() const& noexcept {
+    template <Adaptable Tp>
+    void Adapter<Tp>::operator= (Tp&& factor) noexcept {
+        range = std::move(factor)
+            / static_cast<Tp>(context.windowDimmensions)
+                * value_type{2} - value_type{1};
+    }
+
+    template <Adaptable Tp>
+    Adapter<Tp>::operator Tp() const noexcept {
         return (range + value_type{1})
-            * static_cast<T>(context.windowDimmensions) / value_type{2};
+            * static_cast<Tp>(context.windowDimmensions) / value_type{2};
     }
 
 }
