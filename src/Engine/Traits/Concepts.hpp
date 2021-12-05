@@ -6,6 +6,12 @@
 
 namespace ge {
 
+    #ifndef Operable
+    #define Operable(Tp, Operator) requires ( Tp a, Tp b ) { \
+        { a Operator b } -> std::convertible_to< Tp >; \
+    }
+    #endif
+
     template <typename T>
     concept Arithmetic = std::constructible_from<T>
         && requires (T left, T right)

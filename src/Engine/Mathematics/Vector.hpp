@@ -9,6 +9,8 @@
 #include "../Traits/Concepts.hpp"
 #include "../Utility/Ranges.hpp"
 
+#include <initializer_list>
+
 #ifndef friend_expr
 #define friend_expr     friend constexpr
 #endif
@@ -27,10 +29,13 @@ namespace ge {
             requires (sizeof...(Args) == Size
                 && AllConvertible<value_type, std::remove_cvref_t<Args>...>)
         constexpr Vector(Args&&... args) noexcept;
+
         constexpr Vector(Base const& base) noexcept
             : Base{base} {}
+
         constexpr Vector(Base&& base) noexcept
             : Base{std::move(base)} {}
+
         constexpr Vector(void) noexcept = default;
 
         template <std::size_t Index>
@@ -53,15 +58,34 @@ namespace ge {
 
         template <Arithmetic Up = Tp>
         constexpr Up length(void) const noexcept;
-        constexpr Vector& operator+=(Vector const& right) noexcept;
-        constexpr Vector& operator-=(Vector const& right) noexcept;
-        constexpr Vector& operator*=(Vector const& right) noexcept;
+
+        constexpr Vector& operator+=(Vector const& right);
+        constexpr Vector& operator-=(Vector const& right);
+        constexpr Vector& operator*=(Vector const& right);
         constexpr Vector& operator/=(Vector const& right);
 
-        constexpr Vector& operator+=(Tp&& right) noexcept;
-        constexpr Vector& operator-=(Tp&& right) noexcept;
-        constexpr Vector& operator*=(Tp&& right) noexcept;
+        constexpr Vector& operator%=(Vector const& right)
+            requires Operable(Tp, %);
+        constexpr Vector& operator^=(Vector const& right)
+            requires Operable(Tp, ^);
+        constexpr Vector& operator&=(Vector const& right)
+            requires Operable(Tp, &);
+        constexpr Vector& operator|=(Vector const& right)
+            requires Operable(Tp, |);
+
+        constexpr Vector& operator+=(Tp&& right);
+        constexpr Vector& operator-=(Tp&& right);
+        constexpr Vector& operator*=(Tp&& right);
         constexpr Vector& operator/=(Tp&& right);
+
+        constexpr Vector& operator%=(Tp&& right)
+            requires Operable(Tp, %);
+        constexpr Vector& operator^=(Tp&& right)
+            requires Operable(Tp, ^);
+        constexpr Vector& operator&=(Tp&& right)
+            requires Operable(Tp, &);
+        constexpr Vector& operator|=(Tp&& right)
+            requires Operable(Tp, |);
 
         template <Arithmetic Up>
         constexpr operator Vector<Up, Size>() const noexcept;
@@ -291,203 +315,184 @@ namespace ge {
         return vector;
     }
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator+= (
-        Vector const& right) noexcept
-    {
-        std::ranges::transform(*this, right, begin(),
-            [](Tp const& left, Tp const& right)->Tp{ return left + right; });
-        return *this;
-    }
+    #ifndef ge_vec_vec_inner_op_factory
+    #define ge_vec_vec_inner_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
+            Vector<Tp, Size> const& right) \
+        { \
+            std::ranges::transform(*this, right, begin(), \
+                [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
+            return *this; \
+        }
+    #endif
+    #ifndef ge_vec_vec_c_inner_op_factory
+    #define ge_vec_vec_c_inner_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
+            Vector<Tp, Size> const& right) requires Operable(Tp, Op) \
+        { \
+            std::ranges::transform(*this, right, begin(), \
+                [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
+            return *this; \
+        }
+    #endif
+    #ifndef ge_vec_tp_inner_op_factory
+    #define ge_vec_tp_inner_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
+           Tp&& right) \
+        { \
+            std::ranges::for_each(*this, [&right](Tp& value) -> void \
+                { value Op##= right; }); \
+            return *this; \
+        }
+    #endif
+    #ifndef ge_vec_tp_c_inner_op_factory
+    #define ge_vec_tp_c_inner_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
+           Tp&& right) requires Operable(Tp, Op) \
+        { \
+            std::ranges::for_each(*this, [&right](Tp& value) -> void \
+                { value Op##= right; }); \
+            return *this; \
+        }
+    #endif
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator-= (
-        Vector const& right) noexcept
-    {
-        std::ranges::transform(*this, right, begin(),
-            [](Tp const& left, Tp const& right)->Tp{ return left - right; });
-        return *this;
-    }
+    ge_vec_vec_inner_op_factory(+)
+    ge_vec_vec_inner_op_factory(-)
+    ge_vec_vec_inner_op_factory(*)
+    ge_vec_vec_inner_op_factory(/)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator*= (
-        Vector const& right) noexcept
-    {
-        std::ranges::transform(*this, right, begin(),
-            [](Tp const& left, Tp const& right)->Tp{ return left * right; });
-        return *this;
-    }
+    ge_vec_vec_c_inner_op_factory(%)
+    ge_vec_vec_c_inner_op_factory(^)
+    ge_vec_vec_c_inner_op_factory(|)
+    ge_vec_vec_c_inner_op_factory(&)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator/= (
-        Vector const& right)
-    {
-        std::ranges::transform(*this, right, begin(),
-            [](Tp const& left, Tp const& right)->Tp{ return left / right; });
-        return *this;
-    }
+    ge_vec_tp_inner_op_factory(+)
+    ge_vec_tp_inner_op_factory(-)
+    ge_vec_tp_inner_op_factory(*)
+    ge_vec_tp_inner_op_factory(/)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator+=(
-        Tp&& right) noexcept
-    {
-        std::ranges::for_each(*this, [&right](Tp& value) -> void
-            { value += right; });
-        return *this;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator-=(
-        Tp&& right) noexcept
-    {
-        std::ranges::for_each(*this, [&right](Tp& value) -> void
-            { value -= right; });
-        return *this;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator*=(
-       Tp&& right) noexcept
-    {
-        std::ranges::for_each(*this, [&right](Tp& value) -> void
-            { value *= right; });
-        return *this;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator/=(
-        Tp&& right)
-    {
-        std::ranges::for_each(*this, [&right](Tp& value) -> void
-            { value /= right; });
-        return *this;
-    }
+    ge_vec_tp_c_inner_op_factory(%)
+    ge_vec_tp_c_inner_op_factory(^)
+    ge_vec_tp_c_inner_op_factory(|)
+    ge_vec_tp_c_inner_op_factory(&)
 
     // operators
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>
-        operator+ (Vector<Tp, Size> const& left,
-            Vector<Tp, Size> const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, right, result.begin(),
-            [](Tp const& left, Tp const& right)-> Tp { return left + right; });
-        return result;
-    }
+    #ifndef ge_vec_vec_op_factory
+    #define ge_vec_vec_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size> \
+            operator Op (Vector<Tp, Size> const& left, \
+                Vector<Tp, Size> const& right) \
+        { \
+            Vector<Tp, Size> result; \
+            std::ranges::transform(left, right, result.begin(), \
+                [](Tp const& left, Tp const& right)-> Tp { \
+                    return left Op right; }); \
+            return result; \
+        }
+    #endif
+    #ifndef ge_vec_c_vec_op_factory
+    #define ge_vec_c_vec_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size> \
+            operator Op (Vector<Tp, Size> const& left, \
+                Vector<Tp, Size> const& right) requires Operable(Tp, Op) \
+        { \
+            Vector<Tp, Size> result; \
+            std::ranges::transform(left, right, result.begin(), \
+                [](Tp const& left, Tp const& right)-> Tp { \
+                    return left Op right; }); \
+            return result; \
+        }
+    #endif
+    #ifndef ge_vec_tp_op_factory
+    #define ge_vec_tp_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size> \
+            operator Op (Vector<Tp, Size> const& left, \
+                Tp const& right) \
+        { \
+            Vector<Tp, Size> result; \
+            std::ranges::transform(left, result.begin(), \
+                [&right](Tp const& left) -> Tp { \
+                    return left Op right; }); \
+            return result; \
+        }
+    #endif
+    #ifndef ge_vec_tp_c_op_factory
+    #define ge_vec_tp_c_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size> \
+            operator Op (Vector<Tp, Size> const& left, \
+                Tp const& right) requires Operable(Tp, Op) \
+        { \
+            Vector<Tp, Size> result; \
+            std::ranges::transform(left, result.begin(), \
+                [&right](Tp const& left) -> Tp { \
+                    return left Op right; }); \
+            return result; \
+        }
+    #endif
+    #ifndef ge_tp_vec_op_factory
+    #define ge_tp_vec_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size> operator Op ( \
+            Tp const& left, Vector<Tp, Size> const& right) \
+        { \
+            Vector<Tp, Size> result; \
+            std::ranges::transform(right, result.begin(), \
+                [&left](Tp const& right) -> Tp { \
+                    return left Op right; }); \
+            return result; \
+        }
+    #endif
+    #ifndef ge_tp_vec_c_op_factory
+    #define ge_tp_vec_c_op_factory(Op) \
+        template <Arithmetic Tp, std::size_t Size> \
+        constexpr Vector<Tp, Size> operator Op ( \
+            Tp const& left, Vector<Tp, Size> const& right) \
+                requires Operable(Tp, Op) \
+        { \
+            Vector<Tp, Size> result; \
+            std::ranges::transform(right, result.begin(), \
+                [&left](Tp const& right) -> Tp { \
+                    return left Op right; }); \
+            return result; \
+        }
+    #endif
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>
-        operator- (Vector<Tp, Size> const& left,
-            Vector<Tp, Size> const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, right, result.begin(),
-            [](Tp const& left, Tp const& right)-> Tp { return left - right; });
-        return result;
-    }
+    ge_vec_vec_op_factory(+)
+    ge_vec_vec_op_factory(-)
+    ge_vec_vec_op_factory(*)
+    ge_vec_vec_op_factory(/)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>
-        operator* (Vector<Tp, Size> const& left,
-            Vector<Tp, Size> const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, right, result.begin(),
-            [](Tp const& left, Tp const& right)-> Tp { return left * right; });
-        return result;
-    }
+    ge_vec_c_vec_op_factory(%)
+    ge_vec_c_vec_op_factory(^)
+    ge_vec_c_vec_op_factory(&)
+    ge_vec_c_vec_op_factory(|)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size>
-        operator/ (Vector<Tp, Size> const& left,
-            Vector<Tp, Size> const& right)
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, right, result.begin(),
-            [](Tp const& left, Tp const& right)-> Tp { return left / right; });
-        return result;
-    }
+    ge_vec_tp_op_factory(+)
+    ge_vec_tp_op_factory(-)
+    ge_vec_tp_op_factory(*)
+    ge_vec_tp_op_factory(/)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator+ (
-        Vector<Tp, Size> const& left, Tp const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, result.begin(),
-            [&right](Tp const& left) -> Tp { return left + right; });
-        return result;
-    }
+    ge_vec_tp_c_op_factory(%)
+    ge_vec_tp_c_op_factory(^)
+    ge_vec_tp_c_op_factory(&)
+    ge_vec_tp_c_op_factory(|)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator- (
-        Vector<Tp, Size> const& left, Tp const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, result.begin(),
-            [&right](Tp const& left) -> Tp { return left - right; });
-        return result;
-    }
+    ge_tp_vec_op_factory(+)
+    ge_tp_vec_op_factory(-)
+    ge_tp_vec_op_factory(*)
 
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator* (
-        Vector<Tp, Size> const& left, Tp const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, result.begin(),
-            [&right](Tp const& left) -> Tp { return left * right; });
-        return result;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator/ (
-        Vector<Tp, Size> const& left, Tp const& right)
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(left, result.begin(),
-            [&right](Tp const& left) -> Tp { return left / right; });
-        return result;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator+ (
-        Tp const& left, Vector<Tp, Size> const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(right, result.begin(),
-            [&left](Tp const& right) -> Tp { return left + right; });
-        return result;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator- (
-        Tp const& left, Vector<Tp, Size> const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(right, result.begin(),
-            [&left](Tp const& right) -> Tp { return left - right; });
-        return result;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator* (
-        Tp const& left, Vector<Tp, Size> const& right) noexcept
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(right, result.begin(),
-            [&left](Tp const& right) -> Tp { return left * right; });
-        return result;
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
-    constexpr Vector<Tp, Size> operator/ (
-        Tp const& left, Vector<Tp, Size> const& right)
-    {
-        Vector<Tp, Size> result;
-        std::ranges::transform(right, result.begin(),
-            [&left](Tp const& right) -> Tp { return left / right; });
-        return result;
-    }
+    ge_tp_vec_c_op_factory(^)
+    ge_tp_vec_c_op_factory(&)
+    ge_tp_vec_c_op_factory(|)
 
     template class Vector<float, 2>;
     template class Vector<uint32_t, 2>;
