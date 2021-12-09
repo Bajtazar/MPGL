@@ -7,7 +7,6 @@
 #include "FFT.hpp"
 
 #include <climits>
-#include <vector>
 #include <array>
 
 namespace ge {
@@ -31,7 +30,6 @@ namespace ge {
         typedef std::complex<double>                        Complex;
         typedef FixedRange<Precision,
             std::array<Complex, Precision>>                 ComplexArray;
-        typedef std::array<std::vector<Complex>, log2N()>   ComplexVector;
 
         template <typename Tp, typename Up>
         void idct(Tp const& array, Up& output) const noexcept;

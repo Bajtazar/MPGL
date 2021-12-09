@@ -7,201 +7,190 @@
 
 namespace ge {
 
-    #pragma pack(push, 1)
-    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    class MatrixColumn {
-    public:
-        constexpr explicit MatrixColumn(void) noexcept = delete;
-        constexpr MatrixColumn(
-            MatrixColumn const& column) noexcept = delete;
-        constexpr MatrixColumn(
-            MatrixColumn&& column) noexcept
-                : seed{std::move(column.seed)} {}
-
-        constexpr MatrixColumn& operator=(
-            MatrixColumn const& column) noexcept = delete;
-        constexpr MatrixColumn& operator=(
-            MatrixColumn&& column) noexcept
-                { seed = std::move(column.seed); return *this; }
-
-        constexpr MatrixColumn& operator=(
-            Vector<Tp, Rows> const& vec) noexcept;
-
-        constexpr operator Vector<Tp, Rows>() const noexcept;
-
-        static constexpr std::size_t size(void) noexcept
-            { return Rows; }
-
-        template <Arithmetic Up = Tp>
-        constexpr Up length(Up init = {0}) const noexcept;
-
-        constexpr MatrixColumn& operator+=(
-            MatrixColumn const& right);
-        constexpr MatrixColumn& operator-=(
-            MatrixColumn const& right);
-        constexpr MatrixColumn& operator*=(
-            MatrixColumn const& right);
-        constexpr MatrixColumn& operator/=(
-            MatrixColumn const& right);
-
-        constexpr MatrixColumn& operator%=(
-            MatrixColumn const& right)
-            requires ge_Operable(Tp, %);
-        constexpr MatrixColumn& operator^=(
-            MatrixColumn const& right)
-            requires ge_Operable(Tp, ^);
-        constexpr MatrixColumn& operator&=(
-            MatrixColumn const& right)
-            requires ge_Operable(Tp, &);
-        constexpr MatrixColumn& operator|=(
-            MatrixColumn const& right)
-            requires ge_Operable(Tp, |);
-
-        constexpr MatrixColumn& operator+=(Tp const& right);
-        constexpr MatrixColumn& operator-=(Tp const& right);
-        constexpr MatrixColumn& operator*=(Tp const& right);
-        constexpr MatrixColumn& operator/=(Tp const& right);
-
-        constexpr MatrixColumn& operator%=(Tp const& right)
-            requires ge_Operable(Tp, %);
-        constexpr MatrixColumn& operator^=(Tp const& right)
-            requires ge_Operable(Tp, ^);
-        constexpr MatrixColumn& operator&=(Tp const& right)
-            requires ge_Operable(Tp, &);
-        constexpr MatrixColumn& operator|=(Tp const& right)
-            requires ge_Operable(Tp, |);
-
-        template <Arithmetic value_type>
-        class Iterator : public std::iterator<std::random_access_iterator_tag,
-            value_type>
-        {
-        public:
-            using iterator_category =       std::random_access_iterator_tag;
-            using reference =               value_type&;
-            using pointer =                 value_type*;
-            using const_pointer =           pointer const;
-            using difference_type =         decltype(
-                std::declval<pointer>() - std::declval<pointer>());
-            using iter =                    Iterator;
-            using iter_ref =                Iterator&;
-            using iter_cref =               Iterator const&;
-
-            constexpr explicit Iterator(pointer ptr) noexcept
-                : ptr{ptr} {}
-            constexpr explicit Iterator(void) noexcept = default;
-
-            constexpr iter_ref operator++(void) noexcept
-                { ptr += Cols; return *this; }
-            constexpr iter operator++(int) noexcept
-                { auto temp = *this; ++(*this); return temp; }
-            constexpr iter_ref operator--(void) noexcept
-                { ptr -= Cols; return *this; }
-            constexpr iter operator--(int) noexcept
-                { auto temp = *this; --(*this); return temp; }
-
-            constexpr reference operator*(void) const noexcept
-                { return *ptr; }
-            constexpr const_pointer operator->(void) const noexcept
-                { return ptr; }
-
-            constexpr iter_ref operator+=(difference_type offset) noexcept
-                { ptr += offset * Cols; return *this; }
-            constexpr iter_ref operator-=(difference_type offset) noexcept
-                { ptr -= offset * Cols; return *this; }
-            constexpr reference operator[](difference_type offset) const noexcept
-                { return *(ptr + offset * Cols); }
-
-            friend_expr bool operator==(iter_cref left,
-                iter_cref right) noexcept
-                    { return left.ptr == right.ptr; }
-
-            friend_expr iter operator+(iter_cref left,
-                difference_type right) noexcept
-                    { auto temp = left; temp.ptr += right; return temp; }
-            friend_expr iter operator+(difference_type left,
-                iter_cref right) noexcept
-                    { auto temp = right; temp.ptr += left; return temp; }
-            friend_expr iter operator-(iter_cref left,
-                difference_type right) noexcept
-                    { auto temp = left; temp.ptr -= right; return temp; }
-            friend_expr difference_type operator-(iter_cref left,
-                iter_cref right) noexcept
-                    { return left.ptr - right.ptr; }
-
-            friend_expr bool operator> (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr > left.ptr; }
-            friend_expr bool operator< (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr < left.ptr; }
-            friend_expr bool operator>= (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr >= left.ptr; }
-            friend_expr bool operator<= (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr <= left.ptr; }
-        private:
-            pointer                         ptr;
-        };
-
-        typedef Iterator<Tp>                iterator;
-        typedef Iterator<Tp const>          const_iterator;
-        typedef std::reverse_iterator<
-            iterator>                       reverse_iterator;
-        typedef std::reverse_iterator<
-            const_iterator>                 const_reverse_iterator;
-
-        constexpr iterator begin(void) noexcept
-            { return iterator{ &seed }; }
-        constexpr iterator end(void) noexcept
-            { return iterator{ &seed + Rows * Cols }; }
-
-        constexpr const_iterator begin(void) const noexcept
-            { return const_iterator{ &seed }; }
-        constexpr const_iterator end(void) const noexcept
-            { return const_iterator{ &seed + Rows * Cols }; }
-
-        constexpr const_iterator cbegin(void) const noexcept
-            { return const_iterator{ &seed }; }
-        constexpr const_iterator cend(void) const noexcept
-            { return const_iterator{ &seed + Rows * Cols }; }
-
-        constexpr reverse_iterator rbegin(void) noexcept
-            { return reverse_iterator{ end() - 1 }; }
-        constexpr reverse_iterator rend(void) noexcept
-            { return reverse_iterator{ begin() - 1}; }
-
-        constexpr const_reverse_iterator rbegin(void) const noexcept
-            { return const_reverse_iterator{ end() - 1 }; }
-        constexpr const_reverse_iterator rend(void) const noexcept
-            { return const_reverse_iterator{ begin() - 1}; }
-
-        constexpr const_reverse_iterator crbegin(void) const noexcept
-            { return const_reverse_iterator{ cend() - 1 }; }
-        constexpr const_reverse_iterator crend(void) const noexcept
-            { return const_reverse_iterator{ cbegin() - 1}; }
-
-        constexpr Tp& operator[] (std::size_t index) noexcept
-            { return *(&seed + index * Cols); }
-        constexpr Tp const& operator[] (std::size_t index) const noexcept
-            { return *(&seed + index * Cols); }
-
-        constexpr ~MatrixColumn(void) noexcept = default;
-    private:
-        Tp                                      seed;
-    };
-    #pragma pack(pop)
-
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
     class Matrix {
+    public:
+
+        #pragma pack(push, 1)
+        class Column {
+        public:
+            constexpr explicit Column(void) noexcept = delete;
+            constexpr Column(Column const& column) noexcept = delete;
+            constexpr Column(Column&& column) noexcept
+                : seed{std::move(column.seed)} {}
+
+            constexpr Column& operator=(
+                Column const& column) noexcept = delete;
+            constexpr Column& operator=(Column&& column) noexcept
+                    { seed = std::move(column.seed); return *this; }
+
+            constexpr Column& operator=(
+                Vector<Tp, Rows> const& vec) noexcept;
+
+            constexpr operator Vector<Tp, Rows>() const noexcept;
+
+            static constexpr std::size_t size(void) noexcept
+                { return Rows; }
+
+            template <Arithmetic Up = Tp>
+            constexpr Up length(Up init = {0}) const noexcept;
+
+            constexpr Column& operator+=(Column const& right);
+            constexpr Column& operator-=(Column const& right);
+            constexpr Column& operator*=(Column const& right);
+            constexpr Column& operator/=(Column const& right);
+
+            constexpr Column& operator%=(Column const& right)
+                requires ge_Operable(Tp, %);
+            constexpr Column& operator^=(Column const& right)
+                requires ge_Operable(Tp, ^);
+            constexpr Column& operator&=(Column const& right)
+                requires ge_Operable(Tp, &);
+            constexpr Column& operator|=(Column const& right)
+                requires ge_Operable(Tp, |);
+
+            constexpr Column& operator+=(Tp const& right);
+            constexpr Column& operator-=(Tp const& right);
+            constexpr Column& operator*=(Tp const& right);
+            constexpr Column& operator/=(Tp const& right);
+
+            constexpr Column& operator%=(Tp const& right)
+                requires ge_Operable(Tp, %);
+            constexpr Column& operator^=(Tp const& right)
+                requires ge_Operable(Tp, ^);
+            constexpr Column& operator&=(Tp const& right)
+                requires ge_Operable(Tp, &);
+            constexpr Column& operator|=(Tp const& right)
+                requires ge_Operable(Tp, |);
+
+            template <Arithmetic value_type>
+            class Iterator : public std::iterator<
+                std::random_access_iterator_tag, value_type>
+            {
+            public:
+                using iterator_category =       std::random_access_iterator_tag;
+                using reference =               value_type&;
+                using pointer =                 value_type*;
+                using const_pointer =           pointer const;
+                using difference_type =         decltype(
+                    std::declval<pointer>() - std::declval<pointer>());
+                using iter =                    Iterator;
+                using iter_ref =                Iterator&;
+                using iter_cref =               Iterator const&;
+
+                constexpr explicit Iterator(pointer ptr) noexcept
+                    : ptr{ptr} {}
+                constexpr explicit Iterator(void) noexcept = default;
+
+                constexpr iter_ref operator++(void) noexcept
+                    { ptr += Cols; return *this; }
+                constexpr iter operator++(int) noexcept
+                    { auto temp = *this; ++(*this); return temp; }
+                constexpr iter_ref operator--(void) noexcept
+                    { ptr -= Cols; return *this; }
+                constexpr iter operator--(int) noexcept
+                    { auto temp = *this; --(*this); return temp; }
+
+                constexpr reference operator*(void) const noexcept
+                    { return *ptr; }
+                constexpr const_pointer operator->(void) const noexcept
+                    { return ptr; }
+
+                constexpr iter_ref operator+=(difference_type offset) noexcept
+                    { ptr += offset * Cols; return *this; }
+                constexpr iter_ref operator-=(difference_type offset) noexcept
+                    { ptr -= offset * Cols; return *this; }
+                constexpr reference operator[](difference_type offset) const noexcept
+                    { return *(ptr + offset * Cols); }
+
+                friend_expr bool operator==(iter_cref left,
+                    iter_cref right) noexcept
+                        { return left.ptr == right.ptr; }
+
+                friend_expr iter operator+(iter_cref left,
+                    difference_type right) noexcept
+                        { auto temp = left; temp.ptr += right; return temp; }
+                friend_expr iter operator+(difference_type left,
+                    iter_cref right) noexcept
+                        { auto temp = right; temp.ptr += left; return temp; }
+                friend_expr iter operator-(iter_cref left,
+                    difference_type right) noexcept
+                        { auto temp = left; temp.ptr -= right; return temp; }
+                friend_expr difference_type operator-(iter_cref left,
+                    iter_cref right) noexcept
+                        { return left.ptr - right.ptr; }
+
+                friend_expr bool operator> (iter_cref right,
+                    iter_cref left) noexcept
+                        { return right.ptr > left.ptr; }
+                friend_expr bool operator< (iter_cref right,
+                    iter_cref left) noexcept
+                        { return right.ptr < left.ptr; }
+                friend_expr bool operator>= (iter_cref right,
+                    iter_cref left) noexcept
+                        { return right.ptr >= left.ptr; }
+                friend_expr bool operator<= (iter_cref right,
+                    iter_cref left) noexcept
+                        { return right.ptr <= left.ptr; }
+            private:
+                pointer                         ptr;
+            };
+
+            typedef Iterator<Tp>                iterator;
+            typedef Iterator<Tp const>          const_iterator;
+            typedef std::reverse_iterator<
+                iterator>                       reverse_iterator;
+            typedef std::reverse_iterator<
+                const_iterator>                 const_reverse_iterator;
+
+            constexpr iterator begin(void) noexcept
+                { return iterator{ &seed }; }
+            constexpr iterator end(void) noexcept
+                { return iterator{ &seed + Rows * Cols }; }
+
+            constexpr const_iterator begin(void) const noexcept
+                { return const_iterator{ &seed }; }
+            constexpr const_iterator end(void) const noexcept
+                { return const_iterator{ &seed + Rows * Cols }; }
+
+            constexpr const_iterator cbegin(void) const noexcept
+                { return const_iterator{ &seed }; }
+            constexpr const_iterator cend(void) const noexcept
+                { return const_iterator{ &seed + Rows * Cols }; }
+
+            constexpr reverse_iterator rbegin(void) noexcept
+                { return reverse_iterator{ end() - 1 }; }
+            constexpr reverse_iterator rend(void) noexcept
+                { return reverse_iterator{ begin() - 1}; }
+
+            constexpr const_reverse_iterator rbegin(void) const noexcept
+                { return const_reverse_iterator{ end() - 1 }; }
+            constexpr const_reverse_iterator rend(void) const noexcept
+                { return const_reverse_iterator{ begin() - 1}; }
+
+            constexpr const_reverse_iterator crbegin(void) const noexcept
+                { return const_reverse_iterator{ cend() - 1 }; }
+            constexpr const_reverse_iterator crend(void) const noexcept
+                { return const_reverse_iterator{ cbegin() - 1}; }
+
+            constexpr Tp& operator[] (std::size_t index) noexcept
+                { return *(&seed + index * Cols); }
+            constexpr Tp const& operator[] (std::size_t index) const noexcept
+                { return *(&seed + index * Cols); }
+
+            constexpr ~Column(void) noexcept = default;
+        private:
+            Tp                                      seed;
+        };
+        #pragma pack(pop)
+
     private:
-        typedef MatrixColumn<Tp, Rows, Cols>    Column;
         typedef TensorTuple<Column, Rows, Cols> ColumnBase;
     public:
         typedef TensorTuple<Tp, Rows, Cols>     NormalBase;
         typedef Vector<Tp, Cols>                value_type;
-        typedef MatrixColumn<Tp, Rows, Cols>    column_value_type;
+        typedef Column                          column_value_type;
 
         template <AllAbsolutelySame<value_type>... Rws>
             requires (sizeof...(Rws) == Rows)
@@ -483,8 +472,8 @@ namespace ge {
     // methods
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    constexpr MatrixColumn<Tp, Rows, Cols>&
-        MatrixColumn<Tp, Rows, Cols>::operator=(
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator=(
             Vector<Tp, Rows> const& vec) noexcept
     {
         std::ranges::copy(vec, begin());
@@ -492,7 +481,7 @@ namespace ge {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    constexpr MatrixColumn<Tp, Rows, Cols>::operator
+    constexpr Matrix<Tp, Rows, Cols>::Column::operator
         Vector<Tp, Rows>() const noexcept
     {
         Vector<Tp, Rows> vector;
@@ -570,7 +559,7 @@ namespace ge {
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
     template <Arithmetic Up>
-    constexpr Up MatrixColumn<Tp, Rows, Cols>::length(
+    constexpr Up Matrix<Tp, Rows, Cols>::Column::length(
         Up init) const noexcept
     {
         return accumulate(*this, std::move(init),
@@ -580,9 +569,9 @@ namespace ge {
     #ifndef ge_matcol_matcol_inner_op_factory
     #define ge_matcol_matcol_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr MatrixColumn<Tp, Rows, Cols>& \
-            MatrixColumn<Tp, Rows, Cols>::operator Op##=( \
-                MatrixColumn const& right) \
+        constexpr Matrix<Tp, Rows, Cols>::Column& \
+            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
+                Column const& right) \
         { \
             std::ranges::transform(*this, right, begin(), \
                 [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
@@ -592,9 +581,9 @@ namespace ge {
     #ifndef ge_matcol_matcol_c_inner_op_factory
     #define ge_matcol_matcol_c_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr MatrixColumn<Tp, Rows, Cols>& \
-            MatrixColumn<Tp, Rows, Cols>::operator Op##=( \
-                MatrixColumn const& right) requires ge_Operable(Tp, Op) \
+        constexpr Matrix<Tp, Rows, Cols>::Column& \
+            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
+                Column const& right) requires ge_Operable(Tp, Op) \
         { \
             std::ranges::transform(*this, right, begin(), \
                 [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
@@ -604,8 +593,8 @@ namespace ge {
     #ifndef ge_matcol_tp_inner_op_factory
     #define ge_matcol_tp_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr MatrixColumn<Tp, Rows, Cols>& \
-            MatrixColumn<Tp, Rows, Cols>::operator Op##=( \
+        constexpr Matrix<Tp, Rows, Cols>::Column& \
+            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
                 Tp const& right) \
         { \
             std::ranges::for_each(*this, [&right](Tp& value) -> void \
@@ -616,8 +605,8 @@ namespace ge {
     #ifndef ge_matcol_tp_c_inner_op_factory
     #define ge_matcol_tp_c_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr MatrixColumn<Tp, Rows, Cols>& \
-            MatrixColumn<Tp, Rows, Cols>::operator Op##=( \
+        constexpr Matrix<Tp, Rows, Cols>::Column& \
+            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
                 Tp const& right) requires ge_Operable(Tp, Op) \
         { \
             std::ranges::for_each(*this, [&right](Tp& value) -> void \
@@ -650,7 +639,7 @@ namespace ge {
     #define ge_matcol_vec_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Vector<Tp, Rows> \
-            operator Op (MatrixColumn<Tp, Rows, Cols> const& left, \
+            operator Op (typename Matrix<Tp, Rows, Cols>::Column const& left, \
                 Vector<Tp, Rows> const& right) \
         { \
             Vector<Tp, Rows> result; \
@@ -664,7 +653,7 @@ namespace ge {
     #define ge_matcol_vec_c_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Vector<Tp, Rows> \
-            operator Op (MatrixColumn<Tp, Rows, Cols> const& left, \
+            operator Op (typename Matrix<Tp, Rows, Cols>::Column const& left, \
                 Vector<Tp, Rows> const& right) \
                     requires ge_Operable(Tp, Op) \
         { \
@@ -680,7 +669,7 @@ namespace ge {
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Vector<Tp, Rows> \
             operator Op (Vector<Tp, Rows> const& left, \
-                MatrixColumn<Tp, Rows, Cols> const& right) \
+                typename Matrix<Tp, Rows, Cols>::Column const& right) \
         { \
             Vector<Tp, Rows> result; \
             std::ranges::transform(left, right, result.begin(), \
@@ -694,7 +683,7 @@ namespace ge {
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Vector<Tp, Rows> \
             operator Op (Vector<Tp, Rows> const& left, \
-                MatrixColumn<Tp, Rows, Cols> const& right) \
+                typename Matrix<Tp, Rows, Cols>::Column const& right) \
                     requires ge_Operable(Tp, Op) \
         { \
             Vector<Tp, Rows> result; \
@@ -1085,14 +1074,6 @@ namespace ge {
         return sum;
     }
 
-    #ifndef ge_matrix_explicit_init
-    #define ge_matrix_explicit_init(Tp, Rows, Cols) \
-        template class MatrixColumn<Tp, Rows, Cols>; \
-        template class Matrix<Tp, Rows, Cols>;
-    #endif
-
-    ge_matrix_explicit_init(float, 2, 2)
-
     template <typename Tp>
     using Matrix2                         = Matrix<Tp, 2, 2>;
     template <typename Tp>
@@ -1101,6 +1082,8 @@ namespace ge {
     using Matrix4                         = Matrix<Tp, 4, 4>;
     template <typename Tp>
     using Matrix8                         = Matrix<Tp, 8, 8>;
+
+    template class Matrix<float, 2, 2>;
 
     typedef Matrix<float, 2, 2>             Matrix2f;
 
