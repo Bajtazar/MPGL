@@ -97,8 +97,9 @@ namespace ge {
     }
 
     void Ellipse::recalculateUniforms(void) noexcept {
-        transform = *Matrix2f{Vector2f{vertices[1]} - Vector2f{vertices[0]},
-            Vector2f{vertices[3]} - Vector2f{vertices[0]}}.transpose().inverse();
+        transform = *invert(transpose(
+            Matrix2f{Vector2f{vertices[1]} - Vector2f{vertices[0]},
+            Vector2f{vertices[3]} - Vector2f{vertices[0]}}));
     }
 
     void Ellipse::bindBuffers(void) const noexcept {

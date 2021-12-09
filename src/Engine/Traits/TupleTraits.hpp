@@ -1,31 +1,29 @@
 #pragma once
 
-#include <concepts>
+#include "Concepts.hpp"
+
 #include <tuple>
 
 namespace ge {
 
-    struct TupleHelperFn {
+    class  TupleHelperFn {
+    private:
+        template <NotReference Tp, std::size_t... I>
+        static constexpr auto tupleConstructor(
+            std::index_sequence<I...>) noexcept
+                -> decltype(std::tuple{(I, std::declval<Tp>())...});
+    public:
+        template <NotReference Tp, std::size_t Dimm>
+            requires (Dimm != 0)
+        static constexpr auto tensorConstructor(void) noexcept
+            -> decltype(tupleConstructor<Tp>(
+                std::make_index_sequence<Dimm>{}));
 
-        template <std::constructible_from T, std::size_t Size>
-            requires (Size > 0)
-        static constexpr decltype(auto) tupleConstructor(void) noexcept {
-            if constexpr (Size > 1)
-                return std::tuple_cat(tupleConstructor<T, Size-1>(), std::tuple<T>{});
-            else
-                return std::tuple<T>{};
-        }
-
-        template <std::constructible_from T, std::size_t Size, std::size_t Dimmensions>
-            requires (Size > 0)
-        static constexpr decltype(auto) tensorConstructor(void) noexcept {
-            if constexpr (Dimmensions)
-                return tupleConstructor<decltype(
-                    tensorConstructor<T, Size, Dimmensions - 1>()), Size>();
-            else
-                return T{};
-        }
-
+        template <NotReference Tp, std::size_t Dimm, std::size_t... Dimmensions>
+            requires (Dimm != 0 && sizeof...(Dimmensions) > 0)
+        static constexpr auto tensorConstructor(void) noexcept
+            -> decltype(tensorConstructor<decltype(
+            tensorConstructor<Tp, Dimmensions...>()), Dimm>());
     };
 
     template <typename... Args>
@@ -37,11 +35,11 @@ namespace ge {
         }(std::tuple{std::forward<Args>(args)...}, std::make_index_sequence<sizeof...(Args)>{});
     }
 
-    template <std::constructible_from T, std::size_t Size>
-    using UniformTuple = decltype(TupleHelperFn::tupleConstructor<T, Size>());
+    template <NotReference T, std::size_t Size>
+    using UniformTuple = decltype(TupleHelperFn::tensorConstructor<T, Size>());
 
-    template <std::constructible_from T, std::size_t Size, std::size_t Dimmensions>
-    using TensorTuple = decltype(TupleHelperFn::tensorConstructor<T, Size, Dimmensions>());
+    template <NotReference T, std::size_t... Dimmensions>
+    using TensorTuple = decltype(TupleHelperFn::tensorConstructor<T, Dimmensions...>());
 
     template <typename... Args>
     using ReversedTuple = decltype(tupleReverser<Args...>(std::declval<Args>()...));

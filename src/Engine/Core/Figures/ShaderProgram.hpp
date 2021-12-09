@@ -55,7 +55,7 @@ namespace ge {
         template <std::size_t Size>
             requires (Size <= 4 && Size > 1)
         inline void setUniform(std::string const& uniform,
-            Matrix<float, Size> const& matrix) const noexcept;
+            Matrix<float, Size, Size> const& matrix) const noexcept;
     private:
         class ProgramDeleter {
         public:
@@ -153,7 +153,7 @@ namespace ge {
     template <std::size_t Size>
         requires (Size <= 4 && Size > 1)
     inline void ShaderProgram::setUniform(std::string const& uniform,
-        Matrix<float, Size> const& matrix) const noexcept
+        Matrix<float, Size, Size> const& matrix) const noexcept
     {
         float const* const memory = reinterpret_cast<float const* const>(&matrix);
         if constexpr (Size == 4)

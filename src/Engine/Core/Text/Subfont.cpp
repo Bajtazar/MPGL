@@ -42,7 +42,7 @@ namespace ge {
     Vector2i Subfont::getBearings(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
-        return vectorCast<int32_t>(TwoVector<int16_t>{glyph.leftSideBearing,
+        return vectorCast<int32_t>(Vector2<int16_t>{glyph.leftSideBearing,
             glyph.glyph.getMinDimmensions()[1]}) * static_cast<int32_t>(size)
             / static_cast<int32_t>(fontData.unitsPerEm);
     }

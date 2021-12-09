@@ -99,12 +99,12 @@ namespace ge {
         typedef std::map<bool, std::map<uint8_t, HuffmanTablePtr>>          HuffmanArray;
         typedef std::map<uint8_t, std::unique_ptr<Component>>               ComponentArray;
         typedef std::map<uint8_t, QuantizationTablePtr>                     QuantizationArray;
-        typedef std::map<uint8_t, Matrix<int16_t, 8>>                       MatricesMap;
+        typedef std::map<uint8_t, Matrix8<int16_t>>                         MatricesMap;
         typedef std::reference_wrapper<ChunkParser>                         ChunkParserRef;
         typedef BigEndianBitIter<SafeIter>                                  Iter;
 
         template <typename T>
-        using PixelMatrix = std::tuple<Matrix<T, 8>, Matrix<T, 8>, Matrix<T, 8>>;
+        using PixelMatrix = std::tuple<Matrix8<T>, Matrix8<T>, Matrix8<T>>;
 
         static PixelMatrix<uint8_t> convertYCbCrToRGB(PixelMatrix<int16_t> yCbCr) noexcept;
         static std::size_t getBoundry(std::size_t boundry) noexcept;
@@ -114,7 +114,7 @@ namespace ge {
         void setPolicy(std::istream& file);
         void parseChunks(FileIter file);
         void parseNextChunk(FileIter& file, uint16_t signature);
-        Matrix<int16_t, 8> readMatrix(Iter& iter, uint8_t id, int16_t& coeff);
+        Matrix8<int16_t> readMatrix(Iter& iter, uint8_t id, int16_t& coeff);
         void decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,
             QuantizationTablePtr const& quant, Iter& iter);
         Iter getDecodeIterator(void) noexcept;

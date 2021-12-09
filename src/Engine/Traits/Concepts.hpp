@@ -6,15 +6,15 @@
 
 namespace ge {
 
-    #ifndef Operable
-    #define Operable(Tp, Operator) requires ( Tp a, Tp b ) { \
+    #ifndef ge_Operable
+    #define ge_Operable(Tp, Operator) requires ( Tp a, Tp b ) { \
         { a Operator b } -> std::convertible_to< Tp >; \
     }
     #endif
 
     template <typename T>
-    concept Arithmetic = std::constructible_from<T>
-        && requires (T left, T right)
+    concept Arithmetic =
+        requires (T left, T right)
         {
             {left + right} -> std::convertible_to<T>;
             {left - right} -> std::convertible_to<T>;
@@ -176,5 +176,11 @@ namespace ge {
         std::is_nothrow_move_assignable_v<Classes> &&
         ...
     );
+
+    template <class Range, typename Tp, std::size_t Size>
+    concept SizedRange = std::ranges::random_access_range<Range> &&
+        std::same_as<std::ranges::range_value_t<Range>, Tp> &&
+        requires { { Range::size() } -> std::convertible_to<std::size_t>;  }
+        && Range::size() == Size;
 
 }

@@ -6,10 +6,10 @@ namespace ge {
 
     template <std::size_t Size, std::ranges::random_access_range Range>
     struct FixedRange : public Range {
-        constexpr explicit FixedRange(Range&& range) noexcept
-            : Range{std::forward<Range>(range)} {}
+        using Range::Range;
 
-        static constexpr std::size_t size(void) noexcept { return Size; }
+        static constexpr std::size_t size(void) noexcept
+            { return Size; }
     };
 
 }

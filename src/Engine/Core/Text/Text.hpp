@@ -218,7 +218,7 @@ namespace ge {
         typedef std::vector<uint16_t>               IDArray;
         typedef std::reference_wrapper<Font>        FontRef;
         typedef std::tuple<uint8_t, float,
-            Matrix<float, 2>>                       ArgTuple;
+            Matrix2f>                               ArgTuple;
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
 
@@ -236,7 +236,7 @@ namespace ge {
         IDArray parseString(std::string string);
 
         void drawGlyph(Subfont& subfont, uint8_t level, float scale,
-            uint16_t const& index, Matrix<float, 2> const& rotation);
+            uint16_t const& index, Matrix2f const& rotation);
         void drawGlyphs(IDArray const& array);
         void redrawGlyphs(void);
 

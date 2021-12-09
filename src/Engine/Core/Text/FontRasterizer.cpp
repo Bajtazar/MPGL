@@ -121,7 +121,7 @@ namespace ge {
     }
 
     void FontRasterizer::defaultPixelSetter(Bitmap& canva,
-        TwoVector<uint16_t> const& position) noexcept
+        Vector2<uint16_t> const& position) noexcept
     {
         if (position[1] == lastPosition[1]) {
             if (!canva[position])
@@ -136,7 +136,7 @@ namespace ge {
     }
 
     void FontRasterizer::deducingPixelSetter(Bitmap& canva,
-        TwoVector<uint16_t> const& position) noexcept
+        Vector2<uint16_t> const& position) noexcept
     {
         if (position[1] == lastPosition[1]) {
             if (!canva[position])
@@ -164,7 +164,7 @@ namespace ge {
     void FontRasterizer::tryRepairBrokenPixel(BitmapRow& row,
         std::size_t index) const noexcept
     {
-        TwoVector<uint16_t> brokenPixel;
+        Vector2<uint16_t> brokenPixel;
         for (auto const& contour : contours) {
             if (std::round(contour.front().position[1]) == index) {
                 uint16_t brokenPixel = std::round(contour.front().position[0]);

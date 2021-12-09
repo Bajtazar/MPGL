@@ -26,7 +26,7 @@ namespace ge {
         std::variant<Loca16, Loca32>        locaTable;
     };
 
-    typedef TwoVector<int16_t>                      Vector2si;
+    typedef Vector2<int16_t>                        Vector2si;
 
     class VectorizedGlyph {
     public:

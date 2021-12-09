@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Core/Figures/Views.hpp"
-
 #include <math.h>
 
 namespace ge {

@@ -53,7 +53,7 @@ namespace ge {
 
     template <bool IsPolichromatic>
     void Text<IsPolichromatic>::drawGlyph(Subfont& subfont, uint8_t level,
-        float scale, uint16_t const& index, Matrix<float, 2> const& rotation)
+        float scale, uint16_t const& index, Matrix2f const& rotation)
     {
         if (auto glyph = subfont(index, level)) {
             if (auto texture = glyph->get().texture) {

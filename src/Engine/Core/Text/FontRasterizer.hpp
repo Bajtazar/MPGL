@@ -32,12 +32,12 @@ namespace ge {
         typedef Bitmap::iterator::value_type            BitmapRow;
 
         using PixelSetter = void (FontRasterizer::*)
-            (Bitmap& canva, TwoVector<uint16_t> const& position);
+            (Bitmap& canva, Vector2<uint16_t> const& position);
 
         Contours                    contours;
         Contour                     primitiveQueue;
-        TwoVector<uint16_t>         lastPosition;
-        TwoVector<uint16_t>         firstConoturPixel;
+        Vector2<uint16_t>           lastPosition;
+        Vector2<uint16_t>           firstConoturPixel;
         PixelSetter                 pixelSetter;
         std::size_t                 size;
         FontData const&             mainData;
@@ -87,17 +87,17 @@ namespace ge {
         void setCanvaPixel(Bitmap& canva, uint16_t x, float y) noexcept;
 
         template <bool Axis>
-        TwoVector<uint16_t> getCoords(uint16_t x, float y) const noexcept;
+        Vector2<uint16_t> getCoords(uint16_t x, float y) const noexcept;
 
         template <std::relation<uint16_t, uint16_t> Compare>
-        void correctWhenTrue(Bitmap& bitmap, TwoVector<uint16_t> const& lastPosition,
-            TwoVector<uint16_t> const& position, Compare compare) noexcept;
+        void correctWhenTrue(Bitmap& bitmap, Vector2<uint16_t> const& lastPosition,
+            Vector2<uint16_t> const& position, Compare compare) noexcept;
 
         void defaultPixelSetter(Bitmap& canva,
-            TwoVector<uint16_t> const& position) noexcept;
+            Vector2<uint16_t> const& position) noexcept;
 
         void deducingPixelSetter(Bitmap& canva,
-            TwoVector<uint16_t> const& position) noexcept;
+            Vector2<uint16_t> const& position) noexcept;
 
         void fillContour(Bitmap& canva) const noexcept;
 
@@ -153,7 +153,7 @@ namespace ge {
 
 
     template <bool Axis>
-    TwoVector<uint16_t> FontRasterizer::getCoords(
+    Vector2<uint16_t> FontRasterizer::getCoords(
         uint16_t x, float y) const noexcept
     {
         if constexpr (Axis)
@@ -164,8 +164,8 @@ namespace ge {
 
     template <std::relation<uint16_t, uint16_t> Compare>
     void FontRasterizer::correctWhenTrue(Bitmap& canva,
-        TwoVector<uint16_t> const& lastPosition,
-        TwoVector<uint16_t> const& position,
+        Vector2<uint16_t> const& lastPosition,
+        Vector2<uint16_t> const& position,
         Compare compare) noexcept
     {
         if (compare(position, lastPosition)) {

@@ -9,8 +9,6 @@
 #include "../Traits/Concepts.hpp"
 #include "../Utility/Ranges.hpp"
 
-#include <initializer_list>
-
 #ifndef friend_expr
 #define friend_expr     friend constexpr
 #endif
@@ -38,21 +36,6 @@ namespace ge {
 
         constexpr Vector(void) noexcept = default;
 
-        template <std::size_t Index>
-            requires (Index < Size)
-        constexpr reference get(void) & noexcept
-            { return std::get<Size - 1 - Index>(static_cast<Base&>(*this)); }
-
-        template <std::size_t Index>
-            requires (Index < Size)
-        constexpr const_reference get(void) const& noexcept
-            { return std::get<Size - 1 - Index>(static_cast<Base const&>(*this)); }
-
-        template <std::size_t Index>
-            requires (Index < Size)
-        constexpr value_type&& get(void) && noexcept
-            { return std::get<Size - 1 - Index>(static_cast<Base&&>(*this)); }
-
         static constexpr std::size_t size(void) noexcept
             { return Size; }
 
@@ -65,27 +48,27 @@ namespace ge {
         constexpr Vector& operator/=(Vector const& right);
 
         constexpr Vector& operator%=(Vector const& right)
-            requires Operable(Tp, %);
+            requires ge_Operable(Tp, %);
         constexpr Vector& operator^=(Vector const& right)
-            requires Operable(Tp, ^);
+            requires ge_Operable(Tp, ^);
         constexpr Vector& operator&=(Vector const& right)
-            requires Operable(Tp, &);
+            requires ge_Operable(Tp, &);
         constexpr Vector& operator|=(Vector const& right)
-            requires Operable(Tp, |);
+            requires ge_Operable(Tp, |);
 
-        constexpr Vector& operator+=(Tp&& right);
-        constexpr Vector& operator-=(Tp&& right);
-        constexpr Vector& operator*=(Tp&& right);
-        constexpr Vector& operator/=(Tp&& right);
+        constexpr Vector& operator+=(Tp const& right);
+        constexpr Vector& operator-=(Tp const& right);
+        constexpr Vector& operator*=(Tp const& right);
+        constexpr Vector& operator/=(Tp const& right);
 
-        constexpr Vector& operator%=(Tp&& right)
-            requires Operable(Tp, %);
-        constexpr Vector& operator^=(Tp&& right)
-            requires Operable(Tp, ^);
-        constexpr Vector& operator&=(Tp&& right)
-            requires Operable(Tp, &);
-        constexpr Vector& operator|=(Tp&& right)
-            requires Operable(Tp, |);
+        constexpr Vector& operator%=(Tp const& right)
+            requires ge_Operable(Tp, %);
+        constexpr Vector& operator^=(Tp const& right)
+            requires ge_Operable(Tp, ^);
+        constexpr Vector& operator&=(Tp const& right)
+            requires ge_Operable(Tp, &);
+        constexpr Vector& operator|=(Tp const& right)
+            requires ge_Operable(Tp, |);
 
         template <Arithmetic Up>
         constexpr operator Vector<Up, Size>() const noexcept;
@@ -131,8 +114,8 @@ namespace ge {
                 { ptr += offset; return *this; }
             constexpr iter_ref operator-=(difference_type offset) noexcept
                 { ptr -= offset; return *this; }
-            constexpr iter operator[](difference_type offset) noexcept
-                { auto temp = *this; temp.ptr += offset; return temp; }
+            constexpr reference operator[](difference_type offset) const noexcept
+                { return *(ptr + offset); }
 
             friend_expr bool operator==(iter_cref left,
                 iter_cref right) noexcept
@@ -140,10 +123,10 @@ namespace ge {
 
             friend_expr iter operator+(iter_cref left,
                 difference_type right) noexcept
-                    { auto temp = left; left.ptr += right; return temp; }
+                    { auto temp = left; temp.ptr += right; return temp; }
             friend_expr iter operator+(difference_type left,
                 iter_cref right) noexcept
-                    { auto temp = right; right.ptr += left; return temp; }
+                    { auto temp = right; temp.ptr += left; return temp; }
             friend_expr iter operator-(iter_cref left,
                 difference_type right) noexcept
                     { auto temp = left; temp.ptr -= right; return temp; }
@@ -175,19 +158,19 @@ namespace ge {
             const_iterator>                 const_reverse_iterator;
 
         constexpr iterator begin(void) noexcept
-            { return iterator{ &get<0>() }; }
+            { return iterator{ &first() }; }
         constexpr iterator end(void) noexcept
-            { return iterator{ &get<0>() + Size }; }
+            { return iterator{ &first() + Size }; }
 
         constexpr const_iterator begin(void) const noexcept
-            { return const_iterator{ &get<0>() }; }
+            { return const_iterator{ &first() }; }
         constexpr const_iterator end(void) const noexcept
-            { return const_iterator{ &get<0>() + Size }; }
+            { return const_iterator{ &first() + Size }; }
 
         constexpr const_iterator cbegin(void) const noexcept
-            { return const_iterator{ &get<0>() }; }
+            { return const_iterator{ &first() }; }
         constexpr const_iterator cend(void) const noexcept
-            { return const_iterator{ &get<0>() + Size}; }
+            { return const_iterator{ &first() + Size}; }
 
         constexpr reverse_iterator rbegin(void) noexcept
             { return reverse_iterator{ end() - 1 }; }
@@ -205,12 +188,17 @@ namespace ge {
             { return const_reverse_iterator{ cbegin() - 1}; }
 
         constexpr reference operator[] (std::size_t index) noexcept
-            { return *(&get<0>() + index); }
+            { return *(&first() + index); }
         constexpr const_reference operator[] (std::size_t index) const noexcept
-            { return *(&get<0>() + index); }
+            { return *(&first() + index); }
     private:
         template <typename... Args>
         constexpr Base tupleBuilder(Args&&... args) const noexcept;
+
+        constexpr reference first(void) noexcept
+            { return std::get<Size - 1>(static_cast<Base&>(*this)); }
+        constexpr const_reference first(void) const noexcept
+            { return std::get<Size - 1>(static_cast<Base const&>(*this)); }
     };
 
     template <Arithmetic Tp, std::size_t Size>
@@ -330,7 +318,7 @@ namespace ge {
     #define ge_vec_vec_c_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
-            Vector<Tp, Size> const& right) requires Operable(Tp, Op) \
+            Vector<Tp, Size> const& right) requires ge_Operable(Tp, Op) \
         { \
             std::ranges::transform(*this, right, begin(), \
                 [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
@@ -341,7 +329,7 @@ namespace ge {
     #define ge_vec_tp_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
-           Tp&& right) \
+           Tp const& right) \
         { \
             std::ranges::for_each(*this, [&right](Tp& value) -> void \
                 { value Op##= right; }); \
@@ -352,7 +340,7 @@ namespace ge {
     #define ge_vec_tp_c_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
-           Tp&& right) requires Operable(Tp, Op) \
+           Tp const& right) requires ge_Operable(Tp, Op) \
         { \
             std::ranges::for_each(*this, [&right](Tp& value) -> void \
                 { value Op##= right; }); \
@@ -401,7 +389,7 @@ namespace ge {
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size> \
             operator Op (Vector<Tp, Size> const& left, \
-                Vector<Tp, Size> const& right) requires Operable(Tp, Op) \
+                Vector<Tp, Size> const& right) requires ge_Operable(Tp, Op) \
         { \
             Vector<Tp, Size> result; \
             std::ranges::transform(left, right, result.begin(), \
@@ -429,7 +417,7 @@ namespace ge {
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size> \
             operator Op (Vector<Tp, Size> const& left, \
-                Tp const& right) requires Operable(Tp, Op) \
+                Tp const& right) requires ge_Operable(Tp, Op) \
         { \
             Vector<Tp, Size> result; \
             std::ranges::transform(left, result.begin(), \
@@ -456,7 +444,7 @@ namespace ge {
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size> operator Op ( \
             Tp const& left, Vector<Tp, Size> const& right) \
-                requires Operable(Tp, Op) \
+                requires ge_Operable(Tp, Op) \
         { \
             Vector<Tp, Size> result; \
             std::ranges::transform(right, result.begin(), \
@@ -501,14 +489,17 @@ namespace ge {
     typedef Vector<uint32_t, 2> Vector2ui;
     typedef Vector<int32_t, 2>  Vector2i;
 
-    template <Arithmetic Tp>
-    using TwoVector = Vector<Tp, 2>;
+    typedef Vector<float, 3>    Vector3f;
+    typedef Vector<float, 4>    Vector4f;
 
     template <Arithmetic Tp>
-    using ThreeVector = Vector<Tp, 3>;
+    using Vector2 =             Vector<Tp, 2>;
 
     template <Arithmetic Tp>
-    using FourVector = Vector<Tp, 4>;
+    using Vector3 =             Vector<Tp, 3>;
+
+    template <Arithmetic Tp>
+    using Vector4 =             Vector<Tp, 4>;
 
     constexpr Vector2f operator"" _x(long double value) noexcept {
         return Vector2f{static_cast<float>(value), 0.f};

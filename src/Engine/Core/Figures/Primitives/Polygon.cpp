@@ -1,6 +1,7 @@
 #include "Polygon.hpp"
 
 #include "../../../Mathematics/Systems.hpp"
+#include "../Views.hpp"
 
 #include <numbers>
 #include <iterator>

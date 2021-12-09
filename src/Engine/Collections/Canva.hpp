@@ -24,7 +24,7 @@ namespace ge {
     class Canva {
     public:
         typedef std::size_t                         size_type;
-        typedef TwoVector<size_type>                size_vector;
+        typedef Vector2<size_type>                  size_vector;
     private:
         typedef CanvaRowBase<Base, size_type>       BaseTuple;
         typedef Range<BaseTuple, Alloc<BaseTuple>>  RowsRange;
@@ -85,8 +85,8 @@ namespace ge {
                     { iter += offset; return *this; }
                 VEC_CONSTEXPR Iterator& operator-=(difference_type offset) noexcept
                     { iter -= offset; return *this; }
-                VEC_CONSTEXPR Iterator  operator[](difference_type offset) noexcept
-                    { auto temp = *this; temp += offset; return temp; }
+                VEC_CONSTEXPR reference operator[](difference_type offset) noexcept
+                    { return *(iter + offset); }
 
                 friend VEC_CONSTEXPR bool operator== (Iterator const& left,
                     Iterator const& right) noexcept
@@ -181,10 +181,10 @@ namespace ge {
             { return dimensions[1]; }
 
         template <std::integral T>
-        VEC_CONSTEXPR Base& operator[](TwoVector<T> const& coords) noexcept
+        VEC_CONSTEXPR Base& operator[](Vector2<T> const& coords) noexcept
             { return memoryMap[dimensions[0] * coords[1] + coords[0]]; }
         template <std::integral T>
-        VEC_CONSTEXPR Base const& operator[](TwoVector<T> const& coords) const noexcept
+        VEC_CONSTEXPR Base const& operator[](Vector2<T> const& coords) const noexcept
             { return memoryMap[dimensions[0] * coords[1] + coords[0]]; }
 
         VEC_CONSTEXPR Row& operator[] (size_type index) noexcept

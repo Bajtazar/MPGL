@@ -76,7 +76,7 @@ namespace ge {
     }
 
     template <security::SecurityPolicy Policy>
-    Matrix<int16_t, 8> JPEGLoader<Policy>::readMatrix(Iter& iter, uint8_t id, int16_t& coeff) {
+    Matrix8<int16_t> JPEGLoader<Policy>::readMatrix(Iter& iter, uint8_t id, int16_t& coeff) {
         uint8_t code = huffmanTables.at(false).at(id)->decoder.decodeToken(iter);
         uint16_t bits = readRNBits<uint16_t>(code, iter);
         coeff += decodeNumber(code, bits);
