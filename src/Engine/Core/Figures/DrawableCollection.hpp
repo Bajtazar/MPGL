@@ -13,8 +13,7 @@ namespace ge {
 
     template <class Tp>
     concept DrawableType = std::derived_from<Tp, Drawable>
-        && std::derived_from<Tp, ScreenTransformationEvent>
-        && std::is_default_constructible_v<Tp>;
+        && std::derived_from<Tp, ScreenTransformationEvent>;
 
     template <class Tp>
     concept TransformableDrawable = DrawableType<Tp>
