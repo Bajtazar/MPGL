@@ -43,6 +43,7 @@ namespace ge {
         using const_reverse_iterator = typename Sequence::const_reverse_iterator;
 
         using value_type = Base;
+        using size_type = typename Sequence::size_type;
 
         template <typename Signature, typename... Args>
             requires std::invocable<Signature, Base, Args...>
@@ -51,6 +52,8 @@ namespace ge {
 
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
+        void draw(size_type begin, size_type end) const noexcept
+            requires std::ranges::random_access_range<Sequence>;
 
         void onScreenTransformation(Vector2ui const& oldDimmensions
             ) noexcept final;
@@ -104,6 +107,15 @@ namespace ge {
     void DrawableCollectionBase<Base, Sequence>::draw(void) const noexcept {
         std::ranges::for_each(*this, [](auto const& drawable)
             { drawable.draw(); });
+    }
+
+    template <DrawableType Base, std::ranges::input_range Sequence>
+    void DrawableCollectionBase<Base, Sequence>::draw(
+        size_type begin, size_type end) const noexcept
+            requires std::ranges::random_access_range<Sequence>
+    {
+        for (size_type i = begin; i != end; ++i)
+            (*this)[i].draw();
     }
 
     template <DrawableType Base, std::ranges::input_range Sequence>
