@@ -2,22 +2,25 @@ CXX	:= g++11.1
 CXX_FLAGS	:= -std=c++20 -O3 -ggdb3 -lGL -lglfw -ldl -pthread -ltbb
 
 BIN	:= bin
-SRC	:= $(shell find . -name "*.cpp")
+SRC	:= $(shell find src/ -name "*.cpp")
+T_SRC	:= $(shell find . -name "*.cpp" | awk '{ if (/main/ && !seen) { seen = 1 } else print }')
 INCLUDE	:= include
 
-LIBRARIES	:=
 EXECUTABLE	:= Epsilon
+TEST_EXEC	:= Test
 
-
-
-all: $(BIN)/$(EXECUTABLE)
+all: test app
 
 run: clean all
 	clear
+	./$(BIN)/$(TEST_EXEC)
 	./$(BIN)/$(EXECUTABLE)
 
-$(BIN)/$(EXECUTABLE): $(SRC) glad.c
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $@ $(LIBRARIES)
+app: $(SRC) glad.c
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $(BIN)/$(EXECUTABLE)
+
+test: $(T_SRC) glad.c
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $(BIN)/$(TEST_EXEC)
 
 clean:
 	-rm $(BIN)/*
