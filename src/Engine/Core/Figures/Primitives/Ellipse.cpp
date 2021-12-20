@@ -37,7 +37,7 @@ namespace ge {
     }
 
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
-        float angle, Color const& color) noexcept
+        Color const& color, float angle) noexcept
             : Shadeable{"2DEllipse"}, vertices{ellipseVertices(center, semiAxis, angle)},
             color{color}
     {

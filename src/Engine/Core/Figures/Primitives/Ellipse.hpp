@@ -11,7 +11,7 @@ namespace ge {
     class Ellipse : public Drawable, public Shadeable, public Transformable2D {
     public:
         Ellipse(Vector2f const& center, Vector2f const& semiAxis,
-                float angle = 0.f, Color const& color = {}) noexcept;
+                Color const& color = {}, float angle = 0.f) noexcept;
         Ellipse(Vector2f const& center, float radius,
                 Color const& color = {}) noexcept;
         Ellipse(Ellipse const& ellipse) noexcept;

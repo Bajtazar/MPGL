@@ -138,9 +138,13 @@ namespace ge {
     template <typename T>
     concept DefaultBaseType = Absolute<T> && std::is_default_constructible_v<T>;
 
+    template <class Range, typename Tp>
+    concept SameRangeType = std::same_as<
+        std::ranges::range_value_t<Range>, Tp>;
+
     template <class Range, typename Base>
     concept UnderlyingRange = FlexibleRange<Range>
-        && std::same_as<std::ranges::range_value_t<Range>, Base>;
+        && SameRangeType<Range, Base>;
 
     template <template<class, class> class Range,
         typename Type, typename Alloc = std::allocator<Type>>
@@ -179,7 +183,7 @@ namespace ge {
 
     template <class Range, typename Tp, std::size_t Size>
     concept SizedRange = std::ranges::random_access_range<Range> &&
-        std::same_as<std::ranges::range_value_t<Range>, Tp> &&
+        SameRangeType<Range, Tp> &&
         requires { { Range::size() } -> std::convertible_to<std::size_t>;  }
         && Range::size() == Size;
 

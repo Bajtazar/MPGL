@@ -1033,13 +1033,10 @@ namespace ge {
         invert(Matrix<Tp, Rows, Rows> const& matrix) noexcept
     {
         Matrix<Up, Rows, Rows> luMatrix = matrix;
-        auto identity = identityMatrix<Up, Rows, Rows>();
         if (auto permutations = lupDecomposition(luMatrix)) {
-            Matrix<Up, Rows, Rows> inverseMatrix;
-            for (std::size_t i = 0;i < Rows; ++i)
-                inverseMatrix.getColumn(i)
-                    = lupSolve(luMatrix, *permutations,
-                        identity.getColumn(i));
+            auto inverseMatrix = identityMatrix<Up, Rows, Rows>();
+            for (auto& column : inverseMatrix.columnsRange())
+                column = lupSolve(luMatrix, *permutations, column);
             return { inverseMatrix };
         }
         return {};
