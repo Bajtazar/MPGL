@@ -2,7 +2,7 @@
 
 #include <string>
 #include <memory>
-#include <type_traits>
+#include <array>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -14,17 +14,17 @@
 
 namespace ge {
 
-    template <Allocator Alloc = std::allocator<uint32_t>>
     class Texture {
     public:
-        struct Options {
-            enum class TextureWrapper {
+        class Options {
+        public:
+            enum class TextureWrapper : GLint {
                 Repeat = GL_REPEAT,
                 MirroredRepeat = GL_MIRRORED_REPEAT,
                 ClampToEdge = GL_CLAMP_TO_EDGE,
                 ClampToBorder = GL_CLAMP_TO_BORDER
             };
-            enum class MinifyingTextureFilter {
+            enum class MinifyingTextureFilter : GLint {
                 Nearest = GL_NEAREST,
                 Linear = GL_LINEAR,
                 NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
@@ -32,7 +32,7 @@ namespace ge {
                 LinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
                 LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR
             };
-            enum class MagnifyingTextureFilter {
+            enum class MagnifyingTextureFilter : GLint {
                 Nearest = GL_NEAREST,
                 Linear = GL_LINEAR
             };
@@ -42,29 +42,47 @@ namespace ge {
             MagnifyingTextureFilter     magnifyingFilter;
             Color                       borderColor;
             bool                        mipmaps;
-            Options(TextureWrapper verticalWrapping = TextureWrapper::Repeat,
-                    TextureWrapper horizontalWrapping = TextureWrapper::Repeat,
-                    MinifyingTextureFilter minifyingFilter = MinifyingTextureFilter::Linear,
-                    MagnifyingTextureFilter magnifyingFilter = MagnifyingTextureFilter::Linear,
-                    Color borderColor = {}, bool mipmaps = true) noexcept;
+
+            Options(TextureWrapper verticalWrapping =
+                        TextureWrapper::Repeat,
+                    TextureWrapper horizontalWrapping =
+                        TextureWrapper::Repeat,
+                    MinifyingTextureFilter minifyingFilter =
+                        MinifyingTextureFilter::Linear,
+                    MagnifyingTextureFilter magnifyingFilter =
+                        MagnifyingTextureFilter::Linear,
+                    Color borderColor = {},
+                    bool mipmaps = true) noexcept;
+
+            friend class Texture;
+        private:
+            typedef std::pair<GLint, GLint>     Filter;
+            typedef std::array<Filter, 4>       Underlying;
+
+            Underlying getOptions(void) const noexcept;
+            bool isBorder(void) const noexcept;
         };
-        typedef Alloc                           allocator_type;
 
-        explicit Texture(const std::string& fileName, const Options& options = {}, const Alloc& alloc = {});
+        explicit Texture(std::string const& fileName,
+            Options const& options = {});
         template <security::SecurityPolicy Policy>
-        explicit Texture(Policy policy, const std::string& fileName, const Options& options = {}, const Alloc& alloc = {});
-        explicit Texture(const Image& image, const Options& options = {}, const Alloc& alloc = {}) noexcept;
-        explicit Texture(const Bitmap& bitmap, const Options& options = {}, const Alloc& allo = {}) noexcept;
+        explicit Texture(Policy policy, std::string const& fileName,
+            Options const& options = {});
+        explicit Texture(Image const& image,
+            Options const& options = {}) noexcept;
+        explicit Texture(Bitmap const& bitmap,
+            Options const& options = {}) noexcept;
 
-        Texture(const Texture& texture) = default;
+        Texture(Texture const& texture) = default;
         Texture(Texture&& texture) = default;
 
-        Texture& operator= (const Texture& texture) = default;
+        Texture& operator= (Texture const& texture) = default;
         Texture& operator= (Texture&& texture) = default;
 
-        const uint32_t& getTexture(void) const noexcept { return *textureID; }
+        uint32_t getTexture(void) const noexcept
+            { return *textureID; }
 
-        static Texture defaultTexture(const Options& options = {
+        static Texture defaultTexture(Options const& options = {
             Options::TextureWrapper::ClampToEdge,
             Options::TextureWrapper::ClampToEdge,
             Options::MinifyingTextureFilter::Nearest,
@@ -73,31 +91,19 @@ namespace ge {
 
         ~Texture(void) = default;
     private:
-        class TextureDeleter {
-        public:
-            explicit TextureDeleter(const Alloc& alloc) noexcept : alloc{alloc} {}
+        explicit Texture(Options const& options) noexcept;
 
-            void operator()(uint32_t* ptr) const noexcept;
-        private:
-            [[no_unique_address]] mutable Alloc     alloc;
-        };
+        void loadImage(Image const& image,
+            Options const& options) const;
+        void generateMipmaps(Options const& options) const noexcept;
 
-        explicit Texture(const Options& options, const Alloc& alloc) noexcept;
-
-        void loadImage(const Image& image, const Options& options) const;
-
-        void generateMipmaps(const Options& options) const noexcept;
-
-        [[no_unique_address]] Alloc                 alloc;
-        std::shared_ptr<uint32_t>                   textureID;
+        std::shared_ptr<uint32_t>       textureID;
     };
 
-    template class Texture<>;
-
-    template <Allocator Alloc>
     template <security::SecurityPolicy Policy>
-    Texture<Alloc>::Texture(Policy policy, const std::string& fileName, const Options& options, const Alloc& alloc)
-        : Texture{options, alloc}
+    Texture::Texture(Policy policy, std::string const& fileName,
+        Options const& options)
+            : Texture{options, alloc}
     {
         loadImage(ImageLoader{policy, fileName}.getImage());
     }

@@ -4,60 +4,81 @@
 
 namespace ge {
 
-    template <Allocator Alloc>
-    Texture<Alloc>::Options::Options(TextureWrapper verticalWrapping, TextureWrapper horizontalWrapping, MinifyingTextureFilter minifyingFilter, MagnifyingTextureFilter magnifyingFilter, Color borderColor, bool mipmaps) noexcept
-        : verticalWrapping{verticalWrapping}, horizontalWrapping{horizontalWrapping}, minifyingFilter{minifyingFilter}, magnifyingFilter{magnifyingFilter}, borderColor{borderColor}, mipmaps(mipmaps) {}
+    Texture::Options::Options(TextureWrapper verticalWrapping,
+        TextureWrapper horizontalWrapping,
+        MinifyingTextureFilter minifyingFilter,
+        MagnifyingTextureFilter magnifyingFilter,
+        Color borderColor, bool mipmaps) noexcept
+            : verticalWrapping{verticalWrapping},
+            horizontalWrapping{horizontalWrapping},
+            minifyingFilter{minifyingFilter},
+            magnifyingFilter{magnifyingFilter},
+            borderColor{borderColor}, mipmaps(mipmaps) {}
 
-    template <Allocator Alloc>
-    Texture<Alloc>::Texture(const Options& options, const Alloc& alloc) noexcept : alloc{alloc},
-        textureID{std::allocator_traits<Alloc>::allocate(this->alloc, 1), TextureDeleter{this->alloc}, this->alloc}
+    Texture::Options::Underlying
+        Texture::Options::getOptions(void) const noexcept
+    {
+        return {
+            Filter{GL_TEXTURE_WRAP_S, static_cast<GLint>(verticalWrapping)},
+            Filter{GL_TEXTURE_WRAP_T, static_cast<GLint>(horizontalWrapping)},
+            Filter{GL_TEXTURE_MIN_FILTER, static_cast<GLint>(minifyingFilter)},
+            Filter{GL_TEXTURE_MAG_FILTER, static_cast<GLint>(magnifyingFilter)},
+        };
+    }
+
+    bool Texture::Options::isBorder(void) const noexcept {
+        return verticalWrapping == TextureWrapper::ClampToBorder ||
+            horizontalWrapping == TextureWrapper::ClampToBorder;
+    }
+
+    Texture::Texture(Options const& options) noexcept :
+        textureID{new uint32_t{0}}
     {
         glGenTextures(1, textureID.get());
         glBindTexture(GL_TEXTURE_2D, *textureID);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(options.horizontalWrapping));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(options.verticalWrapping));
-        if (options.verticalWrapping == Options::TextureWrapper::ClampToBorder || options.horizontalWrapping == Options::TextureWrapper::ClampToBorder)
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &options.borderColor.red);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(options.minifyingFilter));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(options.magnifyingFilter));
+        for (auto const& [filter, mode] : options.getOptions())
+            glTexParameteri(GL_TEXTURE_2D, filter, mode);
+        if (options.isBorder())
+            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR,
+                &options.borderColor.red);
     }
 
-    template <Allocator Alloc>
-    Texture<Alloc>::Texture(const std::string& fileName, const Options& options, const Alloc& alloc) : Texture{options, alloc} {
+    Texture::Texture(std::string const& fileName,
+        Options const& options)
+    {
         loadImage(ImageLoader<>{fileName}.getImage(), options);
     }
 
-    template <Allocator Alloc>
-    Texture<Alloc>::Texture(const Image& image, const Options& options, const Alloc& alloc) noexcept : Texture{options, alloc} {
+    Texture::Texture(Image const& image,
+        Options const& options) noexcept
+    {
         loadImage(image, options);
     }
 
-    template <Allocator Alloc>
-    void Texture<Alloc>::generateMipmaps(const Options& options) const noexcept {
+    void Texture::generateMipmaps(Options const& options) const noexcept {
         if (options.mipmaps)
             glGenerateMipmap(GL_TEXTURE_2D);
     }
 
-    template <Allocator Alloc>
-    Texture<Alloc>::Texture(const Bitmap& bitmap, const Options& options, const Alloc& alloc) noexcept : Texture{options, alloc} {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.getWidth(), bitmap.getHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.getMemoryPtr());
+    Texture::Texture(Bitmap const& bitmap,
+        Options const& options) noexcept
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.getWidth(),
+            bitmap.getHeight(), 0, GL_RED, GL_UNSIGNED_BYTE,
+            bitmap.getMemoryPtr());
         generateMipmaps(options);
     }
 
-    template <Allocator Alloc>
-    void Texture<Alloc>::TextureDeleter::operator() (uint32_t* ptr) const noexcept {
-        glDeleteTextures(1, ptr);
-        std::allocator_traits<Alloc>::deallocate(alloc, ptr, 1);
-    }
-
-    template <Allocator Alloc>
-    void Texture<Alloc>::loadImage(const Image& image, const Options& options) const {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
+    void Texture::loadImage(Image const& image,
+        Options const& options) const
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(),
+            image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+            image.getMemoryPtr());
         generateMipmaps(options);
     }
 
-    template <Allocator Alloc>
-    Texture<Alloc> Texture<Alloc>::defaultTexture(const Options& options) {
+    Texture Texture::defaultTexture(Options const& options) {
         Image image{8, 8};
         for (uint8_t i = 0; i != 4; ++i) {
             for (uint8_t j = 0; j != 4; ++j) {
@@ -67,7 +88,7 @@ namespace ge {
                 image[2*i+1][2*j+1] = Pixel(0x7F, 0x7F, 0x7F, 0xFF);
             }
         }
-        return Texture<Alloc>{image, options};
+        return Texture{image, options};
     }
 
 }
