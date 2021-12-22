@@ -16,8 +16,7 @@
 
 namespace ge {
 
-    template <security::SecurityPolicy SecurityPolicy = Secured,
-        Allocator Alloc = std::allocator<uint32_t>>
+    template <security::SecurityPolicy SecurityPolicy = Secured>
     class TextureLoader {
     public:
         explicit TextureLoader(std::string const& directory);
@@ -42,15 +41,16 @@ namespace ge {
         void tryLoad(void);
         void loadAll(void);
 
-        TexturePack<Alloc> getTextures(void) const
-            { return TexturePack<Alloc>{textures}; }
+        TexturePack getTextures(void) const
+            { return TexturePack{textures}; }
         std::vector<std::string> const& getInvalidPaths(
             void) const noexcept;
 
-        ~TextureLoader(void);
+        ~TextureLoader(void)
+            { imagePaths = ImageQueue{}; }
     private:
-        typedef std::vector<std::pair<std::string const,
-            Texture<Alloc>>>                        TextureVector;
+        typedef std::vector<std::pair<
+            std::string const, Texture>>            TextureVector;
         typedef ThreadsafeQueue<std::pair<
             std::string, Image>>                    LoaderQueue;
         typedef ThreadsafeQueue<std::string>        ImageQueue;
@@ -94,25 +94,25 @@ namespace ge {
         size_type threadpoolSize(void);
     };
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    TextureLoader<Sp, Alloc>::TextureLoader(
+    template <security::SecurityPolicy Sp>
+    TextureLoader<Sp>::TextureLoader(
         std::string const& directory)
             : TextureLoader{Sequenced{}, Sp{}, directory} {}
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
+    template <security::SecurityPolicy Sp>
     template <execution::ExecutionPolicy Ep>
-    TextureLoader<Sp, Alloc>::TextureLoader(
+    TextureLoader<Sp>::TextureLoader(
         Ep policy, std::string const& directory)
             : TextureLoader{policy, Sp{}, directory} {}
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    TextureLoader<Sp, Alloc>::TextureLoader(Sp policy,
+    template <security::SecurityPolicy Sp>
+    TextureLoader<Sp>::TextureLoader(Sp policy,
         std::string const& directory)
             : TextureLoader{Sequenced{}, policy, directory} {}
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
+    template <security::SecurityPolicy Sp>
     template <execution::ExecutionPolicy Ep>
-    TextureLoader<Sp, Alloc>::TextureLoader(
+    TextureLoader<Sp>::TextureLoader(
         Ep executionPolicy, Sp securityPolicy,
         std::string const& directory)
             : counter{0}, allTextures{0}, prefix{directory.size() + 1},
@@ -124,10 +124,10 @@ namespace ge {
         startParallelLoading(threadpoolSize<Ep>());
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
+    template <security::SecurityPolicy Sp>
     template <execution::ExecutionPolicy Ep>
-    TextureLoader<Sp, Alloc>::size_type
-        TextureLoader<Sp, Alloc>::threadpoolSize(void)
+    TextureLoader<Sp>::size_type
+        TextureLoader<Sp>::threadpoolSize(void)
     {
         if constexpr (execution::isParallelPolicy<Ep>) {
             size_type availableThreads
@@ -140,54 +140,54 @@ namespace ge {
             throw ExecusionUnknownPolicyException{};
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    double TextureLoader<Sp, Alloc>::loadingStatus(
+    template <security::SecurityPolicy Sp>
+    double TextureLoader<Sp>::loadingStatus(
         void) const noexcept
     {
         return (double) textures.size() * counter.load(
             std::memory_order_relaxed) / (allTextures * allTextures);
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    void TextureLoader<Sp, Alloc>::tryLoad(void) {
+    template <security::SecurityPolicy Sp>
+    void TextureLoader<Sp>::tryLoad(void) {
         if (loadingStatus() != 1.)
             load();
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    void TextureLoader<Sp, Alloc>::loadAll(void) {
+    template <security::SecurityPolicy Sp>
+    void TextureLoader<Sp>::loadAll(void) {
         while (loadingStatus() != 1.)
             load();
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    void TextureLoader<Sp, Alloc>::load(void) {
+    template <security::SecurityPolicy Sp>
+    void TextureLoader<Sp>::load(void) {
         if (exception)
             std::rethrow_exception(exception);
         if (auto ptr = loadedImages.pop()) {
             auto&& [name, image] = *ptr;
-            textures.emplace_back(name, Texture<Alloc>{image});
+            textures.emplace_back(name, Texture{image});
         }
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    void TextureLoader<Sp, Alloc>::ParallelLoader::loadImage(
+    template <security::SecurityPolicy Sp>
+    void TextureLoader<Sp>::ParallelLoader::loadImage(
         std::string const& path)
     {
         loader.loadedImages.emplace(path.substr(loader.prefix),
             ImageLoader{loader.securityPolicy, path}.getImage());
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    void TextureLoader<Sp, Alloc>::ParallelLoader::saveInvalidPath(
+    template <security::SecurityPolicy Sp>
+    void TextureLoader<Sp>::ParallelLoader::saveInvalidPath(
         std::string const& path)
     {
         std::lock_guard<std::mutex> lock{loader.invalidPaths.mutex};
         loader.invalidPaths.paths.push_back(path);
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    void TextureLoader<Sp, Alloc>::ParallelLoader::operator()(
+    template <security::SecurityPolicy Sp>
+    void TextureLoader<Sp>::ParallelLoader::operator()(
         void) noexcept
     {
         while (auto path = loader.imagePaths.pop()) {
@@ -204,8 +204,8 @@ namespace ge {
         }
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    void TextureLoader<Sp, Alloc>::startParallelLoading(
+    template <security::SecurityPolicy Sp>
+    void TextureLoader<Sp>::startParallelLoading(
         size_type threadpoolSize)
     {
         threadpool.reserve(threadpoolSize);
@@ -213,18 +213,13 @@ namespace ge {
             threadpool.emplace_back(ParallelLoader{*this});
     }
 
-    template <security::SecurityPolicy Sp, Allocator Alloc>
+    template <security::SecurityPolicy Sp>
     std::vector<std::string> const&
-        TextureLoader<Sp, Alloc>::getInvalidPaths(void)
+        TextureLoader<Sp>::getInvalidPaths(void)
             const noexcept
     {
         std::lock_guard<std::mutex> lock{invalidPaths.mutex};
         return invalidPaths.paths;
-    }
-
-    template <security::SecurityPolicy Sp, Allocator Alloc>
-    TextureLoader<Sp, Alloc>::~TextureLoader(void) {
-        imagePaths = ImageQueue{};
     }
 
 }

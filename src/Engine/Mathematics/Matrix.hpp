@@ -11,7 +11,6 @@ namespace ge {
         requires (Rows > 1 && Cols > 1)
     class Matrix {
     public:
-
         #pragma pack(push, 1)
         class Column {
         public:
