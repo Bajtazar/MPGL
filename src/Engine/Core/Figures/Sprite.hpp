@@ -14,8 +14,10 @@ namespace ge {
 
     struct ColorableVertex {
         explicit ColorableVertex(Vector2f const& position,
-            Color const& color, Vector2f const& textureCoords) noexcept
-                : position{position}, textureCoords{textureCoords}, color{color} {}
+            Color const& color,
+            Vector2f const& textureCoords) noexcept
+                : position{position},
+                textureCoords{textureCoords}, color{color} {}
 
         Adapter<Vector2f>                   position;
         Vector2f                            textureCoords;
@@ -28,16 +30,13 @@ namespace ge {
         template <std::size_t Index>
             requires (Index < 3)
         constexpr auto&& get(void) const& noexcept;
-
-        template <std::size_t Index>
-            requires (Index < 3)
-        constexpr auto&& get(void) && noexcept;
     };
 
     struct DefaultVertex {
         explicit DefaultVertex(Vector2f const& position,
             Vector2f const& textureCoords) noexcept
-                : position{position}, textureCoords{textureCoords} {}
+                : position{position},
+                textureCoords{textureCoords} {}
 
         Adapter<Vector2f>                   position;
         Vector2f                            textureCoords;
@@ -49,36 +48,39 @@ namespace ge {
         template <std::size_t Index>
             requires (Index < 2)
         constexpr auto&& get(void) const& noexcept;
-
-        template <std::size_t Index>
-            requires (Index < 2)
-        constexpr auto&& get(void) && noexcept;
     };
 
     template <bool IsColorable = false>
-    class Sprite : public Drawable, public Shadeable, public Transformable2D {
+    class Sprite : public Drawable, public Shadeable,
+        public Transformable2D
+    {
     public:
-        using Vertex = std::conditional_t<IsColorable, ColorableVertex, DefaultVertex>;
+        using Vertex = std::conditional_t<IsColorable,
+            ColorableVertex, DefaultVertex>;
 
         typedef std::array<Vertex, 4>       VertexArray;
 
         // Default constructor
-        Sprite(Texture<> const& texture) noexcept;
+        Sprite(Texture const& texture) noexcept;
         // Default constructor with color
-        Sprite(Texture<> const& texture, Color const& color) noexcept requires IsColorable;
+        Sprite(Texture const& texture,
+            Color const& color) noexcept requires IsColorable;
         // parallelogram
-        Sprite(Texture<> const& texture,        Vector2f const& firstVertex,
-               Vector2f const& secondVertex,    Vector2f const& thirdVertex) noexcept;
+        Sprite(Texture const& texture, Vector2f const& firstVertex,
+               Vector2f const& secondVertex,
+               Vector2f const& thirdVertex) noexcept;
         // parallelogram for colorable version
-        Sprite(Texture<> const& texture,        Vector2f const& firstVertex,
-               Vector2f const& secondVertex,    Vector2f const& thirdVertex,
+        Sprite(Texture const& texture, Vector2f const& firstVertex,
+               Vector2f const& secondVertex,
+               Vector2f const& thirdVertex,
                Color const& color) noexcept requires IsColorable;
         // rectangle parallel to the x and y axis
-        Sprite(Texture<> const& texture,        Vector2f const& firstVertex,
+        Sprite(Texture const& texture, Vector2f const& firstVertex,
                Vector2f const& dimmensions) noexcept;
         // rectangle parallel to the x and y axis for colorable version
-        Sprite(Texture<> const& texture,        Vector2f const& firstVertex,
-               Vector2f const& dimmensions,     Color const& color) noexcept requires IsColorable;
+        Sprite(Texture const& texture, Vector2f const& firstVertex,
+               Vector2f const& dimmensions,
+               Color const& color) noexcept requires IsColorable;
 
         Sprite(Sprite const& sprite) noexcept;
         Sprite(Sprite&& sprite) noexcept;
@@ -89,25 +91,31 @@ namespace ge {
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
-        void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
+        void onScreenTransformation(
+            Vector2ui const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float factor) noexcept final;
-        void rotate(Vector2f const& center, float angle) noexcept final;
-        void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
+        void scale(Vector2f const& center,
+            float factor) noexcept final;
+        void rotate(Vector2f const& center,
+            float angle) noexcept final;
+        void rotate(Vector2f const& center,
+            Matrix2f const& rotation) noexcept final;
 
         Vertex& operator[] (std::size_t index) noexcept
             { return vertices[index]; }
         Vertex const& operator[] (std::size_t index) const noexcept
             { return vertices[index]; }
 
-        consteval std::size_t size(void) const noexcept { return 4; }
+        consteval std::size_t size(void) const noexcept
+            { return 4; }
 
-        void replaceTexture(Texture<> const& texture);
+        void replaceTexture(Texture const& texture);
 
         using iterator = VertexArray::iterator;
         using const_iterator = VertexArray::const_iterator;
         using reverse_iterator = VertexArray::reverse_iterator;
-        using const_reverse_iterator = VertexArray::const_reverse_iterator;
+        using const_reverse_iterator =
+            VertexArray::const_reverse_iterator;
 
         iterator begin(void) noexcept
             { return vertices.begin(); }
@@ -148,26 +156,31 @@ namespace ge {
         static const Executable                 shaderExec;
 
         VertexArray                             vertices;
-        Texture<>                               texture;
+        Texture                                 texture;
         uint32_t                                elementArrayBuffer;
         uint32_t                                vertexBuffer;
         uint32_t                                vertexArrayObject;
 
-        void setVerticesPoisition(Vector2f const& firstVertex, Vector2f const& dimmensions) noexcept;
-        void setVerticesPoisition(Vector2f const& firstVertex, Vector2f const& secondVertex,
-                                  Vector2f const& thirdVertex) noexcept;
+        void setVerticesPoisition(Vector2f const& firstVertex,
+            Vector2f const& dimmensions) noexcept;
+        void setVerticesPoisition(Vector2f const& firstVertex,
+            Vector2f const& secondVertex,
+            Vector2f const& thirdVertex) noexcept;
         void generateBuffers(void) noexcept;
         void bindBuffers(void) const noexcept;
         void copyBuffersToGPU(void) const noexcept;
         void unbindBuffers(void) const noexcept;
 
         static VertexArray makeVertexArray(void) noexcept;
-        static VertexArray makeVertexArray(Color const& color) noexcept requires IsColorable;
-        static constexpr std::string shaderType(void) noexcept;
+        static VertexArray makeVertexArray(
+            Color const& color) noexcept requires IsColorable;
+        static inline constexpr std::string shaderType(void) noexcept;
     };
 
     template <bool IsColorable>
-    constexpr std::string Sprite<IsColorable>::shaderType(void) noexcept {
+    inline constexpr std::string Sprite<IsColorable>::shaderType(
+        void) noexcept
+    {
         if constexpr (IsColorable)
             return "2DCTexture";
         else
@@ -203,17 +216,6 @@ namespace ge {
     }
 
     template <std::size_t Index>
-        requires (Index < 3)
-    constexpr auto&& ColorableVertex::get(void) && noexcept {
-        if constexpr (Index == 2)
-            return std::move(color);
-        else if constexpr (Index == 1)
-            return std::move(textureCoords);
-        else
-            return std::move(position);
-    }
-
-    template <std::size_t Index>
         requires (Index < 2)
     constexpr auto&& DefaultVertex::get(void) & noexcept {
         if constexpr (Index == 1)
@@ -229,15 +231,6 @@ namespace ge {
             return textureCoords;
         else
             return position;
-    }
-
-    template <std::size_t Index>
-        requires (Index < 2)
-    constexpr auto&& DefaultVertex::get(void) && noexcept {
-        if constexpr (Index == 1)
-            return std::move(textureCoords);
-        else
-            return std::move(position);
     }
 
 }

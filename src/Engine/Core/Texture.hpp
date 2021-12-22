@@ -103,7 +103,7 @@ namespace ge {
     template <security::SecurityPolicy Policy>
     Texture::Texture(Policy policy, std::string const& fileName,
         Options const& options)
-            : Texture{options, alloc}
+            : Texture{options}
     {
         loadImage(ImageLoader{policy, fileName}.getImage());
     }
