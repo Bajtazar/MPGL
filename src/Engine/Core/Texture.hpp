@@ -19,29 +19,29 @@ namespace ge {
         class Options {
         public:
             enum class TextureWrapper : GLint {
-                Repeat = GL_REPEAT,
-                MirroredRepeat = GL_MIRRORED_REPEAT,
-                ClampToEdge = GL_CLAMP_TO_EDGE,
-                ClampToBorder = GL_CLAMP_TO_BORDER
+                Repeat                    = GL_REPEAT,
+                MirroredRepeat            = GL_MIRRORED_REPEAT,
+                ClampToEdge               = GL_CLAMP_TO_EDGE,
+                ClampToBorder             = GL_CLAMP_TO_BORDER
             };
             enum class MinifyingTextureFilter : GLint {
-                Nearest = GL_NEAREST,
-                Linear = GL_LINEAR,
-                NearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
-                NearestMipmapLinear = GL_NEAREST_MIPMAP_LINEAR,
-                LinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
-                LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR
+                Nearest                   = GL_NEAREST,
+                Linear                    = GL_LINEAR,
+                NearestMipmapNearest      = GL_NEAREST_MIPMAP_NEAREST,
+                NearestMipmapLinear       = GL_NEAREST_MIPMAP_LINEAR,
+                LinearMipmapNearest       = GL_LINEAR_MIPMAP_NEAREST,
+                LinearMipmapLinear        = GL_LINEAR_MIPMAP_LINEAR
             };
             enum class MagnifyingTextureFilter : GLint {
-                Nearest = GL_NEAREST,
-                Linear = GL_LINEAR
+                Nearest                   = GL_NEAREST,
+                Linear                    = GL_LINEAR
             };
-            TextureWrapper              verticalWrapping;
-            TextureWrapper              horizontalWrapping;
-            MinifyingTextureFilter      minifyingFilter;
-            MagnifyingTextureFilter     magnifyingFilter;
-            Color                       borderColor;
-            bool                        mipmaps;
+            TextureWrapper                  verticalWrapping;
+            TextureWrapper                  horizontalWrapping;
+            MinifyingTextureFilter          minifyingFilter;
+            MagnifyingTextureFilter         magnifyingFilter;
+            Color                           borderColor;
+            bool                            mipmaps;
 
             Options(TextureWrapper verticalWrapping =
                         TextureWrapper::Repeat,
@@ -56,8 +56,8 @@ namespace ge {
 
             friend class Texture;
         private:
-            typedef std::pair<GLint, GLint>     Filter;
-            typedef std::array<Filter, 4>       Underlying;
+            typedef std::pair<GLint, GLint> Filter;
+            typedef std::array<Filter, 4>   Underlying;
 
             Underlying getOptions(void) const noexcept;
             bool isBorder(void) const noexcept;
@@ -91,13 +91,18 @@ namespace ge {
 
         ~Texture(void) = default;
     private:
+        typedef std::function<void(
+            uint32_t*)>                     Deleter;
+
         explicit Texture(Options const& options) noexcept;
 
         void loadImage(Image const& image,
             Options const& options) const;
         void generateMipmaps(Options const& options) const noexcept;
 
-        std::shared_ptr<uint32_t>       textureID;
+        std::shared_ptr<uint32_t>           textureID;
+
+        static const Deleter                deleter;
     };
 
     template <security::SecurityPolicy Policy>

@@ -7,9 +7,8 @@
 
 namespace ge {
 
-    template <Allocator Alloc = Texture<>::allocator_type>
     struct Glyph {
-        typedef std::optional<Texture<Alloc>>    TextureVar;
+        typedef std::optional<Texture>          TextureVar;
 
         TextureVar          texture;
         Vector2ui           dimmensions;
@@ -22,19 +21,23 @@ namespace ge {
                 dimmensions{dimmensions}, bearing{bearing},
                 advance{advance} {}
 
-        bool hasOutline(void) const noexcept { return bool(texture); }
+        bool hasOutline(void) const noexcept
+            { return bool(texture); }
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto&& get(void) & noexcept { return helper<Index>(*this); }
+        inline constexpr auto&& get(void) & noexcept
+            { return helper<Index>(*this); }
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto&& get(void) && noexcept { return helper<Index>(*this); }
+        inline constexpr auto&& get(void) && noexcept
+            { return helper<Index>(*this); }
 
         template <std::size_t Index>
             requires (Index < 4)
-        inline constexpr auto&& get(void) const& noexcept { return helper<Index>(*this); }
+        inline constexpr auto&& get(void) const& noexcept
+            { return helper<Index>(*this); }
 
     private:
         template <std::size_t Index, class Base>
@@ -55,19 +58,23 @@ namespace ge {
 
 namespace std {
 
-    template <ge::Allocator Alloc>
-    struct tuple_size<ge::Glyph<Alloc>> : integral_constant<size_t, 4> {};
+    template <>
+    struct tuple_size<ge::Glyph> : integral_constant<size_t, 4> {};
 
-    template <ge::Allocator Alloc>
-    struct tuple_element<0, ge::Glyph<Alloc>> { using type = ge::Glyph<Alloc>::TextureVar; };
+    template <>
+    struct tuple_element<0, ge::Glyph>
+        { using type = ge::Glyph::TextureVar; };
 
-    template <ge::Allocator Alloc>
-    struct tuple_element<1, ge::Glyph<Alloc>> { using type = ge::Vector2ui; };
+    template <>
+    struct tuple_element<1, ge::Glyph>
+        { using type = ge::Vector2ui; };
 
-    template <ge::Allocator Alloc>
-    struct tuple_element<2, ge::Glyph<Alloc>> { using type = ge::Vector2i; };
+    template <>
+    struct tuple_element<2, ge::Glyph>
+        { using type = ge::Vector2i; };
 
-    template <ge::Allocator Alloc>
-    struct tuple_element<3, ge::Glyph<Alloc>> { using type = uint32_t; };
+    template <>
+    struct tuple_element<3, ge::Glyph>
+        { using type = uint32_t; };
 
 }

@@ -151,8 +151,10 @@ namespace ge {
     protected:
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
+        typedef std::array<uint32_t, 6>       Indexes;
 
-        static const std::array<uint32_t, 6>    indexes;
+        static constexpr const Indexes          indexes{
+            {0, 1, 2, 0, 3, 2}};
         static const Executable                 shaderExec;
 
         VertexArray                             vertices;

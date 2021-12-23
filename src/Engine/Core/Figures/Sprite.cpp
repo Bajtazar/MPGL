@@ -36,10 +36,6 @@ namespace ge {
     }
 
     template <bool IsColorable>
-    const std::array<uint32_t, 6>
-        Sprite<IsColorable>::indexes {0, 1, 2, 0, 3, 2};
-
-    template <bool IsColorable>
     const Sprite<IsColorable>::Executable
         Sprite<IsColorable>::shaderExec = [](ProgramPtr& ptr) -> void
             { ptr->use(); ptr->setUniform("tex", 0); };

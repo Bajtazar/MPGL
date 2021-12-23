@@ -26,13 +26,16 @@ namespace ge {
         };
     }
 
+    Texture::Deleter const Texture::deleter = [](uint32_t* ptr) -> void
+        {  glDeleteTextures(1, ptr); if (ptr) delete ptr; };
+
     bool Texture::Options::isBorder(void) const noexcept {
         return verticalWrapping == TextureWrapper::ClampToBorder ||
             horizontalWrapping == TextureWrapper::ClampToBorder;
     }
 
     Texture::Texture(Options const& options) noexcept :
-        textureID{new uint32_t{0}}
+        textureID{new uint32_t{0}, deleter}
     {
         glGenTextures(1, textureID.get());
         glBindTexture(GL_TEXTURE_2D, *textureID);
@@ -44,13 +47,13 @@ namespace ge {
     }
 
     Texture::Texture(std::string const& fileName,
-        Options const& options)
+        Options const& options) : Texture{options}
     {
         loadImage(ImageLoader<>{fileName}.getImage(), options);
     }
 
     Texture::Texture(Image const& image,
-        Options const& options) noexcept
+        Options const& options) noexcept : Texture{options}
     {
         loadImage(image, options);
     }
@@ -61,7 +64,7 @@ namespace ge {
     }
 
     Texture::Texture(Bitmap const& bitmap,
-        Options const& options) noexcept
+        Options const& options) noexcept : Texture{options}
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.getWidth(),
             bitmap.getHeight(), 0, GL_RED, GL_UNSIGNED_BYTE,

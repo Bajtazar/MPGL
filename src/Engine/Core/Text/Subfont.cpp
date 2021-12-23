@@ -12,14 +12,17 @@ namespace ge {
         kern = std::move(loader.getKern());
     }
 
-    Subfont::FontGlyph Subfont::operator() (uint16_t number, uint8_t level) {
+    Subfont::FontGlyph Subfont::operator() (
+        uint16_t number, uint8_t level)
+    {
         auto& map = getMap(level);
         auto iter = map.find(number);
         if (iter == map.end()) {
             auto glpyhIter = glyphMap.find(number);
             if (glpyhIter == glyphMap.end())
                 return {};
-            iter = map.emplace(number, createGlyph(glpyhIter, level)).first;
+            iter = map.emplace(number,
+                createGlyph(glpyhIter, level)).first;
         }
         return {std::cref(iter->second)};
     }
@@ -35,32 +38,38 @@ namespace ge {
         std::size_t size) const noexcept
     {
         return vectorCast<uint32_t>(
-            vectorCast<uint32_t>(glyph.glyph.getMaxDimmensions() - glyph.glyph.getMinDimmensions())
-            * static_cast<uint32_t>(size) / static_cast<uint32_t>(fontData.unitsPerEm));
+            vectorCast<uint32_t>(glyph.glyph.getMaxDimmensions()
+                - glyph.glyph.getMinDimmensions())
+            * static_cast<uint32_t>(size) /
+                static_cast<uint32_t>(fontData.unitsPerEm));
     }
 
     Vector2i Subfont::getBearings(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
         return vectorCast<int32_t>(glyph.glyph.getMinDimmensions())
-            * static_cast<int32_t>(size) / static_cast<int32_t>(fontData.unitsPerEm);
+            * static_cast<int32_t>(size) /
+                static_cast<int32_t>(fontData.unitsPerEm);
     }
 
-    Glyph<> Subfont::createGlyph(Iter const& iter, uint8_t level) {
+    Glyph Subfont::createGlyph(Iter const& iter, uint8_t level) {
         std::size_t size = 64 << level;
         auto const& glyphData = iter->second;
         auto&& dimmensions = getDimmensions(glyphData, size);
         auto&& bearings = getBearings(glyphData, size);
-        uint16_t advanceWidth = size * glyphData.advanceWidth / fontData.unitsPerEm;
-        return Glyph<>{renderTexture(iter, size), dimmensions, bearings, advanceWidth};
+        uint16_t advanceWidth = size * glyphData.advanceWidth
+            / fontData.unitsPerEm;
+        return Glyph{renderTexture(iter, size),
+            dimmensions, bearings, advanceWidth};
     }
 
-    Subfont::TextureVar Subfont::renderTexture(Iter const& iter, std::size_t size) const {
+    Subfont::TextureVar Subfont::renderTexture(
+        Iter const& iter, std::size_t size) const
+    {
         if (!iter->second.glyph.exist())
             return {};
         FontRasterizer raster{fontData, iter->second, size};
-        Texture<>::Options options;
-        return {Texture<>{raster(), options}};
+        return {Texture{raster()}};
     }
 
 }
