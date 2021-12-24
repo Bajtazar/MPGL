@@ -15,28 +15,29 @@
 
 namespace ge {
 
-    template <Absolute Tp, Absolute St>
-    using CanvaRowBase = std::pair<Tp*, std::reference_wrapper<St>>;
+    template <Absolute Tp>
+    using CanvaRowBase = std::pair<Tp*, std::reference_wrapper<
+        std::size_t>>;
 
-    template <DefaultBaseType Base, template<class, class> class Range
-            = std::vector, template<class> class Alloc = std::allocator>
-        requires (UnderlyiesTypes<Range, Base, CanvaRowBase<Base, std::size_t>>)
+    template <DefaultBaseType Base,
+        UnderlyingRange<Base> Range = std::vector<Base>,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange
+            = std::vector<CanvaRowBase<Base>>>
     class Canva {
     public:
         typedef std::size_t                         size_type;
         typedef Vector2<size_type>                  size_vector;
     private:
-        typedef CanvaRowBase<Base, size_type>       BaseTuple;
-        typedef Range<BaseTuple, Alloc<BaseTuple>>  RowsRange;
-        typedef typename RowsRange::iterator        RowIter;
-        typedef typename RowsRange::const_iterator  RowConstIter;
+        typedef CanvaRowBase<Base>                  BaseTuple;
+        typedef typename RowRange::iterator         RowIter;
+        typedef typename RowRange::const_iterator   RowConstIter;
     public:
 
         VEC_CONSTEXPR explicit Canva(size_type width, size_type height);
         VEC_CONSTEXPR explicit Canva(size_vector const& dimensions);
         VEC_CONSTEXPR Canva(void) = default;
 
-        class Row : private CanvaRowBase<Base, size_type> {
+        class Row : private CanvaRowBase<Base> {
         public:
             using value_type =                      Base;
             using reference =                       value_type&;
@@ -297,52 +298,52 @@ namespace ge {
         VEC_CONSTEXPR void* getMemoryPtr(void) noexcept
             { return memoryMap.data(); }
     private:
-        Range<Base, Alloc<Base>>                    memoryMap;
-        RowsRange                                   rows;
+        Range                                       memoryMap;
+        RowRange                                    rows;
         size_vector                                 dimensions;
 
         VEC_CONSTEXPR void createRows(void);
     };
 
-    template <DefaultBaseType Base, template<class, class> class Range,
-            template<class> class Alloc>
-        requires (UnderlyiesTypes<Range, Base, CanvaRowBase<Base, std::size_t>>)
-    VEC_CONSTEXPR Canva<Base, Range, Alloc>::Row&
-        Canva<Base, Range, Alloc>::Row::operator= (Row const& row) noexcept
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Row&
+        Canva<Base, Range, RowRange>::Row::operator= (
+            Row const& row) noexcept
     {
-        static_cast<BaseTuple&>(*this) = static_cast<BaseTuple const&>(row);
+        static_cast<BaseTuple&>(*this) =
+            static_cast<BaseTuple const&>(row);
         return *this;
     }
 
-    template <DefaultBaseType Base, template<class, class> class Range,
-            template<class> class Alloc>
-        requires (UnderlyiesTypes<Range, Base, CanvaRowBase<Base, std::size_t>>)
-    VEC_CONSTEXPR Canva<Base, Range, Alloc>::Row&
-        Canva<Base, Range, Alloc>::Row::operator= (Row&& row) noexcept
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Row&
+        Canva<Base, Range, RowRange>::Row::operator= (Row&& row) noexcept
     {
         static_cast<BaseTuple&>(*this) = static_cast<BaseTuple&&>(row);
         return *this;
     }
 
-    template <DefaultBaseType Base, template<class, class> class Range,
-            template<class> class Alloc>
-        requires (UnderlyiesTypes<Range, Base, CanvaRowBase<Base, std::size_t>>)
-    VEC_CONSTEXPR Canva<Base, Range, Alloc>::Canva(size_type width, size_type height)
-        : Canva{{width, height}} {}
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+        size_type width, size_type height) : Canva{{width, height}} {}
 
-    template <DefaultBaseType Base, template<class, class> class Range,
-            template<class> class Alloc>
-        requires (UnderlyiesTypes<Range, Base, CanvaRowBase<Base, std::size_t>>)
-    VEC_CONSTEXPR Canva<Base, Range, Alloc>::Canva(size_vector const& dimensions)
-        : memoryMap(dimensions[0] * dimensions[1], Base{}), dimensions{dimensions}
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+        size_vector const& dimensions)
+            : memoryMap(dimensions[0] * dimensions[1], Base{}),
+            dimensions{dimensions}
     {
         createRows();
     }
 
-    template <DefaultBaseType Base, template<class, class> class Range,
-            template<class> class Alloc>
-        requires (UnderlyiesTypes<Range, Base, CanvaRowBase<Base, std::size_t>>)
-    VEC_CONSTEXPR void Canva<Base, Range, Alloc>::resize(size_vector const& dimensions)
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR void Canva<Base, Range, RowRange>::resize(
+        size_vector const& dimensions)
     {
         this->dimensions = dimensions;
         size_type size = dimensions[1] * dimensions[0];
@@ -351,16 +352,16 @@ namespace ge {
         createRows();
     }
 
-    template <DefaultBaseType Base, template<class, class> class Range,
-            template<class> class Alloc>
-        requires (UnderlyiesTypes<Range, Base, CanvaRowBase<Base, std::size_t>>)
-    VEC_CONSTEXPR void Canva<Base, Range, Alloc>::createRows(void)
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR void Canva<Base, Range, RowRange>::createRows(void)
     {
         Base* iter = memoryMap.data();
         auto width = std::ref(dimensions[0]);
         rows.reserve(dimensions[1]);
-        for (size_type i = 0; i != dimensions[1]; ++i, iter += dimensions[0])
-            rows.emplace_back(iter, width);
+        for (size_type i = 0; i != dimensions[1]; ++i,
+            iter += dimensions[0])
+                rows.emplace_back(iter, width);
     }
 
 }

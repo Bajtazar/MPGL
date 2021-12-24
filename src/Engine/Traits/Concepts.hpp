@@ -100,19 +100,6 @@ namespace ge {
     template <typename T, T Size>
     concept IsPowerOf2 = std::integral<T> && (Size == (1 << log2N<T, Size>()));
 
-    template <class T>
-    concept Allocator = std::default_initializable<T> && std::copy_constructible<T> &&
-        std::same_as<std::remove_reference_t<typename T::value_type>, typename T::value_type>
-        && std::copyable<T> && requires {
-            typename std::allocator_traits<T>::value_type;
-            typename std::allocator_traits<T>::size_type;
-            typename std::allocator_traits<T>::difference_type;
-        } &&
-        requires (typename T::value_type* ptr, typename T::size_type size, T alloc) {
-            { alloc.allocate(size) } -> std::same_as<typename T::value_type*>;
-            { alloc.deallocate(ptr, size) } -> std::same_as<void>;
-        };
-
     template <typename T>
     concept NotReference = !std::is_reference_v<T>;
 
@@ -145,14 +132,6 @@ namespace ge {
     template <class Range, typename Base>
     concept UnderlyingRange = FlexibleRange<Range>
         && SameRangeType<Range, Base>;
-
-    template <template<class, class> class Range,
-        typename Type, typename Alloc = std::allocator<Type>>
-    concept UnderlyiesType = Allocator<Alloc> &&
-        UnderlyingRange<Range<Type, Alloc>, Type>;
-
-    template <template<class, class> class Range, typename... Types>
-    concept UnderlyiesTypes = (UnderlyiesType<Range, Types> && ...);
 
     template <typename Signature, auto Method>
     concept SameSignatures = std::same_as<Signature, decltype(Method)>;
