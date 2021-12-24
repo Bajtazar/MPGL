@@ -17,9 +17,11 @@ run: clean all
 	./$(BIN)/$(EXECUTABLE)
 
 app: $(SRC) glad.c
+	clear
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $(BIN)/$(EXECUTABLE)
 
 test: $(T_SRC) glad.c
+	clear
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $(BIN)/$(TEST_EXEC)
 
 clean:

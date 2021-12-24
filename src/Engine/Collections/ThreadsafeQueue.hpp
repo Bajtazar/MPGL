@@ -7,117 +7,143 @@
 
 namespace ge {
 
-    template <NotReference T>
+    template <NotReference Tp>
     class ThreadsafeQueue {
     public:
-        typedef std::shared_ptr<T>  DataPtr;
+        typedef std::unique_ptr<Tp>                 DataPtr;
 
         explicit ThreadsafeQueue(void);
+
         template <std::input_iterator Iter, std::sentinel_for<Iter> Sent>
-        explicit ThreadsafeQueue(Iter begin, Sent end);
+        explicit ThreadsafeQueue(Iter iter, Sent const& end);
+
         template <std::ranges::input_range Range>
         explicit ThreadsafeQueue(Range&& range);
 
         ThreadsafeQueue(ThreadsafeQueue&& queue) noexcept;
-        ThreadsafeQueue(ThreadsafeQueue const& queue) = delete;
+        ThreadsafeQueue(ThreadsafeQueue const&) = delete;
 
         ThreadsafeQueue& operator= (ThreadsafeQueue&& queue) noexcept;
-        ThreadsafeQueue& operator= (ThreadsafeQueue const& queue) = delete;
+        ThreadsafeQueue& operator= (ThreadsafeQueue const&) = delete;
 
         DataPtr pop(void);
-        template <typename... Args>
-            requires std::is_constructible_v<T, Args...>
-        void emplace(Args&&... args);
-        void push(T value);
 
-        bool empty(void) const;
+        template <typename... Args>
+            requires std::is_constructible_v<Tp, Args...>
+        void emplace(Args&&... args);
+
+        void push(Tp value);
+        void push(DataPtr ptr);
+
+        bool empty(void) const noexcept;
     private:
         struct Node {
-            DataPtr data;
-            std::unique_ptr<Node> nextNode;
-            explicit Node(void) : data{nullptr}, nextNode{nullptr} {}
+            typedef std::unique_ptr<Node>           NodePtr;
+
+            NodePtr                                 nextNode;
+            DataPtr                                 data;
         };
 
-        typedef std::unique_ptr<Node>               NodePtr;
-        typedef std::reference_wrapper<Node>        NodeRef;
+        typedef typename Node::NodePtr              NodePtr;
+        typedef Node*                               NodeTrace;
+        typedef std::mutex                          Mutex;
+        typedef std::lock_guard<Mutex>              LockGuard;
+        typedef std::scoped_lock<Mutex, Mutex>      ScopedLock;
 
-        mutable std::mutex headMutex;
-        mutable std::mutex tailMutex;
+        Mutex                                       headMutex;
+        Mutex                                       tailMutex;
+        NodePtr                                     head;
+        NodeTrace                                   tail;
 
-        NodePtr head;
-        NodeRef tail;
-
-        void addNode(DataPtr&& dataNode);
+        NodeTrace getTail(void) noexcept;
     };
 
-    template <NotReference T>
-    void ThreadsafeQueue<T>::push(T value) {
-        addNode(std::make_shared<T>(std::move(value)));
+    template <NotReference Tp>
+    ThreadsafeQueue<Tp>::NodeTrace
+        ThreadsafeQueue<Tp>::getTail(void) noexcept
+    {
+        LockGuard lock{tailMutex};
+        return tail;
     }
 
-    template <NotReference T>
-    template <typename... Args>
-        requires std::is_constructible_v<T, Args...>
-    void ThreadsafeQueue<T>::emplace(Args&&... args) {
-        addNode(std::make_shared<T>(std::forward<Args>(args)...));
-    }
+    template <NotReference Tp>
+    ThreadsafeQueue<Tp>::ThreadsafeQueue(void)
+        : head{new Node}, tail{head.get()} {}
 
-    template <NotReference T>
-    void ThreadsafeQueue<T>::addNode(DataPtr&& dataNode) {
-        auto node = std::make_unique<Node>();
-        std::lock_guard<std::mutex> tailLock{tailMutex};
-        tail.get().data = std::move(dataNode);
-        tail.get().nextNode = std::move(node);
-        tail = std::ref(*tail.get().nextNode);
-    }
-
-    template <NotReference T>
-    ThreadsafeQueue<T>::DataPtr ThreadsafeQueue<T>::pop(void) {
-        std::lock_guard<std::mutex> headLock{headMutex};
-        if (!head->nextNode.get())
-            return {nullptr};
-        auto oldHead = std::move(head);
-        head = std::move(oldHead->nextNode);
-        return oldHead->data;
-    }
-
-    template <NotReference T>
-    bool ThreadsafeQueue<T>::empty(void) const {
-        std::lock_guard<std::mutex> headLock{headMutex};
-        return head->nextNode.get() == nullptr;
-    }
-
-    template <NotReference T>
-    ThreadsafeQueue<T>::ThreadsafeQueue(void) : head{std::make_unique<Node>()}, tail{std::ref(*head)} {}
-
-    template <NotReference T>
+    template <NotReference Tp>
     template <std::input_iterator Iter, std::sentinel_for<Iter> Sent>
-    ThreadsafeQueue<T>::ThreadsafeQueue(Iter iter, Sent sentinel) : ThreadsafeQueue{} {
-        std::scoped_lock<std::mutex, std::mutex> lock{headMutex, tailMutex};
-        for (; iter != sentinel; ++iter) {
-            auto node = std::make_unique<Node>();
-            tail.get().data = std::make_shared<T>(*iter);
-            tail.get().nextNode = std::move(node);
-            tail = std::ref(*tail.get().nextNode);
-        }
+    ThreadsafeQueue<Tp>::ThreadsafeQueue(Iter iter, Sent const& end)
+        : ThreadsafeQueue{}
+    {
+        for (; iter != end; ++iter)
+            push(*iter);
     }
 
-    template <NotReference T>
+    template <NotReference Tp>
     template <std::ranges::input_range Range>
-    ThreadsafeQueue<T>::ThreadsafeQueue(Range&& range) : ThreadsafeQueue{
-        std::ranges::begin(range), std::ranges::end(range)} {}
+    ThreadsafeQueue<Tp>::ThreadsafeQueue(Range&& range)
+        : ThreadsafeQueue{std::ranges::begin(range),
+            std::ranges::end(range)} {}
 
-    template <NotReference T>
-    ThreadsafeQueue<T>::ThreadsafeQueue(ThreadsafeQueue&& queue) noexcept
-        : head{std::move(queue.head)}, tail{queue.tail} {}
-
-    template <NotReference T>
-    ThreadsafeQueue<T>& ThreadsafeQueue<T>::operator= (ThreadsafeQueue&& queue) noexcept {
-        std::scoped_lock<std::mutex, std::mutex, std::mutex, std::mutex>
-            lock{headMutex, tailMutex, queue.headMutex, queue.tailMutex};
+    template <NotReference Tp>
+    ThreadsafeQueue<Tp>::ThreadsafeQueue(
+        ThreadsafeQueue&& queue) noexcept
+    {
+        ScopedLock lock{headMutex, tailMutex};
         head = std::move(queue.head);
         tail = queue.tail;
+    }
+
+    template <NotReference Tp>
+    ThreadsafeQueue<Tp>&
+        ThreadsafeQueue<Tp>::operator=(
+            ThreadsafeQueue&& queue) noexcept
+    {
+        {
+            ScopedLock lock{headMutex, tailMutex};
+            head = std::move(queue.head);
+            tail = queue.tail;
+        }
         return *this;
+    }
+
+    template <NotReference Tp>
+    void ThreadsafeQueue<Tp>::push(DataPtr ptr) {
+        auto node = std::make_unique<Node>();
+        LockGuard lock{tailMutex};
+        tail->data = std::move(ptr);
+        tail->nextNode = std::move(node);
+        tail = tail->nextNode.get();
+    }
+
+    template <NotReference Tp>
+    void ThreadsafeQueue<Tp>::push(Tp value) {
+        push(std::make_unique<Tp>(std::move(value)));
+    }
+
+    template <NotReference Tp>
+    template <typename... Args>
+        requires std::is_constructible_v<Tp, Args...>
+    void ThreadsafeQueue<Tp>::emplace(Args&&... args) {
+        push(std::make_unique<Tp>(std::forward<Args>(args)...));
+    }
+
+    template <NotReference Tp>
+    ThreadsafeQueue<Tp>::DataPtr
+        ThreadsafeQueue<Tp>::pop(void)
+    {
+        LockGuard lock{headMutex};
+        if (getTail() == head.get())
+            return {};
+        auto old = std::move(head);
+        head = std::move(old->nextNode);
+        return std::move(old->data);
+    }
+
+    template <NotReference Tp>
+    bool ThreadsafeQueue<Tp>::empty(void) const noexcept {
+        LockGuard lock{headMutex};
+        return getTail() == head.get();
     }
 
 }
