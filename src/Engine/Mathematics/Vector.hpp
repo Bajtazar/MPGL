@@ -482,6 +482,31 @@ namespace ge {
     ge_tp_vec_c_op_factory(&)
     ge_tp_vec_c_op_factory(|)
 
+    template <Arithmetic Tp, std::size_t Size>
+        requires std::three_way_comparable<Tp, std::weak_ordering>
+    constexpr std::weak_ordering lexicographicalCompare(
+        Vector<Tp, Size> const& left,
+        Vector<Tp, Size> const& right) noexcept
+    {
+        for (std::size_t i = 0; i != Size - 1; ++i)
+            if (left[i] != right[i])
+                return left[i] <=> right[i];
+        return left[Size - 1] <=> right[Size - 1];
+    }
+
+    template <Arithmetic Tp, std::size_t Size>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    constexpr std::partial_ordering totalCompare(
+        Vector<Tp, Size> const& left,
+        Vector<Tp, Size> const& right) noexcept
+    {
+        auto first = left[0] <=> right[0];
+        for (std::size_t i = 1; i != Size; ++i)
+            if ((left[i] <=> right[i]) != first)
+                return std::partial_ordering::unordered;
+        return first;
+    }
+
     template class Vector<float, 2>;
     template class Vector<uint32_t, 2>;
 
