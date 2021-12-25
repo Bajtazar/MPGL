@@ -40,6 +40,12 @@ namespace ge {
         VEC_CONSTEXPR explicit Canva(size_vector const& dimensions);
         VEC_CONSTEXPR Canva(void) = default;
 
+        VEC_CONSTEXPR Canva(Canva const& canva);
+        VEC_CONSTEXPR Canva(Canva&& canva) noexcept;
+
+        VEC_CONSTEXPR Canva& operator=(Canva const& canva);
+        VEC_CONSTEXPR Canva& operator=(Canva&& canva) noexcept;
+
         class Row : private CanvaRowBase<Base> {
         public:
             using value_type =                      Base;
@@ -323,12 +329,15 @@ namespace ge {
         VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
             safe_extract(size_vector coords,
                 size_vector dimensions) const noexcept;
+
+        VEC_CONSTEXPR ~Canva(void) noexcept = default;
     private:
         Range                                       memoryMap;
         RowRange                                    rows;
         size_vector                                 dimensions;
 
         VEC_CONSTEXPR void createRows(void);
+        VEC_CONSTEXPR void reassignRows(void) noexcept;
     };
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
@@ -364,6 +373,62 @@ namespace ge {
             dimensions{dimensions}
     {
         createRows();
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+        Canva const& canva)
+            : memoryMap{canva.memoryMap.begin(),
+            canva.memoryMap.end()}, dimensions{canva.dimensions}
+    {
+        createRows();
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+        Canva&& canva) noexcept
+            : memoryMap{std::move(canva.memoryMap)},
+            rows{std::move(canva.rows)},
+            dimensions{canva.dimensions}
+    {
+        reassignRows();
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>&
+        Canva<Base, Range, RowRange>::operator=(Canva const& canva)
+    {
+        memoryMap = canva.memoryMap;
+        dimensions = canva.dimensions;
+        rows.clear();
+        createRows();
+        return *this;
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR Canva<Base, Range, RowRange>&
+        Canva<Base, Range, RowRange>::operator=(
+            Canva&& canva) noexcept
+    {
+        memoryMap = std::move(canva.memoryMap);
+        dimensions = std::move(canva.dimensions);
+        rows = std::move(canva.rows);
+        reassignRows();
+        return *this;
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    VEC_CONSTEXPR void
+        Canva<Base, Range, RowRange>::reassignRows(void) noexcept
+    {
+        auto width = std::ref(dimensions[0]);
+        for (auto& ref : rows | std::views::transform(&BaseTuple::second))
+            ref = width;
     }
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,

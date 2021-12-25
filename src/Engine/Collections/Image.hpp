@@ -10,18 +10,30 @@ namespace ge {
     #pragma pack(push, 1)
 
     struct Pixel {
-        uint8_t red;
-        uint8_t green;
-        uint8_t blue;
-        uint8_t alpha;
-        constexpr uint8_t& operator[] (std::size_t index) noexcept;
-        constexpr const uint8_t& operator[] (std::size_t index) const noexcept;
-        constexpr Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) noexcept : red{red}, green{green}, blue{blue}, alpha{alpha} {}
-        constexpr Pixel(void) noexcept : red{0}, green{0}, blue{0}, alpha{255} {}
+        typedef uint8_t                         Subpixel;
+
+        constexpr Pixel(Subpixel red, Subpixel green,
+            Subpixel blue, Subpixel alpha) noexcept
+                : red{red}, green{green},
+                blue{blue}, alpha{alpha} {}
+        constexpr Pixel(void) noexcept
+            : red{0x00}, green{0x00}, blue{0x00},
+            alpha{0xFF} {}
+
+        Subpixel                                red;
+        Subpixel                                green;
+        Subpixel                                blue;
+        Subpixel                                alpha;
+
+        constexpr Subpixel& operator[] (std::size_t index) noexcept;
+        constexpr Subpixel const& operator[] (
+            std::size_t index) const noexcept;
 
         struct Manip {
-            static std::istream& RGB(std::istream& is, Pixel& pixel) noexcept;
-            static std::ostream& RGB(std::ostream& os, const Pixel& pixel) noexcept;
+            static std::istream& RGB(std::istream& is,
+                Pixel& pixel) noexcept;
+            static std::ostream& RGB(std::ostream& os,
+                Pixel const& pixel) noexcept;
 
             template <std::input_iterator Iter>
             static void RGB(Iter& iter, Pixel& pixel) noexcept;
@@ -32,9 +44,11 @@ namespace ge {
 
     template class Canva<Pixel>;
 
-    typedef Canva<Pixel>        Image;
+    typedef Canva<Pixel>                        Image;
 
-    constexpr uint8_t& Pixel::operator[] (std::size_t index) noexcept {
+    constexpr Pixel::Subpixel&
+        Pixel::operator[] (std::size_t index) noexcept
+    {
         switch (index) {
             case 0:
                 return red;
@@ -48,7 +62,9 @@ namespace ge {
         return red;
     }
 
-    constexpr const uint8_t& Pixel::operator[] (std::size_t index) const noexcept {
+    constexpr const Pixel::Subpixel&
+        Pixel::operator[] (std::size_t index) const noexcept
+    {
         switch (index) {
             case 0:
                 return red;
