@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iterator>
+#include <optional>
+#include <cstring>
+#include <compare>
 #include <memory>
 #include <vector>
 
@@ -219,7 +222,7 @@ namespace ge {
             VEC_CONSTEXPR reference operator*(void) const noexcept
                 { return static_cast<reference>(*iter); }
             VEC_CONSTEXPR pointer operator->(void) noexcept
-                { returnstatic_cast<pointer>(*iter); }
+                { return static_cast<pointer>(*iter); }
             VEC_CONSTEXPR Iterator& operator+=(difference_type offset) noexcept
                 { iter += offset; return *this; }
             VEC_CONSTEXPR Iterator& operator-=(difference_type offset) noexcept
@@ -292,11 +295,34 @@ namespace ge {
         VEC_CONSTEXPR const_reverse_iterator crend(void) const noexcept
             { return const_reverse_iterator{begin() - 1u}; }
 
-        VEC_CONSTEXPR const void* getMemoryPtr(void) const noexcept
+        VEC_CONSTEXPR void const* getMemoryPtr(void) const noexcept
             { return memoryMap.data(); }
 
         VEC_CONSTEXPR void* getMemoryPtr(void) noexcept
             { return memoryMap.data(); }
+
+        template <UnderlyingRange<Base> URange = Range,
+            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
+        VEC_CONSTEXPR Canva<Base, URange, URowRange>
+            extract(size_type x, size_type y,
+                    size_type width, size_type height) const noexcept;
+
+        template <UnderlyingRange<Base> URange = Range,
+            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
+        VEC_CONSTEXPR Canva<Base, URange, URowRange>
+            extract(size_vector coords, size_vector dimensions) const noexcept;
+
+        template <UnderlyingRange<Base> URange = Range,
+            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
+        VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+            safe_extract(size_type x, size_type y,
+                size_type width, size_type height) const noexcept;
+
+        template <UnderlyingRange<Base> URange = Range,
+            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
+        VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+            safe_extract(size_vector coords,
+                size_vector dimensions) const noexcept;
     private:
         Range                                       memoryMap;
         RowRange                                    rows;
@@ -346,8 +372,7 @@ namespace ge {
         size_vector const& dimensions)
     {
         this->dimensions = dimensions;
-        size_type size = dimensions[1] * dimensions[0];
-        memoryMap.resize(size);
+        memoryMap.resize(dimensions[1] * dimensions[0]);
         rows.clear();
         createRows();
     }
@@ -362,6 +387,68 @@ namespace ge {
         for (size_type i = 0; i != dimensions[1]; ++i,
             iter += dimensions[0])
                 rows.emplace_back(iter, width);
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    template <UnderlyingRange<Base> URange,
+        UnderlyingRange<CanvaRowBase<Base>> URowRange>
+    VEC_CONSTEXPR Canva<Base, URange, URowRange>
+        Canva<Base, Range, RowRange>::extract(size_type x,
+            size_type y, size_type width,
+            size_type height) const noexcept
+    {
+        Canva<Base, Range, RowRange> image{width, height};
+        Base* imem = image.memoryMap.data();
+        Base const* tmem = memoryMap.data() +
+            y * this->dimensions[0] + x;
+        for (size_type i = 0; i < height; ++i,
+            imem += width, tmem += this->dimensions[0])
+                std::memcpy(imem, tmem, sizeof(Base) * width);
+        return image;
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    template <UnderlyingRange<Base> URange,
+        UnderlyingRange<CanvaRowBase<Base>> URowRange>
+    VEC_CONSTEXPR Canva<Base, URange, URowRange>
+        Canva<Base, Range, RowRange>::extract(
+            size_vector coords,
+            size_vector dimensions) const noexcept
+    {
+        return extract<URange, URowRange>(
+            coords[0], coords[1], dimensions[0], dimensions[1]);
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    template <UnderlyingRange<Base> URange,
+        UnderlyingRange<CanvaRowBase<Base>> URowRange>
+    VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+        Canva<Base, Range, RowRange>::safe_extract(
+            size_type x, size_type y,
+            size_type width, size_type height) const noexcept
+    {
+        if (x + width > dimensions[0] || y + height > dimensions[1])
+            return {};
+        return { extract<URange, URowRange>(x, y, width, height) };
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    template <UnderlyingRange<Base> URange,
+        UnderlyingRange<CanvaRowBase<Base>> URowRange>
+    VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+        Canva<Base, Range, RowRange>::safe_extract(
+            size_vector coords,
+            size_vector dimensions) const noexcept
+    {
+        // std::partial_ordering::unordered concidered as false
+        if (!(totalCompare(coords + dimensions, this->dimensions) <= 0))
+            return {};
+        return { extract<URange, URowRange>(
+            coords[0], coords[1], dimensions[0], dimensions[1]) };
     }
 
 }
