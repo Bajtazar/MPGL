@@ -7,7 +7,8 @@ namespace ge {
 
     class BitReversion {
     public:
-        constexpr uint8_t operator() (uint8_t bits) const noexcept { return lookupTable[bits]; }
+        constexpr uint8_t operator() (uint8_t bits) const noexcept
+            { return lookupTable[bits]; }
     private:
         constexpr static const std::array<uint8_t, 256> lookupTable = {
             0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,

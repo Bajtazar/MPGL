@@ -4,7 +4,8 @@
 
 namespace ge {
 
-    template <std::size_t Size, std::ranges::random_access_range Range>
+    template <std::size_t Size,
+        std::ranges::random_access_range Range>
     struct FixedRange : public Range {
         using Range::Range;
 

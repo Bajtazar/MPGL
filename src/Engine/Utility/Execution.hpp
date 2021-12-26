@@ -15,14 +15,17 @@ namespace ge {
         inline constexpr Parallel parallel{};
         inline constexpr Sequenced sequenced{};
 
-        template <class T>
-        concept ExecutionPolicy = std::derived_from<T, Execution>;
+        template <class Tp>
+        concept ExecutionPolicy = std::derived_from<Tp,
+            Execution>;
 
-        template <ExecutionPolicy T>
-        constexpr bool isParallelPolicy = std::derived_from<T, Parallel>;
+        template <ExecutionPolicy Tp>
+        constexpr bool isParallelPolicy = std::derived_from<Tp,
+            Parallel>;
 
-        template <ExecutionPolicy T>
-        constexpr bool isSequencedPolicy = std::derived_from<T, Sequenced>;
+        template <ExecutionPolicy Tp>
+        constexpr bool isSequencedPolicy = std::derived_from<Tp,
+            Sequenced>;
 
     }
 

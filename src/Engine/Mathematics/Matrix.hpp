@@ -77,6 +77,8 @@ namespace ge {
                 using iter =                    Iterator;
                 using iter_ref =                Iterator&;
                 using iter_cref =               Iterator const&;
+                using compare =
+                    std::compare_three_way_result_t<pointer, pointer>;
 
                 constexpr explicit Iterator(pointer ptr) noexcept
                     : ptr{ptr} {}
@@ -103,10 +105,6 @@ namespace ge {
                 constexpr reference operator[](difference_type offset) const noexcept
                     { return *(ptr + offset * Cols); }
 
-                friend_expr bool operator==(iter_cref left,
-                    iter_cref right) noexcept
-                        { return left.ptr == right.ptr; }
-
                 friend_expr iter operator+(iter_cref left,
                     difference_type right) noexcept
                         { auto temp = left; temp.ptr += right; return temp; }
@@ -120,18 +118,13 @@ namespace ge {
                     iter_cref right) noexcept
                         { return left.ptr - right.ptr; }
 
-                friend_expr bool operator> (iter_cref right,
-                    iter_cref left) noexcept
-                        { return right.ptr > left.ptr; }
-                friend_expr bool operator< (iter_cref right,
-                    iter_cref left) noexcept
-                        { return right.ptr < left.ptr; }
-                friend_expr bool operator>= (iter_cref right,
-                    iter_cref left) noexcept
-                        { return right.ptr >= left.ptr; }
-                friend_expr bool operator<= (iter_cref right,
-                    iter_cref left) noexcept
-                        { return right.ptr <= left.ptr; }
+                friend_expr bool operator==(iter_cref left,
+                    iter_cref right) noexcept
+                        { return left.ptr == right.ptr; }
+
+                friend_expr compare operator<=>(iter_cref left,
+                    iter_cref right) noexcept
+                        { return left.ptr <=> right.ptr; }
             private:
                 pointer                         ptr;
             };
@@ -183,7 +176,6 @@ namespace ge {
             Tp                                      seed;
         };
         #pragma pack(pop)
-
     private:
         typedef TensorTuple<Column, Rows, Cols> ColumnBase;
     public:
@@ -232,6 +224,8 @@ namespace ge {
             using iter                        = Iterator;
             using iter_ref                    = Iterator&;
             using iter_cref                   = Iterator const&;
+            using compare
+                = std::compare_three_way_result_t<pointer, pointer>;
 
             constexpr explicit Iterator(pointer ptr) noexcept
                 : ptr{ptr} {}
@@ -261,10 +255,6 @@ namespace ge {
             constexpr reference operator[] (difference_type offset) const noexcept
                 { return *(ptr + offset); }
 
-            friend_expr bool operator==(iter_cref left,
-                iter_cref right) noexcept
-                    { return left.ptr == right.ptr; }
-
             friend_expr iter operator+(iter_cref left,
                 difference_type right) noexcept
                     { auto temp = left; temp.ptr += right; return temp; }
@@ -278,18 +268,13 @@ namespace ge {
                 iter_cref right) noexcept
                     { return left.ptr - right.ptr; }
 
-            friend_expr bool operator> (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr > left.ptr; }
-            friend_expr bool operator< (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr < left.ptr; }
-            friend_expr bool operator>= (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr >= left.ptr; }
-            friend_expr bool operator<= (iter_cref right,
-                iter_cref left) noexcept
-                    { return right.ptr <= left.ptr; }
+            friend_expr bool operator==(iter_cref left,
+                iter_cref right) noexcept
+                    { return left.ptr == right.ptr; }
+
+            friend_expr compare operator<=>(iter_cref left,
+                iter_cref right) noexcept
+                    { return left.ptr <=> right.ptr; }
         private:
             pointer                             ptr;
         };

@@ -10,10 +10,8 @@
 #include "../Mathematics/Vector.hpp"
 #include "../Traits/Concepts.hpp"
 
-#if __cplusplus > 202002L
-#define VEC_CONSTEXPR constexpr
-#else
-#define VEC_CONSTEXPR
+#ifndef friend_expr
+#define friend_expr friend constexpr
 #endif
 
 namespace ge {
@@ -35,16 +33,15 @@ namespace ge {
         typedef typename RowRange::iterator         RowIter;
         typedef typename RowRange::const_iterator   RowConstIter;
     public:
+        constexpr explicit Canva(size_type width, size_type height);
+        constexpr explicit Canva(size_vector const& dimensions);
+        constexpr Canva(void) = default;
 
-        VEC_CONSTEXPR explicit Canva(size_type width, size_type height);
-        VEC_CONSTEXPR explicit Canva(size_vector const& dimensions);
-        VEC_CONSTEXPR Canva(void) = default;
+        constexpr Canva(Canva const& canva);
+        constexpr Canva(Canva&& canva) noexcept;
 
-        VEC_CONSTEXPR Canva(Canva const& canva);
-        VEC_CONSTEXPR Canva(Canva&& canva) noexcept;
-
-        VEC_CONSTEXPR Canva& operator=(Canva const& canva);
-        VEC_CONSTEXPR Canva& operator=(Canva&& canva) noexcept;
+        constexpr Canva& operator=(Canva const& canva);
+        constexpr Canva& operator=(Canva&& canva) noexcept;
 
         class Row : private CanvaRowBase<Base> {
         public:
@@ -56,13 +53,13 @@ namespace ge {
 
             Row(void) noexcept = delete;
 
-            VEC_CONSTEXPR Row(Row const& row) noexcept
+            constexpr Row(Row const& row) noexcept
                 : BaseTuple{static_cast<BaseTuple const&>(row)} {}
-            VEC_CONSTEXPR Row(Row&& row) noexcept
+            constexpr Row(Row&& row) noexcept
                 : BaseTuple{static_cast<BaseTuple const&&>(row)} {}
 
-            VEC_CONSTEXPR Row& operator= (Row const& row) noexcept;
-            VEC_CONSTEXPR Row& operator= (Row&& row) noexcept;
+            constexpr Row& operator= (Row const& row) noexcept;
+            constexpr Row& operator= (Row&& row) noexcept;
 
             template <typename value_type>
             class Iterator : public std::iterator<
@@ -74,58 +71,58 @@ namespace ge {
                 using difference_type =             std::ptrdiff_t;
                 using iterator_category =           std::random_access_iterator_tag;
 
-                VEC_CONSTEXPR explicit Iterator(pointer iter) noexcept
+                constexpr explicit Iterator(pointer iter) noexcept
                     : iter{iter} {}
-                VEC_CONSTEXPR explicit Iterator(void) noexcept = default;
+                constexpr explicit Iterator(void) noexcept = default;
 
-                VEC_CONSTEXPR Iterator& operator++(void) noexcept
+                constexpr Iterator& operator++(void) noexcept
                     { ++iter; return *this; }
-                VEC_CONSTEXPR Iterator  operator++(int) noexcept
+                constexpr Iterator  operator++(int) noexcept
                     { auto temp = *this; ++iter; return *this; }
-                VEC_CONSTEXPR Iterator& operator--(void) noexcept
+                constexpr Iterator& operator--(void) noexcept
                     { --iter; return *this; }
-                VEC_CONSTEXPR Iterator  operator--(int) noexcept
+                constexpr Iterator  operator--(int) noexcept
                     { auto temp = *this; --iter; return *this; }
 
-                VEC_CONSTEXPR reference operator*(void) const noexcept
+                constexpr reference operator*(void) const noexcept
                     { return *iter; }
-                VEC_CONSTEXPR pointer operator->(void) noexcept
+                constexpr pointer operator->(void) noexcept
                     { return iter; }
-                VEC_CONSTEXPR Iterator& operator+=(difference_type offset) noexcept
+                constexpr Iterator& operator+=(difference_type offset) noexcept
                     { iter += offset; return *this; }
-                VEC_CONSTEXPR Iterator& operator-=(difference_type offset) noexcept
+                constexpr Iterator& operator-=(difference_type offset) noexcept
                     { iter -= offset; return *this; }
-                VEC_CONSTEXPR reference operator[](difference_type offset) noexcept
+                constexpr reference operator[](difference_type offset) noexcept
                     { return *(iter + offset); }
 
-                friend VEC_CONSTEXPR bool operator== (Iterator const& left,
+                friend_expr bool operator== (Iterator const& left,
                     Iterator const& right) noexcept
-                { return left.iter == right.iter; }
-                friend VEC_CONSTEXPR bool operator>= (Iterator const& left,
+                        { return left.iter == right.iter; }
+                friend_expr bool operator>= (Iterator const& left,
                     Iterator const& right) noexcept
-                { return left.iter >= right.iter; }
-                friend VEC_CONSTEXPR bool operator<= (Iterator const& left,
+                        { return left.iter >= right.iter; }
+                friend_expr bool operator<= (Iterator const& left,
                     Iterator const& right) noexcept
-                { return left.iter <= right.iter; }
-                friend VEC_CONSTEXPR bool operator> (Iterator const& left,
+                        { return left.iter <= right.iter; }
+                friend_expr bool operator> (Iterator const& left,
                     Iterator const& right) noexcept
-                { return left.iter > right.iter; }
-                friend VEC_CONSTEXPR bool operator< (Iterator const& left,
+                        { return left.iter > right.iter; }
+                friend_expr bool operator< (Iterator const& left,
                     Iterator const& right) noexcept
-                { return left.iter < right.iter; }
+                        { return left.iter < right.iter; }
 
-                friend VEC_CONSTEXPR Iterator operator+ (Iterator const& left,
+                friend_expr Iterator operator+ (Iterator const& left,
                     difference_type right) noexcept
-                { return left[right]; }
-                friend VEC_CONSTEXPR Iterator operator+ (difference_type left,
+                        { return left[right]; }
+                friend_expr Iterator operator+ (difference_type left,
                     Iterator const& right) noexcept
-                { return right[left]; }
-                friend VEC_CONSTEXPR Iterator operator- (Iterator const& left,
+                        { return right[left]; }
+                friend_expr Iterator operator- (Iterator const& left,
                     difference_type right) noexcept
-                { auto temp = left; temp -= right; return temp; }
-                friend VEC_CONSTEXPR difference_type operator- (Iterator const& left,
+                        { auto temp = left; temp -= right; return temp; }
+                friend_expr difference_type operator- (Iterator const& left,
                     Iterator const& right) noexcept
-                { return left.iter - right.iter; }
+                        { return left.iter - right.iter; }
             private:
                 pointer                             iter;
             };
@@ -135,71 +132,71 @@ namespace ge {
             using reverse_iterator =                std::reverse_iterator<iterator>;
             using const_reverse_iterator =          std::reverse_iterator<const_iterator>;
 
-            VEC_CONSTEXPR size_type size(void) const noexcept
+            constexpr size_type size(void) const noexcept
                 { return this->second.get(); }
 
-            VEC_CONSTEXPR iterator begin(void) noexcept
+            constexpr iterator begin(void) noexcept
                 { return iterator{memory()}; }
-            VEC_CONSTEXPR iterator end(void) noexcept
+            constexpr iterator end(void) noexcept
                 { return iterator{memory() + size()}; }
-            VEC_CONSTEXPR const_iterator begin(void) const noexcept
+            constexpr const_iterator begin(void) const noexcept
                 { return const_iterator{memory()}; }
-            VEC_CONSTEXPR const_iterator end(void) const noexcept
+            constexpr const_iterator end(void) const noexcept
                 { return const_iterator{memory() + size()}; }
 
-            VEC_CONSTEXPR const_iterator cbegin(void) const noexcept
+            constexpr const_iterator cbegin(void) const noexcept
                 { return const_iterator{memory()}; }
-            VEC_CONSTEXPR const_iterator cend(void) const noexcept
+            constexpr const_iterator cend(void) const noexcept
                 { return const_iterator{memory() + size()}; }
 
-            VEC_CONSTEXPR reverse_iterator rbegin(void) noexcept
+            constexpr reverse_iterator rbegin(void) noexcept
                 { return reverse_iterator{end() - 1u}; }
-            VEC_CONSTEXPR reverse_iterator rend(void) noexcept
+            constexpr reverse_iterator rend(void) noexcept
                 { return reverse_iterator{begin() - 1u}; }
-            VEC_CONSTEXPR const_reverse_iterator rbegin(void) const noexcept
+            constexpr const_reverse_iterator rbegin(void) const noexcept
                 { return const_reverse_iterator{end() - 1u}; }
-            VEC_CONSTEXPR const_reverse_iterator rend(void) const noexcept
+            constexpr const_reverse_iterator rend(void) const noexcept
                 { return const_reverse_iterator{begin() - 1u}; }
 
-            VEC_CONSTEXPR const_reverse_iterator crbegin(void) const noexcept
+            constexpr const_reverse_iterator crbegin(void) const noexcept
                 { return const_reverse_iterator{end() - 1u}; }
-            VEC_CONSTEXPR const_reverse_iterator crend(void) const noexcept
+            constexpr const_reverse_iterator crend(void) const noexcept
                 { return const_reverse_iterator{begin() - 1u}; }
 
-            VEC_CONSTEXPR reference operator[] (size_type index) noexcept
+            constexpr reference operator[] (size_type index) noexcept
                 { return *(memory() + index); }
-            VEC_CONSTEXPR const_reference operator[] (size_type index) const noexcept
+            constexpr const_reference operator[] (size_type index) const noexcept
                 { return *(memory() + index); }
 
             friend class Canva;
 
-            VEC_CONSTEXPR ~Row(void) = default;
+            constexpr ~Row(void) = default;
         private:
-            VEC_CONSTEXPR const_pointer memory(void) const noexcept
+            constexpr const_pointer memory(void) const noexcept
                 { return this->first; }
         };
 
-        VEC_CONSTEXPR void resize(size_vector const& dimensions);
-        VEC_CONSTEXPR void resize(size_type width, size_type height)
+        constexpr void resize(size_vector const& dimensions);
+        constexpr void resize(size_type width, size_type height)
             { return resize({width, height}); }
 
-        VEC_CONSTEXPR size_vector size(void) const noexcept
+        constexpr size_vector size(void) const noexcept
             { return dimensions; }
-        VEC_CONSTEXPR size_type getWidth(void) const noexcept
+        constexpr size_type getWidth(void) const noexcept
             { return dimensions[0]; }
-        VEC_CONSTEXPR size_type getHeight(void) const noexcept
+        constexpr size_type getHeight(void) const noexcept
             { return dimensions[1]; }
 
         template <std::integral T>
-        VEC_CONSTEXPR Base& operator[](Vector2<T> const& coords) noexcept
+        constexpr Base& operator[](Vector2<T> const& coords) noexcept
             { return memoryMap[dimensions[0] * coords[1] + coords[0]]; }
         template <std::integral T>
-        VEC_CONSTEXPR Base const& operator[](Vector2<T> const& coords) const noexcept
+        constexpr Base const& operator[](Vector2<T> const& coords) const noexcept
             { return memoryMap[dimensions[0] * coords[1] + coords[0]]; }
 
-        VEC_CONSTEXPR Row& operator[] (size_type index) noexcept
+        constexpr Row& operator[] (size_type index) noexcept
             { return static_cast<Row&>(rows[index]); }
-        VEC_CONSTEXPR Row const& operator[] (size_type index) const noexcept
+        constexpr Row const& operator[] (size_type index) const noexcept
             { return static_cast<Row const&>(rows[index]); }
 
         template <class value_type, class InnerIter>
@@ -212,58 +209,58 @@ namespace ge {
             using difference_type =             std::ptrdiff_t;
             using iterator_category =           std::random_access_iterator_tag;
 
-            VEC_CONSTEXPR explicit Iterator(InnerIter const& iter) noexcept
+            constexpr explicit Iterator(InnerIter const& iter) noexcept
                 : iter{iter} {}
-            VEC_CONSTEXPR explicit Iterator(void) noexcept = default;
+            constexpr explicit Iterator(void) noexcept = default;
 
-            VEC_CONSTEXPR Iterator& operator++(void) noexcept
+            constexpr Iterator& operator++(void) noexcept
                 { ++iter; return *this; }
-            VEC_CONSTEXPR Iterator  operator++(int) noexcept
+            constexpr Iterator  operator++(int) noexcept
                 { auto temp = *this; ++iter; return *this; }
-            VEC_CONSTEXPR Iterator& operator--(void) noexcept
+            constexpr Iterator& operator--(void) noexcept
                 { --iter; return *this; }
-            VEC_CONSTEXPR Iterator  operator--(int) noexcept
+            constexpr Iterator  operator--(int) noexcept
                 { auto temp = *this; --iter; return *this; }
 
-            VEC_CONSTEXPR reference operator*(void) const noexcept
+            constexpr reference operator*(void) const noexcept
                 { return static_cast<reference>(*iter); }
-            VEC_CONSTEXPR pointer operator->(void) noexcept
+            constexpr pointer operator->(void) noexcept
                 { return static_cast<pointer>(*iter); }
-            VEC_CONSTEXPR Iterator& operator+=(difference_type offset) noexcept
+            constexpr Iterator& operator+=(difference_type offset) noexcept
                 { iter += offset; return *this; }
-            VEC_CONSTEXPR Iterator& operator-=(difference_type offset) noexcept
+            constexpr Iterator& operator-=(difference_type offset) noexcept
                 { iter -= offset; return *this; }
-            VEC_CONSTEXPR Iterator  operator[](difference_type offset) noexcept
+            constexpr Iterator  operator[](difference_type offset) noexcept
                 { auto temp = *this; temp += offset; return temp; }
 
-            friend VEC_CONSTEXPR bool operator== (Iterator const& left,
-                    Iterator const& right) noexcept
-                { return left.iter == right.iter; }
-            friend VEC_CONSTEXPR bool operator>= (Iterator const& left,
-                    Iterator const& right) noexcept
-                { return left.iter >= right.iter; }
-            friend VEC_CONSTEXPR bool operator<= (Iterator const& left,
-                    Iterator const& right) noexcept
-                { return left.iter <= right.iter; }
-            friend VEC_CONSTEXPR bool operator> (Iterator const& left,
-                    Iterator const& right) noexcept
-                { return left.iter > right.iter; }
-            friend VEC_CONSTEXPR bool operator< (Iterator const& left,
-                    Iterator const& right) noexcept
-                { return left.iter < right.iter; }
+            friend_expr bool operator== (Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter == right.iter; }
+            friend_expr bool operator>= (Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter >= right.iter; }
+            friend_expr bool operator<= (Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter <= right.iter; }
+            friend_expr bool operator> (Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter > right.iter; }
+            friend_expr bool operator< (Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter < right.iter; }
 
-            friend VEC_CONSTEXPR Iterator operator+ (Iterator const& left,
-                    difference_type right) noexcept
-                { return left[right]; }
-            friend VEC_CONSTEXPR Iterator operator+ (difference_type left,
-                    Iterator const& right) noexcept
-                { return right[left]; }
-            friend VEC_CONSTEXPR Iterator operator- (Iterator const& left,
-                    difference_type right) noexcept
-                { auto temp = left; temp -= right; return temp; }
-            friend VEC_CONSTEXPR difference_type operator- (Iterator const& left,
-                    Iterator const& right) noexcept
-                { return left.iter - right.iter; }
+            friend_expr Iterator operator+ (Iterator const& left,
+                difference_type right) noexcept
+                    { return left[right]; }
+            friend_expr Iterator operator+ (difference_type left,
+                Iterator const& right) noexcept
+                    { return right[left]; }
+            friend_expr Iterator operator- (Iterator const& left,
+                difference_type right) noexcept
+                    { auto temp = left; temp -= right; return temp; }
+            friend_expr difference_type operator- (Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter - right.iter; }
         private:
             InnerIter                           iter;
         };
@@ -273,76 +270,76 @@ namespace ge {
         using reverse_iterator =                    std::reverse_iterator<iterator>;
         using const_reverse_iterator =              std::reverse_iterator<const_iterator>;
 
-        VEC_CONSTEXPR iterator begin(void) noexcept
+        constexpr iterator begin(void) noexcept
             { return iterator{rows.begin()}; }
-        VEC_CONSTEXPR iterator end(void) noexcept
+        constexpr iterator end(void) noexcept
             { return iterator{rows.end()}; }
-        VEC_CONSTEXPR const_iterator begin(void) const noexcept
+        constexpr const_iterator begin(void) const noexcept
             { return const_iterator{rows.begin()}; }
-        VEC_CONSTEXPR const_iterator end(void) const noexcept
+        constexpr const_iterator end(void) const noexcept
             { return const_iterator{rows.end()}; }
 
-        VEC_CONSTEXPR const_iterator cbegin(void) const noexcept
+        constexpr const_iterator cbegin(void) const noexcept
             { return const_iterator{rows.cbegin()}; }
-        VEC_CONSTEXPR const_iterator cend(void) const noexcept
+        constexpr const_iterator cend(void) const noexcept
             { return const_iterator{rows.cend()}; }
 
-        VEC_CONSTEXPR reverse_iterator rbegin(void) noexcept
+        constexpr reverse_iterator rbegin(void) noexcept
             { return reverse_iterator{end() - 1u}; }
-        VEC_CONSTEXPR reverse_iterator rend(void) noexcept
+        constexpr reverse_iterator rend(void) noexcept
             { return reverse_iterator{begin() - 1u}; }
-        VEC_CONSTEXPR const_reverse_iterator rbegin(void) const noexcept
+        constexpr const_reverse_iterator rbegin(void) const noexcept
             { return const_reverse_iterator{end() - 1u}; }
-        VEC_CONSTEXPR const_reverse_iterator rend(void) const noexcept
+        constexpr const_reverse_iterator rend(void) const noexcept
             { return const_reverse_iterator{begin() - 1u}; }
 
-        VEC_CONSTEXPR const_reverse_iterator crbegin(void) const noexcept
+        constexpr const_reverse_iterator crbegin(void) const noexcept
             { return const_reverse_iterator{end() - 1u}; }
-        VEC_CONSTEXPR const_reverse_iterator crend(void) const noexcept
+        constexpr const_reverse_iterator crend(void) const noexcept
             { return const_reverse_iterator{begin() - 1u}; }
 
-        VEC_CONSTEXPR void const* getMemoryPtr(void) const noexcept
+        constexpr void const* getMemoryPtr(void) const noexcept
             { return memoryMap.data(); }
 
-        VEC_CONSTEXPR void* getMemoryPtr(void) noexcept
+        constexpr void* getMemoryPtr(void) noexcept
             { return memoryMap.data(); }
 
         template <UnderlyingRange<Base> URange = Range,
             UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        VEC_CONSTEXPR Canva<Base, URange, URowRange>
+        constexpr Canva<Base, URange, URowRange>
             extract(size_type x, size_type y,
                     size_type width, size_type height) const noexcept;
 
         template <UnderlyingRange<Base> URange = Range,
             UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        VEC_CONSTEXPR Canva<Base, URange, URowRange>
+        constexpr Canva<Base, URange, URowRange>
             extract(size_vector coords, size_vector dimensions) const noexcept;
 
         template <UnderlyingRange<Base> URange = Range,
             UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+        constexpr std::optional<Canva<Base, URange, URowRange>>
             safe_extract(size_type x, size_type y,
                 size_type width, size_type height) const noexcept;
 
         template <UnderlyingRange<Base> URange = Range,
             UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+        constexpr std::optional<Canva<Base, URange, URowRange>>
             safe_extract(size_vector coords,
                 size_vector dimensions) const noexcept;
 
-        VEC_CONSTEXPR ~Canva(void) noexcept = default;
+        constexpr ~Canva(void) noexcept = default;
     private:
         Range                                       memoryMap;
         RowRange                                    rows;
         size_vector                                 dimensions;
 
-        VEC_CONSTEXPR void createRows(void);
-        VEC_CONSTEXPR void reassignRows(void) noexcept;
+        constexpr void createRows(void);
+        constexpr void reassignRows(void) noexcept;
     };
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Row&
+    constexpr Canva<Base, Range, RowRange>::Row&
         Canva<Base, Range, RowRange>::Row::operator= (
             Row const& row) noexcept
     {
@@ -353,7 +350,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Row&
+    constexpr Canva<Base, Range, RowRange>::Row&
         Canva<Base, Range, RowRange>::Row::operator= (Row&& row) noexcept
     {
         static_cast<BaseTuple&>(*this) = static_cast<BaseTuple&&>(row);
@@ -362,12 +359,12 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+    constexpr Canva<Base, Range, RowRange>::Canva(
         size_type width, size_type height) : Canva{{width, height}} {}
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+    constexpr Canva<Base, Range, RowRange>::Canva(
         size_vector const& dimensions)
             : memoryMap(dimensions[0] * dimensions[1], Base{}),
             dimensions{dimensions}
@@ -377,7 +374,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+    constexpr Canva<Base, Range, RowRange>::Canva(
         Canva const& canva)
             : memoryMap{canva.memoryMap.begin(),
             canva.memoryMap.end()}, dimensions{canva.dimensions}
@@ -387,7 +384,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>::Canva(
+    constexpr Canva<Base, Range, RowRange>::Canva(
         Canva&& canva) noexcept
             : memoryMap{std::move(canva.memoryMap)},
             rows{std::move(canva.rows)},
@@ -398,7 +395,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>&
+    constexpr Canva<Base, Range, RowRange>&
         Canva<Base, Range, RowRange>::operator=(Canva const& canva)
     {
         memoryMap = canva.memoryMap;
@@ -410,7 +407,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR Canva<Base, Range, RowRange>&
+    constexpr Canva<Base, Range, RowRange>&
         Canva<Base, Range, RowRange>::operator=(
             Canva&& canva) noexcept
     {
@@ -423,7 +420,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR void
+    constexpr void
         Canva<Base, Range, RowRange>::reassignRows(void) noexcept
     {
         auto width = std::ref(dimensions[0]);
@@ -433,7 +430,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR void Canva<Base, Range, RowRange>::resize(
+    constexpr void Canva<Base, Range, RowRange>::resize(
         size_vector const& dimensions)
     {
         this->dimensions = dimensions;
@@ -444,7 +441,7 @@ namespace ge {
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
-    VEC_CONSTEXPR void Canva<Base, Range, RowRange>::createRows(void)
+    constexpr void Canva<Base, Range, RowRange>::createRows(void)
     {
         Base* iter = memoryMap.data();
         auto width = std::ref(dimensions[0]);
@@ -458,7 +455,7 @@ namespace ge {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    VEC_CONSTEXPR Canva<Base, URange, URowRange>
+    constexpr Canva<Base, URange, URowRange>
         Canva<Base, Range, RowRange>::extract(size_type x,
             size_type y, size_type width,
             size_type height) const noexcept
@@ -477,7 +474,7 @@ namespace ge {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    VEC_CONSTEXPR Canva<Base, URange, URowRange>
+    constexpr Canva<Base, URange, URowRange>
         Canva<Base, Range, RowRange>::extract(
             size_vector coords,
             size_vector dimensions) const noexcept
@@ -490,7 +487,7 @@ namespace ge {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+    constexpr std::optional<Canva<Base, URange, URowRange>>
         Canva<Base, Range, RowRange>::safe_extract(
             size_type x, size_type y,
             size_type width, size_type height) const noexcept
@@ -504,7 +501,7 @@ namespace ge {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    VEC_CONSTEXPR std::optional<Canva<Base, URange, URowRange>>
+    constexpr std::optional<Canva<Base, URange, URowRange>>
         Canva<Base, Range, RowRange>::safe_extract(
             size_vector coords,
             size_vector dimensions) const noexcept
