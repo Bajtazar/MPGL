@@ -70,6 +70,8 @@ namespace ge {
                 using reference =                   value_type&;
                 using difference_type =             std::ptrdiff_t;
                 using iterator_category =           std::random_access_iterator_tag;
+                using compare =
+                    std::compare_three_way_result_t<pointer, pointer>;
 
                 constexpr explicit Iterator(pointer iter) noexcept
                     : iter{iter} {}
@@ -98,18 +100,10 @@ namespace ge {
                 friend_expr bool operator== (Iterator const& left,
                     Iterator const& right) noexcept
                         { return left.iter == right.iter; }
-                friend_expr bool operator>= (Iterator const& left,
-                    Iterator const& right) noexcept
-                        { return left.iter >= right.iter; }
-                friend_expr bool operator<= (Iterator const& left,
-                    Iterator const& right) noexcept
-                        { return left.iter <= right.iter; }
-                friend_expr bool operator> (Iterator const& left,
-                    Iterator const& right) noexcept
-                        { return left.iter > right.iter; }
-                friend_expr bool operator< (Iterator const& left,
-                    Iterator const& right) noexcept
-                        { return left.iter < right.iter; }
+
+                friend_expr compare operator<=> (
+                    Iterator const& left, Iterator const& right) noexcept
+                        { return left.iter <=> right.iter; }
 
                 friend_expr Iterator operator+ (Iterator const& left,
                     difference_type right) noexcept
@@ -208,6 +202,8 @@ namespace ge {
             using reference =                   value_type&;
             using difference_type =             std::ptrdiff_t;
             using iterator_category =           std::random_access_iterator_tag;
+            using compare =
+                std::compare_three_way_result_t<pointer, pointer>;
 
             constexpr explicit Iterator(InnerIter const& iter) noexcept
                 : iter{iter} {}
@@ -236,18 +232,10 @@ namespace ge {
             friend_expr bool operator== (Iterator const& left,
                 Iterator const& right) noexcept
                     { return left.iter == right.iter; }
-            friend_expr bool operator>= (Iterator const& left,
-                Iterator const& right) noexcept
-                    { return left.iter >= right.iter; }
-            friend_expr bool operator<= (Iterator const& left,
-                Iterator const& right) noexcept
-                    { return left.iter <= right.iter; }
-            friend_expr bool operator> (Iterator const& left,
-                Iterator const& right) noexcept
-                    { return left.iter > right.iter; }
-            friend_expr bool operator< (Iterator const& left,
-                Iterator const& right) noexcept
-                    { return left.iter < right.iter; }
+
+            friend_expr compare operator<=> (
+                Iterator const& left, Iterator const& right) noexcept
+                    { return left.iter <=> right.iter; }
 
             friend_expr Iterator operator+ (Iterator const& left,
                 difference_type right) noexcept
