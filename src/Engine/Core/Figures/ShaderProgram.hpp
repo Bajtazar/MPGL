@@ -147,7 +147,7 @@ namespace ge {
     inline void ShaderProgram::setUniform(std::string const& uniform,
         Color const& color) const noexcept
     {
-        setUniform(uniform, color.red, color.green, color.blue, color.alpha);
+        setUniform(uniform, static_cast<Vector4f const&>(color));
     }
 
     template <std::size_t Size>

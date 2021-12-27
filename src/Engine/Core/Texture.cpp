@@ -43,7 +43,7 @@ namespace ge {
             glTexParameteri(GL_TEXTURE_2D, filter, mode);
         if (options.isBorder())
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR,
-                &options.borderColor.red);
+                &options.borderColor.red());
     }
 
     Texture::Texture(std::string const& fileName,

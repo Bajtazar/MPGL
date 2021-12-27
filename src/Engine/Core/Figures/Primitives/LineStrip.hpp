@@ -9,6 +9,8 @@ namespace ge {
         template <AllConvertible<Vector2f>... Args>
         LineStrip(Color const& color, Args&&... points) noexcept;
         template <AllConvertible<Vector2f>... Args>
+        LineStrip(Vector4f const& color, Args&&... points) noexcept;
+        template <AllConvertible<Vector2f>... Args>
         LineStrip(Args&&... args) noexcept;
 
         LineStrip(std::size_t vertices, Color const& color) noexcept;
@@ -35,6 +37,13 @@ namespace ge {
 
     template <AllConvertible<Vector2f>... Args>
     LineStrip::LineStrip(Color const& color, Args&&... points) noexcept
+        : Shape{createVertices(color, std::forward<Args>(points)...)}
+    {
+        initialize();
+    }
+
+    template <AllConvertible<Vector2f>... Args>
+    LineStrip::LineStrip(Vector4f const& color, Args&&... points) noexcept
         : Shape{createVertices(color, std::forward<Args>(points)...)}
     {
         initialize();

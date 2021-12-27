@@ -1,119 +1,72 @@
 #pragma once
 
-#include <inttypes.h>
-#include <utility>
-#include <tuple>
+#include "../Mathematics/Vector.hpp"
 
 namespace ge {
 
-    struct Color {
+    class Color : public Vector4f {
+    public:
         constexpr Color(uint8_t red, uint8_t green,
-            uint8_t blue, uint8_t alpha=255) noexcept
-                : red((float)red/255), green((float)green/255),
-                blue((float)blue/255), alpha((float)alpha/255) {}
-        constexpr Color(float red, float green, float blue,
-            float alpha) noexcept
-                : red(red), green(green),
-                blue(blue), alpha(alpha) {}
+            uint8_t blue, uint8_t alpha=0xFF) noexcept
+                : Vector4f{red / 0xFF, green / 0xFF,
+                blue / 0xFF, alpha / 0xff} {}
+
+        constexpr Color(float red, float green,
+            float blue, float alpha) noexcept
+                : Vector4f{red, green, blue, alpha} {}
+
         constexpr Color(void) noexcept
-            : red(0.f), green(0.f), blue(0.f), alpha(1.f) {}
+            : Vector4f{0.f, 0.f, 0.f, 1.f} {}
 
-        struct                              literals;
+        constexpr Color(Vector4f const& vector) noexcept
+            : Vector4f{vector} {}
 
-        float                               red;
-        float                               green;
-        float                               blue;
-        float                               alpha;
+        constexpr Color(Vector4f&& vector) noexcept
+            : Vector4f{std::move(vector)} {}
+
+        constexpr float& red(void) noexcept
+            { return (*this)[0]; }
+        constexpr float const& red(void) const noexcept
+            { return (*this)[0]; }
+
+        constexpr float& green(void) noexcept
+            { return (*this)[1]; }
+        constexpr float const& green(void) const noexcept
+            { return (*this)[1]; }
+
+        constexpr float& blue(void) noexcept
+            { return (*this)[2]; }
+        constexpr float const& blue(void) const noexcept
+            { return (*this)[2]; }
+
+        constexpr float& alpha(void) noexcept
+            { return (*this)[3]; }
+        constexpr float const& alpha(void) const noexcept
+            { return (*this)[3]; }
 
         template <std::size_t Index>
             requires (Index < 4)
         constexpr float& get(void) & noexcept
-            { return getHelper<Index>(*this); }
+            { return (*this)[Index]; }
 
         template <std::size_t Index>
             requires (Index < 4)
         constexpr float const& get(void) const& noexcept
-            { return getHelper<Index>(*this); }
+            { return (*this)[Index]; }
 
-    private:
-        template <std::size_t Index, class Base>
-            requires (Index < 4)
-        constexpr float&& getHelper(Base&& base) const noexcept
-        {
-            if constexpr (Index == 0)
-                return std::forward<Base>(base).red;
-            else if constexpr (Index == 1)
-                return std::forward<Base>(base).green;
-            else if constexpr (Index == 2)
-                return std::forward<Base>(base).blue;
-            else
-                return std::forward<Base>(base).alpha;
-        }
+        static constexpr Vector4f           Red
+            {1.f, 0.f, 0.f, 1.f};
+        static constexpr Vector4f           Green
+            {0.f, 1.f, 0.f, 1.f};
+        static constexpr Vector4f           Blue
+            {0.f, 0.f, 1.f, 1.f};
+        static constexpr Vector4f           White
+            {1.f, 1.f, 1.f, 1.f};
+        static constexpr Vector4f           Black
+            {0.f, 0.f, 0.f, 1.f};
+        static constexpr Vector4f           Yellow
+            {1.f, 1.f, 0.f, 1.f};
     };
-
-    struct Color::literals {
-        static constexpr Color              Red {255, 0, 0};
-        static constexpr Color              Green {0, 255, 0};
-        static constexpr Color              Blue {0, 0, 255};
-        static constexpr Color              White {255, 255, 255};
-        static constexpr Color              Black {0, 0, 0};
-        static constexpr Color              Yellow {255, 255, 0};
-    };
-
-    constexpr Color operator/ (Color const& left,
-        Color const& right)
-    {
-        return {left.red / right.red, left.green / right.green,
-            left.blue / right.blue, left.alpha / right.alpha};
-    }
-
-    constexpr Color operator* (Color const& left,
-        Color const& right) noexcept
-    {
-        return {left.red * right.red, left.green * right.green,
-            left.blue * right.blue, left.alpha * right.alpha};
-    }
-
-    constexpr Color operator+ (Color const& left,
-        Color const& right) noexcept
-    {
-        return {left.red + right.red, left.green + right.green,
-            left.blue + right.blue, left.alpha + right.alpha};
-    }
-
-    constexpr Color operator- (Color const& left,
-        Color const& right) noexcept
-    {
-        return {left.red - right.red, left.green - right.green,
-            left.blue - right.blue, left.alpha - right.alpha};
-    }
-
-    constexpr Color operator+ (Color const& left,
-        float right) noexcept
-    {
-        return {left.red + right, left.green + right,
-            left.blue + right, left.alpha + right};
-    }
-
-    constexpr Color operator- (Color const& left,
-        float right) noexcept
-    {
-        return {left.red - right, left.green - right,
-            left.blue - right, left.alpha - right};
-    }
-
-    constexpr Color operator* (Color const& left,
-        float right) noexcept
-    {
-        return {left.red * right, left.green * right,
-            left.blue * right, left.alpha * right};
-    }
-
-    constexpr Color operator/ (Color const& left,
-        float right) noexcept {
-        return {left.red / right, left.green / right,
-            left.blue / right, left.alpha / right};
-    }
 
 }
 

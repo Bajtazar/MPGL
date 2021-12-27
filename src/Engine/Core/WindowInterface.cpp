@@ -97,7 +97,8 @@ namespace ge {
     }
 
     void WindowInterface::clear(const Color& color) const noexcept {
-        glClearColor(color.red, color.green, color.blue, color.alpha);
+        glClearColor(color.red(), color.green(),
+            color.blue(), color.alpha());
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
