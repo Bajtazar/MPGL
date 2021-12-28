@@ -22,7 +22,12 @@
     ge_test_assertions = ge_test_assertions && assertion;
 
 #define ConstexprEqual(left, right) \
-    ge_test_assertions = ge_test_assertions && ge::tests::compare(left, right);
+    ge_test_assertions = ge_test_assertions && ge::tests::compare( \
+    left , right);
+
+#define ConstexprEqualIter(leftIter, leftSent, rightIter, rightSent) \
+    ge_test_assertions = ge_test_assertions && ge::tests::compare( \
+    leftIter , leftSent , rightIter , rightSent );
 
 #define ConstexprOnThrow(assertion, exception) \
     try { \
@@ -37,6 +42,10 @@
 
 #define Equal(left, right) \
     ge_tests_asserts.push_back(ge::tests::compare(left, right));
+
+#define EqualIter(leftIter, leftSent, rightIter, rightSent) \
+    ge_tests_asserts.push_back(ge::tests::compare( \
+    leftIter , leftSent , rightIter , rightSent );
 
 #define OnThrow(assertion, exception) \
     try { \

@@ -68,6 +68,8 @@
         "mutex": "cpp",
         "queue": "cpp",
         "condition_variable": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "list": "cpp",
+        "execution": "cpp"
     }
 }
