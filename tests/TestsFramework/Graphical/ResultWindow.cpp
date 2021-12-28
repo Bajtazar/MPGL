@@ -9,13 +9,13 @@ namespace ge::tests {
     {
         return TextVector{
             Text{font, 18, 20_x + getHeight(0),  "Test name",
-                Color::literals::Black, Font::Type::BoldItalic},
+                Color::Black, Font::Type::BoldItalic},
             Text{font, 18, 200_x + getHeight(0), "Passed tests",
-                Color::literals::Black, Font::Type::BoldItalic},
+                Color::Black, Font::Type::BoldItalic},
             Text{font, 18, 400_x + getHeight(0),  "Failed tests",
-                Color::literals::Black, Font::Type::BoldItalic},
+                Color::Black, Font::Type::BoldItalic},
             Text{font, 18, 580_x + getHeight(0),  "Status",
-                Color::literals::Black, Font::Type::BoldItalic}
+                Color::Black, Font::Type::BoldItalic}
         };
     }
 
@@ -44,7 +44,7 @@ namespace ge::tests {
     {
         columns[Names].emplace_back(font, 18,
             20_x + getHeight(index), name,
-            Color::literals::Black);
+            Color::Black);
     }
 
     void ResultWindow::addPassed(Font& font, uint index,
@@ -52,7 +52,7 @@ namespace ge::tests {
     {
         columns[Passed].emplace_back(font, 18,
             200_x + getHeight(index), std::to_string(passed),
-            Color::literals::Green);
+            Color::Green);
     }
 
     void ResultWindow::addFailed(Font& font, uint index,
@@ -60,7 +60,7 @@ namespace ge::tests {
     {
         columns[Failed].emplace_back(font, 18,
             400_x + getHeight(index), std::to_string(failed),
-            Color::literals::Red, Font::Type::Bold);
+            Color::Red, Font::Type::Bold);
     }
 
     void ResultWindow::addStatus(Font& font, uint index,
@@ -68,8 +68,7 @@ namespace ge::tests {
     {
         columns[Status].emplace_back(font, 18,
             580_x + getHeight(index), status ? "Passed" : "Failed",
-            status ? Color::literals::Green : Color::literals::Red,
-            Font::Type::BoldItalic);
+            status ? Color::Green : Color::Red, Font::Type::BoldItalic);
     }
 
     void ResultWindow::draw(void) const noexcept {

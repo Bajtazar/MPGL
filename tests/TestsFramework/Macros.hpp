@@ -15,6 +15,23 @@
         #TestName, TestName); \
     void TestName (ge_tests_vec& ge_tests_asserts)
 
+#define BeginConstexprTest(TestName) \
+    constexpr bool TestName (void) { bool ge_test_assertions = true;
+
+#define ConstexprAssert(assertion) \
+    ge_test_assertions = ge_test_assertions && assertion;
+
+#define ConstexprEqual(left, right) \
+    ge_test_assertions = ge_test_assertions && ge::tests::compare(left, right);
+
+#define ConstexprOnThrow(assertion, exception) \
+    try { \
+        assertion ; \
+        ge_test_assertions = false; \
+    } catch ( exception const& ) {}
+
+#define EndConstexprTest return ge_test_assertions; }
+
 #define Assert(assertion) \
     ge_tests_asserts.push_back(assertion);
 
