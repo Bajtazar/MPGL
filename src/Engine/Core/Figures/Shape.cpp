@@ -3,14 +3,64 @@
 
 namespace ge {
 
-    Shape::Shape(size_t size) noexcept : vertices{size, Vertex{{}, {}}},
+    Shape::Shape(size_t size, Color const& color)
+        : vertices{size, Vertex{{}, color}},
         Shadeable{"2DDefault"}
     {
         generateBuffers();
     }
 
-    Shape::Shape(std::vector<Vertex> vertices) noexcept
+    // move-only constructor
+    Shape::Shape(Vertices vertices) noexcept
         : vertices{std::move(vertices)} {}
+
+    Shape::Shape(Vertices vertices,
+        std::string const& shader)
+            : vertices{std::move(vertices)},
+            Shadeable{shader}
+    {
+        generateBuffers();
+    }
+
+    Shape::Shape(Vertices vertices,
+        ProgramPtr const& program)
+            : vertices{std::move(vertices)},
+            Shadeable{program}
+    {
+        generateBuffers();
+    }
+
+    Shape::Shape(Vertices vertices,
+        ProgramPtr&& program) noexcept
+            : vertices{std::move(vertices)},
+            Shadeable{std::move(program)} {}
+
+    void Shape::moveShape(Shape&& shape) noexcept {
+        vertexArrayObject = shape.vertexArrayObject;
+        vertexBuffer = shape.vertexBuffer;
+        shape.vertexArrayObject = shape.vertexBuffer = 0;
+    }
+
+    Shape::Shape(Shape&& shape) noexcept
+        : Shape{std::move(shape.vertices),
+            std::move(shape.shaderProgram)}
+    {
+        moveShape(std::move(shape));
+    }
+
+    Shape& Shape::operator=(Shape&& shape) noexcept {
+        this->~Shape();
+        vertices = std::move(shape.vertices);
+        shaderProgram = std::move(shape.shaderProgram);
+        moveShape(std::move(shape));
+        return *this;
+    }
+
+    Shape& Shape::operator=(Shape const& shape) {
+        vertices = shape.vertices;
+        shaderProgram = shape.shaderProgram;
+        return *this;
+    }
 
     void Shape::generateBuffers(void) noexcept {
         glGenVertexArrays(1, &vertexArrayObject);

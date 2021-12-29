@@ -23,10 +23,12 @@ namespace ge {
 
         virtual ~Shadeable(void) noexcept = default;
     protected:
+        explicit Shadeable(ProgramPtr const& program);
+        explicit Shadeable(ProgramPtr&& program) noexcept;
         explicit Shadeable(std::string const& programName);
         explicit Shadeable(std::string const& programName,
             Executable exec);
-        explicit Shadeable(void) noexcept;
+        explicit Shadeable(void);
 
         ProgramPtr                                  shaderProgram;
     };

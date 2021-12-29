@@ -3,49 +3,36 @@
 
 namespace ge {
 
-    Triangle::Triangle(Vector2f const& firstVertex, Vector2f const& secondVertex,
-        Vector2f const& thirdVertex, const Color& color) noexcept
-        : Shape{std::vector<Vertex>{
-            Vertex{firstVertex, color}, Vertex{secondVertex, color},
-            Vertex{thirdVertex, color}}}
+    Triangle::Triangle(Vector2f const& firstVertex,
+        Vector2f const& secondVertex,
+        Vector2f const& thirdVertex,
+        Color const& color)
+            : Shape{{Vertex{firstVertex, color},
+                Vertex{secondVertex, color},
+                Vertex{thirdVertex, color}}, "2DDefault"} {}
+
+    Triangle::Triangle(Color const& color)
+        : Shape{3, color} {}
+
+    Triangle::Triangle(Triangle const& triangle)
+        : Shape{triangle.vertices, triangle.shaderProgram} {}
+
+    Triangle& Triangle::operator= (
+        Triangle const& triangle)
     {
-        initialize();
-    }
-
-    Triangle::Triangle(Color const& color) noexcept : Shape{3} {
-        for (auto& color_ : vertices | ge::views::color)
-            color_ = color;
-    }
-
-    Triangle::Triangle(Triangle const& triangle) noexcept : Shape{3} {
-        shaderProgram = triangle.shaderProgram;
-        std::ranges::copy(triangle, begin());
-    }
-
-    Triangle& Triangle::operator= (Triangle const& triangle) noexcept {
-        shaderProgram = triangle.shaderProgram;
-        std::ranges::copy(triangle, begin());
+        Shape::operator=(triangle);
         return *this;
     }
 
     Triangle::Triangle(Triangle&& triangle) noexcept
-        : Shape{std::move(triangle.vertices)}
+        : Shape{std::move(triangle.vertices),
+            std::move(triangle.shaderProgram)}
     {
-        vertexArrayObject = triangle.vertexArrayObject;
-        vertexBuffer = triangle.vertexBuffer;
-        shaderProgram = std::move(triangle.shaderProgram);
-        triangle.vertexArrayObject = 0;
-        triangle.vertexBuffer = 0;
+        moveShape(std::move(triangle));
     }
 
     Triangle& Triangle::operator= (Triangle&& triangle) noexcept {
-        glDeleteBuffers(1, &vertexBuffer);
-        glDeleteVertexArrays(1, &vertexArrayObject);
-        vertexArrayObject = triangle.vertexArrayObject;
-        vertexBuffer = triangle.vertexBuffer;
-        shaderProgram = std::move(triangle.shaderProgram);
-        triangle.vertexArrayObject = 0;
-        triangle.vertexBuffer = 0;
+        Shape::operator=(std::move(triangle));
         return *this;
     }
 

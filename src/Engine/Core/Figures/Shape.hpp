@@ -8,39 +8,46 @@
 
 namespace ge {
 
-    class Shape : public Drawable, public Shadeable, public Transformable2D {
+    class Shape : public Drawable, public Shadeable,
+        public Transformable2D
+    {
     public:
         struct Vertex {
-            explicit Vertex(Vector2f const& position, Color const& color) noexcept
-                : position{position}, color{color} {}
+            explicit Vertex(Vector2f const& position,
+                Color const& color) noexcept
+                    : position{position}, color{color} {}
 
             Adapter<Vector2f>               position;
             Color                           color;
 
             template <std::size_t Index>
                 requires (Index < 2)
-            constexpr auto&& get(void) & noexcept
-                { if constexpr(Index) return color; else return position; }
+            constexpr auto&& get(void) & noexcept;
 
             template <std::size_t Index>
                 requires (Index < 2)
-            constexpr auto&& get(void) const& noexcept
-                { if constexpr(Index) return color; else return position; }
-
-            template <std::size_t Index>
-                requires (Index < 2)
-            constexpr auto&& get(void) && noexcept
-                { if constexpr(Index) return std::move(color); else return std::move(position); }
+            constexpr auto&& get(void) const& noexcept;
         };
+
+        typedef std::vector<Vertex>         Vertices;
+
+        Shape(Shape const& shape) = delete;
+        Shape(Shape&& shape) noexcept;
+
+        Shape& operator=(Shape&& shape) noexcept;
 
         void copyToGPU(void) const noexcept final;
         virtual void draw(void) const noexcept = 0;
 
-        void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
+        void onScreenTransformation(
+            Vector2ui const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float factor) noexcept final;
-        void rotate(Vector2f const& center, float angle) noexcept final;
-        void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
+        void scale(Vector2f const& center,
+            float factor) noexcept final;
+        void rotate(Vector2f const& center,
+            float angle) noexcept final;
+        void rotate(Vector2f const& center,
+            Matrix2f const& rotation) noexcept final;
 
         Vertex& operator[] (std::size_t index) noexcept
             { return vertices[index]; }
@@ -57,10 +64,13 @@ namespace ge {
         Vertex const& back(void) const noexcept
             { return vertices.back(); }
 
-        using iterator = std::vector<Vertex>::iterator;
-        using const_iterator = std::vector<Vertex>::const_iterator;
-        using reverse_iterator = std::vector<Vertex>::reverse_iterator;
-        using const_reverse_iterator = std::vector<Vertex>::const_reverse_iterator;
+
+        using iterator                    = Vertices::iterator;
+        using const_iterator              = Vertices::const_iterator;
+        using reverse_iterator
+            = Vertices::reverse_iterator;
+        using const_reverse_iterator
+            = Vertices::const_reverse_iterator;
 
         std::size_t size(void) const noexcept
             { return vertices.size(); }
@@ -97,18 +107,45 @@ namespace ge {
 
         virtual ~Shape(void) noexcept;
     protected:
-        explicit Shape(size_t size) noexcept;
-        explicit Shape(std::vector<Vertex> vertices) noexcept;
+        explicit Shape(size_t size, Color const& color);
+        explicit Shape(Vertices vertices) noexcept;
+        explicit Shape(Vertices vertices,
+            std::string const& shader);
+        explicit Shape(Vertices vertices,
+            ProgramPtr const& program);
+        explicit Shape(Vertices vertices,
+            ProgramPtr&& program) noexcept;
 
         virtual void bindBuffers(void) const noexcept;
         virtual void unbindBuffers(void) const noexcept;
         void copyBuffersToGPU(void) const noexcept;
         void generateBuffers(void) noexcept;
         void initialize(void) noexcept;
+        void moveShape(Shape&& shape) noexcept;
 
-        std::vector<Vertex>                 vertices;
+        Shape& operator=(Shape const& shape);
+
+        Vertices                            vertices;
         uint32_t                            vertexBuffer;
         uint32_t                            vertexArrayObject;
     };
+
+    template <std::size_t Index>
+        requires (Index < 2)
+    constexpr auto&& Shape::Vertex::get(void) & noexcept {
+        if constexpr(Index)
+            return color;
+        else
+            return position;
+    }
+
+    template <std::size_t Index>
+        requires (Index < 2)
+    constexpr auto&& Shape::Vertex::get(void) const& noexcept {
+        if constexpr(Index)
+            return color;
+        else
+            return position;
+    }
 
 }

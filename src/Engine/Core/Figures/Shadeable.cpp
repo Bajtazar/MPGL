@@ -2,8 +2,14 @@
 
 namespace ge {
 
-    Shadeable::Shadeable(void) noexcept
+    Shadeable::Shadeable(void)
         : shaderProgram{new ShaderProgram{}} {}
+
+    Shadeable::Shadeable(ProgramPtr const& program)
+        : shaderProgram{program} {}
+
+    Shadeable::Shadeable(ProgramPtr&& program) noexcept
+        : shaderProgram{std::move(program)} {}
 
     Shadeable::Shadeable(std::string const& name) : Shadeable{} {
         setShader(name);

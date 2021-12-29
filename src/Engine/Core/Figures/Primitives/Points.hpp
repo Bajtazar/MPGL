@@ -1,25 +1,41 @@
 #pragma once
 
-#include "../Shape.hpp"
+#include "../ResizableShape.hpp"
+
+#include <optional>
 
 namespace ge {
 
-    class Points : public Shape {
+    class Points : public ResizableShape {
     public:
-        Points(std::size_t vertices, Color const& color) noexcept;
-        Points(std::size_t vertices = 0) noexcept;
+        Points(std::size_t vertices = 0, Color const& color = {});
 
-        Points(Points const& points) noexcept;
+        template <class ColorTp, AllConvertible<Vector2f>... Args>
+            requires std::constructible_from<Color, ColorTp>
+        Points(ColorTp&& color, Args&&... vertices);
+
+        template <AllConvertible<Vector2f>... Args>
+        Points(Args&&... vertices);
+
+        Points(Points const& points);
         Points(Points&& points) noexcept;
 
-        Points& operator= (const Points& points) noexcept;
+        Points& operator= (Points const& points);
         Points& operator= (Points&& points) noexcept;
-
-        Vector2f getCenter(void) const noexcept;
 
         void draw(void) const noexcept final;
 
         ~Points(void) noexcept = default;
     };
+
+    template <class ColorTp, AllConvertible<Vector2f>... Args>
+        requires std::constructible_from<Color, ColorTp>
+    Points::Points(ColorTp&& color, Args&&... args)
+        : ResizableShape{std::forward<ColorTp>(color),
+            std::forward<Args>(vertices)...} {}
+
+    template <AllConvertible<Vector2f>... Args>
+    Points::Points(Args&&... args)
+        : ResizableShape{std::forward<Args>(vertices)...} {}
 
 }

@@ -2,49 +2,31 @@
 
 namespace ge {
 
-    Line::Line(Vector2f const& firstVertex, Vector2f const& secondVertex,
-        Color const& color) noexcept : Shape{2}
-    {
-        vertices[0].position = firstVertex;
-        vertices[1].position = secondVertex;
-        vertices[0].color = color;
-        vertices[1].color = color;
-    }
+    Line::Line(Vector2f const& firstVertex,
+        Vector2f const& secondVertex,
+        Color const& color) : Shape{
+            Vertices{Vertex{firstVertex, color},
+            Vertex{secondVertex, color}}, "2DDefault"} {}
 
-    Line::Line(Color const& color) noexcept : Shape{2} {
-        vertices[0].color = color;
-        vertices[1].color = color;
-    }
+    Line::Line(Color const& color) : Shape{2, color} {}
 
-    Line::Line(Line const& line) noexcept : Shape{2} {
-        shaderProgram = line.shaderProgram;
-        std::ranges::copy(line, begin());
-    }
+    Line::Line(Line const& line)
+        : Shape{line.vertices, line.shaderProgram} {}
 
-    Line& Line::operator= (Line const& line) noexcept {
-        shaderProgram = line.shaderProgram;
-        std::ranges::copy(line, begin());
+    Line& Line::operator= (Line const& line) {
+        Shape::operator=(line);
         return *this;
     }
 
     Line::Line(Line&& line) noexcept
-        : Shape{std::move(line.vertices)}
+        : Shape{std::move(line.vertices),
+            std::move(line.shaderProgram)}
     {
-        vertexArrayObject = line.vertexArrayObject;
-        vertexBuffer = line.vertexBuffer;
-        shaderProgram = std::move(line.shaderProgram);
-        line.vertexArrayObject = 0;
-        line.vertexBuffer = 0;
+        moveShape(std::move(line));
     }
 
     Line& Line::operator= (Line&& line) noexcept {
-        glDeleteBuffers(1, &vertexBuffer);
-        glDeleteVertexArrays(1, &vertexArrayObject);
-        vertexArrayObject = line.vertexArrayObject;
-        vertexBuffer = line.vertexBuffer;
-        shaderProgram = std::move(line.shaderProgram);
-        line.vertexArrayObject = 0;
-        line.vertexBuffer = 0;
+        Shape::operator=(std::move(line));
         return *this;
     }
 

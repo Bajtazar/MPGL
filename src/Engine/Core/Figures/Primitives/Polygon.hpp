@@ -1,26 +1,40 @@
 #pragma once
 
-#include "../Shape.hpp"
+#include "../ResizableShape.hpp"
 
 namespace ge {
 
-    class Polygon : public Shape {
+    class Polygon : public ResizableShape {
     public:
-        Polygon(Vector2f const& center, float radius,
-            std::size_t segments, Color const& color) noexcept;
-        Polygon(Polygon const& circle) noexcept;
-        Polygon(Polygon&& circle) noexcept;
+        Polygon(Vector2f const& center = {}, float radius = 0.f,
+            std::size_t segments = 0, Color const& color = {});
 
-        Polygon& operator= (Polygon const& circle) noexcept;
-        Polygon& operator= (Polygon&& circle) noexcept;
+        template <class ColorTp, AllConvertible<Vector2f>... Args>
+            requires std::constructible_from<Color, ColorTp>
+        Polygon(ColorTp&& color, Args&&... vertices);
+
+        template <AllConvertible<Vector2f>... Args>
+        Polygon(Args&&... vertices);
+
+        Polygon(Polygon const& polygon);
+        Polygon(Polygon&& polygon) noexcept;
+
+        Polygon& operator= (Polygon const& polygon);
+        Polygon& operator= (Polygon&& polygon) noexcept;
 
         void draw(void) const noexcept;
 
-        Vector2f const& getCenter(void) const noexcept { return center; }
-
         ~Polygon(void) noexcept = default;
-    private:
-        Vector2f center;
     };
+
+    template <class ColorTp, AllConvertible<Vector2f>... Args>
+        requires std::constructible_from<Color, ColorTp>
+    Polygon::Polygon(ColorTp&& color, Args&&... args)
+        : ResizableShape{std::forward<ColorTp>(color),
+            std::forward<Args>(vertices)...} {}
+
+    template <AllConvertible<Vector2f>... Args>
+    Polygon::Polygon(Args&&... args)
+        : ResizableShape{std::forward<Args>(vertices)...} {}
 
 }

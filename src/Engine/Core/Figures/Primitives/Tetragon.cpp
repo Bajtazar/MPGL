@@ -3,67 +3,70 @@
 
 namespace ge {
 
-    Tetragon::Tetragon(Color const& color) noexcept : Shape{4} {
+    void Tetragon::generateBuffers(void) noexcept {
         glGenBuffers(1, &elementArrayBuffer);
-        for (auto& color_ : vertices | ge::views::color)
-            color_ = color;
     }
 
-    Tetragon::Tetragon(Vector2f const& firstVertex, Vector2f const& dimmensions,
-        Color const& color) noexcept
-            : Tetragon{color}
+    Tetragon::Tetragon(Color const& color) : Shape{4, color} {
+        generateBuffers();
+    }
+
+    Tetragon::Tetragon(Vector2f const& firstVertex,
+        Vector2f const& dimmensions,
+        Color const& color)
+            : Shape{Vertices{
+                Vertex{firstVertex, color},
+                Vertex{firstVertex + 1._y * dimmensions[1], color},
+                Vertex{firstVertex + dimmensions, color},
+                Vertex{firstVertex + 1._x * dimmensions[0], color}
+            }, "2DDefault"}
     {
-        vertices[0].position = firstVertex;
-        vertices[1].position = firstVertex + Vector2f{0.f, dimmensions[1]};
-        vertices[2].position = firstVertex + dimmensions;
-        vertices[3].position = firstVertex + Vector2f{dimmensions[0], 0.f};
+        generateBuffers();
     }
 
-    Tetragon::Tetragon(Vector2f const& firstVertex, Vector2f const& secondVertex,
-        Vector2f const& thirdVertex, Color const& color) noexcept
-            : Tetragon{color}
+    Tetragon::Tetragon(Vector2f const& firstVertex,
+        Vector2f const& secondVertex,
+        Vector2f const& thirdVertex,
+        Color const& color)
+            : Shape{Vertices{
+                Vertex{firstVertex, color},
+                Vertex{secondVertex, color},
+                Vertex{thirdVertex, color},
+                Vertex{secondVertex - firstVertex
+                    + thirdVertex, color}
+            }, "2DDefault"}
     {
-        vertices[0].position = firstVertex;
-        vertices[1].position = secondVertex;
-        vertices[2].position = thirdVertex;
-        vertices[3].position = secondVertex - firstVertex + thirdVertex;
+        generateBuffers();
     }
 
-    Tetragon::Tetragon(Tetragon const& rectangle) noexcept : Shape{4} {
-        glGenBuffers(1, &elementArrayBuffer);
-        shaderProgram = rectangle.shaderProgram;
-        std::ranges::copy(rectangle, begin());
+    Tetragon::Tetragon(Tetragon const& tetragon)
+        : Shape{tetragon.vertices, tetragon.shaderProgram}
+    {
+        generateBuffers();
     }
 
-    Tetragon& Tetragon::operator= (Tetragon const& rectangle) noexcept {
-        shaderProgram = rectangle.shaderProgram;
-        std::ranges::copy(rectangle, begin());
+    Tetragon& Tetragon::operator= (Tetragon const& tetragon) {
+        Shape::operator=(tetragon);
         return *this;
     }
 
-    Tetragon::Tetragon(Tetragon&& rectangle) noexcept
-        : Shape{std::move(rectangle.vertices)}
+    void Tetragon::moveTetragon(Tetragon& tetragon) noexcept {
+        elementArrayBuffer = tetragon.elementArrayBuffer;
+        tetragon.elementArrayBuffer = 0;
+    }
+
+    Tetragon::Tetragon(Tetragon&& tetragon) noexcept
+        : Shape{std::move(tetragon.vertices),
+            std::move(tetragon.shaderProgram)}
     {
-        vertexArrayObject = rectangle.vertexArrayObject;
-        vertexBuffer = rectangle.vertexBuffer;
-        elementArrayBuffer = rectangle.elementArrayBuffer;
-        shaderProgram = std::move(rectangle.shaderProgram);
-        rectangle.vertexArrayObject = 0;
-        rectangle.vertexBuffer = 0;
-        rectangle.elementArrayBuffer = 0;
+        moveTetragon(tetragon);
+        moveShape(std::move(tetragon));
     }
 
     Tetragon& Tetragon::operator= (Tetragon&& rectangle) noexcept {
-        glDeleteBuffers(1, &vertexBuffer);
-        glDeleteVertexArrays(1, &vertexArrayObject);
-        glDeleteBuffers(1, &elementArrayBuffer);
-        vertexArrayObject = rectangle.vertexArrayObject;
-        vertexBuffer = rectangle.vertexBuffer;
-        shaderProgram = std::move(rectangle.shaderProgram);
-        elementArrayBuffer = rectangle.elementArrayBuffer;
-        rectangle.vertexArrayObject = 0;
-        rectangle.vertexBuffer = 0;
-        rectangle.elementArrayBuffer = 0;
+        deleteBuffers();
+        moveTetragon(rectangle);
+        Shape::operator=(std::move(rectangle));
         return *this;
     }
 
@@ -86,7 +89,11 @@ namespace ge {
         glBindVertexArray(0);
     }
 
-    Tetragon::~Tetragon(void) noexcept {
+    void Tetragon::deleteBuffers(void) noexcept {
         glDeleteBuffers(1, &elementArrayBuffer);
+    }
+
+    Tetragon::~Tetragon(void) noexcept {
+        deleteBuffers();
     }
 }
