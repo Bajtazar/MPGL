@@ -18,7 +18,9 @@ namespace ge {
         explicit FFT(void) noexcept = default;
 
         template <std::ranges::random_access_range Range>
-            requires std::ranges::sized_range<Range>
+            requires (std::ranges::sized_range<Range>
+                && IsInstanceV<std::complex,
+                    std::ranges::range_value_t<Range>>)
         void operator() (Range&& range) const noexcept;
     private:
         typedef std::vector<Complex>    ComplexVector;
@@ -81,6 +83,10 @@ namespace ge {
         private:
             template <std::size_t Index, std::ranges::random_access_range Range>
             void innerLoop(Range&& range) const noexcept;
+
+            template <typename Tp>
+            inline Tp cast(
+                Tp const& value, Complex const& lookup) const noexcept;
 
             static constexpr uint16 log2N() { return ::ge::log2N<uint16, Size>(); }
         };
@@ -151,11 +157,24 @@ namespace ge {
         uint16 m = 2 << Index, sm = 1 << Index;
         for (uint8 k = 0;k != Size; k += m) {
             for (uint8 i = k; i < k + sm; ++i) {
-                auto t = range[i + sm] * CooleyTukeyBasePart<Index, Inverse>::lookupTable[i - k];
+                auto t = cast(range[i + sm],
+                    CooleyTukeyBasePart<Index, Inverse>::lookupTable[i - k]);
                 range[i + sm] = range[i] - t;
                 range[i] += t;
             }
         }
+    }
+
+    template <uint16 Size, bool Inverse>
+    template <typename Tp>
+    inline Tp FFT::CooleyTukeyBase<Size, Inverse>::cast(
+        Tp const& value, Complex const& lookup) const noexcept
+    {
+        if constexpr (std::same_as<Complex, Tp>)
+            return value * lookup;
+        else
+            return Tp{value.real() * lookup.real(),
+                value.imag() * lookup.imag()};
     }
 
     template <uint8 Size>
@@ -225,7 +244,9 @@ namespace ge {
     }
 
     template <std::ranges::random_access_range Range>
-        requires std::ranges::sized_range<Range>
+        requires (std::ranges::sized_range<Range>
+            && IsInstanceV<std::complex,
+                std::ranges::range_value_t<Range>>)
     void FFT::operator() (Range&& range) const noexcept {
         if constexpr (SameSignatures<std::size_t(*)(void) noexcept,
             &std::remove_cvref_t<Range>::size>)
@@ -280,5 +301,7 @@ namespace ge {
         leftSequence.resize(size);
         return leftSequence;
     }
+
+    constexpr inline FFT                            fft{};
 
 }

@@ -38,4 +38,17 @@ namespace ge {
     template <typename Signature, Signature Function, typename... Args>
     constexpr bool IsConstexprEvaluableV = IsConstexprEvaluable<Signature, Function, Args...>::value;
 
+    template <template <typename...> class Template, class Tp>
+    class IsInstance {
+        template <typename... Args>
+        static constexpr auto helper(Template<Args...>) -> std::true_type;
+        static constexpr auto helper(...) -> std::false_type;
+    public:
+        static constexpr bool value = std::same_as<
+            decltype(helper(std::declval<Tp>())), std::true_type>;
+    };
+
+    template <template <typename...> class Template, class Tp>
+    constexpr bool IsInstanceV = IsInstance<Template, Tp>::value;
+
 }

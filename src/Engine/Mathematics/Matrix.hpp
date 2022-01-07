@@ -1055,6 +1055,9 @@ namespace ge {
         return sum;
     }
 
+    template <Arithmetic Tp, std::size_t Size>
+    using SquareMatrix                    = Matrix<Tp, Size, Size>;
+
     template <typename Tp>
     using Matrix2                         = Matrix<Tp, 2, 2>;
     template <typename Tp>
@@ -1064,18 +1067,25 @@ namespace ge {
     template <typename Tp>
     using Matrix8                         = Matrix<Tp, 8, 8>;
 
+    template <std::size_t Rows, std::size_t Cols>
+    using MatrixC                         = Matrix<
+        std::complex<float64>, Rows, Cols>;
+
     template class Matrix<float32, 2, 2>;
 
     typedef Matrix<float32, 2, 2>           Matrix2f;
     typedef Matrix<int32, 2, 2>             Matrix2i;
     typedef Matrix<uint32, 2, 2>            Matrix2u;
+    typedef MatrixC<2, 2>                   Matrix2c;
 
     typedef Matrix<float32, 3, 3>           Matrix3f;
     typedef Matrix<int32, 3, 3>             Matrix3i;
     typedef Matrix<uint32, 3, 3>            Matrix3u;
+    typedef MatrixC<3, 3>                   Matrix3c;
 
     typedef Matrix<float32, 4, 4>           Matrix4f;
     typedef Matrix<int32, 4, 4>             Matrix4i;
     typedef Matrix<uint32, 4, 4>            Matrix4u;
+    typedef MatrixC<4, 4>                   Matrix4c;
 
 }

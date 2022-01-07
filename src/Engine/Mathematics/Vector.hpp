@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <complex>
 #include <math.h>
 
 #include "../Traits/TupleTraits.hpp"
@@ -504,17 +505,24 @@ namespace ge {
     template class Vector<float32, 2>;
     template class Vector<uint32, 2>;
 
+    template <std::size_t Size>
+    using VectorC                     = Vector<
+        std::complex<float64>, Size>;
+
     typedef Vector<float32, 2>          Vector2f;
     typedef Vector<uint32, 2>           Vector2u;
     typedef Vector<int32, 2>            Vector2i;
+    typedef VectorC<2>                  Vector2c;
 
     typedef Vector<float32, 3>          Vector3f;
     typedef Vector<uint32, 3>           Vector3u;
     typedef Vector<int32, 3>            Vector3i;
+    typedef VectorC<3>                  Vector3c;
 
     typedef Vector<float32, 4>          Vector4f;
     typedef Vector<uint32, 4>           Vector4u;
     typedef Vector<int32, 4>            Vector4i;
+    typedef VectorC<4>                  Vector4c;
 
     template <Arithmetic Tp>
     using Vector2 =                     Vector<Tp, 2>;

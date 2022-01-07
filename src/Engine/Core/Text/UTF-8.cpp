@@ -3,8 +3,10 @@
 namespace ge {
 
     uint32 fromUTF8(std::string unicodeString) {
-        uint8 bitmask = unicodeString.size() != 1 ? (1 << (7 - unicodeString.size())) - 1 : 0x7F;
-        uint32 front = (unicodeString.front() & bitmask) << (6 * (unicodeString.size() - 1));
+        uint8 bitmask = unicodeString.size() != 1 ? (
+            1 << (7 - unicodeString.size())) - 1 : 0x7F;
+        uint32 front = (unicodeString.front() & bitmask
+            ) << (6 * (unicodeString.size() - 1));
         unicodeString.erase(unicodeString.begin());
         return front + decodeTail(unicodeString);
     }
