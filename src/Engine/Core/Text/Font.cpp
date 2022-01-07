@@ -46,7 +46,7 @@ namespace ge {
         subfonts.emplace(flag, Subfont{files[position]});
         files.erase(files.cbegin() + position);
         signatures.erase(signatures.cbegin() + position);
-        mask += static_cast<uint8_t>(flag);
+        mask += static_cast<uint8>(flag);
     }
 
     Subfont& Font::operator() (Type const& type) {
@@ -56,12 +56,12 @@ namespace ge {
         return subfonts.at(Type::Regular);
     }
 
-    uint8_t operator& (Font::Type const& left, uint8_t right) noexcept {
-        return static_cast<uint8_t>(left) & right;
+    uint8 operator& (Font::Type const& left, uint8 right) noexcept {
+        return static_cast<uint8>(left) & right;
     }
 
-    uint8_t operator& (uint8_t left, Font::Type const& right) noexcept {
-        return left & static_cast<uint8_t>(right);
+    uint8 operator& (uint8 left, Font::Type const& right) noexcept {
+        return left & static_cast<uint8>(right);
     }
 
 }

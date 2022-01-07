@@ -74,7 +74,7 @@ namespace ge {
         const_reverse_iterator crend(void) const noexcept
             { return drawables.crend(); }
 
-        int32_t windowLoop(Color const& background = Color::Black) noexcept;
+        int32 windowLoop(Color const& background = Color::Black) noexcept;
 
         ShaderLibrary& getShaderLib(void) noexcept
             { return shaders; }

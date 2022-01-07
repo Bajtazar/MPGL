@@ -8,7 +8,7 @@
 
 namespace ge {
 
-    template <uint8_t Size>
+    template <uint8 Size>
         requires (Size > 1)
     class ZigZacRange {
     public:
@@ -30,20 +30,20 @@ namespace ge {
             = generateZigZacArray();
     };
 
-    template <uint8_t Size>
+    template <uint8 Size>
         requires (Size > 1)
     template <std::ranges::random_access_range Range>
     ZigZacRange<Size>::RangeMatrix<Range>
         ZigZacRange<Size>::returnZigZac(Range const& range) noexcept
     {
         RangeMatrix<Range> matrix;
-        for (auto i : std::views::iota(uint8_t(0), Size))
-            for (auto j : std::views::iota(uint8_t(0), Size))
+        for (auto i : std::views::iota(uint8(0), Size))
+            for (auto j : std::views::iota(uint8(0), Size))
                 matrix[i][j] = range[zigzac[i][j]];
         return matrix;
     }
 
-    template <uint8_t Size>
+    template <uint8 Size>
         requires (Size > 1)
     constexpr void ZigZacRange<Size>::nextPosition(
         std::size_t& first, std::size_t& second, bool& direction) noexcept
@@ -60,7 +60,7 @@ namespace ge {
         }
     }
 
-    template <uint8_t Size>
+    template <uint8 Size>
         requires (Size > 1)
     consteval ZigZacRange<Size>::ZigZacBase
         ZigZacRange<Size>::generateZigZacArray(void) noexcept

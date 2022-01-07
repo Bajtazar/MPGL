@@ -55,20 +55,20 @@ namespace ge {
         template <std::size_t Size>
             requires (Size <= 4 && Size > 1)
         inline void setUniform(std::string const& uniform,
-            Matrix<float, Size, Size> const& matrix) const noexcept;
+            Matrix<float32, Size, Size> const& matrix) const noexcept;
     private:
         class ProgramDeleter {
         public:
             explicit ProgramDeleter(void) noexcept = default;
 
-            void operator()(uint32_t* ptr) const noexcept;
+            void operator()(uint32* ptr) const noexcept;
         };
 
-        inline uint32_t location(std::string const& uniform) const noexcept;
+        inline uint32 location(std::string const& uniform) const noexcept;
 
-        std::shared_ptr<uint32_t>           shaderProgramID;
+        std::shared_ptr<uint32>             shaderProgramID;
 
-        static uint32_t                     lastProgramID;
+        static uint32                       lastProgramID;
     };
 
     inline void ShaderProgram::use(void) const noexcept {
@@ -83,7 +83,7 @@ namespace ge {
         glAttachShader(*shaderProgramID, shader.getShader());
     }
 
-    inline uint32_t ShaderProgram::location(std::string const& uniform) const noexcept {
+    inline uint32 ShaderProgram::location(std::string const& uniform) const noexcept {
         return glGetUniformLocation(*shaderProgramID, uniform.c_str());
     }
 
@@ -153,9 +153,9 @@ namespace ge {
     template <std::size_t Size>
         requires (Size <= 4 && Size > 1)
     inline void ShaderProgram::setUniform(std::string const& uniform,
-        Matrix<float, Size, Size> const& matrix) const noexcept
+        Matrix<float32, Size, Size> const& matrix) const noexcept
     {
-        float const* const memory = reinterpret_cast<float const* const>(&matrix);
+        float32 const* const memory = reinterpret_cast<float32 const* const>(&matrix);
         if constexpr (Size == 4)
             glUniformMatrix4fv(location(uniform), 1, GL_FALSE, memory);
         else if constexpr (Size == 3)

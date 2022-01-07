@@ -8,6 +8,7 @@
 #include "../Traits/TupleTraits.hpp"
 #include "../Traits/Concepts.hpp"
 #include "../Utility/Ranges.hpp"
+#include "../Traits/Types.hpp"
 
 #ifndef friend_expr
 #define friend_expr     friend constexpr
@@ -500,39 +501,60 @@ namespace ge {
         return first;
     }
 
-    template class Vector<float, 2>;
-    template class Vector<uint32_t, 2>;
+    template class Vector<float32, 2>;
+    template class Vector<uint32, 2>;
 
-    typedef Vector<float, 2>    Vector2f;
-    typedef Vector<uint32_t, 2> Vector2ui;
-    typedef Vector<int32_t, 2>  Vector2i;
+    typedef Vector<float32, 2>          Vector2f;
+    typedef Vector<uint32, 2>           Vector2ui;
+    typedef Vector<int32, 2>            Vector2i;
 
-    typedef Vector<float, 3>    Vector3f;
-    typedef Vector<float, 4>    Vector4f;
+    typedef Vector<float32, 3>          Vector3f;
+    typedef Vector<uint32, 3>           Vector3ui;
+    typedef Vector<int32, 3>            Vector3i;
+
+    typedef Vector<float32, 4>          Vector4f;
+    typedef Vector<uint32, 4>           Vector4ui;
+    typedef Vector<int32, 4>            Vector4i;
 
     template <Arithmetic Tp>
-    using Vector2 =             Vector<Tp, 2>;
+    using Vector2 =                     Vector<Tp, 2>;
 
     template <Arithmetic Tp>
-    using Vector3 =             Vector<Tp, 3>;
+    using Vector3 =                     Vector<Tp, 3>;
 
     template <Arithmetic Tp>
-    using Vector4 =             Vector<Tp, 4>;
+    using Vector4 =                     Vector<Tp, 4>;
 
-    constexpr Vector2f operator"" _x(long double value) noexcept {
-        return Vector2f{static_cast<float>(value), 0.f};
+    constexpr Vector2f  operator"" _x(float128 value) noexcept {
+        return {value, 0.f};
     }
 
-    constexpr Vector2ui operator"" _x(unsigned long long int value) noexcept {
-        return Vector2ui{static_cast<uint32_t>(value), 0u};
+    constexpr Vector2ui operator"" _x(uint64 value) noexcept {
+        return {value, 0u};
     }
 
-    constexpr Vector2f operator"" _y(long double value) noexcept {
-        return Vector2f{0.f, static_cast<float>(value)};
+    constexpr Vector2f  operator"" _y(float128 value) noexcept {
+        return {0.f, value};
     }
 
-    constexpr Vector2ui operator"" _y(unsigned long long int value) noexcept {
-        return Vector2ui{0u, static_cast<uint32_t>(value)};
+    constexpr Vector2ui operator"" _y(uint64 value) noexcept {
+        return {0u, value};
+    }
+
+    constexpr Vector3f  operator"" _z(float128 value) noexcept {
+        return {0.f, 0.f, value};
+    }
+
+    constexpr Vector3ui operator"" _z(uint64 value) noexcept {
+        return {0u, 0u, value};
+    }
+
+    constexpr Vector4f  operator"" _w(float128 value) noexcept {
+        return {0.f, 0.f, 0.f, value};
+    }
+
+    constexpr Vector4ui operator"" _w(uint64 value) noexcept {
+        return {0u, 0u, 0u, value};
     }
 
 }
@@ -540,10 +562,14 @@ namespace ge {
 namespace std {
 
     template <ge::Arithmetic Tp, std::size_t Size>
-    struct tuple_size<ge::Vector<Tp, Size>> : integral_constant<size_t, Size> {};
+    struct tuple_size<ge::Vector<Tp, Size>>
+        : integral_constant<size_t, Size> {};
 
-    template <ge::Arithmetic Tp, std::size_t Size, std::size_t Index>
-        requires (Index < Size)
-    struct tuple_element<Index, ge::Vector<Tp, Size>> { using type = Tp; };
+    template <ge::Arithmetic Tp, std::size_t Size,
+        std::size_t Index>
+            requires (Index < Size)
+    struct tuple_element<Index, ge::Vector<Tp, Size>> {
+        using type = Tp;
+    };
 
 }

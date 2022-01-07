@@ -14,7 +14,7 @@ int main(void) noexcept {
     auto iter = 0.;
     for (auto& color : circle | std::views::drop(1) | views::color) {
         color = Color(std::sin(iter), std::cos(iter), -std::sin(iter), 0.f);
-        iter += 2 * std::numbers::pi_v<double> / (circle.size() - 1);
+        iter += 2 * std::numbers::pi_v<float64> / (circle.size() - 1);
     }
 
     TextureLoader loader{execution::parallel, "textures"};
@@ -32,7 +32,7 @@ int main(void) noexcept {
 
     window.emplaceDrawable<DefaultSprite>(pack["pad.jpeg"], 100_x + 100_y, 100_x + 100_y);
     auto& sprite = dynamic_cast<DefaultSprite&>(*window[3]);
-    sprite.rotate(150_x + 150_y, std::numbers::pi_v<double> / 4);
+    sprite.rotate(150_x + 150_y, std::numbers::pi_v<float64> / 4);
 
     window.emplaceDrawable<Ellipse>(200_x + 400_y, 40_x + 20_y, Color::Red);
 

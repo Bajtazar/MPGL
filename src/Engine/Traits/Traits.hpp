@@ -5,12 +5,14 @@
 #include <concepts>
 #include <utility>
 
+#include "Types.hpp"
+
 namespace ge {
 
     template <typename T, typename... Args>
         requires std::constructible_from<T, Args...>
     class IsConstexprConstructible {
-        template <class Invocable, int = (Invocable{}(), 0)>
+        template <class Invocable, int32 = (Invocable{}(), 0)>
         static constexpr auto helper(Invocable) -> std::true_type;
         static constexpr auto helper(...) -> std::false_type;
     public:
@@ -25,7 +27,7 @@ namespace ge {
     template <typename Signature, Signature Function, typename... Args>
         requires std::invocable<Signature, Args...>
     class IsConstexprEvaluable {
-        template <class Invocable, int = (Invocable{}(), 0)>
+        template <class Invocable, int32 = (Invocable{}(), 0)>
         static constexpr auto helper(Invocable) -> std::true_type;
         static constexpr auto helper(...) -> std::false_type;
     public:

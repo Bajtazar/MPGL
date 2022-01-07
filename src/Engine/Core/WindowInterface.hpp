@@ -16,12 +16,12 @@ namespace ge {
     public:
         // OpenGL Options
         struct Options {
-            uint16_t openGLMajorVersion;
-            uint16_t openGLMinorVersion;
+            uint16 openGLMajorVersion;
+            uint16 openGLMinorVersion;
             bool floating;
             bool maximised;
             bool resizable;
-            Options(uint16_t major=3,uint16_t minor=3,bool floating=false,bool maximised=false,bool resizable=true) noexcept;
+            Options(uint16 major=3,uint16 minor=3,bool floating=false,bool maximised=false,bool resizable=true) noexcept;
         };
         // Interface cannot be copied or moved
         explicit WindowInterface(void) noexcept = delete;
@@ -30,11 +30,11 @@ namespace ge {
         WindowInterface& operator= (const WindowInterface& window) noexcept = delete;
         WindowInterface& operator= (WindowInterface&& window) noexcept = delete;
 
-        friend void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept;
-        friend void keyCallback(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods);
-        friend void textCallback(GLFWwindow* window, uint32_t character);
-        friend void mousePosCallback(GLFWwindow* window, double xpos, double ypos);
-        friend void mouseButtonCallback(GLFWwindow* window, int32_t button, int32_t action, int32_t mods);
+        friend void framebufferCallback(GLFWwindow* window, int32 width, int32 height) noexcept;
+        friend void keyCallback(GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods);
+        friend void textCallback(GLFWwindow* window, uint32 character);
+        friend void mousePosCallback(GLFWwindow* window, float64 xpos, float64 ypos);
+        friend void mouseButtonCallback(GLFWwindow* window, int32 button, int32 action, int32 mods);
 
         virtual ~WindowInterface(void) noexcept;
     protected:

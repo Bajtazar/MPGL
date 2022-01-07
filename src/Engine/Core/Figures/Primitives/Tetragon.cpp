@@ -74,7 +74,7 @@ namespace ge {
         Shape::bindBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-            indexes.size() * sizeof(uint32_t), indexes.data(), GL_STATIC_DRAW);
+            indexes.size() * sizeof(uint32), indexes.data(), GL_STATIC_DRAW);
     }
 
     void Tetragon::unbindBuffers(void) const noexcept {

@@ -4,7 +4,7 @@
 
 namespace ge {
 
-    enum class Key : uint16_t {
+    enum class Key : uint16 {
         Undefined       = 0xFFFF,
         Space           = 0x0020,
         Apostrophe      = 0x0027,

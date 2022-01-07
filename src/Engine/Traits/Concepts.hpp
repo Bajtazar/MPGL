@@ -108,7 +108,7 @@ namespace ge {
         std::same_as<T, std::remove_cvref_t<T>> &&
         requires { typename T::value_type; } &&
         requires(T& a, typename T::value_type b) { a / a; a * a; a * b; a / b; a - b; a + b; }
-        && std::is_convertible_v<uint32_t, typename T::value_type>;
+        && std::is_convertible_v<uint32, typename T::value_type>;
 
     template <typename T, typename... Args>
     concept ConstexprConstructible = IsConstexprConstructibleV<T, Args...>;

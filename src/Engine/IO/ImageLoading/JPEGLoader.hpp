@@ -27,8 +27,8 @@ namespace ge {
         ~JPEGLoader(void) noexcept = default;
     private:
         typedef std::conditional_t<security::isSecurePolicy<Policy>,
-            SafeIterator<std::vector<uint8_t>::const_iterator>,
-            std::vector<uint8_t>::const_iterator>                   SafeIter;
+            SafeIterator<std::vector<uint8>::const_iterator>,
+            std::vector<uint8>::const_iterator>                     SafeIter;
         typedef std::istreambuf_iterator<char>                      StreamBuf;
         typedef std::conditional_t<security::isSecurePolicy<Policy>,
             SafeIterator<StreamBuf>, StreamBuf>                     FileIter;
@@ -76,46 +76,46 @@ namespace ge {
         };
 
         struct HuffmanTable {
-            HuffmanTree<uint16_t>::Decoder decoder;
-            explicit HuffmanTable(HuffmanTree<uint16_t> tree);
+            HuffmanTree<uint16>::Decoder decoder;
+            explicit HuffmanTable(HuffmanTree<uint16> tree);
         };
 
         struct QuantizationTable {
-            std::vector<uint8_t> information;
-            uint8_t precision : 4;
+            std::vector<uint8> information;
+            uint8 precision : 4;
         };
 
         struct Component {
-            uint8_t verticalSampling : 4;
-            uint8_t horizontalSampling: 4;
-            uint8_t tableNumber;
-            explicit Component(uint8_t tableNumber, uint8_t samplings) noexcept;
+            uint8 verticalSampling : 4;
+            uint8 horizontalSampling: 4;
+            uint8 tableNumber;
+            explicit Component(uint8 tableNumber, uint8 samplings) noexcept;
         };
 
         typedef std::unique_ptr<QuantizationTable> QuantizationTablePtr;
         typedef std::unique_ptr<HuffmanTable>   HuffmanTablePtr;
 
         typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)> ChunkParser;
-        typedef std::map<bool, std::map<uint8_t, HuffmanTablePtr>>          HuffmanArray;
-        typedef std::map<uint8_t, std::unique_ptr<Component>>               ComponentArray;
-        typedef std::map<uint8_t, QuantizationTablePtr>                     QuantizationArray;
-        typedef std::map<uint8_t, Matrix8<int16_t>>                         MatricesMap;
+        typedef std::map<bool, std::map<uint8, HuffmanTablePtr>>          HuffmanArray;
+        typedef std::map<uint8, std::unique_ptr<Component>>               ComponentArray;
+        typedef std::map<uint8, QuantizationTablePtr>                     QuantizationArray;
+        typedef std::map<uint8, Matrix8<int16>>                         MatricesMap;
         typedef std::reference_wrapper<ChunkParser>                         ChunkParserRef;
         typedef BigEndianBitIter<SafeIter>                                  Iter;
 
         template <typename T>
         using PixelMatrix = std::tuple<Matrix8<T>, Matrix8<T>, Matrix8<T>>;
 
-        static PixelMatrix<uint8_t> convertYCbCrToRGB(PixelMatrix<int16_t> yCbCr) noexcept;
+        static PixelMatrix<uint8> convertYCbCrToRGB(PixelMatrix<int16> yCbCr) noexcept;
         static std::size_t getBoundry(std::size_t boundry) noexcept;
-        static uint8_t adjustPixelColor(int16_t color) noexcept;
-        static int32_t decodeNumber(uint8_t code, uint16_t bits) noexcept;
+        static uint8 adjustPixelColor(int16 color) noexcept;
+        static int32 decodeNumber(uint8 code, uint16 bits) noexcept;
 
         void setPolicy(std::istream& file);
         void parseChunks(FileIter file);
-        void parseNextChunk(FileIter& file, uint16_t signature);
-        Matrix8<int16_t> readMatrix(Iter& iter, uint8_t id, int16_t& coeff);
-        void decodeMatrix(std::array<int16_t, 64>& data, HuffmanTablePtr const& table,
+        void parseNextChunk(FileIter& file, uint16 signature);
+        Matrix8<int16> readMatrix(Iter& iter, uint8 id, int16& coeff);
+        void decodeMatrix(std::array<int16, 64>& data, HuffmanTablePtr const& table,
             QuantizationTablePtr const& quant, Iter& iter);
         Iter getDecodeIterator(void) noexcept;
         void decodeImage(void);
@@ -124,13 +124,13 @@ namespace ge {
         ComponentArray componentsTable;
         QuantizationArray quantizationTables;
         std::queue<ChunkParser> parsingQueue;
-        std::vector<uint8_t> imageData;
+        std::vector<uint8> imageData;
         HuffmanArray huffmanTables;
         bool endOfImage;
 
         static const IDCT<>     inverseCosineTransform;
         static const ChunkParser emptyChunk;
-        static const std::map<uint16_t, ChunkParser> chunkParser;
+        static const std::map<uint16, ChunkParser> chunkParser;
     };
 
     template class JPEGLoader<Secured>;

@@ -4,8 +4,8 @@
 
 namespace ge {
 
-    template class Canva<uint8_t>;
+    template class Canva<uint8>;
 
-    typedef Canva<uint8_t>          Bitmap;
+    typedef Canva<uint8>            Bitmap;
 
 }

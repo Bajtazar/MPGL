@@ -12,27 +12,27 @@ namespace ge {
 
     class LocaTable {
     public:
-        typedef std::vector<uint16_t>       Loca16;
-        typedef std::vector<uint32_t>       Loca32;
+        typedef std::vector<uint16>                 Loca16;
+        typedef std::vector<uint32>                 Loca32;
 
         explicit LocaTable(void) noexcept = default;
 
         template <ByteInputIterator Iter>
-        explicit LocaTable(Iter iter, int16_t indexFormat,
-            uint16_t numGlyphs);
+        explicit LocaTable(Iter iter, int16 indexFormat,
+            uint16 numGlyphs);
 
-        uint32_t operator() (uint16_t index) const;
+        uint32 operator() (uint16 index) const;
     private:
-        std::variant<Loca16, Loca32>        locaTable;
+        std::variant<Loca16, Loca32>                locaTable;
     };
 
-    typedef Vector2<int16_t>                        Vector2si;
+    typedef Vector2<int16>                          Vector2si;
 
     class VectorizedGlyph {
     public:
-        typedef std::vector<uint16_t>               UShortVec;
-        typedef std::vector<int16_t>                ShortVec;
-        typedef std::vector<uint8_t>                UByteVec;
+        typedef std::vector<uint16>                 UShortVec;
+        typedef std::vector<int16>                  ShortVec;
+        typedef std::vector<uint8>                  UByteVec;
 
         struct Point {
             explicit Point(Vector2si const& position, bool onCurve) noexcept
@@ -51,7 +51,7 @@ namespace ge {
             explicit Glyph(void) noexcept = default;
         };
 
-        enum class SimpleFlags : uint8_t {
+        enum class SimpleFlags : uint8 {
             OnCurvePoint = 0x01,
             XShortVector = 0x02,
             YShortVector = 0x04,
@@ -60,7 +60,7 @@ namespace ge {
             YIsSameOrPositive = 0x20
         };
 
-        enum class CompositeFlags : uint16_t {
+        enum class CompositeFlags : uint16 {
             Arg1And2AreWords = 0x0001,
             ArgsAreXYValues = 0x0002,
             RoundXYToGrid = 0x0004,
@@ -89,32 +89,32 @@ namespace ge {
 
     private:
         typedef std::variant<std::monostate, Glyph> GlyphVariant;
-        typedef Vector<float, 6>                    ProjectionMatrix;
+        typedef Vector<float32, 6>                    ProjectionMatrix;
 
         struct Component {
-            uint16_t                                glyphIndex;
+            uint16                                  glyphIndex;
             ProjectionMatrix                        projection;
 
-            explicit Component(uint16_t glyphIndex) noexcept :
+            explicit Component(uint16 glyphIndex) noexcept :
                 glyphIndex{glyphIndex}, projection{1.f, 0.f, 0.f, 0.f, 1.f, 0.f} {}
 
             template <ByteInputIterator Iter>
-            void parseProjection(Iter& iter, uint16_t const& flag);
+            void parseProjection(Iter& iter, uint16 const& flag);
 
-            void readArgs(int16_t arg1, int16_t arg2, uint16_t const& flag) noexcept;
+            void readArgs(int16 arg1, int16 arg2, uint16 const& flag) noexcept;
         };
 
         typedef std::vector<Component>              Components;
-        typedef std::pair<int16_t, int16_t>         Arguments;
+        typedef std::pair<int16, int16>         Arguments;
 
         template <ByteInputIterator Iter>
-        int16_t parseHeader(Iter& iter);
+        int16 parseHeader(Iter& iter);
 
         template <ByteInputIterator Iter>
-        void parseSimpleGlyph(Iter& iter, int16_t numberOfContours, Glyph& glyph);
+        void parseSimpleGlyph(Iter& iter, int16 numberOfContours, Glyph& glyph);
 
         template <ByteInputIterator Iter>
-        VectorizedGlyph::UByteVec readSimpleFlags(Iter& iter, uint16_t points);
+        VectorizedGlyph::UByteVec readSimpleFlags(Iter& iter, uint16 points);
 
         template <bool Axis, ByteInputIterator Iter>
         void readCoords(Glyph& glyph, UByteVec const& flags, Iter& iter,
@@ -125,7 +125,7 @@ namespace ge {
             LocaTable const& table, Glyph& glyph);
 
         template <ByteInputIterator Iter>
-        Arguments parseArguments(Iter& iter, uint16_t const& flag) const;
+        Arguments parseArguments(Iter& iter, uint16 const& flag) const;
 
         void generatePoints(Glyph& glyph, UByteVec const& flags);
 
@@ -134,7 +134,7 @@ namespace ge {
             Glyph& glyph, Components const& components);
 
         template <ByteInputIterator Iter>
-        Glyph parseSubglyph(Iter const begin, uint16_t offset, LocaTable const& locaTable);
+        Glyph parseSubglyph(Iter const begin, uint16 offset, LocaTable const& locaTable);
 
         void transformSubglyph(Component const& component, Glyph& target, Glyph const& subglyph);
 
@@ -143,40 +143,40 @@ namespace ge {
         GlyphVariant                                glyph;
 
         template <ByteInputIterator Iter>
-        static float read2Dot14(Iter& iter) { return readFixed<true, int16_t, float, 14>(iter); }
+        static float32 read2Dot14(Iter& iter) { return readFixed<true, int16, float32, 14>(iter); }
     };
 
-    constexpr inline uint8_t operator& (VectorizedGlyph::SimpleFlags const& left,
-        uint8_t right) noexcept
+    constexpr inline uint8 operator& (VectorizedGlyph::SimpleFlags const& left,
+        uint8 right) noexcept
     {
-        return static_cast<uint8_t>(left) & right;
+        return static_cast<uint8>(left) & right;
     }
 
-    constexpr inline uint8_t operator& (uint8_t left,
+    constexpr inline uint8 operator& (uint8 left,
         VectorizedGlyph::SimpleFlags const& right) noexcept
     {
-        return left & static_cast<uint8_t>(right);
+        return left & static_cast<uint8>(right);
     }
 
-    constexpr inline uint16_t operator& (VectorizedGlyph::CompositeFlags const& left,
-        uint16_t right) noexcept
+    constexpr inline uint16 operator& (VectorizedGlyph::CompositeFlags const& left,
+        uint16 right) noexcept
     {
-        return static_cast<uint16_t>(left) & right;
+        return static_cast<uint16>(left) & right;
     }
 
-    constexpr inline uint16_t operator& (uint16_t left,
+    constexpr inline uint16 operator& (uint16 left,
         VectorizedGlyph::CompositeFlags const& right) noexcept
     {
-        return left & static_cast<uint16_t>(right);
+        return left & static_cast<uint16>(right);
     }
 
     template <ByteInputIterator Iter>
-    int16_t VectorizedGlyph::parseHeader(Iter& iter) {
-        int16_t numberOfContours = readType<int16_t, true>(iter);
-        min[0] = readType<int16_t, true>(iter);
-        min[1] = readType<int16_t, true>(iter);
-        max[0] = readType<int16_t, true>(iter);
-        max[1] = readType<int16_t, true>(iter);
+    int16 VectorizedGlyph::parseHeader(Iter& iter) {
+        int16 numberOfContours = readType<int16, true>(iter);
+        min[0] = readType<int16, true>(iter);
+        min[1] = readType<int16, true>(iter);
+        max[0] = readType<int16, true>(iter);
+        max[1] = readType<int16, true>(iter);
         return numberOfContours;
     }
 
@@ -196,12 +196,12 @@ namespace ge {
     }
 
     template <ByteInputIterator Iter>
-    void VectorizedGlyph::parseSimpleGlyph(Iter& iter, int16_t numberOfContours, Glyph& glyph) {
-        for (auto i : std::views::iota(int16_t(0), numberOfContours))
-            glyph.endPtsOfContours.push_back(readType<uint16_t, true>(iter));
-        std::advance(iter, readType<uint16_t, true>(iter));
+    void VectorizedGlyph::parseSimpleGlyph(Iter& iter, int16 numberOfContours, Glyph& glyph) {
+        for (auto i : std::views::iota(int16(0), numberOfContours))
+            glyph.endPtsOfContours.push_back(readType<uint16, true>(iter));
+        std::advance(iter, readType<uint16, true>(iter));
         if (!glyph.endPtsOfContours.size()) return;
-        uint16_t points = *std::ranges::max_element(glyph.endPtsOfContours) + 1;
+        uint16 points = *std::ranges::max_element(glyph.endPtsOfContours) + 1;
         auto flags = readSimpleFlags(iter, points);
         generatePoints(glyph, flags);
         readCoords<0>(glyph, flags, iter, SimpleFlags::XShortVector, SimpleFlags::XIsSameOrPositive);
@@ -209,12 +209,12 @@ namespace ge {
     }
 
     template <ByteInputIterator Iter>
-    VectorizedGlyph::UByteVec VectorizedGlyph::readSimpleFlags(Iter& iter, uint16_t points) {
+    VectorizedGlyph::UByteVec VectorizedGlyph::readSimpleFlags(Iter& iter, uint16 points) {
         UByteVec flags;
-        for (uint16_t i = 0; i < points; ++i) {
-            flags.emplace_back(readType<uint8_t>(iter));
+        for (uint16 i = 0; i < points; ++i) {
+            flags.emplace_back(readType<uint8>(iter));
             if (flags.back() & SimpleFlags::RepeatFlag) {
-                uint8_t repeater = readType<uint8_t>(iter);
+                uint8 repeater = readType<uint8>(iter);
                 i += repeater;
                 while (repeater--)
                     flags.push_back(flags.back());
@@ -227,38 +227,38 @@ namespace ge {
     void VectorizedGlyph::readCoords(Glyph& glyph, UByteVec const& flags, Iter& iter,
         SimpleFlags vectorFlag, SimpleFlags positiveFlag)
     {
-        int16_t value = 0;
-        for (uint16_t i = 0; i != flags.size(); ++i) {
+        int16 value = 0;
+        for (uint16 i = 0; i != flags.size(); ++i) {
             if (flags[i] & vectorFlag)
-                value += (flags[i] & positiveFlag) ? (int16_t)readType<uint8_t>(iter) : -(int16_t)readType<uint8_t>(iter);
+                value += (flags[i] & positiveFlag) ? (int16)readType<uint8>(iter) : -(int16)readType<uint8>(iter);
             else if (~flags[i] & positiveFlag)
-                value += readType<int16_t, true>(iter);
+                value += readType<int16, true>(iter);
             glyph.points[i].position[Axis] = value;
         }
     }
 
     template <ByteInputIterator Iter>
-    LocaTable::LocaTable(Iter iter, int16_t indexFormat, uint16_t numGlyphs) {
+    LocaTable::LocaTable(Iter iter, int16 indexFormat, uint16 numGlyphs) {
         if (indexFormat) {
             Loca32 loca;
-            for (uint16_t i = 0; i < numGlyphs + 1; ++i)
-                loca.push_back(readType<uint32_t, true>(iter));
+            for (uint16 i = 0; i < numGlyphs + 1; ++i)
+                loca.push_back(readType<uint32, true>(iter));
             locaTable = std::move(loca);
         } else {
             Loca16 loca;
-            for (uint16_t i = 0; i < numGlyphs + 1; ++i)
-                loca.push_back(readType<uint16_t, true>(iter));
+            for (uint16 i = 0; i < numGlyphs + 1; ++i)
+                loca.push_back(readType<uint16, true>(iter));
             locaTable = std::move(loca);
         }
     }
 
     template <ByteInputIterator Iter>
     VectorizedGlyph::Arguments VectorizedGlyph::parseArguments(Iter& iter,
-        uint16_t const& flag) const
+        uint16 const& flag) const
     {
         if (flag & CompositeFlags::Arg1And2AreWords)
-            return Arguments{readType<int16_t, true>(iter), readType<int16_t, true>(iter)};
-        return Arguments{readType<uint8_t>(iter), readType<uint8_t>(iter)};
+            return Arguments{readType<int16, true>(iter), readType<int16, true>(iter)};
+        return Arguments{readType<uint8>(iter), readType<uint8>(iter)};
     }
 
     template <ByteInputIterator Iter>
@@ -266,10 +266,10 @@ namespace ge {
         LocaTable const& table, Glyph& glyph)
     {
         Components components;
-        uint16_t flag;
+        uint16 flag;
         do {
-            flag = readType<uint16_t, true>(iter);
-            Component component{readType<uint16_t, true>(iter)};
+            flag = readType<uint16, true>(iter);
+            Component component{readType<uint16, true>(iter)};
             auto&& [argument2, argument1] = parseArguments(iter, flag);
             component.readArgs(argument1, argument2, flag);
             component.parseProjection(iter, flag);
@@ -279,7 +279,7 @@ namespace ge {
 
     template <ByteInputIterator Iter>
     void VectorizedGlyph::Component::parseProjection(Iter& iter,
-        uint16_t const& flag)
+        uint16 const& flag)
     {
         if (flag & CompositeFlags::WeHaveAScale) {
             projection[0] = read2Dot14(iter);
@@ -300,7 +300,7 @@ namespace ge {
         LocaTable const& table, Glyph& glyph, Components const& components)
     {
         for (auto const& component : components) {
-            uint16_t currentSize = static_cast<uint16_t>(glyph.points.size());
+            uint16 currentSize = static_cast<uint16>(glyph.points.size());
             auto subglyph = parseSubglyph(begin, table(component.glyphIndex), table);
             transformSubglyph(component, glyph, subglyph);
             for (auto const& contourEnds : subglyph.endPtsOfContours)
@@ -310,10 +310,10 @@ namespace ge {
 
     template <ByteInputIterator Iter>
     VectorizedGlyph::Glyph VectorizedGlyph::parseSubglyph(Iter const begin,
-        uint16_t offset, LocaTable const& locaTable)
+        uint16 offset, LocaTable const& locaTable)
     {
         auto iter = begin + offset;
-        int16_t numberOfContours = readType<int16_t, true>(iter);
+        int16 numberOfContours = readType<int16, true>(iter);
         std::advance(iter, 8);
         Glyph glyph;
         if (numberOfContours >= 0)

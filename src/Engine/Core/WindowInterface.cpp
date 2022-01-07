@@ -6,7 +6,7 @@
 
 namespace ge {
 
-    WindowInterface::Options::Options(uint16_t major,uint16_t minor,bool floating,bool maximised,bool resizable) noexcept
+    WindowInterface::Options::Options(uint16 major,uint16 minor,bool floating,bool maximised,bool resizable) noexcept
     : openGLMajorVersion(major), openGLMinorVersion(minor), floating(floating), maximised(maximised), resizable(resizable) {}
 
     WindowInterface::WindowInterface(Vector2ui dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share)
@@ -32,43 +32,43 @@ namespace ge {
         context.windowDimmensions = dimmensions = dimm;
     }
 
-    void framebufferCallback(GLFWwindow* window, int32_t width, int32_t height) noexcept {
+    void framebufferCallback(GLFWwindow* window, int32 width, int32 height) noexcept {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         Vector2ui oldDimmensions = render->dimmensions;
-        render->setDimmensions(vectorCast<uint32_t>(Vector2i{width, height}));
+        render->setDimmensions(vectorCast<uint32>(Vector2i{width, height}));
         get<ScreenTransformationRegister>(render->events).onEvent(oldDimmensions);
     }
 
-    void keyCallback(GLFWwindow* window, int32_t key,
-        [[maybe_unused]] int32_t scancode, int32_t action,
-        [[maybe_unused]] int32_t mods)
+    void keyCallback(GLFWwindow* window, int32 key,
+        [[maybe_unused]] int32 scancode, int32 action,
+        [[maybe_unused]] int32 mods)
     {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
-        auto keyCode = static_cast<Key>(static_cast<int16_t>(key));
+        auto keyCode = static_cast<Key>(static_cast<int16>(key));
         if (action == GLFW_PRESS)
             get<KeyPressRegister>(render->events).onEvent(keyCode);
         else if (action == GLFW_RELEASE)
             get<KeyReleaseRegister>(render->events).onEvent(keyCode);
     }
 
-    void mouseButtonCallback(GLFWwindow* window, int32_t button,
-        int32_t action, [[maybe_unused]] int32_t mods)
+    void mouseButtonCallback(GLFWwindow* window, int32 button,
+        int32 action, [[maybe_unused]] int32 mods)
     {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
-        auto buttonCode = static_cast<MouseButton>(static_cast<uint8_t>(button));
+        auto buttonCode = static_cast<MouseButton>(static_cast<uint8>(button));
         if (action == GLFW_PRESS)
             get<MousePressRegister>(render->events).onEvent(buttonCode);
         else if (action == GLFW_RELEASE)
             get<MouseReleaseRegister>(render->events).onEvent(buttonCode);
     }
 
-    void textCallback(GLFWwindow* window, uint32_t character) {
+    void textCallback(GLFWwindow* window, uint32 character) {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         get<TextWriteRegister>(render->events).onEvent(toUTF8(character));
     }
 
-    void mousePosCallback(GLFWwindow* window, double xpos, double ypos) {
+    void mousePosCallback(GLFWwindow* window, float64 xpos, float64 ypos) {
         WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
         get<MouseMotionRegister>(render->events).onEvent(Vector2f{xpos, ypos});
     }

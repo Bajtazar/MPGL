@@ -13,7 +13,7 @@ namespace ge {
     }
 
     Subfont::FontGlyph Subfont::operator() (
-        uint16_t number, uint8_t level)
+        uint16 number, uint8 level)
     {
         auto& map = getMap(level);
         auto iter = map.find(number);
@@ -27,7 +27,7 @@ namespace ge {
         return {std::cref(iter->second)};
     }
 
-    Subfont::RasterMap& Subfont::getMap(uint8_t level) {
+    Subfont::RasterMap& Subfont::getMap(uint8 level) {
         auto iter = sizeMap.find(level);
         if (iter == sizeMap.end())
             iter = sizeMap.emplace(level, RasterMap{}).first;
@@ -37,27 +37,27 @@ namespace ge {
     Vector2ui Subfont::getDimmensions(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
-        return vectorCast<uint32_t>(
-            vectorCast<uint32_t>(glyph.glyph.getMaxDimmensions()
+        return vectorCast<uint32>(
+            vectorCast<uint32>(glyph.glyph.getMaxDimmensions()
                 - glyph.glyph.getMinDimmensions())
-            * static_cast<uint32_t>(size) /
-                static_cast<uint32_t>(fontData.unitsPerEm));
+            * static_cast<uint32>(size) /
+                static_cast<uint32>(fontData.unitsPerEm));
     }
 
     Vector2i Subfont::getBearings(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
-        return vectorCast<int32_t>(glyph.glyph.getMinDimmensions())
-            * static_cast<int32_t>(size) /
-                static_cast<int32_t>(fontData.unitsPerEm);
+        return vectorCast<int32>(glyph.glyph.getMinDimmensions())
+            * static_cast<int32>(size) /
+                static_cast<int32>(fontData.unitsPerEm);
     }
 
-    Glyph Subfont::createGlyph(Iter const& iter, uint8_t level) {
+    Glyph Subfont::createGlyph(Iter const& iter, uint8 level) {
         std::size_t size = 64 << level;
         auto const& glyphData = iter->second;
         auto&& dimmensions = getDimmensions(glyphData, size);
         auto&& bearings = getBearings(glyphData, size);
-        uint16_t advanceWidth = size * glyphData.advanceWidth
+        uint16 advanceWidth = size * glyphData.advanceWidth
             / fontData.unitsPerEm;
         return Glyph{renderTexture(iter, size),
             dimmensions, bearings, advanceWidth};

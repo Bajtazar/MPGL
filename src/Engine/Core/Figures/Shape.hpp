@@ -43,9 +43,9 @@ namespace ge {
             Vector2ui const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center,
-            float factor) noexcept final;
+            float32 factor) noexcept final;
         void rotate(Vector2f const& center,
-            float angle) noexcept final;
+            float32 angle) noexcept final;
         void rotate(Vector2f const& center,
             Matrix2f const& rotation) noexcept final;
 
@@ -126,8 +126,8 @@ namespace ge {
         Shape& operator=(Shape const& shape);
 
         Vertices                            vertices;
-        uint32_t                            vertexBuffer;
-        uint32_t                            vertexArrayObject;
+        uint32                              vertexBuffer;
+        uint32                              vertexArrayObject;
     };
 
     template <std::size_t Index>

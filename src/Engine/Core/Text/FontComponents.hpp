@@ -7,29 +7,29 @@
 namespace ge {
 
     struct FontData {
-        uint16_t                            unitsPerEm;
-        int16_t                             xMin;
-        int16_t                             yMin;
-        int16_t                             xMax;
-        int16_t                             yMax;
+        uint16                              unitsPerEm;
+        int16                               xMin;
+        int16                               yMin;
+        int16                               xMax;
+        int16                               yMax;
 
         explicit FontData(void) noexcept = default;
     };
 
     struct GlyphData {
         VectorizedGlyph                     glyph;
-        uint16_t                            advanceWidth;
-        int16_t                             leftSideBearing;
+        uint16                              advanceWidth;
+        int16                               leftSideBearing;
 
         explicit GlyphData(VectorizedGlyph const& glyph,
-            uint16_t advanceWidth, int16_t leftSideBearing) noexcept
+            uint16 advanceWidth, int16 leftSideBearing) noexcept
                 : glyph{glyph}, advanceWidth{advanceWidth},
                 leftSideBearing{leftSideBearing} {}
         explicit GlyphData(void) noexcept = default;
     };
 
     struct KernTable {
-        typedef std::map<uint32_t, int16_t> DistanceMap;
+        typedef std::map<uint32, int16> DistanceMap;
 
         DistanceMap                         distance;
         bool                                axis;
@@ -39,24 +39,25 @@ namespace ge {
 
         explicit KernTable(void) noexcept = default;
 
-        void setAxis(uint16_t const& coverage) noexcept;
+        void setAxis(uint16 const& coverage) noexcept;
     };
 
     template <ByteInputIterator Iter>
     KernTable::KernTable(Iter& iter) {
-        if (readType<uint16_t, true>(iter)) return;
+        if (readType<uint16, true>(iter)) return;
         std::advance(iter, 2);
-        setAxis(readType<uint16_t, true>(iter));
-        auto range = std::views::iota(uint16_t(0), readType<uint16_t, true>(iter));
+        setAxis(readType<uint16, true>(iter));
+        auto range = std::views::iota(uint16(0),
+            readType<uint16, true>(iter));
         std::advance(iter, 6);
         for (auto _ : range) {
-            uint32_t key = readType<uint16_t, true>(iter) << 0x0010;
-            key += readType<uint16_t, true>(iter);
-            distance[key] = readType<int16_t, true>(iter);
+            uint32 key = readType<uint16, true>(iter) << 0x0010;
+            key += readType<uint16, true>(iter);
+            distance[key] = readType<int16, true>(iter);
         }
     }
 
     typedef std::vector<KernTable>          Kern;
-    typedef std::map<uint16_t, GlyphData>   GlyphMap;
+    typedef std::map<uint16, GlyphData>     GlyphMap;
 
 }

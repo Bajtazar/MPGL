@@ -14,7 +14,7 @@
 
 namespace ge {
 
-    template <typename CharType = uint8_t, SizeType FrequencyType = std::size_t>
+    template <typename CharType = uint8, SizeType FrequencyType = std::size_t>
     class HuffmanTree {
     public:
         typedef std::unordered_map<CharType, FrequencyType>     DecodingMap;
@@ -74,7 +74,7 @@ namespace ge {
         typedef std::reference_wrapper<const NodePtr>                   NodeCRef;
 
         typedef std::array<FrequencyType, sizeof(CharType) * CHAR_BIT>  CountedArray;
-        typedef std::vector<std::pair<uint8_t, uint8_t>>                CharacterLengthArray;
+        typedef std::vector<std::pair<uint8, uint8>>                    CharacterLengthArray;
 
         void walkThrough(NodeCRef node, CodesMap& map, std::string code) const;
         void walkThrough(NodeCRef node, DecodingMap& map, FrequencyType code) const;

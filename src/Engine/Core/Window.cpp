@@ -59,7 +59,7 @@ namespace ge {
             ticks ? TickRegister::Duration{1'000ms} / ticks : 0ms);
     }
 
-    int32_t Window::windowLoop(const Color& background) noexcept {
+    int32 Window::windowLoop(const Color& background) noexcept {
         copyDrawablesToGPU();
         while (!shouldWindowClose()) {
             clear(background);

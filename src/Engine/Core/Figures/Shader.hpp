@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <string>
 
+#include "../../Traits/Types.hpp"
+
 namespace ge {
 
     template <bool ShaderType>
@@ -16,11 +18,11 @@ namespace ge {
         Shader& operator= (Shader const& shader) noexcept = delete;
         Shader& operator= (Shader&& shader) noexcept;
 
-        uint32_t const& getShader(void) const noexcept
+        uint32 const& getShader(void) const noexcept
             { return shaderID; }
         ~Shader(void) noexcept;
     private:
-        uint32_t                        shaderID;
+        uint32                          shaderID;
 
         constexpr auto shaderType(void) const noexcept;
     };

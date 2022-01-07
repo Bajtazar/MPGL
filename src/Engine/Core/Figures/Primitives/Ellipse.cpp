@@ -4,9 +4,9 @@
 namespace ge {
 
     Ellipse::Vertices Ellipse::ellipseVertices(Vector2f const& center,
-        Vector2f const& semiAxis, float angle) noexcept
+        Vector2f const& semiAxis, float32 angle) noexcept
     {
-        Matrix2f rotation = rotationMatrix<float>(angle);
+        Matrix2f rotation = rotationMatrix<float32>(angle);
         Vector2f rot1 = rotation * semiAxis;
         Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
         return {
@@ -18,7 +18,7 @@ namespace ge {
     }
 
     Ellipse::Vertices Ellipse::circleVertices(Vector2f const& center,
-        float radius) noexcept
+        float32 radius) noexcept
     {
         Vector2f semiMajor = Vector2f{radius, 0.f};
         Vector2f semiMinor = Vector2f{0.f, radius};
@@ -37,7 +37,7 @@ namespace ge {
     }
 
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
-        Color const& color, float angle) noexcept
+        Color const& color, float32 angle) noexcept
             : Shadeable{"2DEllipse"}, vertices{ellipseVertices(center, semiAxis, angle)},
             color{color}
     {
@@ -45,7 +45,7 @@ namespace ge {
         recalculateUniforms();
     }
 
-    Ellipse::Ellipse(Vector2f const& center, float radius,
+    Ellipse::Ellipse(Vector2f const& center, float32 radius,
         Color const& color) noexcept
             : Shadeable{"2DEllipse"}, vertices{circleVertices(center, radius)}, color{color}
     {
@@ -108,7 +108,7 @@ namespace ge {
         glBufferData(GL_ARRAY_BUFFER, sizeof(Adapter<Vector2f>) * 4,
             vertices.data(), GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(uint32_t),
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(uint32),
             indexes.data(), GL_STATIC_DRAW);
     }
 
@@ -147,15 +147,15 @@ namespace ge {
         recalculateUniforms();
     }
 
-    void Ellipse::scale(Vector2f const& center, float factor) noexcept {
+    void Ellipse::scale(Vector2f const& center, float32 factor) noexcept {
         for (auto& vertexPosition : vertices)
             vertexPosition = (static_cast<Vector2f>(vertexPosition) - center) * factor + center;
         copyToGPU();
         recalculateUniforms();
     }
 
-    void Ellipse::rotate(Vector2f const& center, float angle) noexcept {
-        rotate(center, rotationMatrix<float>(angle));
+    void Ellipse::rotate(Vector2f const& center, float32 angle) noexcept {
+        rotate(center, rotationMatrix<float32>(angle));
     }
 
     void Ellipse::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {

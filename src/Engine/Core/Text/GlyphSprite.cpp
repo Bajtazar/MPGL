@@ -119,7 +119,7 @@ namespace ge {
             vertices.data(), GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() *
-            sizeof(uint32_t), indexes.data(), GL_STATIC_DRAW);
+            sizeof(uint32), indexes.data(), GL_STATIC_DRAW);
     }
 
     template <bool IsMonochromatic>
@@ -130,11 +130,11 @@ namespace ge {
             sizeof(Vertex), nullptr);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-            sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(float)));
+            sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(float32)));
         glEnableVertexAttribArray(1);
         if constexpr (!IsMonochromatic) {
             glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE,
-                sizeof(Vertex), reinterpret_cast<void*>(4 * sizeof(float)));
+                sizeof(Vertex), reinterpret_cast<void*>(4 * sizeof(float32)));
             glEnableVertexAttribArray(2);
         }
     }
@@ -175,8 +175,8 @@ namespace ge {
             std::views::transform(&Vertex::position))
         {
             Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * vectorCast<float>(
-                oldDimmensions) / vectorCast<float>(
+            position = (position + 1.f) * vectorCast<float32>(
+                oldDimmensions) / vectorCast<float32>(
                     context.windowDimmensions) - 1.f;
         }
         copyToGPU();
@@ -194,7 +194,7 @@ namespace ge {
 
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::scale(
-        Vector2f const& center, float factor) noexcept
+        Vector2f const& center, float32 factor) noexcept
     {
         for (auto& vertexPosition : vertices |
             std::views::transform(&Vertex::position))
@@ -207,9 +207,9 @@ namespace ge {
 
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::rotate(
-        Vector2f const& center, float angle) noexcept
+        Vector2f const& center, float32 angle) noexcept
     {
-        rotate(center, rotationMatrix<float>(angle));
+        rotate(center, rotationMatrix<float32>(angle));
     }
 
     template <bool IsMonochromatic>

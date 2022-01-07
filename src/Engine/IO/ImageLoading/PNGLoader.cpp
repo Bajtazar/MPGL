@@ -17,7 +17,7 @@ namespace ge {
     const std::string PNGLoader<Policy>::Tag{"png"};
 
     template <security::SecurityPolicy Policy>
-    const std::array<uint32_t, 256> PNGLoader<Policy>::crcTable{ PNGLoader<Policy>::createCRCTable() };
+    const std::array<uint32, 256> PNGLoader<Policy>::crcTable{ PNGLoader<Policy>::createCRCTable() };
 
     template <security::SecurityPolicy Policy>
     PNGLoader<Policy>::PNGLoader(Policy policy, const std::string& fileName)
@@ -50,23 +50,23 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     void PNGLoader<Policy>::readImage(Policy policy, FileIter file) {
-        if (readType<uint64_t>(file) != 0x0A1A0A0D474E5089)
+        if (readType<uint64>(file) != 0x0A1A0A0D474E5089)
             throw ImageLoadingInvalidTypeException{fileName};
-        while (auto length = readType<uint32_t, true>(file)) {
+        while (auto length = readType<uint32, true>(file)) {
             if (auto iter = chunkParsers.find(readNChars(4, file)); iter != chunkParsers.end())
                 std::invoke(*std::invoke(iter->second, std::ref(*this)), length, file);
             else
                 std::advance(file, length + 4);
         }
-        if (readType<uint64_t>(file) != 0x826042AE444E4549)
+        if (readType<uint64>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
         Inflate decoder{policy, rawFileData};
         filterPixels(decoder.decompress());
     }
 
     template <security::SecurityPolicy Policy>
-    std::array<uint32_t, 256> PNGLoader<Policy>::createCRCTable(void) noexcept {
-        std::array<uint32_t, 256> table;
+    std::array<uint32, 256> PNGLoader<Policy>::createCRCTable(void) noexcept {
+        std::array<uint32, 256> table;
         std::ranges::for_each(table, [i = 0](auto& value) mutable -> void {
             value = i++;
             for ([[maybe_unused]] auto _ : std::views::iota(0, 8)) {
@@ -80,33 +80,33 @@ namespace ge {
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::ChunkInterface::checkCRCCode(const uint32_t& crc) const {
+    void PNGLoader<Policy>::ChunkInterface::checkCRCCode(const uint32& crc) const {
         if ((crcCode ^ 0xFFFFFFFF) != crc)
             throw ImageLoadingFileCorruptionException{loader.fileName};
     }
 
     template <security::SecurityPolicy Policy>
     void PNGLoader<Policy>::IHDRChunk::operator() ([[maybe_unused]] std::size_t length, FileIter& data) {
-        uint32_t width = readType<uint32_t, true>(data);
-        this->loader.pixels.resize(width, readType<uint32_t, true>(data));
-        readCRCCode(this->crcCode, static_cast<uint32_t>(this->loader.pixels.getWidth()));
-        readCRCCode(this->crcCode, static_cast<uint32_t>(this->loader.pixels.getHeight()));
-        parseBitDepth(readType<uint8_t>(data));
-        parseColorType(readType<uint8_t>(data));
-        readCRCCode(this->crcCode, readType<uint16_t, true>(data)); // compression method and filter method
-        parseInterlance(readType<uint8_t>(data));
-        this->checkCRCCode(readType<uint32_t, true>(data));
+        uint32 width = readType<uint32, true>(data);
+        this->loader.pixels.resize(width, readType<uint32, true>(data));
+        readCRCCode(this->crcCode, static_cast<uint32>(this->loader.pixels.getWidth()));
+        readCRCCode(this->crcCode, static_cast<uint32>(this->loader.pixels.getHeight()));
+        parseBitDepth(readType<uint8>(data));
+        parseColorType(readType<uint8>(data));
+        readCRCCode(this->crcCode, readType<uint16, true>(data)); // compression method and filter method
+        parseInterlance(readType<uint8>(data));
+        this->checkCRCCode(readType<uint32, true>(data));
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::IHDRChunk::parseBitDepth(const uint8_t& bitDepth) {
+    void PNGLoader<Policy>::IHDRChunk::parseBitDepth(const uint8& bitDepth) {
         if (bitDepth != 0x08)
             throw NotSupportedException{"Not 8-bit pixel fortmats are not supported"};
         readCRCCode(this->crcCode, bitDepth);
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::IHDRChunk::parseColorType(const uint8_t& colorType) {
+    void PNGLoader<Policy>::IHDRChunk::parseColorType(const uint8& colorType) {
         readCRCCode(this->crcCode, colorType);
         switch (colorType) {
             case 0:
@@ -127,7 +127,7 @@ namespace ge {
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::IHDRChunk::parseInterlance(const uint8_t& interlance) {
+    void PNGLoader<Policy>::IHDRChunk::parseInterlance(const uint8& interlance) {
         if (interlance)
             throw NotSupportedException{"Adam7 interlance in PNG files is not supported"};
         readCRCCode(this->crcCode, interlance);
@@ -140,45 +140,45 @@ namespace ge {
             byte = *data++;
             this->crcCode = PNGLoader<Policy>::crcTable[(this->crcCode ^ byte) & 0xFF] ^ (this->crcCode >> 8);
         }
-        this->checkCRCCode(readType<uint32_t, true>(data));
+        this->checkCRCCode(readType<uint32, true>(data));
     }
 
     template <security::SecurityPolicy Policy>
-    uint8_t PNGLoader<Policy>::paethPredictor(uint8_t a, uint8_t b, uint8_t c) const noexcept {
-        uint16_t paethA = b > c ? b - c : c - b;
-        uint16_t paethB = a > c ? a - c : c - a;
-        uint16_t paethC = ((uint16_t) a + b) > ((uint16_t) 2 * c) ?
-            (uint16_t) a + b - 2 * c : (uint16_t) 2 * c - a - b;
+    uint8 PNGLoader<Policy>::paethPredictor(uint8 a, uint8 b, uint8 c) const noexcept {
+        uint16 paethA = b > c ? b - c : c - b;
+        uint16 paethB = a > c ? a - c : c - a;
+        uint16 paethC = ((uint16) a + b) > ((uint16) 2 * c) ?
+            (uint16) a + b - 2 * c : (uint16) 2 * c - a - b;
         if (paethA <= paethB && paethA <= paethC)
             return a;
         return (paethB <= paethC) ? b : c;
     }
 
     template <security::SecurityPolicy Policy>
-    uint8_t PNGLoader<Policy>::reconstructA(std::size_t row, std::size_t column, uint8_t pixel) const noexcept {
+    uint8 PNGLoader<Policy>::reconstructA(std::size_t row, std::size_t column, uint8 pixel) const noexcept {
         return column ? pixels[row][column - 1][pixel] : 0;
     }
 
     template <security::SecurityPolicy Policy>
-    uint8_t PNGLoader<Policy>::reconstructB(std::size_t row, std::size_t column, uint8_t pixel) const noexcept {
+    uint8 PNGLoader<Policy>::reconstructB(std::size_t row, std::size_t column, uint8 pixel) const noexcept {
         return (row < pixels.getHeight() - 1) ? pixels[row + 1][column][pixel] : 0;
     }
 
     template <security::SecurityPolicy Policy>
-    uint8_t PNGLoader<Policy>::reconstructC(std::size_t row, std::size_t column, uint8_t pixel) const noexcept {
+    uint8 PNGLoader<Policy>::reconstructC(std::size_t row, std::size_t column, uint8 pixel) const noexcept {
         return (row < pixels.getHeight() - 1) && column ? pixels[row + 1][column - 1][pixel] : 0;
 
     }
 
     template <security::SecurityPolicy Policy>
-    uint8_t PNGLoader<Policy>::filterSubpixel(std::size_t row, std::size_t column, uint8_t filter, uint8_t subpixelID, CharIter& iter) noexcept {
-        uint8_t subpixel = *iter++;
+    uint8 PNGLoader<Policy>::filterSubpixel(std::size_t row, std::size_t column, uint8 filter, uint8 subpixelID, CharIter& iter) noexcept {
+        uint8 subpixel = *iter++;
         if (filter == 1)
             subpixel += reconstructA(row, column, subpixelID);
         else if (filter == 2)
             subpixel += reconstructB(row, column, subpixelID);
         else if (filter == 3)
-            subpixel += ((uint16_t) reconstructA(row, column, subpixelID) + reconstructB(row, column, subpixelID)) / 2;
+            subpixel += ((uint16) reconstructA(row, column, subpixelID) + reconstructB(row, column, subpixelID)) / 2;
         else if (filter == 4)
             subpixel += paethPredictor(reconstructA(row, column, subpixelID),
                 reconstructB(row, column, subpixelID), reconstructC(row, column, subpixelID));
@@ -186,26 +186,26 @@ namespace ge {
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setRGBAPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
-        for (uint8_t sub = 0; sub < 4; ++sub)
+    void PNGLoader<Policy>::setRGBAPixels(std::size_t row, std::size_t column, uint8 filter, CharIter& iter) noexcept {
+        for (uint8 sub = 0; sub < 4; ++sub)
             pixels[row][column][sub] = filterSubpixel(row, column, filter, sub, iter);
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setRGBPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
-        for (uint8_t sub = 0; sub < 3; ++sub)
+    void PNGLoader<Policy>::setRGBPixels(std::size_t row, std::size_t column, uint8 filter, CharIter& iter) noexcept {
+        for (uint8 sub = 0; sub < 3; ++sub)
             pixels[row][column][sub] = filterSubpixel(row, column, filter, sub, iter);
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setGrayPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
-        uint8_t subpixel = filterSubpixel(row, column, filter, 0, iter);
-        for (uint8_t sub = 0; sub < 3; ++sub)
+    void PNGLoader<Policy>::setGrayPixels(std::size_t row, std::size_t column, uint8 filter, CharIter& iter) noexcept {
+        uint8 subpixel = filterSubpixel(row, column, filter, 0, iter);
+        for (uint8 sub = 0; sub < 3; ++sub)
             pixels[row][column][sub] = subpixel;
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setGrayAlphaPixels(std::size_t row, std::size_t column, uint8_t filter, CharIter& iter) noexcept {
+    void PNGLoader<Policy>::setGrayAlphaPixels(std::size_t row, std::size_t column, uint8 filter, CharIter& iter) noexcept {
         setGrayPixels(row, column, filter, iter);
         pixels[row][column].alpha = filterSubpixel(row, column, filter, 3, iter);
     }
@@ -214,7 +214,7 @@ namespace ge {
     void PNGLoader<Policy>::filterPixels(const std::vector<char>& data) noexcept {
         auto iter = data.begin();
         for (std::size_t i = pixels.getHeight() - 1;i < pixels.getHeight(); --i) {
-            uint8_t filter = *iter++;
+            uint8 filter = *iter++;
             for (std::size_t j = 0;j < pixels.getWidth(); ++j)
                 (this->*headerData.setter)(i, j, filter, iter);
         }

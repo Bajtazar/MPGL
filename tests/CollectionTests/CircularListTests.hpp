@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../TestsFramework/Tests.hpp"
+#include "../../src/Engine/Traits/Types.hpp"
 #include "../../src/Engine/Collections/CircularList.hpp"
 
 #include <array>
@@ -22,7 +23,7 @@ EndConstexprTest
 
 BeginConstexprTest(CircularListAddMultipleElements)
     ge::CircularList<int> list;
-    for (uint8_t i = 0;i < 100; ++i)
+    for (ge::uint8 i = 0;i < 100; ++i)
         list.push(i);
 EndConstexprTest
 
@@ -33,7 +34,7 @@ EndConstexprTest
 
 BeginConstexprTest(CircularListCopyConstructor)
     ge::CircularList<int> list;
-    for (uint8_t i = 0;i < 100; ++i)
+    for (ge::uint8 i = 0;i < 100; ++i)
         list.push(i);
     auto cpy = list;
     auto i1 = list.attachment(), i2 = cpy.attachment();
@@ -44,7 +45,7 @@ EndConstexprTest
 
 BeginConstexprTest(CircularListMoveConstructor)
     ge::CircularList<int> list;
-    for (uint8_t i = 0;i < 100; ++i)
+    for (ge::uint8 i = 0;i < 100; ++i)
         list.push(i);
     auto cpy = std::move(list);
     ConstexprAssert(list.empty())
@@ -55,7 +56,7 @@ EndConstexprTest
 
 BeginConstexprTest(CircularListCopyAsignment)
     ge::CircularList<int> list, cpy;
-    for (uint8_t i = 0;i < 100; ++i)
+    for (ge::uint8 i = 0;i < 100; ++i)
         list.push(i);
     cpy = list;
     auto i1 = list.attachment(), i2 = cpy.attachment();
@@ -66,7 +67,7 @@ EndConstexprTest
 
 BeginConstexprTest(CircularListMoveAsignment)
     ge::CircularList<int> list, cpy;
-    for (uint8_t i = 0;i < 100; ++i)
+    for (ge::uint8 i = 0;i < 100; ++i)
         list.push(i);
     cpy = std::move(list);
     ConstexprAssert(list.empty())
@@ -84,7 +85,7 @@ EndConstexprTest
 
 BeginConstexprTest(CircularListRemoveMultipleElements)
     ge::CircularList<int> list;
-    for (uint8_t i = 0;i < 100; ++i)
+    for (ge::uint8 i = 0;i < 100; ++i)
         list.push(i);
     ConstexprEqual(list.pop(), 99)
     ConstexprEqual(list.pop(), 98)

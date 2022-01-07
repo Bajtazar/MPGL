@@ -32,7 +32,7 @@ namespace ge {
             return {};
         return { accumulate(*this | views::position, Vector2f{},
             [](auto const& x){ return std::forward<Vector2f>(x); })
-                / static_cast<float>(vertices.size()) };
+                / static_cast<float32>(vertices.size()) };
     }
 
     void ResizableShape::resize(size_type size) {

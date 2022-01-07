@@ -81,7 +81,7 @@ namespace ge {
     void Shape::bindBuffers(void) const noexcept {
         glBindVertexArray(vertexArrayObject);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float) * vertices.size(),
+        glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float32) * vertices.size(),
             vertices.data(), GL_STATIC_DRAW);
     }
 
@@ -90,7 +90,7 @@ namespace ge {
         glEnableVertexAttribArray(0);
 
         glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-            reinterpret_cast<void*>(2 * sizeof(float)));
+            reinterpret_cast<void*>(2 * sizeof(float32)));
         glEnableVertexAttribArray(1);
     }
 
@@ -102,8 +102,8 @@ namespace ge {
     void Shape::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position)) {
             Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * vectorCast<float>(oldDimmensions)
-                / vectorCast<float>(context.windowDimmensions) - 1.f;
+            position = (position + 1.f) * vectorCast<float32>(oldDimmensions)
+                / vectorCast<float32>(context.windowDimmensions) - 1.f;
         }
         copyToGPU();
     }
@@ -114,8 +114,8 @@ namespace ge {
         copyToGPU();
     }
 
-    void Shape::rotate(Vector2f const& center, float angle) noexcept {
-        rotate(center, rotationMatrix<float>(angle));
+    void Shape::rotate(Vector2f const& center, float32 angle) noexcept {
+        rotate(center, rotationMatrix<float32>(angle));
     }
 
     void Shape::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
@@ -127,7 +127,7 @@ namespace ge {
         copyToGPU();
     }
 
-    void Shape::scale(Vector2f const& center, float factor) noexcept {
+    void Shape::scale(Vector2f const& center, float32 factor) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position))
             vertexPosition = (static_cast<Vector2f>(vertexPosition) - center) * factor + center;
         copyToGPU();

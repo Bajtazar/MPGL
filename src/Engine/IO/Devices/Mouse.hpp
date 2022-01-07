@@ -4,7 +4,7 @@
 
 namespace ge {
 
-    enum class MouseButton : uint8_t {
+    enum class MouseButton : uint8 {
         Left            = 0x00,
         Right           = 0x01,
         Middle          = 0x02,

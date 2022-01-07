@@ -1064,8 +1064,10 @@ namespace ge {
     template <typename Tp>
     using Matrix8                         = Matrix<Tp, 8, 8>;
 
-    template class Matrix<float, 2, 2>;
+    template class Matrix<float32, 2, 2>;
 
-    typedef Matrix<float, 2, 2>             Matrix2f;
+    typedef Matrix<float32, 2, 2>           Matrix2f;
+    typedef Matrix<float32, 3, 3>           Matrix3f;
+    typedef Matrix<float32, 4, 4>           Matrix4f;
 
 }

@@ -21,7 +21,7 @@ namespace ge {
         auto iter = string.begin();
         IDArray array;
         while (iter < string.end()) {   // put SafeIterator in case
-            uint8_t length = getUTF8SequenceLength(*iter);
+            uint8 length = getUTF8SequenceLength(*iter);
             array.push_back(fromUTF8(iter, std::next(iter, length)));
             std::advance(iter, length);
         }
@@ -29,17 +29,17 @@ namespace ge {
     }
 
     template <bool IsPolichromatic>
-    uint8_t Text<IsPolichromatic>::getLevel(void) const {
-        uint8_t level = std::ceil(log2(size));
+    uint8 Text<IsPolichromatic>::getLevel(void) const {
+        uint8 level = std::ceil(log2(size));
         return level > 6 ? level - 6 : 0;
     }
 
     template <bool IsPolichromatic>
     Text<IsPolichromatic>::ArgTuple Text<IsPolichromatic>::getArgs(void) const noexcept
     {
-        uint8_t level = getLevel();
-        auto rotation = rotationMatrix<float>(angle);
-        float scale = (float) size / (64 << level);
+        uint8 level = getLevel();
+        auto rotation = rotationMatrix<float32>(angle);
+        float32 scale = (float32) size / (64 << level);
         return {level, scale, rotation};
     }
 
@@ -47,23 +47,23 @@ namespace ge {
     void Text<IsPolichromatic>::drawGlyphs(IDArray const& indexes) {
         auto& subfont = font.get()(type);
         auto&& [level, scale, rotation] = getArgs();
-        for (uint16_t const& index : indexes)
+        for (uint16 const& index : indexes)
             drawGlyph(subfont, level, scale, index, rotation);
     }
 
     template <bool IsPolichromatic>
-    void Text<IsPolichromatic>::drawGlyph(Subfont& subfont, uint8_t level,
-        float scale, uint16_t const& index, Matrix2f const& rotation)
+    void Text<IsPolichromatic>::drawGlyph(Subfont& subfont, uint8 level,
+        float32 scale, uint16 const& index, Matrix2f const& rotation)
     {
         if (auto glyph = subfont(index, level)) {
             if (auto texture = glyph->get().texture) {
-                Vector2f xVersor = rotation * Vector2f{float(glyph->get().dimmensions[0]), 0.f} * scale;
-                Vector2f yVersor = rotation * Vector2f{0.f, float(glyph->get().dimmensions[1])} * scale;
-                Vector2f bearing = rotation * vectorCast<float>(glyph->get().bearing) * scale;
+                Vector2f xVersor = rotation * Vector2f{float32(glyph->get().dimmensions[0]), 0.f} * scale;
+                Vector2f yVersor = rotation * Vector2f{0.f, float32(glyph->get().dimmensions[1])} * scale;
+                Vector2f bearing = rotation * vectorCast<float32>(glyph->get().bearing) * scale;
                 glyphs.emplace_back(*texture, position + bearing,
                     position + bearing + yVersor, position + bearing + xVersor, color);
             }
-            position += rotation * Vector2f{float(glyph->get().advance * scale), 0.f};
+            position += rotation * Vector2f{float32(glyph->get().advance * scale), 0.f};
         }
     }
 
@@ -88,11 +88,11 @@ namespace ge {
     Vector2f Text<IsPolichromatic>::getPosition(void) const noexcept {
         if (!glyphs.size())
             return position;
-        uint8_t len = getUTF8SequenceLength(text.front());
-        uint16_t index = fromUTF8(text.begin(), std::next(text.begin(), len));
+        uint8 len = getUTF8SequenceLength(text.front());
+        uint16 index = fromUTF8(text.begin(), std::next(text.begin(), len));
         auto&& [level, scale, rotation] = getArgs();
         auto const& glyph = font.get()(type)(index, level);
-        Vector2f bearing = rotation * vectorCast<float>(
+        Vector2f bearing = rotation * vectorCast<float32>(
             glyph->get().bearing) * scale;
         return Vector2f{glyphs.front()[0].position} - bearing;
     }
@@ -102,7 +102,7 @@ namespace ge {
         if (glyphs.size())
             return {(static_cast<Vector2f>(glyphs.size() > 1 ? glyphs.back()[2].position
                 : glyphs.front()[2].position) - static_cast<Vector2f>(
-                glyphs.front()[1].position)).length(), float(size)};
+                glyphs.front()[1].position)).length(), float32(size)};
         return {0.f, 0.f};
     }
 
@@ -183,21 +183,21 @@ namespace ge {
     }
 
     template <bool IsPolichromatic>
-    void Text<IsPolichromatic>::rotate(Vector2f const& center, float angle) noexcept {
-        rotate(center, rotationMatrix<float>(angle));
+    void Text<IsPolichromatic>::rotate(Vector2f const& center, float32 angle) noexcept {
+        rotate(center, rotationMatrix<float32>(angle));
     }
 
     template <bool IsPolichromatic>
     void Text<IsPolichromatic>::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
         std::ranges::for_each(glyphs, [&center, &rotation](auto& glyph){ glyph.rotate(center, rotation); });
         position = rotation * (position - center) + center;
-        auto twoPi = std::numbers::pi_v<float> * 2;
+        auto twoPi = std::numbers::pi_v<float32> * 2;
         this->angle += twoPi - angle;
         this->angle = angle > twoPi ? angle - twoPi : angle < 0.f ? twoPi + angle : angle;
     }
 
     template <bool IsPolichromatic>
-    void Text<IsPolichromatic>::scale(Vector2f const& center, float factor) noexcept {
+    void Text<IsPolichromatic>::scale(Vector2f const& center, float32 factor) noexcept {
         std::ranges::for_each(glyphs, [&center, &factor](auto& glyph){ glyph.scale(center, factor); });
         size *= factor;
         position = (position - center) * factor + center;

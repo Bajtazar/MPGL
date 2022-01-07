@@ -84,7 +84,7 @@ namespace ge {
             MonochromaticFontVertex, PolichromaticFontVertex>;
 
         typedef std::array<Vertex, 4>               Vertices;
-        typedef std::array<uint32_t, 6>             Indexes;
+        typedef std::array<uint32, 6>               Indexes;
         typedef std::shared_ptr<Vector2ui>          ScenePtr;
 
         GlyphSprite(Texture const& texture, Color const& color = {});
@@ -111,9 +111,9 @@ namespace ge {
         void translate(
             Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center,
-            float factor) noexcept final;
+            float32 factor) noexcept final;
         void rotate(Vector2f const& center,
-            float angle) noexcept final;
+            float32 angle) noexcept final;
         void rotate(Vector2f const& center,
             Matrix2f const& rotation) noexcept final;
 
@@ -168,9 +168,9 @@ namespace ge {
     private:
         Vertices                                    vertices;
         Texture                                     texture;
-        uint32_t                                    elementArrayBuffer;
-        uint32_t                                    vertexBuffer;
-        uint32_t                                    vertexArrayObject;
+        uint32                                      elementArrayBuffer;
+        uint32                                      vertexBuffer;
+        uint32                                      vertexArrayObject;
 
         Vertices makeVertexArray(Color const& color) noexcept;
         void bindBuffers(void) const noexcept;
@@ -184,8 +184,8 @@ namespace ge {
     template class GlyphSprite<true>;
     template class GlyphSprite<false>;
 
-    typedef GlyphSprite<true>               MonoGlyphSprite;
-    typedef GlyphSprite<false>              PoliGlyphSprite;
+    typedef GlyphSprite<true>                       MonoGlyphSprite;
+    typedef GlyphSprite<false>                      PoliGlyphSprite;
 
 }
 

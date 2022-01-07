@@ -165,15 +165,15 @@ namespace ge {
 
         Vector2f getDimmensions(void) const noexcept;
         Vector2f getPosition(void) const noexcept;
-        float getAngle(void) const noexcept { return angle; }
+        float32 getAngle(void) const noexcept { return angle; }
 
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
         void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float factor) noexcept final;
-        void rotate(Vector2f const& center, float angle) noexcept final;
+        void scale(Vector2f const& center, float32 factor) noexcept final;
+        void rotate(Vector2f const& center, float32 angle) noexcept final;
         void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
 
         using iterator = PolichromaticTextIterator<false>;
@@ -215,9 +215,9 @@ namespace ge {
     private:
         typedef GlyphSprite<!IsPolichromatic>       FontGlyph;
         typedef std::vector<FontGlyph>              GlyphsArray;
-        typedef std::vector<uint16_t>               IDArray;
+        typedef std::vector<uint16>                 IDArray;
         typedef std::reference_wrapper<Font>        FontRef;
-        typedef std::tuple<uint8_t, float,
+        typedef std::tuple<uint8, float32,
             Matrix2f>                               ArgTuple;
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
@@ -227,16 +227,16 @@ namespace ge {
         Color                       color;
         Vector2f                    position;
         std::size_t                 size;
-        float                       angle;
+        float32                     angle;
         FontRef                     font;
         Font::Type                  type;
 
-        uint8_t getLevel(void) const;
+        uint8 getLevel(void) const;
 
         IDArray parseString(std::string string);
 
-        void drawGlyph(Subfont& subfont, uint8_t level, float scale,
-            uint16_t const& index, Matrix2f const& rotation);
+        void drawGlyph(Subfont& subfont, uint8 level, float32 scale,
+            uint16 const& index, Matrix2f const& rotation);
         void drawGlyphs(IDArray const& array);
         void redrawGlyphs(void);
 

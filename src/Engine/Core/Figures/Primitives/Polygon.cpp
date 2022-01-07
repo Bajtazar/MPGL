@@ -9,12 +9,12 @@
 namespace ge {
 
     Polygon::Polygon(Vector2f const& center,
-        float radius, std::size_t segments,
+        float32 radius, std::size_t segments,
         Color const& color)
             : ResizableShape{segments + 1, color}
     {
-        float increment = 2.f *
-            std::numbers::pi_v<float> / (segments - 1), angle = 0.f;
+        float32 increment = 2.f *
+            std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;
         vertices.front().position = center;
         for (auto& position : vertices | std::views::drop(1) |
             ge::views::position)

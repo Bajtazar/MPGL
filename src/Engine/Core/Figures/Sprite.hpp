@@ -95,9 +95,9 @@ namespace ge {
             Vector2ui const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center,
-            float factor) noexcept final;
+            float32 factor) noexcept final;
         void rotate(Vector2f const& center,
-            float angle) noexcept final;
+            float32 angle) noexcept final;
         void rotate(Vector2f const& center,
             Matrix2f const& rotation) noexcept final;
 
@@ -151,7 +151,7 @@ namespace ge {
     protected:
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
-        typedef std::array<uint32_t, 6>       Indexes;
+        typedef std::array<uint32, 6>           Indexes;
 
         static constexpr const Indexes          indexes{
             {0, 1, 2, 0, 3, 2}};
@@ -159,9 +159,9 @@ namespace ge {
 
         VertexArray                             vertices;
         Texture                                 texture;
-        uint32_t                                elementArrayBuffer;
-        uint32_t                                vertexBuffer;
-        uint32_t                                vertexArrayObject;
+        uint32                                  elementArrayBuffer;
+        uint32                                  vertexBuffer;
+        uint32                                  vertexArrayObject;
 
         void setVerticesPoisition(Vector2f const& firstVertex,
             Vector2f const& dimmensions) noexcept;

@@ -78,8 +78,8 @@ namespace ge {
         using DrawableCollectionBase<Base, Sequence>::DrawableCollectionBase;
 
         void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float factor) noexcept final;
-        void rotate(Vector2f const& center, float angle) noexcept final;
+        void scale(Vector2f const& center, float32 factor) noexcept final;
+        void rotate(Vector2f const& center, float32 angle) noexcept final;
         void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
 
         ~DrawableCollection(void) noexcept = default;
@@ -134,7 +134,7 @@ namespace ge {
 
     template <TransformableDrawable Base, std::ranges::input_range Sequence>
     void DrawableCollection<Base, Sequence>::scale(
-        Vector2f const& center, float factor) noexcept
+        Vector2f const& center, float32 factor) noexcept
     {
         std::ranges::for_each(*this, [&center, &factor](auto& drawable)
             { drawable.scale(center, factor); });
@@ -142,7 +142,7 @@ namespace ge {
 
     template <TransformableDrawable Base, std::ranges::input_range Sequence>
     void DrawableCollection<Base, Sequence>::rotate(
-        Vector2f const& center, float angle) noexcept
+        Vector2f const& center, float32 angle) noexcept
     {
         std::ranges::for_each(*this, [&center, &angle](auto& drawable)
             { drawable.rotate(center, angle); });

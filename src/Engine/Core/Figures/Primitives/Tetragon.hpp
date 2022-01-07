@@ -28,11 +28,11 @@ namespace ge {
 
         ~Tetragon(void) noexcept;
     private:
-        typedef std::array<uint32_t, 6>             Indexes;
+        typedef std::array<uint32, 6>               Indexes;
 
         static constexpr const Indexes              indexes{0, 1, 2, 0, 3, 2};
 
-        uint32_t                                    elementArrayBuffer;
+        uint32                                      elementArrayBuffer;
 
         void moveTetragon(Tetragon& tetragon) noexcept;
         void generateBuffers(void) noexcept;

@@ -10,14 +10,14 @@ namespace ge {
     struct Glyph {
         typedef std::optional<Texture>          TextureVar;
 
-        TextureVar          texture;
-        Vector2ui           dimmensions;
-        Vector2i            bearing;
-        uint32_t            advance;
+        TextureVar                              texture;
+        Vector2ui                               dimmensions;
+        Vector2i                                bearing;
+        uint32                                  advance;
 
         explicit Glyph(TextureVar const& texture,
             Vector2ui const& dimmensions, Vector2i const& bearing,
-            uint32_t advance) noexcept : texture{texture},
+            uint32 advance) noexcept : texture{texture},
                 dimmensions{dimmensions}, bearing{bearing},
                 advance{advance} {}
 
@@ -75,6 +75,6 @@ namespace std {
 
     template <>
     struct tuple_element<3, ge::Glyph>
-        { using type = uint32_t; };
+        { using type = ge::uint32; };
 
 }

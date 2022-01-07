@@ -11,8 +11,8 @@ namespace ge {
     class Ellipse : public Drawable, public Shadeable, public Transformable2D {
     public:
         Ellipse(Vector2f const& center, Vector2f const& semiAxis,
-                Color const& color = {}, float angle = 0.f) noexcept;
-        Ellipse(Vector2f const& center, float radius,
+                Color const& color = {}, float32 angle = 0.f) noexcept;
+        Ellipse(Vector2f const& center, float32 radius,
                 Color const& color = {}) noexcept;
         Ellipse(Ellipse const& ellipse) noexcept;
         Ellipse(Ellipse&& ellipse) noexcept;
@@ -25,8 +25,8 @@ namespace ge {
 
         void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept;
         void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float factor) noexcept final;
-        void rotate(Vector2f const& center, float angle) noexcept final;
+        void scale(Vector2f const& center, float32 factor) noexcept final;
+        void rotate(Vector2f const& center, float32 angle) noexcept final;
         void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
 
         Vector2f getCenter(void) const noexcept;
@@ -39,21 +39,21 @@ namespace ge {
 
         ~Ellipse(void) noexcept;
     private:
-        typedef std::array<uint32_t, 6>             Indexes;
+        typedef std::array<uint32, 6>               Indexes;
         typedef std::array<Adapter<Vector2f>, 4>    Vertices;
 
         Vertices                                    vertices;
         Matrix2f                                    transform;
         Color                                       color;
-        uint32_t                                    vertexBuffer;
-        uint32_t                                    vertexArrayObject;
-        uint32_t                                    elementArrayBuffer;
+        uint32                                      vertexBuffer;
+        uint32                                      vertexArrayObject;
+        uint32                                      elementArrayBuffer;
 
 
         static Vertices ellipseVertices(Vector2f const& center,
-            Vector2f const& semiAxis, float angle) noexcept;
+            Vector2f const& semiAxis, float32 angle) noexcept;
         static Vertices circleVertices(Vector2f const& center,
-            float radius) noexcept;
+            float32 radius) noexcept;
 
         void generateBuffers(void) noexcept;
         void bindBuffers(void) const noexcept;

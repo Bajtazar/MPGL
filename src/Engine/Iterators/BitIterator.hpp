@@ -60,15 +60,15 @@ namespace ge {
             LittleEndianBitIter const& right) noexcept
                 { return left.iter == right.iter; }
 
-        static inline consteval uint8_t byteLength(void) noexcept
+        static inline consteval uint8 byteLength(void) noexcept
             { return CHAR_BIT; }
 
         constexpr void skipToNextByte(void) noexcept
             { ++iter; bitIter = 0; }
         constexpr std::byte readByte(void) noexcept;
     private:
-        Iter iter;
-        uint8_t bitIter;
+        Iter                            iter;
+        uint8                           bitIter;
     };
 
     template <ByteInputIterator Iter>
@@ -101,15 +101,15 @@ namespace ge {
             BigEndianBitIter const& right) noexcept
                 { return left.iter == right.iter; }
 
-        static inline consteval uint8_t byteLength(void) noexcept
+        static inline consteval uint8 byteLength(void) noexcept
             { return CHAR_BIT; }
 
         constexpr void skipToNextByte(void) noexcept
             { ++iter; bitIter = 7; }
         constexpr std::byte readByte(void) noexcept;
     private:
-        Iter iter;
-        uint8_t bitIter;
+        Iter                            iter;
+        uint8                           bitIter;
     };
 
     template <ByteInputIterator Iter>
@@ -159,11 +159,11 @@ namespace ge {
         if constexpr (BigEndian) {
             std::byte* raw = reinterpret_cast<std::byte*>(&data) +
                 sizeof(T) - 1;
-            for (uint8_t i = sizeof(T); i != 0; --i, --raw)
+            for (uint8 i = sizeof(T); i != 0; --i, --raw)
                 *raw = iter.readByte();
         } else {
             std::byte* raw = reinterpret_cast<std::byte*>(&data);
-            for (uint8_t i = 0; i != sizeof(T); ++i, ++raw)
+            for (uint8 i = 0; i != sizeof(T); ++i, ++raw)
                 *raw = iter.readByte();
         }
         return data;

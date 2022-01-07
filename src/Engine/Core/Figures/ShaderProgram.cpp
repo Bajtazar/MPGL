@@ -5,20 +5,20 @@
 
 namespace ge {
 
-    uint32_t ShaderProgram::lastProgramID = 0u;
+    uint32 ShaderProgram::lastProgramID = 0u;
 
     ShaderProgram::ShaderProgram(void) noexcept : shaderProgramID{
-        new uint32_t{0}, ProgramDeleter{}} {}
+        new uint32{0}, ProgramDeleter{}} {}
 
     ShaderProgram::ShaderProgram(VertexShader const& vertex,
         FragmentShader const& fragment) noexcept : shaderProgramID{
-            new uint32_t{glCreateProgram()}, ProgramDeleter{}}
+            new uint32{glCreateProgram()}, ProgramDeleter{}}
     {
         attachShader(vertex);
         attachShader(fragment);
     }
 
-    void ShaderProgram::ProgramDeleter::operator() (uint32_t* ptr) const noexcept {
+    void ShaderProgram::ProgramDeleter::operator() (uint32* ptr) const noexcept {
         glDeleteProgram(*ptr);
         delete ptr;
     }

@@ -7,26 +7,26 @@
 namespace ge {
 
     #ifdef __GNUC__
-    uint8_t FFT::log2N(uint8_t number) noexcept {
+    uint8 FFT::log2N(uint8 number) noexcept {
         return number & 0x01 ? 0 :
-            static_cast<uint8_t>(__builtin_ctz(number));
+            static_cast<uint8>(__builtin_ctz(number));
     }
     #elif defined(_MSC_VER)
-    uint8_t FFT::log2N(uint8_t number) noexcept {
+    uint8 FFT::log2N(uint8 number) noexcept {
         DWORD trailing = 0;
         return _BitScanForward(&trailing, number) ? trailing : 0;
     }
     #endif
 
     #ifdef __GNUC__
-    uint16_t FFT::convolutionSize(uint8_t number) noexcept {
+    uint16 FFT::convolutionSize(uint8 number) noexcept {
         uint size = 2 * number + 1;
         // __builtin_clz cannot overflow - it is well defined
         return !(size & (size - 1)) ? size :
             1 << (sizeof(long) * CHAR_BIT - __builtin_clz(size));
     }
     #elif defined(_MSC_VER)
-    uint16_t FFT::convolutionSize(uint8_t number) noexcept {
+    uint16 FFT::convolutionSize(uint8 number) noexcept {
         uint size = 2 * number + 1;
         if (!(size & (size - 1)))
             return size;
@@ -36,18 +36,18 @@ namespace ge {
     }
     #endif
 
-    FFT::ComplexVector FFT::generateLookupTable(uint16_t size) noexcept {
+    FFT::ComplexVector FFT::generateLookupTable(uint16 size) noexcept {
         ComplexVector lookupTable;
         lookupTable.reserve(size);
         lookupTable.emplace_back(1.);
-        for (uint16_t i = 1; i < size; ++i)
+        for (uint16 i = 1; i < size; ++i)
             lookupTable.push_back(std::polar(1., (2 * i - 1) * std::numbers::pi / size)
                 * lookupTable.back());
         return lookupTable;
     }
 
     FFT::ComplexVector FFT::generateRightSequence(ComplexVector const& lookupTable,
-        uint16_t size) noexcept
+        uint16 size) noexcept
     {
         ComplexVector rightSequence;
         rightSequence.reserve(size);

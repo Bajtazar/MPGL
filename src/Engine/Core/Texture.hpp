@@ -79,7 +79,7 @@ namespace ge {
         Texture& operator= (Texture const& texture) = default;
         Texture& operator= (Texture&& texture) = default;
 
-        uint32_t getTexture(void) const noexcept
+        uint32 getTexture(void) const noexcept
             { return *textureID; }
 
         static Texture defaultTexture(Options const& options = {
@@ -92,7 +92,7 @@ namespace ge {
         ~Texture(void) = default;
     private:
         typedef std::function<void(
-            uint32_t*)>                     Deleter;
+            uint32*)>                       Deleter;
 
         explicit Texture(Options const& options) noexcept;
 
@@ -100,7 +100,7 @@ namespace ge {
             Options const& options) const;
         void generateMipmaps(Options const& options) const noexcept;
 
-        std::shared_ptr<uint32_t>           textureID;
+        std::shared_ptr<uint32>             textureID;
 
         static const Deleter                deleter;
     };

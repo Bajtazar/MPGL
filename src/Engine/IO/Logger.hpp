@@ -13,7 +13,7 @@ namespace ge {
     class Logger {
     public:
         template <std::derived_from<std::exception> Exception>
-        static void checkCompilationStatus(uint32_t bufferID, uint32_t operation, const std::string& title);
+        static void checkCompilationStatus(uint32 bufferID, uint32 operation, const std::string& title);
         static std::string loggingString(std::size_t size, char fill) noexcept;
         static void saveOpenGl(const std::string& data, const std::string& title) noexcept;
         static void logInvalidFont(const std::string& fontName, const std::string& subtype);
@@ -23,8 +23,8 @@ namespace ge {
     };
 
     template <std::derived_from<std::exception> Exception>
-    void Logger::checkCompilationStatus(uint32_t bufferID, uint32_t operation, const std::string& title) {
-        int32_t status = 0;
+    void Logger::checkCompilationStatus(uint32 bufferID, uint32 operation, const std::string& title) {
+        int32 status = 0;
         glGetProgramiv(bufferID, operation, &status);
         if (!status) {
             std::string info = loggingString(512, 0);

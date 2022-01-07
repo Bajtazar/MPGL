@@ -90,7 +90,7 @@ namespace ge::tests {
     void ResultWindow::onScreenTransformation(
         Vector2ui const& oldDimmensions) noexcept
     {
-        int32_t drop = (int32_t) context.windowDimmensions[1]
+        int32 drop = (int32) context.windowDimmensions[1]
             - oldDimmensions[1];
         columns.onScreenTransformation(oldDimmensions);
         header.onScreenTransformation(oldDimmensions);

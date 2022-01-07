@@ -28,17 +28,17 @@ namespace ge {
     }
 
     template <Mathematical Tp>
-    inline constexpr Matrix2<Tp> rotationMatrix(float angle) noexcept {
+    inline constexpr Matrix2<Tp> rotationMatrix(float32 angle) noexcept {
         return {Vector2<Tp>{std::cos(angle), -std::sin(angle)},
             Vector2<Tp>{std::sin(angle), std::cos(angle)}};
     }
 
     template <std::size_t Rows, std::size_t Cols>
-    inline constexpr Matrix<std::complex<double>, Cols, Rows>
+    inline constexpr Matrix<std::complex<float64>, Cols, Rows>
         hermitianTranspose(
-            Matrix<std::complex<double>, Rows, Cols> const& matrix) noexcept
+            Matrix<std::complex<float64>, Rows, Cols> const& matrix) noexcept
     {
-        Matrix<std::complex<double>, Cols, Rows> output;
+        Matrix<std::complex<float64>, Cols, Rows> output;
         for (std::size_t i = 0;i < Rows; ++i)
             for (std::size_t j = 0;j < Cols; ++j)
                 output[j][i] = std::conj(matrix[i][j]);

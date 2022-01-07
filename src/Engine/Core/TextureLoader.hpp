@@ -36,7 +36,7 @@ namespace ge {
         TextureLoader& operator=(TextureLoader const&) = delete;
         TextureLoader& operator=(TextureLoader&&) = delete;
 
-        double loadingStatus(void) const noexcept;
+        float64 loadingStatus(void) const noexcept;
         void load(void);
         void tryLoad(void);
         void loadAll(void);
@@ -141,10 +141,10 @@ namespace ge {
     }
 
     template <security::SecurityPolicy Sp>
-    double TextureLoader<Sp>::loadingStatus(
+    float64 TextureLoader<Sp>::loadingStatus(
         void) const noexcept
     {
-        return (double) textures.size() * counter.load(
+        return (float64) textures.size() * counter.load(
             std::memory_order_relaxed) / (allTextures * allTextures);
     }
 

@@ -17,7 +17,7 @@ namespace ge {
         auto const& points = glyph.glyph.getGlyph().points;
         auto const& ends = glyph.glyph.getGlyph().endPtsOfContours;
         Contour contour;
-        for (uint16_t i = 0, counter = 0; i != points.size(); ++i) {
+        for (uint16 i = 0, counter = 0; i != points.size(); ++i) {
             addPoint(contour, points[i]);
             if (ends[counter] == i) {
                 contours.emplace_back(std::move(contour));
@@ -40,7 +40,7 @@ namespace ge {
     Bitmap FontRasterizer::operator() (void) noexcept {
         auto canva = prepareCanva(size);
         for (auto const& contour : contours) {
-            lastPosition = vectorCast<uint16_t>(round(contour.front().position));
+            lastPosition = vectorCast<uint16>(round(contour.front().position));
             drawContourAndSetFlags(contour, canva, size);
         }
         fillContour(canva);
@@ -56,8 +56,8 @@ namespace ge {
         , std::size_t size) const noexcept
     {
         auto translated = position - glyph.glyph.getMinDimmensions();
-        return float(size) * vectorCast<float>(translated)
-            / float(mainData.unitsPerEm);
+        return float32(size) * vectorCast<float32>(translated)
+            / float32(mainData.unitsPerEm);
     }
 
     void FontRasterizer::drawContourAndSetFlags(Contour const& contour,
@@ -103,7 +103,7 @@ namespace ge {
         auto const& secondVertex = primitiveQueue[1].position;
         auto const& thridVertex = primitiveQueue[2].position;
         auto samples = getBezierSamples(firstVertex, secondVertex, thridVertex);
-        for (float t = 0, step = 1.f / samples; t < 1.f; t += step) {
+        for (float32 t = 0, step = 1.f / samples; t < 1.f; t += step) {
             auto result = (1.f - t) * ((1.f - t) * firstVertex + t * secondVertex)
                 + t * ((1.f - t) * secondVertex + t * thridVertex);
             setCanvaPixel<0>(canva, std::round(result[0]), result[1]);
@@ -121,7 +121,7 @@ namespace ge {
     }
 
     void FontRasterizer::defaultPixelSetter(Bitmap& canva,
-        Vector2<uint16_t> const& position) noexcept
+        Vector2<uint16> const& position) noexcept
     {
         if (position[1] == lastPosition[1]) {
             if (!canva[position])
@@ -136,7 +136,7 @@ namespace ge {
     }
 
     void FontRasterizer::deducingPixelSetter(Bitmap& canva,
-        Vector2<uint16_t> const& position) noexcept
+        Vector2<uint16> const& position) noexcept
     {
         if (position[1] == lastPosition[1]) {
             if (!canva[position])
@@ -164,10 +164,10 @@ namespace ge {
     void FontRasterizer::tryRepairBrokenPixel(BitmapRow& row,
         std::size_t index) const noexcept
     {
-        Vector2<uint16_t> brokenPixel;
+        Vector2<uint16> brokenPixel;
         for (auto const& contour : contours) {
             if (std::round(contour.front().position[1]) == index) {
-                uint16_t brokenPixel = std::round(contour.front().position[0]);
+                uint16 brokenPixel = std::round(contour.front().position[0]);
                 row[brokenPixel] ^= Mask;
                 break;
             }

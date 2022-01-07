@@ -26,7 +26,7 @@ namespace ge {
         };
     }
 
-    Texture::Deleter const Texture::deleter = [](uint32_t* ptr) -> void
+    Texture::Deleter const Texture::deleter = [](uint32* ptr) -> void
         {  glDeleteTextures(1, ptr); if (ptr) delete ptr; };
 
     bool Texture::Options::isBorder(void) const noexcept {
@@ -35,7 +35,7 @@ namespace ge {
     }
 
     Texture::Texture(Options const& options) noexcept :
-        textureID{new uint32_t{0}, deleter}
+        textureID{new uint32{0}, deleter}
     {
         glGenTextures(1, textureID.get());
         glBindTexture(GL_TEXTURE_2D, *textureID);
@@ -83,8 +83,8 @@ namespace ge {
 
     Texture Texture::defaultTexture(Options const& options) {
         Image image{8, 8};
-        for (uint8_t i = 0; i != 4; ++i) {
-            for (uint8_t j = 0; j != 4; ++j) {
+        for (uint8 i = 0; i != 4; ++i) {
+            for (uint8 j = 0; j != 4; ++j) {
                 image[2*i][2*j] = Pixel(0x7F, 0x7F, 0x7F, 0xFF);
                 image[2*i][2*j+1] = Pixel(0x99, 0xD9, 0xEA, 0xFF);
                 image[2*i+1][2*j] = Pixel(0x99, 0xD9, 0xEA, 0xFF);

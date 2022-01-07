@@ -14,11 +14,11 @@ namespace ge {
         T data;
         if constexpr (BigEndian) {
             char* raw = reinterpret_cast<char*>(&data) + sizeof(T) - 1;
-            for (uint16_t i = sizeof(T);i != 0; --i, --raw, ++iterator)
+            for (uint16 i = sizeof(T);i != 0; --i, --raw, ++iterator)
                 *raw = *iterator;
         } else {
             char* raw = reinterpret_cast<char*>(&data);
-            for (uint16_t i = 0;i != sizeof(T); ++i, ++raw, ++iterator)
+            for (uint16 i = 0;i != sizeof(T); ++i, ++raw, ++iterator)
                 *raw = *iterator;
         }
         return data;
@@ -31,7 +31,7 @@ namespace ge {
         return static_cast<T>(*iterator++);
     }
 
-    template <bool BigEndian = false, std::integral U = int32_t, std::floating_point T = float,
+    template <bool BigEndian = false, std::integral U = int32, std::floating_point T = float32,
         std::size_t Shift = 16, std::input_iterator Iter>
     inline T readFixed(Iter& iterator) noexcept(NothrowReadable<Iter>) {
         return static_cast<T>(readType<U, BigEndian>(iterator)) / (1 << Shift);

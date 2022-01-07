@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Events/TickEvent.hpp"
+#include "../../Traits/Types.hpp"
 #include "RegisterInterface.hpp"
 
 #include <vector>
@@ -10,7 +11,7 @@ namespace ge {
 
     class TickRegister : public RegisterInterface {
     public:
-        typedef std::chrono::duration<double, std::milli>   Duration;
+        typedef std::chrono::duration<float64, std::milli>  Duration;
         typedef std::shared_ptr<TickEvent>                  pointer;
         typedef TickEvent                                   value_type;
         typedef std::vector<pointer>                        Storage;

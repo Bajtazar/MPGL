@@ -6,7 +6,7 @@ namespace ge {
 
     class Font {
     public:
-        enum class Type : uint8_t {
+        enum class Type : uint8 {
             Regular = 0x01,
             Italic = 0x02,
             Bold = 0x04,
@@ -16,7 +16,8 @@ namespace ge {
         explicit Font(std::string const& fontName,
                       std::string fontDirectory = {});
 
-        uint8_t getMask(void) const noexcept { return mask; }
+        uint8 getMask(void) const noexcept
+            { return mask; }
 
         Subfont& operator() (Type const& type);
     private:
@@ -27,7 +28,7 @@ namespace ge {
 
         SubfontsMap                         subfonts;
         std::string                         fontName;
-        uint8_t                             mask;
+        uint8                             mask;
 
         void findSubfont(Files& files, Files& signatures,
             std::string const& type, Type const& flag);
@@ -38,8 +39,8 @@ namespace ge {
         static const TypeMap                typeVector;
     };
 
-    uint8_t operator& (Font::Type const& left, uint8_t right) noexcept;
+    uint8 operator& (Font::Type const& left, uint8 right) noexcept;
 
-    uint8_t operator& (uint8_t left, Font::Type const& right) noexcept;
+    uint8 operator& (uint8 left, Font::Type const& right) noexcept;
 
 }

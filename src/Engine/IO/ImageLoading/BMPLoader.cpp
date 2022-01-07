@@ -41,13 +41,13 @@ namespace ge {
 
     template <security::SecurityPolicy Policy>
     void BMPLoader<Policy>::readHeader(FileIter& file) {
-        if (readType<uint16_t>(file) != 0x4D42)
+        if (readType<uint16>(file) != 0x4D42)
             throw ImageLoadingInvalidTypeException{fileName};
-        readType<uint64_t>(file);   // file size and two reserved fields
-        uint32_t offset = readType<uint32_t>(file) - 6 * sizeof(uint32_t) - sizeof(uint16_t);
-        readType<uint32_t>(file);   // DIB header
-        pixels.resize(readType<uint32_t>(file), readType<uint32_t>(file));
-        for (uint32_t i = 0;i < offset; ++i)
+        readType<uint64>(file);   // file size and two reserved fields
+        uint32 offset = readType<uint32>(file) - 6 * sizeof(uint32) - sizeof(uint16);
+        readType<uint32>(file);   // DIB header
+        pixels.resize(readType<uint32>(file), readType<uint32>(file));
+        for (uint32 i = 0;i < offset; ++i)
             readType<std::byte>(file);
     }
 

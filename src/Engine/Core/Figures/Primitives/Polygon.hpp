@@ -6,7 +6,7 @@ namespace ge {
 
     class Polygon : public ResizableShape {
     public:
-        Polygon(Vector2f const& center = {}, float radius = 0.f,
+        Polygon(Vector2f const& center = {}, float32 radius = 0.f,
             std::size_t segments = 0, Color const& color = {});
 
         template <class ColorTp, AllConvertible<Vector2f>... Args>

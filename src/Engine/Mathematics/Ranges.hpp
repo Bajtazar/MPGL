@@ -2,27 +2,32 @@
 
 #include <math.h>
 
+#include "../Traits/Types.hpp"
+
 namespace ge {
 
-    template <typename T>
-    concept Mathematical = std::is_arithmetic_v<T> && std::convertible_to<T, double>;
+    template <typename Tp>
+    concept Mathematical = std::is_arithmetic_v<Tp>
+        && std::convertible_to<Tp, float64>;
 
     struct NormFn {
 
         struct powerInvocable {
 
-            template <Mathematical T, Mathematical U>
-            constexpr T operator() (T const& value, U const& power) const noexcept {
+            template <Mathematical Tp, Mathematical Up>
+            constexpr Tp operator() (
+                Tp const& value, Up const& power) const noexcept
+            {
                 return std::pow(value, power);
             }
 
         };
 
         template <std::incrementable Iter, std::sentinel_for<Iter> Sent,
-            std::invocable<std::iter_value_t<Iter>, double> Pred = powerInvocable>
+            std::invocable<std::iter_value_t<Iter>, float64> Pred = powerInvocable>
                 requires requires (std::iter_value_t<Iter> a) { a += a; }
         constexpr std::iter_value_t<Iter>
-            operator() (Iter first, Sent last, double norm = 2., Pred pred = {}) const noexcept
+            operator() (Iter first, Sent last, float64 norm = 2., Pred pred = {}) const noexcept
         {
             std::iter_value_t<Iter> sum {};
             for (;first != last; ++first)
@@ -31,10 +36,10 @@ namespace ge {
         }
 
         template <std::ranges::input_range Range,
-            std::invocable<std::ranges::range_value_t<Range>, double> Pred = powerInvocable>
+            std::invocable<std::ranges::range_value_t<Range>, float64> Pred = powerInvocable>
                 requires requires (std::ranges::range_value_t<Range> a) { a += a; }
         constexpr std::ranges::range_value_t<Range>
-            operator() (Range&& range, double norm = 2., Pred pred = {}) const noexcept
+            operator() (Range&& range, float64 norm = 2., Pred pred = {}) const noexcept
         {
             return (*this)(std::ranges::begin(range), std::ranges::end(range), norm, std::move(pred));
         }

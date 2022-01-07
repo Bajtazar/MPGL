@@ -10,7 +10,7 @@ namespace ge {
     #pragma pack(push, 1)
 
     struct Pixel {
-        typedef uint8_t                         Subpixel;
+        typedef uint8                           Subpixel;
 
         constexpr Pixel(Subpixel red, Subpixel green,
             Subpixel blue, Subpixel alpha) noexcept
