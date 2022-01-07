@@ -34,7 +34,7 @@ namespace ge::tests {
         }
     }
 
-    Vector2ui ResultWindow::getHeight(uint index) noexcept {
+    Vector2u ResultWindow::getHeight(uint index) noexcept {
         return 1_y * context.windowDimmensions[1] - 20_y * (
             1 + index);
     }
@@ -88,7 +88,7 @@ namespace ge::tests {
     }
 
     void ResultWindow::onScreenTransformation(
-        Vector2ui const& oldDimmensions) noexcept
+        Vector2u const& oldDimmensions) noexcept
     {
         int32 drop = (int32) context.windowDimmensions[1]
             - oldDimmensions[1];

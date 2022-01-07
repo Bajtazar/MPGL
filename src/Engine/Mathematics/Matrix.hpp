@@ -1067,7 +1067,15 @@ namespace ge {
     template class Matrix<float32, 2, 2>;
 
     typedef Matrix<float32, 2, 2>           Matrix2f;
+    typedef Matrix<int32, 2, 2>             Matrix2i;
+    typedef Matrix<uint32, 2, 2>            Matrix2u;
+
     typedef Matrix<float32, 3, 3>           Matrix3f;
+    typedef Matrix<int32, 3, 3>             Matrix3i;
+    typedef Matrix<uint32, 3, 3>            Matrix3u;
+
     typedef Matrix<float32, 4, 4>           Matrix4f;
+    typedef Matrix<int32, 4, 4>             Matrix4i;
+    typedef Matrix<uint32, 4, 4>            Matrix4u;
 
 }

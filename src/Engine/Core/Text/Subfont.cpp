@@ -34,7 +34,7 @@ namespace ge {
         return iter->second;
     }
 
-    Vector2ui Subfont::getDimmensions(GlyphData const& glyph,
+    Vector2u Subfont::getDimmensions(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
         return vectorCast<uint32>(

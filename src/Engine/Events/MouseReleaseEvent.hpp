@@ -8,7 +8,8 @@ namespace ge {
     struct MouseReleaseEvent : public EventBase {
         explicit MouseReleaseEvent(void) noexcept = default;
 
-        virtual void onMouseReleaseEvent(MouseButton const& button) = 0;
+        virtual void onMouseReleaseEvent(
+            MouseButton const& button) noexcept = 0;
 
         virtual ~MouseReleaseEvent(void) = default;
     };

@@ -31,32 +31,32 @@ namespace ge {
         WindowInterface& operator= (WindowInterface&& window) noexcept = delete;
 
         friend void framebufferCallback(GLFWwindow* window, int32 width, int32 height) noexcept;
-        friend void keyCallback(GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods);
-        friend void textCallback(GLFWwindow* window, uint32 character);
-        friend void mousePosCallback(GLFWwindow* window, float64 xpos, float64 ypos);
-        friend void mouseButtonCallback(GLFWwindow* window, int32 button, int32 action, int32 mods);
+        friend void keyCallback(GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods) noexcept;
+        friend void textCallback(GLFWwindow* window, uint32 character) noexcept;
+        friend void mousePosCallback(GLFWwindow* window, float64 xpos, float64 ypos) noexcept;
+        friend void mouseButtonCallback(GLFWwindow* window, int32 button, int32 action, int32 mods) noexcept;
 
         virtual ~WindowInterface(void) noexcept;
     protected:
-        explicit WindowInterface(Vector2ui dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
+        explicit WindowInterface(Vector2u dimmensions, std::string title, Options options = Options(), GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
         explicit WindowInterface(GLFWwindow* window) noexcept : window(window) {}
         bool shouldWindowClose(void) const noexcept  { return glfwWindowShouldClose(window); }
         void clear(const Color& color) const noexcept;
         void draw(void) const noexcept;
         void setContextWindow(void) noexcept;
 
-        const Vector2ui& getWindowDimmensions(void) const noexcept { return dimmensions; }
+        const Vector2u& getWindowDimmensions(void) const noexcept { return dimmensions; }
         const std::string& getWindowTitle(void) const noexcept { return name; }
 
         EventBus                        events;
     private:
-        Vector2ui                       dimmensions;
+        Vector2u                       dimmensions;
         std::string                     name;
         GLFWwindow*                     window;
 
         void setWindowOptions(const Options&) const noexcept;
         void setCallbacks(void) noexcept;
-        void setDimmensions(Vector2ui const& dimm) noexcept;
+        void setDimmensions(Vector2u const& dimm) noexcept;
     };
 
 }

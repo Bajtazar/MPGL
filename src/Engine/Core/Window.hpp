@@ -13,7 +13,7 @@ namespace ge {
         typedef std::shared_ptr<Drawable>           DrawablePtr;
         typedef std::vector<DrawablePtr>            Drawables;
 
-        explicit Window(Vector2ui const& dimmensions,
+        explicit Window(Vector2u const& dimmensions,
             std::string const& title, Options options = Options(),
             GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
 

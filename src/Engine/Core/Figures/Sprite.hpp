@@ -92,7 +92,7 @@ namespace ge {
         void draw(void) const noexcept final;
 
         void onScreenTransformation(
-            Vector2ui const& oldDimmensions) noexcept final;
+            Vector2u const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center,
             float32 factor) noexcept final;

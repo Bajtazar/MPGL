@@ -11,7 +11,7 @@ namespace ge {
     struct Context {
         explicit Context(void) noexcept;
 
-        Vector2ui                       windowDimmensions;
+        Vector2u                        windowDimmensions;
         ShadersContext                  shaders;
 
         ~Context(void) noexcept;

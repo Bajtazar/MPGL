@@ -15,7 +15,7 @@
 namespace ge {
 
     typedef UniversalRegister<ScreenTransformationEvent,
-        void(ScreenTransformationEvent::*)(Vector2ui const&),
+        void(ScreenTransformationEvent::*)(Vector2u const&),
         &ScreenTransformationEvent::onScreenTransformation>     ScreenTransformationRegister;
 
     typedef UniversalRegister<MouseReleaseEvent, void(MouseReleaseEvent::*)(MouseButton const&),

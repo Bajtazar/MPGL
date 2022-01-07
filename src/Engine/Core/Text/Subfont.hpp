@@ -25,7 +25,7 @@ namespace ge {
 
         Glyph createGlyph(Iter const& iter, uint8 level);
 
-        Vector2ui getDimmensions(GlyphData const& glyph,
+        Vector2u getDimmensions(GlyphData const& glyph,
             std::size_t size) const noexcept;
 
         Vector2i getBearings(GlyphData const& glyph,

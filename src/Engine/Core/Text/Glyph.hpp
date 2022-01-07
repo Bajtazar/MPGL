@@ -11,12 +11,12 @@ namespace ge {
         typedef std::optional<Texture>          TextureVar;
 
         TextureVar                              texture;
-        Vector2ui                               dimmensions;
+        Vector2u                               dimmensions;
         Vector2i                                bearing;
         uint32                                  advance;
 
         explicit Glyph(TextureVar const& texture,
-            Vector2ui const& dimmensions, Vector2i const& bearing,
+            Vector2u const& dimmensions, Vector2i const& bearing,
             uint32 advance) noexcept : texture{texture},
                 dimmensions{dimmensions}, bearing{bearing},
                 advance{advance} {}
@@ -67,7 +67,7 @@ namespace std {
 
     template <>
     struct tuple_element<1, ge::Glyph>
-        { using type = ge::Vector2ui; };
+        { using type = ge::Vector2u; };
 
     template <>
     struct tuple_element<2, ge::Glyph>

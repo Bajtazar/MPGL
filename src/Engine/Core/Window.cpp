@@ -6,7 +6,7 @@ namespace ge {
 
     using std::operator""us;
 
-    Window::Window(Vector2ui const& dimmensions,
+    Window::Window(Vector2u const& dimmensions,
         std::string const& title, Options options, GLFWmonitor* monitor,
         GLFWwindow* share)
             : WindowInterface{dimmensions, title, options, monitor, share},

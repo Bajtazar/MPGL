@@ -85,7 +85,6 @@ namespace ge {
 
         typedef std::array<Vertex, 4>               Vertices;
         typedef std::array<uint32, 6>               Indexes;
-        typedef std::shared_ptr<Vector2ui>          ScenePtr;
 
         GlyphSprite(Texture const& texture, Color const& color = {});
         // parallelogram
@@ -107,7 +106,7 @@ namespace ge {
         void draw(void) const noexcept;
 
         void onScreenTransformation(
-            Vector2ui const& oldDimmensions) noexcept final;
+            Vector2u const& oldDimmensions) noexcept final;
         void translate(
             Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center,

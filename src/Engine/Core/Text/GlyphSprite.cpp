@@ -169,7 +169,7 @@ namespace ge {
 
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::onScreenTransformation(
-        Vector2ui const& oldDimmensions) noexcept
+        Vector2u const& oldDimmensions) noexcept
     {
         for (auto& vertexPosition : vertices |
             std::views::transform(&Vertex::position))

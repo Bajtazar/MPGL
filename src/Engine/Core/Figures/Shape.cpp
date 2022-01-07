@@ -99,7 +99,7 @@ namespace ge {
         glBindVertexArray(0);
     }
 
-    void Shape::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
+    void Shape::onScreenTransformation(Vector2u const& oldDimmensions) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Shape::Vertex::position)) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * vectorCast<float32>(oldDimmensions)

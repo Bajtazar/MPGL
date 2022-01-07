@@ -130,7 +130,7 @@ namespace ge {
         unbindBuffers();
     }
 
-    void Ellipse::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
+    void Ellipse::onScreenTransformation(Vector2u const& oldDimmensions) noexcept {
         for (auto& vertexPosition : vertices) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * static_cast<Vector2f>(oldDimmensions)

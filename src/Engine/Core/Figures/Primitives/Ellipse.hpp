@@ -23,7 +23,7 @@ namespace ge {
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
-        void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept;
+        void onScreenTransformation(Vector2u const& oldDimmensions) noexcept;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center, float32 factor) noexcept final;
         void rotate(Vector2f const& center, float32 angle) noexcept final;

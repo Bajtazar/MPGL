@@ -505,15 +505,15 @@ namespace ge {
     template class Vector<uint32, 2>;
 
     typedef Vector<float32, 2>          Vector2f;
-    typedef Vector<uint32, 2>           Vector2ui;
+    typedef Vector<uint32, 2>           Vector2u;
     typedef Vector<int32, 2>            Vector2i;
 
     typedef Vector<float32, 3>          Vector3f;
-    typedef Vector<uint32, 3>           Vector3ui;
+    typedef Vector<uint32, 3>           Vector3u;
     typedef Vector<int32, 3>            Vector3i;
 
     typedef Vector<float32, 4>          Vector4f;
-    typedef Vector<uint32, 4>           Vector4ui;
+    typedef Vector<uint32, 4>           Vector4u;
     typedef Vector<int32, 4>            Vector4i;
 
     template <Arithmetic Tp>
@@ -525,35 +525,35 @@ namespace ge {
     template <Arithmetic Tp>
     using Vector4 =                     Vector<Tp, 4>;
 
-    constexpr Vector2f  operator"" _x(float128 value) noexcept {
+    constexpr Vector2f operator"" _x(float128 value) noexcept {
         return {value, 0.f};
     }
 
-    constexpr Vector2ui operator"" _x(uint64 value) noexcept {
+    constexpr Vector2u operator"" _x(uint64 value) noexcept {
         return {value, 0u};
     }
 
-    constexpr Vector2f  operator"" _y(float128 value) noexcept {
+    constexpr Vector2f operator"" _y(float128 value) noexcept {
         return {0.f, value};
     }
 
-    constexpr Vector2ui operator"" _y(uint64 value) noexcept {
+    constexpr Vector2u operator"" _y(uint64 value) noexcept {
         return {0u, value};
     }
 
-    constexpr Vector3f  operator"" _z(float128 value) noexcept {
+    constexpr Vector3f operator"" _z(float128 value) noexcept {
         return {0.f, 0.f, value};
     }
 
-    constexpr Vector3ui operator"" _z(uint64 value) noexcept {
+    constexpr Vector3u operator"" _z(uint64 value) noexcept {
         return {0u, 0u, value};
     }
 
-    constexpr Vector4f  operator"" _w(float128 value) noexcept {
+    constexpr Vector4f operator"" _w(float128 value) noexcept {
         return {0.f, 0.f, 0.f, value};
     }
 
-    constexpr Vector4ui operator"" _w(uint64 value) noexcept {
+    constexpr Vector4u operator"" _w(uint64 value) noexcept {
         return {0u, 0u, 0u, value};
     }
 

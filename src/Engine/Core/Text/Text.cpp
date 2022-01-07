@@ -204,7 +204,7 @@ namespace ge {
     }
 
     template <bool IsPolichromatic>
-    void Text<IsPolichromatic>::onScreenTransformation(Vector2ui const& oldDimmensions) noexcept {
+    void Text<IsPolichromatic>::onScreenTransformation(Vector2u const& oldDimmensions) noexcept {
         std::ranges::for_each(glyphs, [&oldDimmensions](auto& glyph)
             { glyph.onScreenTransformation(oldDimmensions); });
     }

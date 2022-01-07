@@ -132,8 +132,6 @@ namespace ge {
     template <bool IsPolichromatic = false>
     class Text : public Drawable, public Shadeable, public Transformable2D {
     public:
-        typedef std::shared_ptr<Vector2ui>      ScenePtr;
-
         explicit Text(Font& font, std::size_t size,
             Vector2f const& position = {},
             std::string const& text = {},
@@ -170,7 +168,7 @@ namespace ge {
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
-        void onScreenTransformation(Vector2ui const& oldDimmensions) noexcept final;
+        void onScreenTransformation(Vector2u const& oldDimmensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center, float32 factor) noexcept final;
         void rotate(Vector2f const& center, float32 angle) noexcept final;
