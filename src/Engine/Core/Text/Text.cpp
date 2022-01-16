@@ -31,7 +31,7 @@ namespace ge {
     template <bool IsPolichromatic>
     uint8 Text<IsPolichromatic>::getLevel(void) const {
         uint8 level = std::ceil(log2(size));
-        return level > 6 ? level - 6 : 0;
+        return level > shiftValue ? level - shiftValue : 0;
     }
 
     template <bool IsPolichromatic>
@@ -39,7 +39,7 @@ namespace ge {
     {
         uint8 level = getLevel();
         auto rotation = rotationMatrix<float32>(angle);
-        float32 scale = (float32) size / (64 << level);
+        float32 scale = (float32) size / (shiftBase << level);
         return {level, scale, rotation};
     }
 

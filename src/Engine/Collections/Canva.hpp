@@ -28,6 +28,7 @@ namespace ge {
     public:
         typedef std::size_t                         size_type;
         typedef Vector2<size_type>                  size_vector;
+        typedef Base                                pixel;
     private:
         typedef CanvaRowBase<Base>                  BaseTuple;
         typedef typename RowRange::iterator         RowIter;

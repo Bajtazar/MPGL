@@ -220,6 +220,11 @@ namespace ge {
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
 
+        static constexpr std::size_t                shiftBase
+            = Subfont::shiftBase;
+        static constexpr std::size_t                shiftValue
+            = log2N<std::size_t, shiftBase>();
+
         std::string                 text;
         GlyphsArray                 glyphs;
         Color                       color;

@@ -7,18 +7,6 @@
 namespace ge {
 
     #ifdef __GNUC__
-    uint8 FFT::log2N(uint8 number) noexcept {
-        return number & 0x01 ? 0 :
-            static_cast<uint8>(__builtin_ctz(number));
-    }
-    #elif defined(_MSC_VER)
-    uint8 FFT::log2N(uint8 number) noexcept {
-        DWORD trailing = 0;
-        return _BitScanForward(&trailing, number) ? trailing : 0;
-    }
-    #endif
-
-    #ifdef __GNUC__
     uint16 FFT::convolutionSize(uint8 number) noexcept {
         uint size = 2 * number + 1;
         // __builtin_clz cannot overflow - it is well defined

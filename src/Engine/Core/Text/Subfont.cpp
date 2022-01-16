@@ -53,7 +53,7 @@ namespace ge {
     }
 
     Glyph Subfont::createGlyph(Iter const& iter, uint8 level) {
-        std::size_t size = 64 << level;
+        std::size_t size = shiftBase << level;
         auto const& glyphData = iter->second;
         auto&& dimmensions = getDimmensions(glyphData, size);
         auto&& bearings = getBearings(glyphData, size);

@@ -2,6 +2,7 @@
 
 #include "../Utility/BitReversion.hpp"
 #include "../Traits/Concepts.hpp"
+#include "FastFunctions.hpp"
 
 #include <math.h>
 #include <numeric>
@@ -25,7 +26,6 @@ namespace ge {
     private:
         typedef std::vector<Complex>    ComplexVector;
 
-        static uint8 log2N(uint8 number) noexcept;
         static uint16 convolutionSize(uint8 number) noexcept;
 
         template <std::ranges::random_access_range Range>
@@ -264,7 +264,7 @@ namespace ge {
 
     template <std::ranges::random_access_range Range>
     void FFT::cooleyTukey(Range&& range, float64 sign) noexcept {
-        auto log = log2N(range.size());
+        auto log = fastLog2(range.size());
         for (uint8 i = 0; i < range.size() / 2; ++i)
             std::swap(range[reverseBits(i) >> (CHAR_BIT - log)], range[i]);
         for (uint8 i = 1, m = 2, sm = 1; i <= log; ++i, sm = m, m <<= 1) {
