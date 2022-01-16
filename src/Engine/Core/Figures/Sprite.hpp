@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Shadeable.hpp"
 #include "../Color.hpp"
 #include "../Texture.hpp"
-#include "../Drawable.hpp"
+#include "../Shaders/Shadeable.hpp"
 #include "../../Utility/Adapter.hpp"
 #include "../Transformations/Transformable2D.hpp"
 

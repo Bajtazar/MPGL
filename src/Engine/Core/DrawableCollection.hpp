@@ -4,10 +4,9 @@
 #include <concepts>
 #include <algorithm>
 
-#include "../Transformations/Transformable2D.hpp"
-#include "../../Mathematics/Systems.hpp"
-#include "../Drawable.hpp"
-#include "Views.hpp"
+#include "Transformations/Transformable2D.hpp"
+#include "../Mathematics/Systems.hpp"
+#include "Drawable.hpp"
 
 namespace ge {
 

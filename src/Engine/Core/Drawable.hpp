@@ -1,9 +1,5 @@
 #pragma once
 
-#include <memory>
-
-#include "Figures/ShaderLibrary.hpp"
-#include "../Mathematics/Vector.hpp"
 #include "Context/Context.hpp"
 
 namespace ge {

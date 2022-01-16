@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ShaderProgram.hpp"
-
 #include "../Drawable.hpp"
 
 namespace ge {

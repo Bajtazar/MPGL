@@ -4,7 +4,7 @@
 
 #include "Drawable.hpp"
 #include "WindowInterface.hpp"
-#include "Figures/ShaderLibrary.hpp"
+#include "Shaders/ShaderLibrary.hpp"
 
 namespace ge {
 

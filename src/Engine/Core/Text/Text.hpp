@@ -2,7 +2,7 @@
 
 #include "Font.hpp"
 #include "GlyphSprite.hpp"
-#include "../Figures/Shadeable.hpp"
+#include "../Shaders/Shadeable.hpp"
 
 namespace ge {
 

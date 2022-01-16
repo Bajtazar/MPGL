@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Figures/ShaderLibrary.hpp"
+#include "../Shaders/ShaderLibrary.hpp"
 
 #include <queue>
 #include <variant>
