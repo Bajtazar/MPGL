@@ -72,6 +72,22 @@ namespace ge {
         [](ProgramPtr& ptr) -> void { ptr->use(); ptr->setUniform("tex", 0); };
 
     template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::setShader(
+        ShaderProgram const& program) noexcept
+    {
+        Shadeable::setShader(program);
+        shaderExec(shaderProgram);
+    }
+
+    template <bool IsPolichromatic>
+    void Text<IsPolichromatic>::setShader(
+        ShaderProgram&& program) noexcept
+    {
+        Shadeable::setShader(std::move(program));
+        shaderExec(shaderProgram);
+    }
+
+    template <bool IsPolichromatic>
     void Text<IsPolichromatic>::copyToGPU(void) const noexcept {
         std::ranges::for_each(glyphs, [](auto const& glyph) { glyph.copyToGPU(); });
     }

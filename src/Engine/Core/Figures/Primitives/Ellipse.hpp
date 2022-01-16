@@ -8,7 +8,7 @@
 
 namespace ge {
 
-    class Ellipse : public Drawable, public Shadeable, public Transformable2D {
+    class Ellipse : public Shadeable, public Transformable2D {
     public:
         Ellipse(Vector2f const& center, Vector2f const& semiAxis,
                 Color const& color = {}, float32 angle = 0.f) noexcept;
@@ -23,11 +23,15 @@ namespace ge {
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
-        void onScreenTransformation(Vector2u const& oldDimmensions) noexcept;
+        void onScreenTransformation(
+            Vector2u const& oldDimmensions) noexcept;
         void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float32 factor) noexcept final;
-        void rotate(Vector2f const& center, float32 angle) noexcept final;
-        void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
+        void scale(Vector2f const& center,
+            float32 factor) noexcept final;
+        void rotate(Vector2f const& center,
+            float32 angle) noexcept final;
+        void rotate(Vector2f const& center,
+            Matrix2f const& rotation) noexcept final;
 
         Vector2f getCenter(void) const noexcept;
         Vector2f getSemiAxis(void) const noexcept;
@@ -48,7 +52,6 @@ namespace ge {
         uint32                                      vertexBuffer;
         uint32                                      vertexArrayObject;
         uint32                                      elementArrayBuffer;
-
 
         static Vertices ellipseVertices(Vector2f const& center,
             Vector2f const& semiAxis, float32 angle) noexcept;

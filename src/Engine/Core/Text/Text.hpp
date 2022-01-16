@@ -130,7 +130,7 @@ namespace ge {
     };
 
     template <bool IsPolichromatic = false>
-    class Text : public Drawable, public Shadeable, public Transformable2D {
+    class Text : public Shadeable, public Transformable2D {
     public:
         explicit Text(Font& font, std::size_t size,
             Vector2f const& position = {},
@@ -173,6 +173,13 @@ namespace ge {
         void scale(Vector2f const& center, float32 factor) noexcept final;
         void rotate(Vector2f const& center, float32 angle) noexcept final;
         void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
+
+        void setShader(
+            ShaderProgram const& program) noexcept final override;
+        void setShader(
+            ShaderProgram&& program) noexcept final override;
+        void setShader(std::string const& name) final override
+            { Shadeable::setShader(name, shaderExec); }
 
         using iterator = PolichromaticTextIterator<false>;
         using const_iterator = PolichromaticTextIterator<true>;

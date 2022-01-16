@@ -1,34 +1,41 @@
 #pragma once
 
-#include "../Context/Context.hpp"
 #include "ShaderProgram.hpp"
+
+#include "../Drawable.hpp"
 
 namespace ge {
 
-    class Shadeable : virtual protected GraphicalObject {
+    class Shadeable : virtual public Drawable {
     public:
         typedef std::shared_ptr<ShaderProgram>      ProgramPtr;
-        typedef typename ShadersContext::Executable Executable;
 
-        void setShader(ShaderProgram const& program) noexcept
+        virtual void setShader(ShaderProgram const& program) noexcept
             { *shaderProgram = program; }
-        void setShader(ShaderProgram&& program) noexcept
+        virtual void setShader(ShaderProgram&& program) noexcept
             { *shaderProgram = std::move(program); }
-        void setShader(std::string const& name)
+        virtual void setShader(std::string const& name)
             { context.shaders.setOrQueue(shaderProgram, name); }
-        void setShader(std::string const& name, Executable exec);
 
         ShaderProgram const& getProgram(void) const noexcept
             { return *shaderProgram; }
 
+        virtual void copyToGPU(void) const noexcept = 0;
+        virtual void draw(void) const noexcept = 0;
+
         virtual ~Shadeable(void) noexcept = default;
     protected:
+        typedef typename ShadersContext::Executable Executable;
+
         explicit Shadeable(ProgramPtr const& program);
         explicit Shadeable(ProgramPtr&& program) noexcept;
         explicit Shadeable(std::string const& programName);
         explicit Shadeable(std::string const& programName,
             Executable exec);
         explicit Shadeable(void);
+
+        void setShader(std::string const& program,
+            Executable exec);
 
         ProgramPtr                                  shaderProgram;
     };

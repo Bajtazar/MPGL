@@ -8,7 +8,7 @@
 
 namespace ge {
 
-    class Shape : public Drawable, public Shadeable,
+    class Shape : public Shadeable,
         public Transformable2D
     {
     public:

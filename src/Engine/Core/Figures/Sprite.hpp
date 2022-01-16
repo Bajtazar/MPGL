@@ -51,7 +51,7 @@ namespace ge {
     };
 
     template <bool IsColorable = false>
-    class Sprite : public Drawable, public Shadeable,
+    class Sprite : public Shadeable,
         public Transformable2D
     {
     public:
@@ -101,12 +101,19 @@ namespace ge {
         void rotate(Vector2f const& center,
             Matrix2f const& rotation) noexcept final;
 
+        void setShader(
+            ShaderProgram const& program) noexcept final override;
+        void setShader(
+            ShaderProgram&& program) noexcept final override;
+        void setShader(std::string const& name) final override
+            { Shadeable::setShader(name, shaderExec); }
+
         Vertex& operator[] (std::size_t index) noexcept
             { return vertices[index]; }
         Vertex const& operator[] (std::size_t index) const noexcept
             { return vertices[index]; }
 
-        consteval std::size_t size(void) const noexcept
+        static consteval std::size_t size(void) noexcept
             { return 4; }
 
         void replaceTexture(Texture const& texture);

@@ -24,7 +24,8 @@ namespace ge {
     Shadeable::Shadeable(std::string const& name,
         ShadersContext::Executable exec) : Shadeable{}
     {
-        setShader(name, std::move(exec));
+        context.shaders.setOrQueue(shaderProgram,
+            name, std::move(exec));
     }
 
 }

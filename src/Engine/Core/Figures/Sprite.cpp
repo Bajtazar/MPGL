@@ -249,6 +249,22 @@ namespace ge {
     }
 
     template <bool IsColorable>
+    void Sprite<IsColorable>::setShader(
+        ShaderProgram const& program) noexcept
+    {
+        Shadeable::setShader(program);
+        shaderExec(shaderProgram);
+    }
+
+    template <bool IsColorable>
+    void Sprite<IsColorable>::setShader(
+        ShaderProgram&& program) noexcept
+    {
+        Shadeable::setShader(std::move(program));
+        shaderExec(shaderProgram);
+    }
+
+    template <bool IsColorable>
     Sprite<IsColorable>::~Sprite(void) noexcept {
         glDeleteBuffers(1, &elementArrayBuffer);
         glDeleteBuffers(1, &vertexBuffer);
