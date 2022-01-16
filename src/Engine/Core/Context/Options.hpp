@@ -12,7 +12,7 @@ namespace ge {
             bool floating = false,
             bool maximised = false,
             bool resizable = true,
-            bool clean = false);
+            bool clean = false) noexcept;
 
         uint16                          openGLMajorVersion;
         uint16                          openGLMinorVersion;
