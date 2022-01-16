@@ -6,16 +6,14 @@
 
 namespace ge {
 
-    WindowInterface::Options::Options(uint16 major,uint16 minor,bool floating,bool maximised,bool resizable) noexcept
-    : openGLMajorVersion(major), openGLMinorVersion(minor), floating(floating), maximised(maximised), resizable(resizable) {}
-
-    WindowInterface::WindowInterface(Vector2u dimmensions, std::string title, Options options, GLFWmonitor* monitor, GLFWwindow* share)
-        : dimmensions{dimmensions}
+    WindowInterface::WindowInterface(Vector2u dimmensions,
+        std::string title, Options const& options)
+        : dimmensions{dimmensions}, options{options}
     {
-        context.windowDimmensions = dimmensions;
-        setWindowOptions(options);
-        window = glfwCreateWindow(dimmensions[0], dimmensions[1], title.c_str(), monitor, share);
-        glfwMakeContextCurrent(window);
+        setWindowOptions();
+        window = glfwCreateWindow(dimmensions[0], dimmensions[1],
+            title.c_str(), nullptr, nullptr);
+        setContextWindow();
         if (!window)
             throw RenderWindowInvalidArgsException{title};
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -26,25 +24,32 @@ namespace ge {
     void WindowInterface::setContextWindow(void) noexcept {
         glfwMakeContextCurrent(window);
         context.windowDimmensions = dimmensions;
+        context.windowOptions = options;
     }
 
     void WindowInterface::setDimmensions(Vector2u const& dimm) noexcept {
         context.windowDimmensions = dimmensions = dimm;
     }
 
-    void framebufferCallback(GLFWwindow* window, int32 width, int32 height) noexcept {
-        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
+    void framebufferCallback(GLFWwindow* window, int32 width,
+        int32 height) noexcept
+    {
+        WindowInterface* render = static_cast<WindowInterface*>(
+            glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         Vector2u oldDimmensions = render->dimmensions;
-        render->setDimmensions(vectorCast<uint32>(Vector2i{width, height}));
-        get<ScreenTransformationRegister>(render->events).onEvent(oldDimmensions);
+        render->setDimmensions(vectorCast<uint32>(
+            Vector2i{width, height}));
+        get<ScreenTransformationRegister>(render->events).onEvent(
+            oldDimmensions);
     }
 
     void keyCallback(GLFWwindow* window, int32 key,
         [[maybe_unused]] int32 scancode, int32 action,
         [[maybe_unused]] int32 mods) noexcept
     {
-        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
+        WindowInterface* render = static_cast<WindowInterface*>(
+            glfwGetWindowUserPointer(window));
         auto keyCode = static_cast<Key>(static_cast<int16>(key));
         if (action == GLFW_PRESS)
             get<KeyPressRegister>(render->events).onEvent(keyCode);
@@ -55,22 +60,32 @@ namespace ge {
     void mouseButtonCallback(GLFWwindow* window, int32 button,
         int32 action, [[maybe_unused]] int32 mods) noexcept
     {
-        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
-        auto buttonCode = static_cast<MouseButton>(static_cast<uint8>(button));
+        WindowInterface* render = static_cast<WindowInterface*>(
+            glfwGetWindowUserPointer(window));
+        auto buttonCode = static_cast<MouseButton>(
+            static_cast<uint8>(button));
         if (action == GLFW_PRESS)
-            get<MousePressRegister>(render->events).onEvent(buttonCode);
+            get<MousePressRegister>(render->events).onEvent(
+                buttonCode);
         else if (action == GLFW_RELEASE)
-            get<MouseReleaseRegister>(render->events).onEvent(buttonCode);
+            get<MouseReleaseRegister>(render->events).onEvent(
+                buttonCode);
     }
 
     void textCallback(GLFWwindow* window, uint32 character) noexcept {
-        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
-        get<TextWriteRegister>(render->events).onEvent(toUTF8(character));
+        WindowInterface* render = static_cast<WindowInterface*>(
+            glfwGetWindowUserPointer(window));
+        get<TextWriteRegister>(render->events).onEvent(
+            toUTF8(character));
     }
 
-    void mousePosCallback(GLFWwindow* window, float64 xpos, float64 ypos) noexcept {
-        WindowInterface* render = static_cast<WindowInterface*>(glfwGetWindowUserPointer(window));
-        get<MouseMotionRegister>(render->events).onEvent(Vector2f{xpos, ypos});
+    void mousePosCallback(GLFWwindow* window, float64 xpos,
+        float64 ypos) noexcept
+    {
+        WindowInterface* render = static_cast<WindowInterface*>(
+            glfwGetWindowUserPointer(window));
+        get<MouseMotionRegister>(render->events).onEvent(
+            Vector2f{xpos, ypos});
     }
 
     void WindowInterface::setCallbacks(void) noexcept {
@@ -82,13 +97,17 @@ namespace ge {
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
     }
 
-    void WindowInterface::setWindowOptions(const Options& options) const noexcept {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, options.openGLMajorVersion);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, options.openGLMinorVersion);
+    void WindowInterface::setWindowOptions(void) const noexcept {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,
+            options.openGLMajorVersion);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
+            options.openGLMinorVersion);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_RESIZABLE, options.resizable);
         glfwWindowHint(GLFW_MAXIMIZED, options.maximised);
         glfwWindowHint(GLFW_FLOATING, options.floating);
+        glfwWindowHint(GLFW_DECORATED, !options.clean);
+        glfwWindowHint(GLFW_SAMPLES, options.antiAliasingSamples);
     }
 
     void WindowInterface::draw(void) const noexcept {

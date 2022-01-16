@@ -14,8 +14,8 @@ namespace ge {
         typedef std::vector<DrawablePtr>            Drawables;
 
         explicit Window(Vector2u const& dimmensions,
-            std::string const& title, Options options = Options(),
-            GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
+            std::string const& title,
+            Options const& options = Options{});
 
         Window(Window const& window) noexcept = delete;
         Window(Window&& window) noexcept = delete;

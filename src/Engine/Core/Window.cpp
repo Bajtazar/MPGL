@@ -7,12 +7,12 @@ namespace ge {
     using std::operator""us;
 
     Window::Window(Vector2u const& dimmensions,
-        std::string const& title, Options options, GLFWmonitor* monitor,
-        GLFWwindow* share)
-            : WindowInterface{dimmensions, title, options, monitor, share},
+        std::string const& title, Options const& options)
+            : WindowInterface{dimmensions, title, options},
             sleepTime{0us}, lastTime{0us}
     {
         glEnable(GL_BLEND);
+        glEnable(GL_MULTISAMPLE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         context.shaders.setLibrary(shaders,
