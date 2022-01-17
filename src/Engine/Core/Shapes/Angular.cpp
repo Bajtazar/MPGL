@@ -10,7 +10,8 @@ namespace ge {
         vertices{std::move(vertices)} {}
 
     Angular::Angular(Angular&& shape) noexcept
-        : Figure{std::move(shape)}, vertices{std::move(vertices)} {}
+        : Figure{std::move(shape)}, vertices{
+            std::move(shape.vertices)} {}
 
     Angular::Angular(Angular const& shape)
         : Figure{shape}, vertices{shape.vertices} {}

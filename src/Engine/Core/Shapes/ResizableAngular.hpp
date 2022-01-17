@@ -25,17 +25,13 @@ namespace ge {
 
         virtual ~ResizableAngular(void) noexcept = default;
     protected:
-        explicit ResizableAngular(size_t size, Color const& color)
-            : Angular{size, color} {}
-        explicit ResizableAngular(Vertices vertices)
-            : Angular{vertices} {}
+        explicit ResizableAngular(size_t size, Color const& color);
+        explicit ResizableAngular(Vertices vertices);
 
         explicit ResizableAngular(
-            ResizableAngular const& shape) noexcept
-                : Angular{shape} {}
+            ResizableAngular const& shape) noexcept;
         explicit ResizableAngular(
-            ResizableAngular&& shape) noexcept
-                : Angular{std::move(shape)} {}
+            ResizableAngular&& shape) noexcept;
 
         template <class ColorTp, AllConvertible<Vector2f>... Args>
             requires std::constructible_from<Color, ColorTp>

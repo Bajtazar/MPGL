@@ -4,6 +4,20 @@
 
 namespace ge {
 
+    ResizableAngular::ResizableAngular(size_t size,
+        Color const& color) : Angular{size, color} {}
+
+    ResizableAngular::ResizableAngular(Vertices vertices)
+        : Angular{vertices} {}
+
+    ResizableAngular::ResizableAngular(
+        ResizableAngular const& shape) noexcept
+            : Angular{shape} {}
+
+    ResizableAngular::ResizableAngular(
+        ResizableAngular&& shape) noexcept
+            : Angular{std::move(shape)} {}
+
     ResizableAngular& ResizableAngular::operator= (
         ResizableAngular const& shape)
     {
