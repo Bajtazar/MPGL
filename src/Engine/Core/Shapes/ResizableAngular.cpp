@@ -4,13 +4,6 @@
 
 namespace ge {
 
-    ResizableAngular::ResizableAngular(ResizableAngular&& shape) noexcept
-        : Angular{std::move(shape.vertices),
-            std::move(shape.shaderProgram)}
-    {
-        moveAngular(std::move(shape));
-    }
-
     ResizableAngular& ResizableAngular::operator= (
         ResizableAngular const& shape)
     {

@@ -1,15 +1,13 @@
 #pragma once
 
+#include "Figure.hpp"
 #include "../Color.hpp"
-#include "../Shaders/Shadeable.hpp"
 #include "../../Utility/Adapter.hpp"
 #include "../Transformations/Transformable2D.hpp"
 
 namespace ge {
 
-    class Angular : public Shadeable,
-        public Transformable2D
-    {
+    class Angular : public Figure {
     public:
         struct Vertex {
             explicit Vertex(Vector2f const& position,
@@ -29,11 +27,6 @@ namespace ge {
         };
 
         typedef std::vector<Vertex>         Vertices;
-
-        Angular(Angular const& shape) = delete;
-        Angular(Angular&& shape) noexcept;
-
-        Angular& operator=(Angular&& shape) noexcept;
 
         void copyToGPU(void) const noexcept final;
         virtual void draw(void) const noexcept = 0;
@@ -104,29 +97,22 @@ namespace ge {
         const_reverse_iterator crend(void) const noexcept
             { return vertices.crend(); }
 
-        virtual ~Angular(void) noexcept;
+        virtual ~Angular(void) noexcept = default;
     protected:
         explicit Angular(size_t size, Color const& color);
-        explicit Angular(Vertices vertices) noexcept;
-        explicit Angular(Vertices vertices,
-            std::string const& shader);
-        explicit Angular(Vertices vertices,
-            ProgramPtr const& program);
-        explicit Angular(Vertices vertices,
-            ProgramPtr&& program) noexcept;
+        explicit Angular(Vertices vertices);
+
+        explicit Angular(Angular const& shape);
+        explicit Angular(Angular&& shape) noexcept;
+
+        Angular& operator=(Angular const& shape);
+        Angular& operator=(Angular&& shape) noexcept;
 
         virtual void bindBuffers(void) const noexcept;
         virtual void unbindBuffers(void) const noexcept;
         void copyBuffersToGPU(void) const noexcept;
-        void generateBuffers(void) noexcept;
-        void initialize(void) noexcept;
-        void moveAngular(Angular&& shape) noexcept;
-
-        Angular& operator=(Angular const& shape);
 
         Vertices                            vertices;
-        uint32                              vertexBuffer;
-        uint32                              vertexArrayObject;
     };
 
     template <std::size_t Index>

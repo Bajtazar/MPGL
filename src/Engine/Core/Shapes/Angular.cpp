@@ -4,72 +4,27 @@
 namespace ge {
 
     Angular::Angular(size_t size, Color const& color)
-        : vertices{size, Vertex{{}, color}},
-        Shadeable{"2DDefault"}
-    {
-        generateBuffers();
-    }
+        : Figure{"2DDefault"}, vertices{size, Vertex{{}, color}} {}
 
-    // move-only constructor
-    Angular::Angular(Vertices vertices) noexcept
-        : vertices{std::move(vertices)} {}
-
-    Angular::Angular(Vertices vertices,
-        std::string const& shader)
-            : vertices{std::move(vertices)},
-            Shadeable{shader}
-    {
-        generateBuffers();
-    }
-
-    Angular::Angular(Vertices vertices,
-        ProgramPtr const& program)
-            : vertices{std::move(vertices)},
-            Shadeable{program}
-    {
-        generateBuffers();
-    }
-
-    Angular::Angular(Vertices vertices,
-        ProgramPtr&& program) noexcept
-            : vertices{std::move(vertices)},
-            Shadeable{std::move(program)} {}
-
-    void Angular::moveAngular(Angular&& shape) noexcept {
-        vertexArrayObject = shape.vertexArrayObject;
-        vertexBuffer = shape.vertexBuffer;
-        shape.vertexArrayObject = shape.vertexBuffer = 0;
-    }
+    Angular::Angular(Vertices vertices) : Figure{"2DDefault"},
+        vertices{std::move(vertices)} {}
 
     Angular::Angular(Angular&& shape) noexcept
-        : Angular{std::move(shape.vertices),
-            std::move(shape.shaderProgram)}
-    {
-        moveAngular(std::move(shape));
-    }
+        : Figure{std::move(shape)}, vertices{std::move(vertices)} {}
+
+    Angular::Angular(Angular const& shape)
+        : Figure{shape}, vertices{shape.vertices} {}
 
     Angular& Angular::operator=(Angular&& shape) noexcept {
-        this->~Angular();
+        Figure::operator=(std::move(shape));
         vertices = std::move(shape.vertices);
-        shaderProgram = std::move(shape.shaderProgram);
-        moveAngular(std::move(shape));
         return *this;
     }
 
     Angular& Angular::operator=(Angular const& shape) {
+        Figure::operator=(shape);
         vertices = shape.vertices;
-        shaderProgram = shape.shaderProgram;
         return *this;
-    }
-
-    void Angular::generateBuffers(void) noexcept {
-        glGenVertexArrays(1, &vertexArrayObject);
-        glGenBuffers(1, &vertexBuffer);
-    }
-
-    void Angular::initialize(void) noexcept {
-        generateBuffers();
-        setShader("2DDefault");
     }
 
     void Angular::copyToGPU(void) const noexcept {
@@ -131,11 +86,6 @@ namespace ge {
         for (auto& vertexPosition : vertices | std::views::transform(&Angular::Vertex::position))
             vertexPosition = (static_cast<Vector2f>(vertexPosition) - center) * factor + center;
         copyToGPU();
-    }
-
-    Angular::~Angular(void) noexcept {
-        glDeleteBuffers(1, &vertexBuffer);
-        glDeleteVertexArrays(1, &vertexArrayObject);
     }
 
 }

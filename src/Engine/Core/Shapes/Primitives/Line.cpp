@@ -6,12 +6,12 @@ namespace ge {
         Vector2f const& secondVertex,
         Color const& color) : Angular{
             Vertices{Vertex{firstVertex, color},
-            Vertex{secondVertex, color}}, "2DDefault"} {}
+            Vertex{secondVertex, color}}} {}
 
     Line::Line(Color const& color) : Angular{2, color} {}
 
     Line::Line(Line const& line)
-        : Angular{line.vertices, line.shaderProgram} {}
+        : Angular{line} {}
 
     Line& Line::operator= (Line const& line) {
         Angular::operator=(line);
@@ -19,11 +19,7 @@ namespace ge {
     }
 
     Line::Line(Line&& line) noexcept
-        : Angular{std::move(line.vertices),
-            std::move(line.shaderProgram)}
-    {
-        moveAngular(std::move(line));
-    }
+        : Angular{std::move(line)} {}
 
     Line& Line::operator= (Line&& line) noexcept {
         Angular::operator=(std::move(line));

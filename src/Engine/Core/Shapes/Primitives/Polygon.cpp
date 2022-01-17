@@ -25,19 +25,16 @@ namespace ge {
     }
 
     Polygon::Polygon(Polygon const& polygon)
-        : ResizableAngular{polygon.vertices, polygon.shaderProgram} {}
+        : ResizableAngular{
+            static_cast<ResizableAngular const&>(polygon)} {}
+
+    Polygon::Polygon(Polygon&& polygon) noexcept
+        : ResizableAngular{
+            static_cast<ResizableAngular&&>(polygon)} {}
 
     Polygon& Polygon::operator= (Polygon const& polygon) {
         ResizableAngular::operator=(polygon);
         return *this;
-    }
-
-
-    Polygon::Polygon(Polygon&& polygon) noexcept
-        : ResizableAngular{std::move(polygon.vertices),
-        std::move(shaderProgram)}
-    {
-        moveAngular(std::move(polygon));
     }
 
     Polygon& Polygon::operator= (Polygon&& polygon) noexcept {

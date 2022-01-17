@@ -8,7 +8,8 @@ namespace ge {
         : ResizableAngular{vertices, color} {}
 
     Points::Points(Points const& points)
-        : ResizableAngular{points.vertices, points.shaderProgram} {}
+        : ResizableAngular{
+            static_cast<ResizableAngular const&>(points)} {}
 
     Points& Points::operator= (Points const& points) {
         ResizableAngular::operator=(points);
@@ -16,11 +17,8 @@ namespace ge {
     }
 
     Points::Points(Points&& points) noexcept
-        : ResizableAngular{std::move(points.vertices),
-            std::move(points.shaderProgram)}
-    {
-        moveAngular(std::move(points));
-    }
+        : ResizableAngular{
+            static_cast<ResizableAngular&&>(points)} {}
 
     Points& Points::operator= (Points&& points) noexcept {
         ResizableAngular::operator=(std::move(points));

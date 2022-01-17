@@ -6,8 +6,8 @@ namespace ge {
         Color const& color) : ResizableAngular{vertices, color} {}
 
     LineStrip::LineStrip(LineStrip const& lineStrip)
-        : ResizableAngular{lineStrip.vertices,
-            lineStrip.shaderProgram} {}
+        : ResizableAngular{
+            static_cast<ResizableAngular const&>(lineStrip)} {}
 
     LineStrip& LineStrip::operator=(LineStrip const& lineStrip) {
         ResizableAngular::operator=(lineStrip);
@@ -15,11 +15,8 @@ namespace ge {
     }
 
     LineStrip::LineStrip(LineStrip&& lineStrip) noexcept
-        : ResizableAngular{std::move(lineStrip.vertices),
-            std::move(lineStrip.shaderProgram)}
-    {
-        moveAngular(std::move(lineStrip));
-    }
+        : ResizableAngular{
+            static_cast<ResizableAngular&&>(lineStrip)} {}
 
     LineStrip& LineStrip::operator= (LineStrip&& lineStrip) noexcept
     {

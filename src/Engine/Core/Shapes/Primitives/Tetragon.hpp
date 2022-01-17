@@ -36,7 +36,6 @@ namespace ge {
 
         void moveTetragon(Tetragon& tetragon) noexcept;
         void generateBuffers(void) noexcept;
-        void deleteBuffers(void) noexcept;
         void bindBuffers(void) const noexcept override;
         void unbindBuffers(void) const noexcept override;
     };

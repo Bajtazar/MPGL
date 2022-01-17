@@ -19,7 +19,7 @@ namespace ge {
                 Vertex{firstVertex + 1._y * dimmensions[1], color},
                 Vertex{firstVertex + dimmensions, color},
                 Vertex{firstVertex + 1._x * dimmensions[0], color}
-            }, "2DDefault"}
+            }}
     {
         generateBuffers();
     }
@@ -34,13 +34,13 @@ namespace ge {
                 Vertex{thirdVertex, color},
                 Vertex{secondVertex - firstVertex
                     + thirdVertex, color}
-            }, "2DDefault"}
+            }}
     {
         generateBuffers();
     }
 
     Tetragon::Tetragon(Tetragon const& tetragon)
-        : Angular{tetragon.vertices, tetragon.shaderProgram}
+        : Angular{tetragon}
     {
         generateBuffers();
     }
@@ -56,15 +56,12 @@ namespace ge {
     }
 
     Tetragon::Tetragon(Tetragon&& tetragon) noexcept
-        : Angular{std::move(tetragon.vertices),
-            std::move(tetragon.shaderProgram)}
+        : Angular{std::move(tetragon)}
     {
         moveTetragon(tetragon);
-        moveAngular(std::move(tetragon));
     }
 
     Tetragon& Tetragon::operator= (Tetragon&& rectangle) noexcept {
-        deleteBuffers();
         moveTetragon(rectangle);
         Angular::operator=(std::move(rectangle));
         return *this;
@@ -89,11 +86,7 @@ namespace ge {
         glBindVertexArray(0);
     }
 
-    void Tetragon::deleteBuffers(void) noexcept {
-        glDeleteBuffers(1, &elementArrayBuffer);
-    }
-
     Tetragon::~Tetragon(void) noexcept {
-        deleteBuffers();
+        glDeleteBuffers(1, &elementArrayBuffer);
     }
 }

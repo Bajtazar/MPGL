@@ -11,12 +11,6 @@ namespace ge {
         typedef std::size_t                 size_type;
         typedef std::optional<Vector2f>     OptionalVec2f;
 
-        ResizableAngular(ResizableAngular const& shape) = delete;
-        ResizableAngular(ResizableAngular&& shape) noexcept;
-
-        ResizableAngular& operator= (
-            ResizableAngular&& shape) noexcept;
-
         virtual void draw(void) const noexcept = 0;
 
         void resize(size_type size);
@@ -31,7 +25,17 @@ namespace ge {
 
         virtual ~ResizableAngular(void) noexcept = default;
     protected:
-        using Angular::Angular;
+        explicit ResizableAngular(size_t size, Color const& color)
+            : Angular{size, color} {}
+        explicit ResizableAngular(Vertices vertices)
+            : Angular{vertices} {}
+
+        explicit ResizableAngular(
+            ResizableAngular const& shape) noexcept
+                : Angular{shape} {}
+        explicit ResizableAngular(
+            ResizableAngular&& shape) noexcept
+                : Angular{std::move(shape)} {}
 
         template <class ColorTp, AllConvertible<Vector2f>... Args>
             requires std::constructible_from<Color, ColorTp>
@@ -41,6 +45,8 @@ namespace ge {
         explicit ResizableAngular(Args&&... vertices);
 
         ResizableAngular& operator= (
+            ResizableAngular&& shape) noexcept;
+        ResizableAngular& operator= (
             ResizableAngular const& shape);
     };
 
@@ -49,11 +55,11 @@ namespace ge {
     ResizableAngular::ResizableAngular(ColorTp&& color,
         Args&&... vertices)
             : Angular{Vertices{Vertex{std::forward<Args>(vertices),
-                color}...}, "2DDefault"} {}
+                color}...}} {}
 
     template <AllConvertible<Vector2f>... Args>
     ResizableAngular::ResizableAngular(Args&&... vertices)
         : Angular{Vertices{Vertex{std::forward<Args>(vertices),
-            {}}...}, "2DDefault"} {}
+            {}}...}} {}
 
 }

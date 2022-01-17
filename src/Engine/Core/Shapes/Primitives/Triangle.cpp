@@ -9,27 +9,21 @@ namespace ge {
         Color const& color)
             : Angular{{Vertex{firstVertex, color},
                 Vertex{secondVertex, color},
-                Vertex{thirdVertex, color}}, "2DDefault"} {}
+                Vertex{thirdVertex, color}}} {}
 
     Triangle::Triangle(Color const& color)
         : Angular{3, color} {}
 
     Triangle::Triangle(Triangle const& triangle)
-        : Angular{triangle.vertices, triangle.shaderProgram} {}
+        : Angular{triangle} {}
 
-    Triangle& Triangle::operator= (
-        Triangle const& triangle)
-    {
+    Triangle& Triangle::operator= (Triangle const& triangle) {
         Angular::operator=(triangle);
         return *this;
     }
 
     Triangle::Triangle(Triangle&& triangle) noexcept
-        : Angular{std::move(triangle.vertices),
-            std::move(triangle.shaderProgram)}
-    {
-        moveAngular(std::move(triangle));
-    }
+        : Angular{std::move(triangle)} {}
 
     Triangle& Triangle::operator= (Triangle&& triangle) noexcept {
         Angular::operator=(std::move(triangle));
