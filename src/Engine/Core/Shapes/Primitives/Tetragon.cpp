@@ -7,14 +7,14 @@ namespace ge {
         glGenBuffers(1, &elementArrayBuffer);
     }
 
-    Tetragon::Tetragon(Color const& color) : Shape{4, color} {
+    Tetragon::Tetragon(Color const& color) : Angular{4, color} {
         generateBuffers();
     }
 
     Tetragon::Tetragon(Vector2f const& firstVertex,
         Vector2f const& dimmensions,
         Color const& color)
-            : Shape{Vertices{
+            : Angular{Vertices{
                 Vertex{firstVertex, color},
                 Vertex{firstVertex + 1._y * dimmensions[1], color},
                 Vertex{firstVertex + dimmensions, color},
@@ -28,7 +28,7 @@ namespace ge {
         Vector2f const& secondVertex,
         Vector2f const& thirdVertex,
         Color const& color)
-            : Shape{Vertices{
+            : Angular{Vertices{
                 Vertex{firstVertex, color},
                 Vertex{secondVertex, color},
                 Vertex{thirdVertex, color},
@@ -40,13 +40,13 @@ namespace ge {
     }
 
     Tetragon::Tetragon(Tetragon const& tetragon)
-        : Shape{tetragon.vertices, tetragon.shaderProgram}
+        : Angular{tetragon.vertices, tetragon.shaderProgram}
     {
         generateBuffers();
     }
 
     Tetragon& Tetragon::operator= (Tetragon const& tetragon) {
-        Shape::operator=(tetragon);
+        Angular::operator=(tetragon);
         return *this;
     }
 
@@ -56,29 +56,29 @@ namespace ge {
     }
 
     Tetragon::Tetragon(Tetragon&& tetragon) noexcept
-        : Shape{std::move(tetragon.vertices),
+        : Angular{std::move(tetragon.vertices),
             std::move(tetragon.shaderProgram)}
     {
         moveTetragon(tetragon);
-        moveShape(std::move(tetragon));
+        moveAngular(std::move(tetragon));
     }
 
     Tetragon& Tetragon::operator= (Tetragon&& rectangle) noexcept {
         deleteBuffers();
         moveTetragon(rectangle);
-        Shape::operator=(std::move(rectangle));
+        Angular::operator=(std::move(rectangle));
         return *this;
     }
 
     void Tetragon::bindBuffers(void) const noexcept {
-        Shape::bindBuffers();
+        Angular::bindBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
             indexes.size() * sizeof(uint32), indexes.data(), GL_STATIC_DRAW);
     }
 
     void Tetragon::unbindBuffers(void) const noexcept {
-        Shape::unbindBuffers();
+        Angular::unbindBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 

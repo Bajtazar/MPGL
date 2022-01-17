@@ -5,25 +5,25 @@
 namespace ge {
 
     Points::Points(std::size_t vertices, Color const& color)
-        : ResizableShape{vertices, color} {}
+        : ResizableAngular{vertices, color} {}
 
     Points::Points(Points const& points)
-        : ResizableShape{points.vertices, points.shaderProgram} {}
+        : ResizableAngular{points.vertices, points.shaderProgram} {}
 
     Points& Points::operator= (Points const& points) {
-        ResizableShape::operator=(points);
+        ResizableAngular::operator=(points);
         return *this;
     }
 
     Points::Points(Points&& points) noexcept
-        : ResizableShape{std::move(points.vertices),
+        : ResizableAngular{std::move(points.vertices),
             std::move(points.shaderProgram)}
     {
-        moveShape(std::move(points));
+        moveAngular(std::move(points));
     }
 
     Points& Points::operator= (Points&& points) noexcept {
-        ResizableShape::operator=(std::move(points));
+        ResizableAngular::operator=(std::move(points));
         return *this;
     }
 

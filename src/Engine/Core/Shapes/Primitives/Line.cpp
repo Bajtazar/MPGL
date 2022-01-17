@@ -4,29 +4,29 @@ namespace ge {
 
     Line::Line(Vector2f const& firstVertex,
         Vector2f const& secondVertex,
-        Color const& color) : Shape{
+        Color const& color) : Angular{
             Vertices{Vertex{firstVertex, color},
             Vertex{secondVertex, color}}, "2DDefault"} {}
 
-    Line::Line(Color const& color) : Shape{2, color} {}
+    Line::Line(Color const& color) : Angular{2, color} {}
 
     Line::Line(Line const& line)
-        : Shape{line.vertices, line.shaderProgram} {}
+        : Angular{line.vertices, line.shaderProgram} {}
 
     Line& Line::operator= (Line const& line) {
-        Shape::operator=(line);
+        Angular::operator=(line);
         return *this;
     }
 
     Line::Line(Line&& line) noexcept
-        : Shape{std::move(line.vertices),
+        : Angular{std::move(line.vertices),
             std::move(line.shaderProgram)}
     {
-        moveShape(std::move(line));
+        moveAngular(std::move(line));
     }
 
     Line& Line::operator= (Line&& line) noexcept {
-        Shape::operator=(std::move(line));
+        Angular::operator=(std::move(line));
         return *this;
     }
 

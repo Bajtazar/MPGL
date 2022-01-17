@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../ResizableShape.hpp"
+#include "../ResizableAngular.hpp"
 
 namespace ge {
 
-    class Polygon : public ResizableShape {
+    class Polygon : public ResizableAngular {
     public:
         Polygon(Vector2f const& center = {}, float32 radius = 0.f,
             std::size_t segments = 0, Color const& color = {});
@@ -30,11 +30,11 @@ namespace ge {
     template <class ColorTp, AllConvertible<Vector2f>... Args>
         requires std::constructible_from<Color, ColorTp>
     Polygon::Polygon(ColorTp&& color, Args&&... args)
-        : ResizableShape{std::forward<ColorTp>(color),
+        : ResizableAngular{std::forward<ColorTp>(color),
             std::forward<Args>(vertices)...} {}
 
     template <AllConvertible<Vector2f>... Args>
     Polygon::Polygon(Args&&... args)
-        : ResizableShape{std::forward<Args>(vertices)...} {}
+        : ResizableAngular{std::forward<Args>(vertices)...} {}
 
 }

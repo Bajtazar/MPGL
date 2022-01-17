@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Shape.hpp"
+#include "../Angular.hpp"
 
 namespace ge {
 
-    class Line : public Shape {
+    class Line : public Angular {
     public:
         Line(Vector2f const& firstVertex,
             Vector2f const& secondVertex,

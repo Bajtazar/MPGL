@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Shape.hpp"
+#include "../Angular.hpp"
 
 namespace ge {
 
-    class Triangle : public Shape {
+    class Triangle : public Angular {
     public:
         Triangle(Vector2f const& firstVertex,
                 Vector2f const& secondVertex,

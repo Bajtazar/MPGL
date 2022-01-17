@@ -3,27 +3,27 @@
 namespace ge {
 
     LineStrip::LineStrip(std::size_t vertices,
-        Color const& color) : ResizableShape{vertices, color} {}
+        Color const& color) : ResizableAngular{vertices, color} {}
 
     LineStrip::LineStrip(LineStrip const& lineStrip)
-        : ResizableShape{lineStrip.vertices,
+        : ResizableAngular{lineStrip.vertices,
             lineStrip.shaderProgram} {}
 
     LineStrip& LineStrip::operator=(LineStrip const& lineStrip) {
-        ResizableShape::operator=(lineStrip);
+        ResizableAngular::operator=(lineStrip);
         return *this;
     }
 
     LineStrip::LineStrip(LineStrip&& lineStrip) noexcept
-        : ResizableShape{std::move(lineStrip.vertices),
+        : ResizableAngular{std::move(lineStrip.vertices),
             std::move(lineStrip.shaderProgram)}
     {
-        moveShape(std::move(lineStrip));
+        moveAngular(std::move(lineStrip));
     }
 
     LineStrip& LineStrip::operator= (LineStrip&& lineStrip) noexcept
     {
-        ResizableShape::operator=(std::move(lineStrip));
+        ResizableAngular::operator=(std::move(lineStrip));
         return *this;
     }
 

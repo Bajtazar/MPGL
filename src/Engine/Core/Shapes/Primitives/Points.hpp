@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../ResizableShape.hpp"
+#include "../ResizableAngular.hpp"
 
 #include <optional>
 
 namespace ge {
 
-    class Points : public ResizableShape {
+    class Points : public ResizableAngular {
     public:
         Points(std::size_t vertices = 0, Color const& color = {});
 
@@ -31,11 +31,11 @@ namespace ge {
     template <class ColorTp, AllConvertible<Vector2f>... Args>
         requires std::constructible_from<Color, ColorTp>
     Points::Points(ColorTp&& color, Args&&... args)
-        : ResizableShape{std::forward<ColorTp>(color),
+        : ResizableAngular{std::forward<ColorTp>(color),
             std::forward<Args>(vertices)...} {}
 
     template <AllConvertible<Vector2f>... Args>
     Points::Points(Args&&... args)
-        : ResizableShape{std::forward<Args>(vertices)...} {}
+        : ResizableAngular{std::forward<Args>(vertices)...} {}
 
 }

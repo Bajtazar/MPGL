@@ -7,7 +7,7 @@
 
 namespace ge {
 
-    class Shape : public Shadeable,
+    class Angular : public Shadeable,
         public Transformable2D
     {
     public:
@@ -30,10 +30,10 @@ namespace ge {
 
         typedef std::vector<Vertex>         Vertices;
 
-        Shape(Shape const& shape) = delete;
-        Shape(Shape&& shape) noexcept;
+        Angular(Angular const& shape) = delete;
+        Angular(Angular&& shape) noexcept;
 
-        Shape& operator=(Shape&& shape) noexcept;
+        Angular& operator=(Angular&& shape) noexcept;
 
         void copyToGPU(void) const noexcept final;
         virtual void draw(void) const noexcept = 0;
@@ -104,15 +104,15 @@ namespace ge {
         const_reverse_iterator crend(void) const noexcept
             { return vertices.crend(); }
 
-        virtual ~Shape(void) noexcept;
+        virtual ~Angular(void) noexcept;
     protected:
-        explicit Shape(size_t size, Color const& color);
-        explicit Shape(Vertices vertices) noexcept;
-        explicit Shape(Vertices vertices,
+        explicit Angular(size_t size, Color const& color);
+        explicit Angular(Vertices vertices) noexcept;
+        explicit Angular(Vertices vertices,
             std::string const& shader);
-        explicit Shape(Vertices vertices,
+        explicit Angular(Vertices vertices,
             ProgramPtr const& program);
-        explicit Shape(Vertices vertices,
+        explicit Angular(Vertices vertices,
             ProgramPtr&& program) noexcept;
 
         virtual void bindBuffers(void) const noexcept;
@@ -120,9 +120,9 @@ namespace ge {
         void copyBuffersToGPU(void) const noexcept;
         void generateBuffers(void) noexcept;
         void initialize(void) noexcept;
-        void moveShape(Shape&& shape) noexcept;
+        void moveAngular(Angular&& shape) noexcept;
 
-        Shape& operator=(Shape const& shape);
+        Angular& operator=(Angular const& shape);
 
         Vertices                            vertices;
         uint32                              vertexBuffer;
@@ -131,7 +131,7 @@ namespace ge {
 
     template <std::size_t Index>
         requires (Index < 2)
-    constexpr auto&& Shape::Vertex::get(void) & noexcept {
+    constexpr auto&& Angular::Vertex::get(void) & noexcept {
         if constexpr(Index)
             return color;
         else
@@ -140,7 +140,7 @@ namespace ge {
 
     template <std::size_t Index>
         requires (Index < 2)
-    constexpr auto&& Shape::Vertex::get(void) const& noexcept {
+    constexpr auto&& Angular::Vertex::get(void) const& noexcept {
         if constexpr(Index)
             return color;
         else

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../Shape.hpp"
+#include "../Angular.hpp"
 
 #include <array>
 
 namespace ge {
 
-    class Tetragon : public Shape {
+    class Tetragon : public Angular {
     public:
         Tetragon(Color const& color = {});
         // parallelogram

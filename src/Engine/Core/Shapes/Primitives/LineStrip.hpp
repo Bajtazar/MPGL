@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../ResizableShape.hpp"
+#include "../ResizableAngular.hpp"
 
 #include <optional>
 
 namespace ge {
 
-    class LineStrip : public ResizableShape {
+    class LineStrip : public ResizableAngular {
     public:
         template <class ColorTp, AllConvertible<Vector2f>... Args>
             requires std::constructible_from<Color, ColorTp>
@@ -32,7 +32,7 @@ namespace ge {
     template <class ColorTp, AllConvertible<Vector2f>... Args>
         requires std::constructible_from<Color, ColorTp>
     LineStrip::LineStrip(ColorTp&& color, Args&&... vertices)
-        : ResizableShape{std::forward<Color>(color),
+        : ResizableAngular{std::forward<Color>(color),
             std::forward<Args>(vertices)...}
     {
         this->vertices.push_back(this->vertices.front());
@@ -40,7 +40,7 @@ namespace ge {
 
     template <AllConvertible<Vector2f>... Args>
     LineStrip::LineStrip(Args&&... vertices)
-        : ResizableShape{std::forward<Args>(vertices)...}
+        : ResizableAngular{std::forward<Args>(vertices)...}
     {
         this->vertices.push_back(this->vertices.front());
     }

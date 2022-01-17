@@ -1,21 +1,21 @@
 #pragma once
 
-#include "Shape.hpp"
+#include "Angular.hpp"
 
 #include <optional>
 
 namespace ge {
 
-    class ResizableShape : public Shape {
+    class ResizableAngular : public Angular {
     public:
         typedef std::size_t                 size_type;
         typedef std::optional<Vector2f>     OptionalVec2f;
 
-        ResizableShape(ResizableShape const& shape) = delete;
-        ResizableShape(ResizableShape&& shape) noexcept;
+        ResizableAngular(ResizableAngular const& shape) = delete;
+        ResizableAngular(ResizableAngular&& shape) noexcept;
 
-        ResizableShape& operator= (
-            ResizableShape&& shape) noexcept;
+        ResizableAngular& operator= (
+            ResizableAngular&& shape) noexcept;
 
         virtual void draw(void) const noexcept = 0;
 
@@ -29,31 +29,31 @@ namespace ge {
 
         OptionalVec2f getCenter(void) const noexcept;
 
-        virtual ~ResizableShape(void) noexcept = default;
+        virtual ~ResizableAngular(void) noexcept = default;
     protected:
-        using Shape::Shape;
+        using Angular::Angular;
 
         template <class ColorTp, AllConvertible<Vector2f>... Args>
             requires std::constructible_from<Color, ColorTp>
-        explicit ResizableShape(ColorTp&& color,
+        explicit ResizableAngular(ColorTp&& color,
             Args&&... vertices);
         template <AllConvertible<Vector2f>... Args>
-        explicit ResizableShape(Args&&... vertices);
+        explicit ResizableAngular(Args&&... vertices);
 
-        ResizableShape& operator= (
-            ResizableShape const& shape);
+        ResizableAngular& operator= (
+            ResizableAngular const& shape);
     };
 
     template <class ColorTp, AllConvertible<Vector2f>... Args>
         requires std::constructible_from<Color, ColorTp>
-    ResizableShape::ResizableShape(ColorTp&& color,
+    ResizableAngular::ResizableAngular(ColorTp&& color,
         Args&&... vertices)
-            : Shape{Vertices{Vertex{std::forward<Args>(vertices),
+            : Angular{Vertices{Vertex{std::forward<Args>(vertices),
                 color}...}, "2DDefault"} {}
 
     template <AllConvertible<Vector2f>... Args>
-    ResizableShape::ResizableShape(Args&&... vertices)
-        : Shape{Vertices{Vertex{std::forward<Args>(vertices),
+    ResizableAngular::ResizableAngular(Args&&... vertices)
+        : Angular{Vertices{Vertex{std::forward<Args>(vertices),
             {}}...}, "2DDefault"} {}
 
 }

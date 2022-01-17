@@ -11,7 +11,7 @@ namespace ge {
     Polygon::Polygon(Vector2f const& center,
         float32 radius, std::size_t segments,
         Color const& color)
-            : ResizableShape{segments + 1, color}
+            : ResizableAngular{segments + 1, color}
     {
         float32 increment = 2.f *
             std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;
@@ -25,23 +25,23 @@ namespace ge {
     }
 
     Polygon::Polygon(Polygon const& polygon)
-        : ResizableShape{polygon.vertices, polygon.shaderProgram} {}
+        : ResizableAngular{polygon.vertices, polygon.shaderProgram} {}
 
     Polygon& Polygon::operator= (Polygon const& polygon) {
-        ResizableShape::operator=(polygon);
+        ResizableAngular::operator=(polygon);
         return *this;
     }
 
 
     Polygon::Polygon(Polygon&& polygon) noexcept
-        : ResizableShape{std::move(polygon.vertices),
+        : ResizableAngular{std::move(polygon.vertices),
         std::move(shaderProgram)}
     {
-        moveShape(std::move(polygon));
+        moveAngular(std::move(polygon));
     }
 
     Polygon& Polygon::operator= (Polygon&& polygon) noexcept {
-        ResizableShape::operator=(std::move(polygon));
+        ResizableAngular::operator=(std::move(polygon));
         return *this;
     }
 

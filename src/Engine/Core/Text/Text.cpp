@@ -1,6 +1,6 @@
 #include "Text.hpp"
 #include "UTF-8.hpp"
-#include "../Figures/Views.hpp"
+#include "../Shapes/Views.hpp"
 
 namespace ge {
 
