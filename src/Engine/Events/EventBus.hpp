@@ -5,6 +5,7 @@
 #include "../Core/Registers/TickRegister.hpp"
 #include "ScreenTransformationEvent.hpp"
 #include "MouseReleaseEvent.hpp"
+#include "WindowCloseEvent.hpp"
 #include "MouseMotionEvent.hpp"
 #include "MousePressEvent.hpp"
 #include "KeyReleaseEvent.hpp"
@@ -19,29 +20,32 @@ namespace ge {
         &ScreenTransformationEvent::onScreenTransformation>     ScreenTransformationRegister;
 
     typedef UniversalRegister<MouseReleaseEvent, void(MouseReleaseEvent::*)(MouseButton const&),
-        &MouseReleaseEvent::onMouseReleaseEvent>                MouseReleaseRegister;
+        &MouseReleaseEvent::onMouseRelease>                 MouseReleaseRegister;
 
     typedef UniversalRegister<MouseMotionEvent, void(MouseMotionEvent::*)(Vector2f const&),
-        &MouseMotionEvent::onMouseMotionEvent>                  MouseMotionRegister;
+        &MouseMotionEvent::onMouseMotion>                   MouseMotionRegister;
+
+    typedef UniversalRegister<WindowCloseEvent, void(WindowCloseEvent::*)(void),
+        &WindowCloseEvent::onWindowClose>                   WindowCloseRegister;
 
     typedef UniversalRegister<MousePressEvent, void(MousePressEvent::*)(MouseButton const&),
-        &MousePressEvent::onMousePressEvent>                    MousePressRegister;
+        &MousePressEvent::onMousePress>                     MousePressRegister;
 
     typedef UniversalRegister<KeyReleaseEvent, void(KeyReleaseEvent::*)(Key const&),
-        &KeyReleaseEvent::onKeyReleaseEvent>                    KeyReleaseRegister;
+        &KeyReleaseEvent::onKeyRelease>                     KeyReleaseRegister;
 
     typedef UniversalRegister<TextWriteEvent, void(TextWriteEvent::*)(std::string const&),
-        &TextWriteEvent::onTextWirteEvent>                      TextWriteRegister;
+        &TextWriteEvent::onTextWrite>                       TextWriteRegister;
 
     typedef UniversalRegister<KeyPressEvent, void(KeyPressEvent::*)(Key const&),
-        &KeyPressEvent::onKeyPressEvent>                        KeyPressRegister;
+        &KeyPressEvent::onKeyPress>                         KeyPressRegister;
 
     typedef UniversalRegister<ScrollEvent, void(ScrollEvent::*)(Vector2f const&),
-        &ScrollEvent::onScrollEvent>                            ScrollRegistry;
+        &ScrollEvent::onScroll>                             ScrollRegistry;
 
     typedef RegistersHolder<TickRegister, ScreenTransformationRegister,
         MouseReleaseRegister, MouseMotionRegister, MousePressRegister,
-        KeyReleaseRegister, TextWriteRegister, KeyPressRegister,
-        ScrollRegistry>                                         EventBus;
+        WindowCloseRegister, KeyReleaseRegister, TextWriteRegister,
+        KeyPressRegister, ScrollRegistry>                   EventBus;
 
 }

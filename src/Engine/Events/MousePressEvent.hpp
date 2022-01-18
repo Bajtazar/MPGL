@@ -8,7 +8,7 @@ namespace ge {
     struct MousePressEvent : public EventBase {
         explicit MousePressEvent(void) noexcept = default;
 
-        virtual void onMousePressEvent(
+        virtual void onMousePress(
             MouseButton const& button) noexcept = 0;
 
         virtual ~MousePressEvent(void) noexcept = default;

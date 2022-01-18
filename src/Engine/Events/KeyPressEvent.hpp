@@ -8,7 +8,7 @@ namespace ge {
     struct KeyPressEvent : public EventBase {
         explicit KeyPressEvent(void) noexcept = default;
 
-        virtual void onKeyPressEvent(
+        virtual void onKeyPress(
             Key const& key) noexcept = 0;
 
         virtual ~KeyPressEvent(void) noexcept = default;

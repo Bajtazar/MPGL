@@ -8,7 +8,7 @@ namespace ge {
     struct ScrollEvent : public EventBase {
         explicit ScrollEvent(void) noexcept = default;
 
-        virtual void onScrollEvent(
+        virtual void onScroll(
             Vector2f const& scroll) noexcept = 0;
 
         virtual ~ScrollEvent(void) noexcept = default;

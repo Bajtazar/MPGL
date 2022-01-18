@@ -79,6 +79,12 @@ namespace ge {
             toUTF8(character));
     }
 
+    void windowCloseCallback(GLFWwindow* window) noexcept {
+        WindowInterface* render = static_cast<WindowInterface*>(
+            glfwGetWindowUserPointer(window));
+        get<WindowCloseRegister>(render->events).onEvent();
+    }
+
     void mousePosCallback(GLFWwindow* window, float64 xpos,
         float64 ypos) noexcept
     {
@@ -95,6 +101,7 @@ namespace ge {
         glfwSetCharCallback(window, textCallback);
         glfwSetCursorPosCallback(window, mousePosCallback);
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        glfwSetWindowCloseCallback(window, windowCloseCallback);
     }
 
     void WindowInterface::setWindowOptions(void) const noexcept {

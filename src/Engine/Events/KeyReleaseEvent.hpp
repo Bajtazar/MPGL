@@ -8,7 +8,7 @@ namespace ge {
     struct KeyReleaseEvent : public EventBase {
         explicit KeyReleaseEvent(void) noexcept = default;
 
-        virtual void onKeyReleaseEvent(
+        virtual void onKeyRelease(
             Key const& key) noexcept = 0;
 
         virtual ~KeyReleaseEvent(void) noexcept = default;

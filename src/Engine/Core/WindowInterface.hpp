@@ -43,6 +43,9 @@ namespace ge {
             GLFWwindow* window, int32 button,
             int32 action, int32 mods) noexcept;
 
+        friend void windowCloseCallback(
+            GLFWwindow* window) noexcept;
+
         virtual ~WindowInterface(void) noexcept;
     protected:
         explicit WindowInterface(Vector2u dimmensions,
