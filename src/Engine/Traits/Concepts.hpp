@@ -137,28 +137,43 @@ namespace ge {
     concept SameSignatures = std::same_as<Signature, decltype(Method)>;
 
     template <class... Classes>
+    concept NothrowDefaultConstructible = (
+        std::is_nothrow_default_constructible_v<Classes> && ...
+    );
+
+    template <class... Classes>
     concept NothrowCopyConstructible = (
-        std::is_nothrow_copy_constructible_v<Classes> &&
-        ...
+        std::is_nothrow_copy_constructible_v<Classes> && ...
     );
 
     template <class... Classes>
     concept NothrowMoveConstructible = (
-        std::is_nothrow_move_constructible_v<Classes> &&
-        ...
+        std::is_nothrow_move_constructible_v<Classes> && ...
     );
 
     template <class... Classes>
     concept NothrowCopyAssignable = (
-        std::is_nothrow_copy_assignable_v<Classes> &&
-        ...
+        std::is_nothrow_copy_assignable_v<Classes> && ...
     );
 
     template <class... Classes>
     concept NothrowMoveAssignable = (
-        std::is_nothrow_move_assignable_v<Classes> &&
-        ...
+        std::is_nothrow_move_assignable_v<Classes> && ...
     );
+
+    template <class... Classes>
+    concept NothrowDestructible = (
+        std::is_nothrow_destructible_v<Classes> && ...
+    );
+
+    template <class... Classes>
+    concept DefaultConstructible = (
+        std::is_default_constructible_v<Classes> && ...
+    );
+
+    template <class Classes, typename... Args>
+    concept NothrowConstructible =
+        std::is_nothrow_constructible_v<Classes, Args...>;
 
     template <class Range, typename Tp, std::size_t Size>
     concept SizedRange = std::ranges::random_access_range<Range> &&

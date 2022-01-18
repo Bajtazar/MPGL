@@ -5,7 +5,7 @@
 #include "../IO/FileIO.hpp"
 #include "../Utility/Security.hpp"
 #include "../Utility/Execution.hpp"
-#include "../Collections/ThreadsafeQueue.hpp"
+#include "../Concurrency/QueueMonitor.hpp"
 #include "../Exceptions/ImageLoadingException.hpp"
 
 #include <stdexcept>
@@ -51,9 +51,9 @@ namespace ge {
     private:
         typedef std::vector<std::pair<
             std::string const, Texture>>            TextureVector;
-        typedef ThreadsafeQueue<std::pair<
+        typedef QueueMonitor<std::pair<
             std::string, Image>>                    LoaderQueue;
-        typedef ThreadsafeQueue<std::string>        ImageQueue;
+        typedef QueueMonitor<std::string>           ImageQueue;
         typedef std::vector<std::jthread>           Threadpool;
         typedef std::size_t                         size_type;
         typedef std::atomic<size_type>              AtomicCounter;
@@ -120,7 +120,8 @@ namespace ge {
     {
         auto files = FileIO::getRecursiveDirFiles(directory);
         const_cast<size_type&>(allTextures) = files.size();
-        imagePaths = ImageQueue{files};
+        imagePaths = ImageQueue{ImageQueue::Underlying{
+            files.begin(), files.end()}};
         startParallelLoading(threadpoolSize<Ep>());
     }
 
