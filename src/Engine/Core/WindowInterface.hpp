@@ -56,6 +56,8 @@ namespace ge {
         void clear(Color const& color) const noexcept;
         void draw(void) const noexcept;
         void setContextWindow(void) noexcept;
+        void closeWindow(void) noexcept;
+        void openWindow(void) noexcept;
 
         Vector2u const& getWindowDimmensions(void) const noexcept
             { return dimmensions; }

@@ -60,6 +60,7 @@ namespace ge {
     }
 
     int32 Window::windowLoop(const Color& background) noexcept {
+        openWindow();
         copyDrawablesToGPU();
         while (!shouldWindowClose()) {
             clear(background);

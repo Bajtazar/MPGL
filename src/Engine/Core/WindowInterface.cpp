@@ -125,4 +125,12 @@ namespace ge {
         glfwDestroyWindow(window);
     }
 
+    void WindowInterface::openWindow(void) noexcept {
+        glfwSetWindowShouldClose(window, false);
+    }
+
+    void WindowInterface::closeWindow(void) noexcept {
+        glfwSetWindowShouldClose(window, true);
+    }
+
 }

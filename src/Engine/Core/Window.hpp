@@ -25,6 +25,8 @@ namespace ge {
 
         using WindowInterface::getWindowDimmensions;
         using WindowInterface::getWindowTitle;
+        using WindowInterface::openWindow;
+        using WindowInterface::closeWindow;
 
         void setContextWindow(void) noexcept;
 
