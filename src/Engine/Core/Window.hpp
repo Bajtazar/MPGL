@@ -30,13 +30,20 @@ namespace ge {
 
         void setContextWindow(void) noexcept;
 
+        template <std::derived_from<EventBase> Tp>
+        void pushEvent(std::shared_ptr<Tp> const& event);
+
+        template <std::derived_from<EventBase> Tp, typename... Args>
+            requires std::constructible_from<Tp, Args...>
+        void emplaceEvent(Args&&... args);
+
         template <std::derived_from<Drawable> T>
         void pushDrawable(std::shared_ptr<T> const& drawable) noexcept;
         template <std::derived_from<Drawable> T>
         void pushDrawable(std::shared_ptr<T>&& drawable) noexcept;
 
         template <std::derived_from<Drawable> T, typename... Args>
-            requires std::is_constructible_v<T, Args...>
+            requires std::constructible_from<T, Args...>
         void emplaceDrawable(Args&&... args) noexcept;
 
         bool setFPSLimit(std::size_t fpsLimit) noexcept;
@@ -99,7 +106,7 @@ namespace ge {
     };
 
     template <std::derived_from<Drawable> T, typename... Args>
-        requires std::is_constructible_v<T, Args...>
+        requires std::constructible_from<T, Args...>
     void Window::emplaceDrawable(Args&&... args) noexcept {
         auto ptr = std::make_shared<T>(std::forward<Args>(args)...);
         events.addIfDerived(ptr);
@@ -116,6 +123,18 @@ namespace ge {
     void Window::pushDrawable(std::shared_ptr<T>&& drawable) noexcept {
         events.addIfDerived(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable>(std::move(drawable)));
+    }
+
+    template <std::derived_from<EventBase> Tp>
+    void Window::pushEvent(std::shared_ptr<Tp> const& event) {
+        events.addIfDerived(event);
+    }
+
+    template <std::derived_from<EventBase> Tp, typename... Args>
+        requires std::constructible_from<Tp, Args...>
+    void Window::emplaceEvent(Args&&... args) {
+        events.addIfDerived(std::make_shared<Tp>(
+            std::forward<Args>(args)...));
     }
 
 }
