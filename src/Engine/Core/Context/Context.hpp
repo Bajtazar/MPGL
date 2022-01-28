@@ -15,7 +15,7 @@ namespace ge {
         explicit Context(void) noexcept;
 
         ShadersContext                  shaders;
-        Vector2u                        windowDimmensions;
+        Vector2u                        windowDimensions;
         Options                         windowOptions;
 
         friend void errorCallback(int32 error,

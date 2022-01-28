@@ -55,11 +55,11 @@ namespace ge {
         glBindVertexArray(0);
     }
 
-    void Angular::onScreenTransformation(Vector2u const& oldDimmensions) noexcept {
+    void Angular::onScreenTransformation(Vector2u const& oldDimensions) noexcept {
         for (auto& vertexPosition : vertices | std::views::transform(&Angular::Vertex::position)) {
             Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * vectorCast<float32>(oldDimmensions)
-                / vectorCast<float32>(context.windowDimmensions) - 1.f;
+            position = (position + 1.f) * vectorCast<float32>(oldDimensions)
+                / vectorCast<float32>(context.windowDimensions) - 1.f;
         }
         copyToGPU();
     }

@@ -28,7 +28,7 @@ namespace ge {
         Vector2u const& dimensions,
         Options const& options) noexcept
     {
-        context.windowDimmensions = dimensions;
+        context.windowDimensions = dimensions;
         context.windowOptions = options;
         communicationThread = true;
     }

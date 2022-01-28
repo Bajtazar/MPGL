@@ -130,11 +130,11 @@ namespace ge {
         unbindBuffers();
     }
 
-    void Ellipse::onScreenTransformation(Vector2u const& oldDimmensions) noexcept {
+    void Ellipse::onScreenTransformation(Vector2u const& oldDimensions) noexcept {
         for (auto& vertexPosition : vertices) {
             Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * static_cast<Vector2f>(oldDimmensions)
-                / static_cast<Vector2f>(context.windowDimmensions) - 1.f;
+            position = (position + 1.f) * static_cast<Vector2f>(oldDimensions)
+                / static_cast<Vector2f>(context.windowDimensions) - 1.f;
         }
         copyToGPU();
         recalculateUniforms();

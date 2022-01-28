@@ -18,7 +18,7 @@ namespace ge::tests {
         void draw(void) const noexcept final;
 
         void onScreenTransformation(
-            Vector2u const& oldDimmensions) noexcept final;
+            Vector2u const& oldDimensions) noexcept final;
     private:
         typedef DrawableCollection<Text<>>      TextVector;
         typedef DrawableCollection<TextVector>  Columns;

@@ -93,7 +93,7 @@ namespace ge {
             Vector2f const& thirdVertex, Color const& color = {});
         //rectangle parallel to x and y axis
         GlyphSprite(Texture const& texture,
-            Vector2f const& firstVertex, Vector2f const& dimmensions,
+            Vector2f const& firstVertex, Vector2f const& dimensions,
             Color const& color = {});
 
         GlyphSprite(GlyphSprite const& sprite) noexcept;
@@ -106,7 +106,7 @@ namespace ge {
         void draw(void) const noexcept;
 
         void onScreenTransformation(
-            Vector2u const& oldDimmensions) noexcept final;
+            Vector2u const& oldDimensions) noexcept final;
         void translate(
             Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center,

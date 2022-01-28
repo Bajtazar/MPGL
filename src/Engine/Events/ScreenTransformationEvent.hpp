@@ -9,7 +9,7 @@ namespace ge {
         explicit ScreenTransformationEvent(void) noexcept = default;
 
         virtual void onScreenTransformation(
-            Vector2u const& oldDimmensions) noexcept = 0;
+            Vector2u const& oldDimensions) noexcept = 0;
 
         virtual ~ScreenTransformationEvent(void) = default;
     };

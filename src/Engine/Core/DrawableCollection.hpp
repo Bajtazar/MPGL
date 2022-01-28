@@ -54,7 +54,7 @@ namespace ge {
         void draw(size_type begin, size_type end) const noexcept
             requires std::ranges::random_access_range<Sequence>;
 
-        void onScreenTransformation(Vector2u const& oldDimmensions
+        void onScreenTransformation(Vector2u const& oldDimensions
             ) noexcept final;
 
         ~DrawableCollectionBase(void) noexcept = default;
@@ -119,10 +119,10 @@ namespace ge {
 
     template <DrawableType Base, std::ranges::input_range Sequence>
     void DrawableCollectionBase<Base, Sequence>::onScreenTransformation(
-        Vector2u const& oldDimmensions) noexcept
+        Vector2u const& oldDimensions) noexcept
     {
-        std::ranges::for_each(*this, [&oldDimmensions](auto& drawable)
-            { drawable.onScreenTransformation(oldDimmensions); });
+        std::ranges::for_each(*this, [&oldDimensions](auto& drawable)
+            { drawable.onScreenTransformation(oldDimensions); });
     }
 
     template <TransformableDrawable Base, std::ranges::input_range Sequence>

@@ -32,32 +32,32 @@ namespace ge {
 
     template <Adaptable Tp>
     Adapter<Tp>::Adapter(Tp const& range) noexcept
-        : range{range / static_cast<Tp>(context.windowDimmensions)
+        : range{range / static_cast<Tp>(context.windowDimensions)
             * value_type{2} - value_type{1}} {}
 
     template <Adaptable Tp>
     Adapter<Tp>::Adapter(Tp&& range) noexcept
-        : range{std::move(range) / static_cast<Tp>(context.windowDimmensions)
+        : range{std::move(range) / static_cast<Tp>(context.windowDimensions)
             * value_type{2} - value_type{1}} {}
 
     template <Adaptable Tp>
     void Adapter<Tp>::operator= (Tp const& factor) noexcept {
         range = factor
-            / static_cast<Tp>(context.windowDimmensions)
+            / static_cast<Tp>(context.windowDimensions)
                 * value_type{2} - value_type{1};
     }
 
     template <Adaptable Tp>
     void Adapter<Tp>::operator= (Tp&& factor) noexcept {
         range = std::move(factor)
-            / static_cast<Tp>(context.windowDimmensions)
+            / static_cast<Tp>(context.windowDimensions)
                 * value_type{2} - value_type{1};
     }
 
     template <Adaptable Tp>
     Adapter<Tp>::operator Tp() const noexcept {
         return (range + value_type{1})
-            * static_cast<Tp>(context.windowDimmensions) / value_type{2};
+            * static_cast<Tp>(context.windowDimensions) / value_type{2};
     }
 
 }

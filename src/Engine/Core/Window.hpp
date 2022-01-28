@@ -13,7 +13,7 @@ namespace ge {
         typedef std::shared_ptr<Drawable>           DrawablePtr;
         typedef std::vector<DrawablePtr>            Drawables;
 
-        explicit Window(Vector2u const& dimmensions,
+        explicit Window(Vector2u const& dimensions,
             std::string const& title,
             Options const& options = Options{});
 
@@ -23,7 +23,7 @@ namespace ge {
         Window& operator= (const Window& window) noexcept = delete;
         Window& operator= (Window&& window) noexcept = delete;
 
-        using WindowInterface::getWindowDimmensions;
+        using WindowInterface::getWindowDimensions;
         using WindowInterface::getWindowTitle;
         using WindowInterface::openWindow;
         using WindowInterface::closeWindow;

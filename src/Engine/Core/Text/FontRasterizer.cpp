@@ -82,15 +82,15 @@ namespace ge {
 
     Bitmap FontRasterizer::prepareCanva(void) const noexcept
     {
-        auto dimmensions = remapPoint(glyph.glyph.getMaxDimmensions(),
+        auto dimensions = remapPoint(glyph.glyph.getMaxDimensions(),
             size);
-        return Bitmap{vectorCast<size_type>(ceil(dimmensions + 1.f))};
+        return Bitmap{vectorCast<size_type>(ceil(dimensions + 1.f))};
     }
 
     Vector2f FontRasterizer::remapPoint(Vector2si const& position
         , size_type size) const noexcept
     {
-        auto translated = position - glyph.glyph.getMinDimmensions();
+        auto translated = position - glyph.glyph.getMinDimensions();
         return float32(size) * vectorCast<float32>(translated)
             / float32(mainData.unitsPerEm);
     }

@@ -84,8 +84,8 @@ namespace ge {
         bool exist(void) const noexcept { return !std::holds_alternative<std::monostate>(glyph); }
         Glyph const& getGlyph(void) const { return std::get<Glyph>(glyph); }
 
-        Vector2si const& getMinDimmensions(void) const noexcept { return min; }
-        Vector2si const& getMaxDimmensions(void) const noexcept { return max; }
+        Vector2si const& getMinDimensions(void) const noexcept { return min; }
+        Vector2si const& getMaxDimensions(void) const noexcept { return max; }
 
     private:
         typedef std::variant<std::monostate, Glyph> GlyphVariant;

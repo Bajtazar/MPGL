@@ -57,8 +57,8 @@ namespace ge {
     {
         if (auto glyph = subfont(index, level)) {
             if (auto texture = glyph->get().texture) {
-                Vector2f xVersor = rotation * Vector2f{float32(glyph->get().dimmensions[0]), 0.f} * scale;
-                Vector2f yVersor = rotation * Vector2f{0.f, float32(glyph->get().dimmensions[1])} * scale;
+                Vector2f xVersor = rotation * Vector2f{float32(glyph->get().dimensions[0]), 0.f} * scale;
+                Vector2f yVersor = rotation * Vector2f{0.f, float32(glyph->get().dimensions[1])} * scale;
                 Vector2f bearing = rotation * vectorCast<float32>(glyph->get().bearing) * scale;
                 glyphs.emplace_back(*texture, position + bearing,
                     position + bearing + yVersor, position + bearing + xVersor, color);
@@ -114,7 +114,7 @@ namespace ge {
     }
 
     template <bool IsPolichromatic>
-    Vector2f Text<IsPolichromatic>::getDimmensions(void) const noexcept {
+    Vector2f Text<IsPolichromatic>::getDimensions(void) const noexcept {
         if (glyphs.size())
             return {(static_cast<Vector2f>(glyphs.size() > 1 ? glyphs.back()[2].position
                 : glyphs.front()[2].position) - static_cast<Vector2f>(
@@ -220,9 +220,9 @@ namespace ge {
     }
 
     template <bool IsPolichromatic>
-    void Text<IsPolichromatic>::onScreenTransformation(Vector2u const& oldDimmensions) noexcept {
-        std::ranges::for_each(glyphs, [&oldDimmensions](auto& glyph)
-            { glyph.onScreenTransformation(oldDimmensions); });
+    void Text<IsPolichromatic>::onScreenTransformation(Vector2u const& oldDimensions) noexcept {
+        std::ranges::for_each(glyphs, [&oldDimensions](auto& glyph)
+            { glyph.onScreenTransformation(oldDimensions); });
     }
 
 }

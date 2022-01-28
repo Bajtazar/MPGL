@@ -6,12 +6,12 @@
 
 namespace ge {
 
-    WindowInterface::WindowInterface(Vector2u dimmensions,
+    WindowInterface::WindowInterface(Vector2u dimensions,
         std::string title, Options const& options)
-        : dimmensions{dimmensions}, options{options}
+        : dimensions{dimensions}, options{options}
     {
         setWindowOptions();
-        window = glfwCreateWindow(dimmensions[0], dimmensions[1],
+        window = glfwCreateWindow(dimensions[0], dimensions[1],
             title.c_str(), nullptr, nullptr);
         setContextWindow();
         if (!window)
@@ -23,11 +23,11 @@ namespace ge {
 
     void WindowInterface::setContextWindow(void) noexcept {
         glfwMakeContextCurrent(window);
-        setCommunicationThread(dimmensions, options);
+        setCommunicationThread(dimensions, options);
     }
 
-    void WindowInterface::setDimmensions(Vector2u const& dimm) noexcept {
-        context.windowDimmensions = dimmensions = dimm;
+    void WindowInterface::setDimensions(Vector2u const& dimm) noexcept {
+        context.windowDimensions = dimensions = dimm;
     }
 
     void framebufferCallback(GLFWwindow* window, int32 width,
@@ -36,11 +36,11 @@ namespace ge {
         WindowInterface* render = static_cast<WindowInterface*>(
             glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        Vector2u oldDimmensions = render->dimmensions;
-        render->setDimmensions(vectorCast<uint32>(
+        Vector2u oldDimensions = render->dimensions;
+        render->setDimensions(vectorCast<uint32>(
             Vector2i{width, height}));
         get<ScreenTransformationRegister>(render->events).onEvent(
-            oldDimmensions);
+            oldDimensions);
     }
 
     void keyCallback(GLFWwindow* window, int32 key,

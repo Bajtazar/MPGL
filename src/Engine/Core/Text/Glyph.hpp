@@ -11,14 +11,14 @@ namespace ge {
         typedef std::optional<Texture>          TextureVar;
 
         TextureVar                              texture;
-        Vector2u                               dimmensions;
+        Vector2u                               dimensions;
         Vector2i                                bearing;
         uint32                                  advance;
 
         explicit Glyph(TextureVar const& texture,
-            Vector2u const& dimmensions, Vector2i const& bearing,
+            Vector2u const& dimensions, Vector2i const& bearing,
             uint32 advance) noexcept : texture{texture},
-                dimmensions{dimmensions}, bearing{bearing},
+                dimensions{dimensions}, bearing{bearing},
                 advance{advance} {}
 
         bool hasOutline(void) const noexcept
@@ -45,7 +45,7 @@ namespace ge {
             if constexpr (Index == 0)
                 return std::forward<Base>(base).texture;
             else if constexpr (Index == 1)
-                return std::forward<Base>(base).dimmensions;
+                return std::forward<Base>(base).dimensions;
             else if constexpr (Index == 2)
                 return std::forward<Base>(base).bearing;
             else

@@ -16,7 +16,7 @@ namespace ge {
                 Color const& color = {});
         // rectangle parallel to the x and y axis
         Tetragon(Vector2f const& firstVertex,
-                Vector2f const& dimmensions,
+                Vector2f const& dimensions,
                 Color const& color = {});
         Tetragon(Tetragon const& tetragon);
         Tetragon(Tetragon&& tetragon) noexcept;

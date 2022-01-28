@@ -161,14 +161,14 @@ namespace ge {
 
         std::string const& getString(void) const noexcept { return text; }
 
-        Vector2f getDimmensions(void) const noexcept;
+        Vector2f getDimensions(void) const noexcept;
         Vector2f getPosition(void) const noexcept;
         float32 getAngle(void) const noexcept { return angle; }
 
         void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
-        void onScreenTransformation(Vector2u const& oldDimmensions) noexcept final;
+        void onScreenTransformation(Vector2u const& oldDimensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center, float32 factor) noexcept final;
         void rotate(Vector2f const& center, float32 angle) noexcept final;

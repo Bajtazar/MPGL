@@ -48,7 +48,7 @@ namespace ge {
 
         virtual ~WindowInterface(void) noexcept;
     protected:
-        explicit WindowInterface(Vector2u dimmensions,
+        explicit WindowInterface(Vector2u dimensions,
             std::string title, Options const& options = Options{});
         explicit WindowInterface(
             GLFWwindow* window) noexcept : window(window) {}
@@ -62,21 +62,21 @@ namespace ge {
         void closeWindow(void) noexcept;
         void openWindow(void) noexcept;
 
-        Vector2u const& getWindowDimmensions(void) const noexcept
-            { return dimmensions; }
+        Vector2u const& getWindowDimensions(void) const noexcept
+            { return dimensions; }
         std::string const& getWindowTitle(void) const noexcept
             { return name; }
 
         EventBus                        events;
     private:
-        Vector2u                        dimmensions;
+        Vector2u                        dimensions;
         Options                         options;
         std::string                     name;
         GLFWwindow*                     window;
 
         void setWindowOptions(void) const noexcept;
         void setCallbacks(void) noexcept;
-        void setDimmensions(Vector2u const& dimm) noexcept;
+        void setDimensions(Vector2u const& dimm) noexcept;
     };
 
 }

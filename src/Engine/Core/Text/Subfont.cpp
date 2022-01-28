@@ -34,12 +34,12 @@ namespace ge {
         return iter->second;
     }
 
-    Vector2u Subfont::getDimmensions(GlyphData const& glyph,
+    Vector2u Subfont::getDimensions(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
         return vectorCast<uint32>(
-            vectorCast<uint32>(glyph.glyph.getMaxDimmensions()
-                - glyph.glyph.getMinDimmensions())
+            vectorCast<uint32>(glyph.glyph.getMaxDimensions()
+                - glyph.glyph.getMinDimensions())
             * static_cast<uint32>(size) /
                 static_cast<uint32>(fontData.unitsPerEm));
     }
@@ -47,7 +47,7 @@ namespace ge {
     Vector2i Subfont::getBearings(GlyphData const& glyph,
         std::size_t size) const noexcept
     {
-        return vectorCast<int32>(glyph.glyph.getMinDimmensions())
+        return vectorCast<int32>(glyph.glyph.getMinDimensions())
             * static_cast<int32>(size) /
                 static_cast<int32>(fontData.unitsPerEm);
     }
@@ -55,12 +55,12 @@ namespace ge {
     Glyph Subfont::createGlyph(Iter const& iter, uint8 level) {
         std::size_t size = shiftBase << level;
         auto const& glyphData = iter->second;
-        auto&& dimmensions = getDimmensions(glyphData, size);
+        auto&& dimensions = getDimensions(glyphData, size);
         auto&& bearings = getBearings(glyphData, size);
         uint16 advanceWidth = size * glyphData.advanceWidth
             / fontData.unitsPerEm;
         return Glyph{renderTexture(iter, size),
-            dimmensions, bearings, advanceWidth};
+            dimensions, bearings, advanceWidth};
     }
 
     Subfont::TextureVar Subfont::renderTexture(

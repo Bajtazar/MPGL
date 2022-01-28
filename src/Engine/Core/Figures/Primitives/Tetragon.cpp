@@ -12,13 +12,13 @@ namespace ge {
     }
 
     Tetragon::Tetragon(Vector2f const& firstVertex,
-        Vector2f const& dimmensions,
+        Vector2f const& dimensions,
         Color const& color)
             : Angular{Vertices{
                 Vertex{firstVertex, color},
-                Vertex{firstVertex + 1._y * dimmensions[1], color},
-                Vertex{firstVertex + dimmensions, color},
-                Vertex{firstVertex + 1._x * dimmensions[0], color}
+                Vertex{firstVertex + 1._y * dimensions[1], color},
+                Vertex{firstVertex + dimensions, color},
+                Vertex{firstVertex + 1._x * dimensions[0], color}
             }}
     {
         generateBuffers();

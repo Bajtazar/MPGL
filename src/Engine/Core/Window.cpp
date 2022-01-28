@@ -6,9 +6,9 @@ namespace ge {
 
     using std::operator""us;
 
-    Window::Window(Vector2u const& dimmensions,
+    Window::Window(Vector2u const& dimensions,
         std::string const& title, Options const& options)
-            : WindowInterface{dimmensions, title, options},
+            : WindowInterface{dimensions, title, options},
             sleepTime{0us}, lastTime{0us}
     {
         glEnable(GL_BLEND);

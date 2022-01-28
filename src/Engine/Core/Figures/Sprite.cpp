@@ -79,19 +79,19 @@ namespace ge {
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(Texture const& texture,
         Vector2f const& firstVertex,
-        Vector2f const& dimmensions) noexcept
+        Vector2f const& dimensions) noexcept
             : Sprite{texture}
     {
-        setVerticesPoisition(firstVertex, dimmensions);
+        setVerticesPoisition(firstVertex, dimensions);
     }
 
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(Texture const& texture,
-        Vector2f const& firstVertex, Vector2f const& dimmensions,
+        Vector2f const& firstVertex, Vector2f const& dimensions,
         Color const& color) noexcept requires (IsColorable)
             : Sprite{texture, color}
     {
-        setVerticesPoisition(firstVertex, dimmensions);
+        setVerticesPoisition(firstVertex, dimensions);
     }
 
     template <bool IsColorable>
@@ -192,15 +192,15 @@ namespace ge {
 
     template <bool IsColorable>
     void Sprite<IsColorable>::onScreenTransformation(
-        Vector2u const& oldDimmensions) noexcept
+        Vector2u const& oldDimensions) noexcept
     {
         for (auto& vertexPosition : vertices |
             std::views::transform(&Vertex::position))
         {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * vectorCast<float32>(
-                oldDimmensions) / vectorCast<float32>(
-                    context.windowDimmensions) - 1.f;
+                oldDimensions) / vectorCast<float32>(
+                    context.windowDimensions) - 1.f;
         }
         copyToGPU();
     }
@@ -281,14 +281,14 @@ namespace ge {
     template <bool IsColorable>
     void Sprite<IsColorable>::setVerticesPoisition(
         Vector2f const& firstVertex,
-        Vector2f const& dimmensions) noexcept
+        Vector2f const& dimensions) noexcept
     {
         vertices[0].position = firstVertex;
         vertices[1].position = firstVertex +
-            Vector2f{0.f, dimmensions[1]};
-        vertices[2].position = firstVertex + dimmensions;
+            Vector2f{0.f, dimensions[1]};
+        vertices[2].position = firstVertex + dimensions;
         vertices[3].position = firstVertex +
-            Vector2f{dimmensions[0], 0.f};
+            Vector2f{dimensions[0], 0.f};
     }
 
     template <bool IsColorable>

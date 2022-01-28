@@ -75,10 +75,10 @@ namespace ge {
                Color const& color) noexcept requires IsColorable;
         // rectangle parallel to the x and y axis
         Sprite(Texture const& texture, Vector2f const& firstVertex,
-               Vector2f const& dimmensions) noexcept;
+               Vector2f const& dimensions) noexcept;
         // rectangle parallel to the x and y axis for colorable version
         Sprite(Texture const& texture, Vector2f const& firstVertex,
-               Vector2f const& dimmensions,
+               Vector2f const& dimensions,
                Color const& color) noexcept requires IsColorable;
 
         Sprite(Sprite const& sprite) noexcept;
@@ -91,7 +91,7 @@ namespace ge {
         void draw(void) const noexcept final;
 
         void onScreenTransformation(
-            Vector2u const& oldDimmensions) noexcept final;
+            Vector2u const& oldDimensions) noexcept final;
         void translate(Vector2f const& shift) noexcept final;
         void scale(Vector2f const& center,
             float32 factor) noexcept final;
@@ -170,7 +170,7 @@ namespace ge {
         uint32                                  vertexArrayObject;
 
         void setVerticesPoisition(Vector2f const& firstVertex,
-            Vector2f const& dimmensions) noexcept;
+            Vector2f const& dimensions) noexcept;
         void setVerticesPoisition(Vector2f const& firstVertex,
             Vector2f const& secondVertex,
             Vector2f const& thirdVertex) noexcept;

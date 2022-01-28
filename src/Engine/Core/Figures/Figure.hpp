@@ -22,7 +22,7 @@ namespace ge {
         virtual void rotate(Vector2f const& center,
             Matrix2f const& rotation) noexcept = 0;
         virtual void onScreenTransformation(
-            Vector2u const& oldDimmensions) noexcept = 0;
+            Vector2u const& oldDimensions) noexcept = 0;
 
         virtual ~Figure(void) noexcept = default;
     protected:

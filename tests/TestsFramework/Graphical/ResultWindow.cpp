@@ -35,7 +35,7 @@ namespace ge::tests {
     }
 
     Vector2u ResultWindow::getHeight(uint index) noexcept {
-        return 1_y * context.windowDimmensions[1] - 20_y * (
+        return 1_y * context.windowDimensions[1] - 20_y * (
             1 + index);
     }
 
@@ -83,17 +83,17 @@ namespace ge::tests {
     }
 
     std::size_t ResultWindow::clampEnd(uint begin, uint max) noexcept {
-        return std::min(begin + std::max(context.windowDimmensions[1]
+        return std::min(begin + std::max(context.windowDimensions[1]
             / 20u, 4u), max);
     }
 
     void ResultWindow::onScreenTransformation(
-        Vector2u const& oldDimmensions) noexcept
+        Vector2u const& oldDimensions) noexcept
     {
-        int32 drop = (int32) context.windowDimmensions[1]
-            - oldDimmensions[1];
-        columns.onScreenTransformation(oldDimmensions);
-        header.onScreenTransformation(oldDimmensions);
+        int32 drop = (int32) context.windowDimensions[1]
+            - oldDimensions[1];
+        columns.onScreenTransformation(oldDimensions);
+        header.onScreenTransformation(oldDimensions);
         auto lambda = [&drop](auto& text){ text.translate({0, drop}); };
         std::ranges::for_each(columns | std::views::join, lambda);
         std::ranges::for_each(header, lambda);

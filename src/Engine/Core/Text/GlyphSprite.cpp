@@ -44,16 +44,16 @@ namespace ge {
 
     template <bool IsMonochromatic>
     GlyphSprite<IsMonochromatic>::GlyphSprite(Texture const& texture,
-        Vector2f const& firstVertex, Vector2f const& dimmensions,
+        Vector2f const& firstVertex, Vector2f const& dimensions,
         Color const& color)
             : GlyphSprite{texture, color}
     {
         vertices[0].position = firstVertex;
         vertices[1].position = firstVertex +
-            Vector2f{0.f, dimmensions[1]};
-        vertices[2].position = firstVertex + dimmensions;
+            Vector2f{0.f, dimensions[1]};
+        vertices[2].position = firstVertex + dimensions;
         vertices[3].position = firstVertex +
-            Vector2f{dimmensions[0], 0.f};
+            Vector2f{dimensions[0], 0.f};
     }
 
     template <bool IsMonochromatic>
@@ -169,15 +169,15 @@ namespace ge {
 
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::onScreenTransformation(
-        Vector2u const& oldDimmensions) noexcept
+        Vector2u const& oldDimensions) noexcept
     {
         for (auto& vertexPosition : vertices |
             std::views::transform(&Vertex::position))
         {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * vectorCast<float32>(
-                oldDimmensions) / vectorCast<float32>(
-                    context.windowDimmensions) - 1.f;
+                oldDimensions) / vectorCast<float32>(
+                    context.windowDimensions) - 1.f;
         }
         copyToGPU();
     }
