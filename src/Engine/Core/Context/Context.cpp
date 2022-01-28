@@ -10,16 +10,9 @@ namespace ge {
         std::cout << "Description: " << message << '\n';
     }
 
-    thread_local Context GraphicalObject::context{};
+    Context GraphicalObject::context{};
 
-    GraphicalObject::GraphicalObject(void) noexcept {
-        // forces context initialization
-        ++context.objects;
-    }
-
-    GraphicalObject::~GraphicalObject(void) noexcept {
-        --context.objects;
-    }
+    thread_local bool GraphicalObject::communicationThread = false;
 
     Context::Context(void) noexcept {
         if (!glfwInit())
@@ -29,6 +22,15 @@ namespace ge {
 
     Context::~Context(void) noexcept {
         glfwTerminate();
+    }
+
+    void GraphicalObject::setCommunicationThread(
+        Vector2u const& dimensions,
+        Options const& options) noexcept
+    {
+        context.windowDimmensions = dimensions;
+        context.windowOptions = options;
+        communicationThread = true;
     }
 
 }

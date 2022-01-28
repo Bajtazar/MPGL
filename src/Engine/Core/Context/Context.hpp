@@ -9,13 +9,14 @@
 
 namespace ge {
 
+    class WindowInterface;
+
     struct Context {
         explicit Context(void) noexcept;
 
         ShadersContext                  shaders;
         Vector2u                        windowDimmensions;
         Options                         windowOptions;
-        uint32                          objects;
 
         friend void errorCallback(int32 error,
             char const* message) noexcept;
@@ -23,12 +24,24 @@ namespace ge {
         ~Context(void) noexcept;
     };
 
-    struct GraphicalObject {
-        explicit GraphicalObject(void) noexcept;
+    class GraphicalObject {
+    public:
+        static Context                  context;
 
-        ~GraphicalObject(void) noexcept;
+        static bool isCommunicationThread(void) noexcept
+            { return communicationThread; }
 
-        thread_local static Context    context;
+        friend class WindowInterface;
+    private:
+        static_assert((context, true));
+
+        static void setCommunicationThread(
+            Vector2u const& dimensions,
+            Options const& options) noexcept;
+        static void resetCommunicationThread(void) noexcept
+            { communicationThread = false; }
+
+        thread_local static bool        communicationThread;
     };
 
 }

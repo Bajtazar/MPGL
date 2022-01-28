@@ -23,8 +23,7 @@ namespace ge {
 
     void WindowInterface::setContextWindow(void) noexcept {
         glfwMakeContextCurrent(window);
-        context.windowDimmensions = dimmensions;
-        context.windowOptions = options;
+        setCommunicationThread(dimmensions, options);
     }
 
     void WindowInterface::setDimmensions(Vector2u const& dimm) noexcept {
@@ -130,6 +129,7 @@ namespace ge {
 
     WindowInterface::~WindowInterface(void) noexcept {
         glfwDestroyWindow(window);
+        resetCommunicationThread();
     }
 
     void WindowInterface::openWindow(void) noexcept {
