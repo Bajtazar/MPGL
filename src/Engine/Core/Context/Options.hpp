@@ -5,22 +5,13 @@
 namespace ge {
 
     struct Options {
-        explicit Options(
-            uint16 openGlMajorVersion = 3,
-            uint16 openGlMinorVersion = 3,
-            uint8 antiAliasingSamples = 4,
-            bool floating = false,
-            bool maximised = false,
-            bool resizable = true,
-            bool clean = false) noexcept;
-
-        uint16                          openGLMajorVersion;
-        uint16                          openGLMinorVersion;
-        uint8                           antiAliasingSamples : 4;
-        bool                            floating : 1;
-        bool                            maximised : 1;
-        bool                            resizable : 1;
-        bool                            clean : 1;
+        uint16              openGLMajorVersion        = 3;
+        uint16              openGLMinorVersion        = 3;
+        uint8               antiAliasingSamples : 4   = 4;
+        bool                floating : 1              = false;
+        bool                maximised : 1             = false;
+        bool                resizable : 1             = true;
+        bool                clean : 1                 = false;
         // bool                            transparent : 1;
     };
 
