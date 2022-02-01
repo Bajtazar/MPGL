@@ -39,8 +39,14 @@ namespace ge {
         template <typename Fn, typename... Args>
             requires std::is_invocable_v<Fn, Base&, Args...>
         std::invoke_result_t<Fn, Base&, Args...>
-            protect(Fn method, Args&&... args) noexcept(
+            protect(Fn method, Args&&... args) & noexcept(
                 std::is_nothrow_invocable_v<Fn, Base&, Args...>);
+
+        template <typename Fn, typename... Args>
+            requires std::is_invocable_v<Fn, Base const&, Args...>
+        std::invoke_result_t<Fn, Base const&, Args...>
+            protect(Fn method, Args&&... args) const& noexcept(
+                std::is_nothrow_invocable_v<Fn, Base const&, Args...>);
 
         template <typename Fn, typename... Args>
             requires std::is_invocable_v<Fn, Base&, Args...>
@@ -94,7 +100,7 @@ namespace ge {
         };
 
         Base                                base;
-        Mutex                               mutex;
+        mutable Mutex                       mutex;
         Condition                           condition;
         Flag                                flag;
     };
@@ -169,8 +175,19 @@ namespace ge {
     template <typename Fn, typename... Args>
         requires std::is_invocable_v<Fn, Base&, Args...>
     std::invoke_result_t<Fn, Base&, Args...>
-        Monitor<Base>::protect(Fn method, Args&&... args) noexcept(
+        Monitor<Base>::protect(Fn method, Args&&... args) & noexcept(
             std::is_nothrow_invocable_v<Fn, Base&, Args...>)
+    {
+        Guard lock{mutex};
+        return std::invoke(method, base, std::forward<Args>(args)...);
+    }
+
+    template <NotReference Base>
+    template <typename Fn, typename... Args>
+        requires std::is_invocable_v<Fn, Base const&, Args...>
+    std::invoke_result_t<Fn, Base const&, Args...>
+        Monitor<Base>::protect(Fn method, Args&&... args) const& noexcept(
+            std::is_nothrow_invocable_v<Fn, Base const&, Args...>)
     {
         Guard lock{mutex};
         return std::invoke(method, base, std::forward<Args>(args)...);
