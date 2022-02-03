@@ -181,4 +181,27 @@ namespace ge {
         requires { { Range::size() } -> std::convertible_to<std::size_t>;  }
         && Range::size() == Size;
 
+    template <class Alloc, typename Tp>
+    concept Allocator = NotReference<Tp> && requires {
+        { Alloc::value_type } -> std::same_as<Tp>;
+        { Alloc::pointer } -> std::same_as<Tp*>;
+        { Alloc::const_pointer } -> std::same_as<Tp const*>;
+        { Alloc::size_type } -> std::integral;
+    } && requires (Alloc alloc, Alloc ralloc,
+        typename Alloc::size_type size,
+        Tp* pointer)
+    {
+        { alloc.allocate(size) } -> std::same_as<Tp*>;
+        alloc.deallocate(pointer, size);
+        { alloc == ralloc } -> std::same_as<bool>;
+        { alloc != ralloc } -> std::same_as<bool>;
+    } && std::copy_constructible<Alloc>
+     && NothrowCopyConstructible<Alloc>
+     && std::is_copy_assignable_v<Alloc>
+     && NothrowCopyAssignable<Alloc>
+     && std::move_constructible<Alloc>
+     && NothrowMoveConstructible<Alloc>
+     && std::is_move_assignable_v<Alloc>
+     && NothrowMoveAssignable<Alloc>;
+
 }
