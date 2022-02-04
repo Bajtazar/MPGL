@@ -183,11 +183,11 @@ namespace ge {
 
     template <class Alloc, typename Tp>
     concept Allocator = NotReference<Tp> && requires {
-        { Alloc::value_type } -> std::same_as<Tp>;
-        { Alloc::pointer } -> std::same_as<Tp*>;
-        { Alloc::const_pointer } -> std::same_as<Tp const*>;
-        { Alloc::size_type } -> std::integral;
-    } && requires (Alloc alloc, Alloc ralloc,
+        typename Alloc::value_type;
+        typename Alloc::size_type;
+    } && std::same_as<typename Alloc::value_type, Tp>
+      && std::integral<typename Alloc::size_type>
+      && requires (Alloc alloc, Alloc ralloc,
         typename Alloc::size_type size,
         Tp* pointer)
     {
