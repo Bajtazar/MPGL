@@ -21,21 +21,17 @@ namespace ge {
             NodePtr                                 nextNode;
             NodePtr                                 lastNode;
 
-            constexpr explicit Node(
-                const_reference value) noexcept
+            template <typename... Args>
+                requires std::constructible_from<value_type, Args...>
+            constexpr explicit Node(NodePtr lastNode,
+                NodePtr nextNode, Args&&... args)
+                    : nextNode{nextNode}, lastNode{lastNode},
+                    value{std::forward<Args>(args)...} {}
+            template <typename... Args>
+                requires std::constructible_from<value_type, Args...>
+            constexpr explicit Node(Args&&... args)
                     : nextNode{nullptr}, lastNode{nullptr},
-                    value{value} {}
-            constexpr explicit Node(value_type&& value) noexcept
-                : nextNode{nullptr}, lastNode{nullptr},
-                value{value} {}
-            constexpr explicit Node(const_reference value,
-                NodePtr lastNode, NodePtr nextNode) noexcept
-                    : nextNode{nextNode}, lastNode{lastNode},
-                    value{value} {}
-            constexpr explicit Node(value_type&& value,
-                NodePtr lastNode, NodePtr nextNode) noexcept
-                    : nextNode{nextNode}, lastNode{lastNode},
-                    value{value} {}
+                    value{std::forward<Args>(args)...} {}
             constexpr ~Node(void) noexcept = default;
         };
     public:
@@ -125,7 +121,7 @@ namespace ge {
 
         template <typename... Args>
             requires std::constructible_from<value_type, Args...>
-        constexpr void emplace(Args&&... args);
+        constexpr iterator emplace(Args&&... args);
 
         constexpr value_type pop(void);
 
@@ -145,8 +141,8 @@ namespace ge {
         constexpr NodePtr construct(Args&&... args);
         constexpr void destroy(NodePtr node) noexcept;
 
-        constexpr void addNode(const_reference value);
-        constexpr void addNode(value_type&& value);
+        template <typename... Args>
+        constexpr void addNode(Args&&... args);
 
         constexpr void buildListFromList(const_iterator iter);
 
@@ -174,21 +170,12 @@ namespace ge {
     }
 
     template <NotReference Tp, Allocator<Tp> Alloc>
+    template <typename... Args>
     constexpr void CircularList<Tp, Alloc>::addNode(
-            const_reference value)
+            Args&&... args)
     {
-        NodePtr node = construct(value, sentinel,
-            sentinel->nextNode);
-        sentinel = sentinel->nextNode =
-            sentinel->nextNode->lastNode = node;
-    }
-
-    template <NotReference Tp, Allocator<Tp> Alloc>
-    constexpr void CircularList<Tp, Alloc>::addNode(
-            value_type&& value)
-    {
-        NodePtr node = construct(std::move(value),
-            sentinel, sentinel->nextNode);
+        NodePtr node = construct(sentinel, sentinel->nextNode,
+            std::forward<Args>(args)...);
         sentinel = sentinel->nextNode =
             sentinel->nextNode->lastNode = node;
     }
@@ -216,6 +203,21 @@ namespace ge {
                 node->nextNode = node;
         } else
             addNode(std::move(value));
+        return iterator{ sentinel };
+    }
+
+    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <typename... Args>
+        requires std::constructible_from<Tp, Args...>
+    constexpr CircularList<Tp, Alloc>::iterator
+        CircularList<Tp, Alloc>::emplace(Args&&... args)
+    {
+        if (empty()) {
+            NodePtr node = construct(std::forward<Args>(args)...);
+            sentinel = node->lastNode =
+                node->nextNode = node;
+        } else
+            addNode(std::forward<Args>(args)...);
         return iterator{ sentinel };
     }
 

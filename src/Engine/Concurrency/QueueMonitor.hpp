@@ -62,7 +62,7 @@ namespace ge {
             return {};
         Tp value = std::move(queue.front());
         queue.pop();
-        return { value };
+        return { std::move(value) };
     }
 
     template <NotReference Tp,
