@@ -1,7 +1,8 @@
 /**
  *  MPGL - Modern and Precise Graphics Library
  *
- *  Copyright (c) 2021-2022 Grzegorz Czarnecki (wahadlowiec@interia.pl)
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
  *
  *  This software is provided 'as-is', without any express or
  *  implied warranty. In no event will the authors be held liable
