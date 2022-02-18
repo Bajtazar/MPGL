@@ -129,7 +129,6 @@ namespace mpgl {
 
     WindowInterface::~WindowInterface(void) noexcept {
         glfwDestroyWindow(window);
-        resetCommunicationThread();
     }
 
     void WindowInterface::openWindow(void) noexcept {

@@ -12,7 +12,7 @@ namespace mpgl {
 
     Context GraphicalObject::context{};
 
-    thread_local bool GraphicalObject::communicationThread = false;
+    GraphicalObject::AtomicThreadID GraphicalObject::communicationID{};
 
     Context::Context(void) noexcept {
         if (!glfwInit())
@@ -24,13 +24,19 @@ namespace mpgl {
         glfwTerminate();
     }
 
+    bool GraphicalObject::isCommunicationThread(void) noexcept {
+        return communicationID.load(std::memory_order_relaxed)
+            == std::this_thread::get_id();
+    }
+
     void GraphicalObject::setCommunicationThread(
         Vector2u const& dimensions,
         Options const& options) noexcept
     {
         context.windowDimensions = dimensions;
         context.windowOptions = options;
-        communicationThread = true;
+        communicationID.store(std::this_thread::get_id(),
+            std::memory_order_relaxed);
     }
 
 }
