@@ -4,7 +4,7 @@
 #include "../Exceptions/RenderWindowGladException.hpp"
 #include "Text/UTF-8.hpp"
 
-namespace ge {
+namespace mpgl {
 
     WindowInterface::WindowInterface(Vector2u dimensions,
         std::string title, Options const& options)

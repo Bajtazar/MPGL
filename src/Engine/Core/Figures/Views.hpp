@@ -3,7 +3,7 @@
 #include <iterator>
 #include <ranges>
 
-namespace ge {
+namespace mpgl {
 
     template <class T>
     using position_t = decltype(std::declval<std::ranges::range_value_t<T>>().position);

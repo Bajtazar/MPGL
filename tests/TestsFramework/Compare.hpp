@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <concepts>
 
-namespace ge::tests {
+namespace mpgl::tests {
 
     template <typename Tp>
     constexpr bool compare(Tp&& t1, Tp&& t2) noexcept

@@ -6,7 +6,7 @@
 #include <atomic>
 #include <condition_variable>
 
-namespace ge {
+namespace mpgl {
 
     template <NotReference Base>
     class Monitor {

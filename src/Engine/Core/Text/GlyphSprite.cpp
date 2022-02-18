@@ -1,6 +1,6 @@
 #include "GlyphSprite.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <bool IsMonochromatic>
         GlyphSprite<IsMonochromatic>::Vertices

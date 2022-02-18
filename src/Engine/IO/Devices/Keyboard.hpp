@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 
-namespace ge {
+namespace mpgl {
 
     enum class Key : uint16 {
         Undefined       = 0xFFFF,

@@ -5,7 +5,7 @@
 #include "../Core/Context/Context.hpp"
 #include "../Traits/Concepts.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <Adaptable Tp>
     class Adapter : private GraphicalObject {

@@ -5,7 +5,7 @@
 #include "../../../Utility/Adapter.hpp"
 #include "../../Transformations/Transformable2D.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Ellipse : public Shadeable, public Transformable2D {
     public:

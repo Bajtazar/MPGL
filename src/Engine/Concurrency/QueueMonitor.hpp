@@ -5,7 +5,7 @@
 #include <optional>
 #include <queue>
 
-namespace ge {
+namespace mpgl {
 
     template <NotReference Tp,
         std::ranges::bidirectional_range Container = std::deque<Tp>>

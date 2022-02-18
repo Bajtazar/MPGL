@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-namespace ge {
+namespace mpgl {
 
     void errorCallback(int32 error, char const* message) noexcept {
         std::cout << "Error: " << error << '\n';

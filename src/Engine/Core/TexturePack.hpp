@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace ge {
+namespace mpgl {
 
     class TexturePack {
     public:

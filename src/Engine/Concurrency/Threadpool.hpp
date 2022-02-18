@@ -10,7 +10,7 @@
 #include <vector>
 #include <thread>
 
-namespace ge {
+namespace mpgl {
 
     class Threadpool {
     public:

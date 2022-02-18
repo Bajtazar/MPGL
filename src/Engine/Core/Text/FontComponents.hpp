@@ -4,7 +4,7 @@
 
 #include <map>
 
-namespace ge {
+namespace mpgl {
 
     struct FontData {
         uint16                              unitsPerEm;

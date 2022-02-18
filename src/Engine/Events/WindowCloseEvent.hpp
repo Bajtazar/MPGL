@@ -2,7 +2,7 @@
 
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct WindowCloseEvent : public EventBase {
         explicit WindowCloseEvent(void) noexcept = default;

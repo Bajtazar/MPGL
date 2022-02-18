@@ -2,7 +2,7 @@
 #include "UTF-8.hpp"
 #include "../Figures/Views.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <bool IsPolichromatic>
     Text<IsPolichromatic>::Text(Font& font, std::size_t size,

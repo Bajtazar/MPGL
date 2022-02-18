@@ -3,7 +3,7 @@
 #include "../IO/Devices/Keyboard.hpp"
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct KeyReleaseEvent : public EventBase {
         explicit KeyReleaseEvent(void) noexcept = default;

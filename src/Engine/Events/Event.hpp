@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-namespace ge {
+namespace mpgl {
 
     struct EventBase {
         virtual ~EventBase(void) noexcept = default;

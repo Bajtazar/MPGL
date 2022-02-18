@@ -10,7 +10,7 @@
 #include <climits>
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     class FFT {
     public:
@@ -75,7 +75,7 @@ namespace ge {
 
         template <uint16 Size, bool Inverse = false>
         class CooleyTukeyBase : private CooleyTukeyTupleHelper<
-            decltype(constructor<::ge::log2N<uint16, Size>(), Inverse>())>
+            decltype(constructor<::mpgl::log2N<uint16, Size>(), Inverse>())>
         {
         public:
             template <std::ranges::random_access_range Range>
@@ -88,7 +88,7 @@ namespace ge {
             inline Tp cast(
                 Tp const& value, Complex const& lookup) const noexcept;
 
-            static constexpr uint16 log2N() { return ::ge::log2N<uint16, Size>(); }
+            static constexpr uint16 log2N() { return ::mpgl::log2N<uint16, Size>(); }
         };
 
         template <uint8 Size>

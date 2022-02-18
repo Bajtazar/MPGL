@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace ge{
+namespace mpgl{
 
     class RenderWindowException : public std::exception {
     public:

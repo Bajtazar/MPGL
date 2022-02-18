@@ -5,7 +5,7 @@
 #include <istream>
 #include <ostream>
 
-namespace ge {
+namespace mpgl {
 
     #pragma pack(push, 1)
 

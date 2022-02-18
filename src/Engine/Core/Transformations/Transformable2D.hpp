@@ -3,7 +3,7 @@
 #include "../../Mathematics/Matrix.hpp"
 #include "Transformable.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template<>
     struct Transformable<dim::Dim2> : public virtual ScreenTransformationEvent {

@@ -15,6 +15,6 @@ Test(CircularListTests) {
 }
 
 Test(CircularListRemoveFromEmptyList) {
-    ge::CircularList<int> list;
-    OnThrow(list.pop(), ge::CircularListEmptyException)
+    mpgl::CircularList<int> list;
+    OnThrow(list.pop(), mpgl::CircularListEmptyException)
 }

@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     template <bool IsColorable>
     Sprite<IsColorable>::VertexArray

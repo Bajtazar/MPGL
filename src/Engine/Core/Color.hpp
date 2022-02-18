@@ -2,7 +2,7 @@
 
 #include "../Mathematics/Vector.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Color : public Vector4f {
     public:
@@ -73,13 +73,13 @@ namespace ge {
 namespace std {
 
     template <>
-    struct tuple_size<ge::Color>
+    struct tuple_size<mpgl::Color>
         : integral_constant<size_t, 4> {};
 
     template <size_t Index>
         requires (Index < 4)
-    struct tuple_element<Index, ge::Color> {
-        typedef ge::float32                   type;
+    struct tuple_element<Index, mpgl::Color> {
+        typedef mpgl::float32                   type;
     };
 
 }

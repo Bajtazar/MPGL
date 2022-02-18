@@ -8,7 +8,7 @@
 #include <iterator>
 #include <fstream>
 
-namespace ge {
+namespace mpgl {
 
     template <bool ShaderType>
     constexpr auto Shader<ShaderType>::shaderType(void) const noexcept {

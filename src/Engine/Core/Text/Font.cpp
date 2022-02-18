@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     Font::TypeMap const Font::typeVector {
         {Type::Regular, "regular"},

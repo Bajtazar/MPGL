@@ -1,6 +1,6 @@
 #include "ShadersContext.hpp"
 
-namespace ge {
+namespace mpgl {
 
     void ShadersContext::setLibrary(ShaderLibrary const& library,
         WindowID windowID)

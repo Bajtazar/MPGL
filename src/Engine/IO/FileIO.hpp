@@ -5,7 +5,7 @@
 #include <fstream>
 #include <vector>
 
-namespace ge {
+namespace mpgl {
 
     struct FileIO {
         using stream = std::stringstream;

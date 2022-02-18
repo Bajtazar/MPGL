@@ -9,7 +9,7 @@
 #include <vector>
 #include <inttypes.h>
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy = Secured>
     class Inflate {

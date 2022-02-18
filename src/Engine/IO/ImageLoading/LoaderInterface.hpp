@@ -5,7 +5,7 @@
 #include "../../Collections/Image.hpp"
 #include "../Helper.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class LoaderInterface {
     public:

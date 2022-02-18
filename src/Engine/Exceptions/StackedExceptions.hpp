@@ -30,7 +30,7 @@
 #include <exception>
 #include <list>
 
-namespace ge {
+namespace mpgl {
 
     /**
      * Exception that allows to stack multiple exceptions

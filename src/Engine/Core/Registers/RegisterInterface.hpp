@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ge {
+namespace mpgl {
 
     struct RegisterInterface {
         explicit RegisterInterface(void) noexcept = default;

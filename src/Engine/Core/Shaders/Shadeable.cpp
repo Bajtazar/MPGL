@@ -1,6 +1,6 @@
 #include "Shadeable.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Shadeable::Shadeable(void)
         : shaderProgram{new ShaderProgram{}} {}

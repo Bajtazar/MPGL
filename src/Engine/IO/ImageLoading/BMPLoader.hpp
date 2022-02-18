@@ -4,7 +4,7 @@
 #include "../../Utility/Security.hpp"
 #include "LoaderInterface.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy = Secured>
     class BMPLoader : public LoaderInterface {

@@ -2,7 +2,7 @@
 
 #include <exception>
 
-namespace ge {
+namespace mpgl {
 
     class SecurityUnknownPolicyException : public std::exception {
     public:

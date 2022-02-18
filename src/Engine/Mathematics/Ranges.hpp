@@ -4,7 +4,7 @@
 
 #include "../Traits/Types.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <typename Tp>
     concept Mathematical = std::is_arithmetic_v<Tp>

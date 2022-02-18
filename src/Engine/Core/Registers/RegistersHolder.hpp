@@ -6,7 +6,7 @@
 #include <memory>
 #include <tuple>
 
-namespace ge {
+namespace mpgl {
 
     template <class T>
     concept PushableRegister = requires (

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace ge {
+namespace mpgl {
 
     class ShaderProgram {
     public:

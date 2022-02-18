@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     ShaderLibrary::ShaderLibrary(void) {
         for (std::string const& shader : getShaderList()) {

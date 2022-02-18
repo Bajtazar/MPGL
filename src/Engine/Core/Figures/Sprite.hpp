@@ -9,7 +9,7 @@
 #include <utility>
 #include <array>
 
-namespace ge {
+namespace mpgl {
 
     struct ColorableVertex {
         explicit ColorableVertex(Vector2f const& position,

@@ -2,7 +2,7 @@
 
 #include <thread>
 
-namespace ge {
+namespace mpgl {
 
     using std::operator""us;
 

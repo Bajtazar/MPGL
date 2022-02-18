@@ -8,7 +8,7 @@
 #include <exception>
 #include <functional>
 
-namespace ge {
+namespace mpgl {
 
     class ShadersContext {
     public:

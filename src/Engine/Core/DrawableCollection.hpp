@@ -8,7 +8,7 @@
 #include "../Mathematics/Systems.hpp"
 #include "Drawable.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <class Tp>
     concept DrawableType = std::derived_from<Tp, Drawable>

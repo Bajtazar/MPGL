@@ -1,7 +1,7 @@
 #include "Triangle.hpp"
 #include "../Views.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Triangle::Triangle(Vector2f const& firstVertex,
         Vector2f const& secondVertex,

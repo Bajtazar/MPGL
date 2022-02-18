@@ -6,7 +6,7 @@
 #include "WindowInterface.hpp"
 #include "Shaders/ShaderLibrary.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Window : virtual private WindowInterface {
     public:

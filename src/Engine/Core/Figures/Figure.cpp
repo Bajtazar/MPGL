@@ -1,6 +1,6 @@
 #include "Figure.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Figure::Figure(std::string const& programName)
         : Shadeable{programName} {}

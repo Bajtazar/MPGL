@@ -4,7 +4,7 @@
 
 #include <tuple>
 
-namespace ge {
+namespace mpgl {
 
     class  TupleHelperFn {
     private:

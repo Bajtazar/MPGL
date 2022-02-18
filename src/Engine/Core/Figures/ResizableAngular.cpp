@@ -2,7 +2,7 @@
 #include "ResizableAngular.hpp"
 #include "../../Utility/Ranges.hpp"
 
-namespace ge {
+namespace mpgl {
 
     ResizableAngular::ResizableAngular(size_t size,
         Color const& color) : Angular{size, color} {}

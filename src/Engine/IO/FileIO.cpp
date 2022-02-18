@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace ge {
+namespace mpgl {
 
     std::vector<std::string> FileIO::getAllDirectoryFiles(const std::string& dirName) noexcept {
         std::vector<std::string> files;

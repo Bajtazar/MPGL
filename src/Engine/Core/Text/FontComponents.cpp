@@ -1,6 +1,6 @@
 #include "FontComponents.hpp"
 
-namespace ge {
+namespace mpgl {
 
     void KernTable::setAxis(uint16 const& coverage) noexcept {
         bool horizontal = coverage & 0x0001;

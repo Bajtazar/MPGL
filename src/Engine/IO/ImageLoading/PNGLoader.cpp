@@ -11,7 +11,7 @@
 #include <numeric>
 #include <ranges>
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     const std::string PNGLoader<Policy>::Tag{"png"};

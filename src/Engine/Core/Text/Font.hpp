@@ -2,7 +2,7 @@
 
 #include "Subfont.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Font {
     public:

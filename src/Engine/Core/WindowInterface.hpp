@@ -10,7 +10,7 @@
 #include "Context/Context.hpp"
 #include "Color.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class WindowInterface : protected GraphicalObject {
     public:

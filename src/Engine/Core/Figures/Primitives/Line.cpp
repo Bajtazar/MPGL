@@ -1,6 +1,6 @@
 #include "Line.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Line::Line(Vector2f const& firstVertex,
         Vector2f const& secondVertex,

@@ -24,7 +24,7 @@
  */
 #pragma once
 
-namespace ge {
+namespace mpgl {
 
     /**
      * Base exception for all MPGL exceptions

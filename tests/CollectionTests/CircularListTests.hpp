@@ -7,34 +7,34 @@
 #include <array>
 
 BeginConstexprTest(CircularListConstructor)
-    ge::CircularList<int> list;
+    mpgl::CircularList<int> list;
 EndConstexprTest
 
 BeginConstexprTest(CircularListAddOneElement)
-    ge::CircularList<int> list;
+    mpgl::CircularList<int> list;
     list.push(4);
 EndConstexprTest
 
 BeginConstexprTest(CircularListAddTwoElements)
-    ge::CircularList<int> list;
+    mpgl::CircularList<int> list;
     list.push(4);
     list.push(5);
 EndConstexprTest
 
 BeginConstexprTest(CircularListAddMultipleElements)
-    ge::CircularList<int> list;
-    for (ge::uint8 i = 0;i < 100; ++i)
+    mpgl::CircularList<int> list;
+    for (mpgl::uint8 i = 0;i < 100; ++i)
         list.push(i);
 EndConstexprTest
 
 BeginConstexprTest(CircularListRangeConstructor)
     std::array vec{1, 2, 3, 4, 5};
-    ge::CircularList<int> list{vec};
+    mpgl::CircularList<int> list{vec};
 EndConstexprTest
 
 BeginConstexprTest(CircularListCopyConstructor)
-    ge::CircularList<int> list;
-    for (ge::uint8 i = 0;i < 100; ++i)
+    mpgl::CircularList<int> list;
+    for (mpgl::uint8 i = 0;i < 100; ++i)
         list.push(i);
     auto cpy = list;
     auto i1 = list.attachment(), i2 = cpy.attachment();
@@ -44,8 +44,8 @@ BeginConstexprTest(CircularListCopyConstructor)
 EndConstexprTest
 
 BeginConstexprTest(CircularListMoveConstructor)
-    ge::CircularList<int> list;
-    for (ge::uint8 i = 0;i < 100; ++i)
+    mpgl::CircularList<int> list;
+    for (mpgl::uint8 i = 0;i < 100; ++i)
         list.push(i);
     auto cpy = std::move(list);
     ConstexprAssert(list.empty())
@@ -55,8 +55,8 @@ BeginConstexprTest(CircularListMoveConstructor)
 EndConstexprTest
 
 BeginConstexprTest(CircularListCopyAsignment)
-    ge::CircularList<int> list, cpy;
-    for (ge::uint8 i = 0;i < 100; ++i)
+    mpgl::CircularList<int> list, cpy;
+    for (mpgl::uint8 i = 0;i < 100; ++i)
         list.push(i);
     cpy = list;
     auto i1 = list.attachment(), i2 = cpy.attachment();
@@ -66,8 +66,8 @@ BeginConstexprTest(CircularListCopyAsignment)
 EndConstexprTest
 
 BeginConstexprTest(CircularListMoveAsignment)
-    ge::CircularList<int> list, cpy;
-    for (ge::uint8 i = 0;i < 100; ++i)
+    mpgl::CircularList<int> list, cpy;
+    for (mpgl::uint8 i = 0;i < 100; ++i)
         list.push(i);
     cpy = std::move(list);
     ConstexprAssert(list.empty())
@@ -77,15 +77,15 @@ BeginConstexprTest(CircularListMoveAsignment)
 EndConstexprTest
 
 BeginConstexprTest(CircularListRemoveOneElement)
-    ge::CircularList<int> list;
+    mpgl::CircularList<int> list;
     list.push(1);
     ConstexprEqual(list.pop(), 1)
     ConstexprAssert(list.empty())
 EndConstexprTest
 
 BeginConstexprTest(CircularListRemoveMultipleElements)
-    ge::CircularList<int> list;
-    for (ge::uint8 i = 0;i < 100; ++i)
+    mpgl::CircularList<int> list;
+    for (mpgl::uint8 i = 0;i < 100; ++i)
         list.push(i);
     ConstexprEqual(list.pop(), 99)
     ConstexprEqual(list.pop(), 98)

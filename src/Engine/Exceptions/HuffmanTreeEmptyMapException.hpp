@@ -2,7 +2,7 @@
 
 #include "HuffmanTreeException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class HuffmanTreeEmptyMapException : public HuffmanTreeException {
     public:

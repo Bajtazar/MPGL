@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace ge {
+namespace mpgl {
 
     class NotSupportedException : public std::exception {
     public:

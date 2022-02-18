@@ -2,7 +2,7 @@
 
 #include <ranges>
 
-namespace ge::tests {
+namespace mpgl::tests {
 
     ResultWindow::TextVector
         ResultWindow::generateHeader(Font& font) noexcept

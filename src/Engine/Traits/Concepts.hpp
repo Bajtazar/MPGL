@@ -4,7 +4,7 @@
 
 #include <ranges>
 
-namespace ge {
+namespace mpgl {
 
     #ifndef ge_Operable
     #define ge_Operable(Tp, Operator) requires ( Tp a, Tp b ) { \

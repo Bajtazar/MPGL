@@ -6,7 +6,7 @@
 #include <fstream>
 #include <ranges>
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     TTFLoader<Policy>::TTFLoader(FileName const& fileName)

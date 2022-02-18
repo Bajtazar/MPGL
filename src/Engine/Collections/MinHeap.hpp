@@ -5,7 +5,7 @@
 #include <ranges>
 #include <memory>
 
-namespace ge {
+namespace mpgl {
 
     template <typename T>
     concept IsSmartPtr = std::is_object_v<T> && (
@@ -82,5 +82,5 @@ namespace ge {
 
 template<class T, std::predicate<T, T> Compare,
     std::ranges::forward_range Container, class Alloc>
-struct std::uses_allocator<ge::MinHeap<T, Compare, Container>,Alloc> :
+struct std::uses_allocator<mpgl::MinHeap<T, Compare, Container>,Alloc> :
     std::uses_allocator<Container, Alloc>::type { };

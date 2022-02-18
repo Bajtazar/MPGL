@@ -4,7 +4,7 @@
 
 #include <concepts>
 
-namespace ge {
+namespace mpgl {
 
     uint8 fastLog2(uint32 number) noexcept;
     // works only for powers of 2

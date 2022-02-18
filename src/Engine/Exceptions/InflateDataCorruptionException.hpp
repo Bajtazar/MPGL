@@ -2,7 +2,7 @@
 
 #include "InflateException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct InflateDataCorruptionException : public InflateException {
         explicit InflateDataCorruptionException(void) = default;

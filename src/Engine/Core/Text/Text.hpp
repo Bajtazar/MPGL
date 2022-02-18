@@ -4,7 +4,7 @@
 #include "GlyphSprite.hpp"
 #include "../Shaders/Shadeable.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <bool IsConst>
     class GlyphColorView {

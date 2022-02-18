@@ -5,7 +5,7 @@
 
 #include "../Traits/Concepts.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct BitIteratorTag : public std::input_iterator_tag {};
 

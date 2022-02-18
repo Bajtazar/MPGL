@@ -3,7 +3,7 @@
 #include "../../../src/Engine/2DGraphics.hpp"
 #include "../Tester.hpp"
 
-namespace ge::tests {
+namespace mpgl::tests {
 
     class ResultWindow : public Drawable,
         public ScreenTransformationEvent

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     TickRegister::TickRegister(Duration const& period) noexcept
         : lastTime{Clock::now()}, period{period} {}

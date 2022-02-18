@@ -1,6 +1,6 @@
 #include "Threadpool.hpp"
 
-namespace ge {
+namespace mpgl {
 
     uint32 Threadpool::threadpoolSize(uint32 size) noexcept {
         return size ? size :

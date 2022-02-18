@@ -6,7 +6,7 @@
 #include <numbers>
 #include <iterator>
 
-namespace ge {
+namespace mpgl {
 
     Polygon::Polygon(Vector2f const& center,
         float32 radius, std::size_t segments,
@@ -17,7 +17,7 @@ namespace ge {
             std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;
         vertices.front().position = center;
         for (auto& position : vertices | std::views::drop(1) |
-            ge::views::position)
+            mpgl::views::position)
         {
             position = polarToCartesian(Vector2f{radius, angle}) + center;
             angle += increment;

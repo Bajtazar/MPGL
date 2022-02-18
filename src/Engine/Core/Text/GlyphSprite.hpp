@@ -11,7 +11,7 @@
 #include <variant>
 #include <array>
 
-namespace ge {
+namespace mpgl {
 
     class MonochromaticFontVertex {
     public:
@@ -191,36 +191,36 @@ namespace ge {
 namespace std {
 
     template <>
-    struct tuple_size<ge::MonochromaticFontVertex>
+    struct tuple_size<mpgl::MonochromaticFontVertex>
         : integral_constant<size_t, 2> {};
 
     template <>
-    struct tuple_element<0, ge::MonochromaticFontVertex> {
-        using type = ge::Adapter<ge::Vector2f>;
+    struct tuple_element<0, mpgl::MonochromaticFontVertex> {
+        using type = mpgl::Adapter<mpgl::Vector2f>;
     };
 
     template <>
-    struct tuple_element<1, ge::MonochromaticFontVertex> {
-        using type = ge::Vector2f;
+    struct tuple_element<1, mpgl::MonochromaticFontVertex> {
+        using type = mpgl::Vector2f;
     };
 
     template <>
-    struct tuple_size<ge::PolichromaticFontVertex>
+    struct tuple_size<mpgl::PolichromaticFontVertex>
         : integral_constant<size_t, 3> {};
 
     template <>
-    struct tuple_element<0, ge::PolichromaticFontVertex> {
-        using type = ge::Adapter<ge::Vector2f>;
+    struct tuple_element<0, mpgl::PolichromaticFontVertex> {
+        using type = mpgl::Adapter<mpgl::Vector2f>;
     };
 
     template <>
-    struct tuple_element<1, ge::PolichromaticFontVertex> {
-        using type = ge::Color;
+    struct tuple_element<1, mpgl::PolichromaticFontVertex> {
+        using type = mpgl::Color;
     };
 
     template <>
-    struct tuple_element<2, ge::PolichromaticFontVertex> {
-        using type = ge::Vector2f;
+    struct tuple_element<2, mpgl::PolichromaticFontVertex> {
+        using type = mpgl::Vector2f;
     };
 
 }

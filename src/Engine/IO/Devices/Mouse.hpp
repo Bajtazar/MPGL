@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 
-namespace ge {
+namespace mpgl {
 
     enum class MouseButton : uint8 {
         Left            = 0x00,

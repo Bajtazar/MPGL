@@ -2,7 +2,7 @@
 
 #include "Drawable.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Shape : virtual public Drawable {
     public:

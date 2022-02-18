@@ -3,7 +3,7 @@
 #include "../Mathematics/Vector.hpp"
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct ScrollEvent : public EventBase {
         explicit ScrollEvent(void) noexcept = default;

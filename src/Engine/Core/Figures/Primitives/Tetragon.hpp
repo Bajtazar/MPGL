@@ -4,7 +4,7 @@
 
 #include <array>
 
-namespace ge {
+namespace mpgl {
 
     class Tetragon : public Angular {
     public:

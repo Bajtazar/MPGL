@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     ShaderLibraryInvalidShadersException::ShaderLibraryInvalidShadersException(std::vector<std::string> vertex, std::vector<std::string> fragment) noexcept : message{"Shaders without pairs have been detected. List of invalid shaders:\n"}{
         std::ranges::sort(vertex);

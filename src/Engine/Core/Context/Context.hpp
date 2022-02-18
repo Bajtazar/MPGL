@@ -7,7 +7,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-namespace ge {
+namespace mpgl {
 
     class WindowInterface;
 

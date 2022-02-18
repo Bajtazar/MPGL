@@ -42,6 +42,6 @@ Test(Test5) {
 }
 
 int main(void) noexcept {
-    ge::tests::TestsWindow window;
+    mpgl::tests::TestsWindow window;
     return window.run();
 }

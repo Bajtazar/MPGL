@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-namespace ge {
+namespace mpgl {
 
     std::ostream& Pixel::Manip::RGB(std::ostream& os,
         Pixel const& pixel) noexcept

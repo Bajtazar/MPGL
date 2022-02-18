@@ -9,7 +9,7 @@
 
 #include "../../Events/Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <Event T, typename Signature, Signature Method>
     class UniversalRegister : public RegisterInterface {

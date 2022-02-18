@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace ge {
+namespace mpgl {
 
     template <NotSameSize<std::byte> T, bool BigEndian = false, std::input_iterator Iter>
         requires (std::is_trivially_constructible_v<T>

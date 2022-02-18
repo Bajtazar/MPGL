@@ -7,7 +7,7 @@
 
 #include <variant>
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy = Secured>
     class TTFLoader {

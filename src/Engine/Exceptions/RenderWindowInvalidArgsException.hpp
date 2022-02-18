@@ -2,7 +2,7 @@
 
 #include "RenderWindowException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class RenderWindowInvalidArgsException : public RenderWindowException {
     public:

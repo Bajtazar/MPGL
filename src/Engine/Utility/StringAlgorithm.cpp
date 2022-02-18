@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     std::string toLower(std::string const& string) {
         std::string output;

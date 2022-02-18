@@ -1,7 +1,7 @@
 #include "Angular.hpp"
 #include "../../Mathematics/Systems.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Angular::Angular(size_t size, Color const& color)
         : Figure{"2DDefault"}, vertices{size, Vertex{{}, color}} {}

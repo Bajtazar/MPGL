@@ -1,6 +1,6 @@
 #include "Shape.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Shape::Shape(void) noexcept {
         glGenVertexArrays(1, &vertexArrayObject);

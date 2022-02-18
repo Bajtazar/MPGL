@@ -5,7 +5,7 @@
 
 #include <complex>
 
-namespace ge {
+namespace mpgl {
 
     template <std::signed_integral Tp>
     inline constexpr Tp signum(Tp const& value) noexcept {

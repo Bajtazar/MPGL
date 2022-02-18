@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <ranges>
 
-namespace ge::tests {
+namespace mpgl::tests {
 
     thread_local Tester::TestVector Tester::testVector{};
 

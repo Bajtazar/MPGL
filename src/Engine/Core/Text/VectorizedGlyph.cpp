@@ -1,6 +1,6 @@
 #include "VectorizedGlyph.hpp"
 
-namespace ge {
+namespace mpgl {
 
     void VectorizedGlyph::generatePoints(Glyph& glyph, UByteVec const& flags) {
         for (uint8 const& flag : flags)

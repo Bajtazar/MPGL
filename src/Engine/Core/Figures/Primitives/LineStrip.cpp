@@ -1,6 +1,6 @@
 #include "LineStrip.hpp"
 
-namespace ge {
+namespace mpgl {
 
     LineStrip::LineStrip(std::size_t vertices,
         Color const& color) : ResizableAngular{vertices, color} {}

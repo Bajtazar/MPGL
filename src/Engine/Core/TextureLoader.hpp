@@ -34,7 +34,7 @@
 #include <vector>
 #include <list>
 
-namespace ge {
+namespace mpgl {
 
     /**
      * The base class of all texture loaders

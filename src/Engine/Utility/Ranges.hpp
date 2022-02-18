@@ -6,7 +6,7 @@
 
 #include "../Traits/Concepts.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct AccumulateFn {
 

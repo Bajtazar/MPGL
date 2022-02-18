@@ -2,7 +2,7 @@
 
 #include <ranges>
 
-namespace ge {
+namespace mpgl {
 
     template <std::size_t Size,
         std::ranges::random_access_range Range>

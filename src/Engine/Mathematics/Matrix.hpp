@@ -5,7 +5,7 @@
 
 #include <optional>
 
-namespace ge {
+namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)

@@ -8,7 +8,7 @@
 #include "../../Utility/Security.hpp"
 #include "../../Utility/FunctionalWrapper.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy = Secured>
     class ImageLoader {

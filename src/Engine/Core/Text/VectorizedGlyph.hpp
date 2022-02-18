@@ -8,7 +8,7 @@
 #include <iterator>
 #include <variant>
 
-namespace ge {
+namespace mpgl {
 
     class LocaTable {
     public:

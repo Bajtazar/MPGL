@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 
-namespace ge {
+namespace mpgl {
 
     class ShaderLibrary {
     public:

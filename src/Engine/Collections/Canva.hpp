@@ -14,7 +14,7 @@
 #define friend_expr friend constexpr
 #endif
 
-namespace ge {
+namespace mpgl {
 
     template <Absolute Tp>
     using CanvaRowBase = std::pair<Tp*, std::reference_wrapper<

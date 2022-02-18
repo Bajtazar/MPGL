@@ -5,7 +5,7 @@
 
 #include "../Traits/Types.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class BitReversion {
     public:

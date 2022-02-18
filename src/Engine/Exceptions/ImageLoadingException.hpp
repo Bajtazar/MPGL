@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace ge {
+namespace mpgl {
 
     class ImageLoadingException : public std::exception {
     public:

@@ -15,7 +15,7 @@
 #define friend_expr     friend constexpr
 #endif
 
-namespace ge {
+namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
     class Vector : public UniformTuple<Tp, Size> {
@@ -569,14 +569,14 @@ namespace ge {
 
 namespace std {
 
-    template <ge::Arithmetic Tp, std::size_t Size>
-    struct tuple_size<ge::Vector<Tp, Size>>
+    template <mpgl::Arithmetic Tp, std::size_t Size>
+    struct tuple_size<mpgl::Vector<Tp, Size>>
         : integral_constant<size_t, Size> {};
 
-    template <ge::Arithmetic Tp, std::size_t Size,
+    template <mpgl::Arithmetic Tp, std::size_t Size,
         std::size_t Index>
             requires (Index < Size)
-    struct tuple_element<Index, ge::Vector<Tp, Size>> {
+    struct tuple_element<Index, mpgl::Vector<Tp, Size>> {
         using type = Tp;
     };
 

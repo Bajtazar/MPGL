@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace ge {
+namespace mpgl {
 
     class ShaderProgramLinkingException : public std::exception {
     public:

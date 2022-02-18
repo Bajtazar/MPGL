@@ -2,7 +2,7 @@
 
 #include "../ResizableAngular.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Polygon : public ResizableAngular {
     public:

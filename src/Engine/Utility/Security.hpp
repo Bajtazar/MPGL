@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-namespace ge {
+namespace mpgl {
 
     struct Security {};
 

@@ -6,8 +6,8 @@
 #ifndef ge_tests__module
 #define ge_tests__module
 
-#define ge_tests_vec            ge::tests::AssertVector
-#define ge_tests_Tester         ge::tests::Tester
+#define ge_tests_vec            mpgl::tests::AssertVector
+#define ge_tests_Tester         mpgl::tests::Tester
 
 #define Test(TestName) \
     void TestName (ge_tests_vec& ge_tests_asserts); \
@@ -22,11 +22,11 @@
     ge_test_assertions = ge_test_assertions && assertion;
 
 #define ConstexprEqual(left, right) \
-    ge_test_assertions = ge_test_assertions && ge::tests::compare( \
+    ge_test_assertions = ge_test_assertions && mpgl::tests::compare( \
     left , right);
 
 #define ConstexprEqualIter(leftIter, leftSent, rightIter, rightSent) \
-    ge_test_assertions = ge_test_assertions && ge::tests::compare( \
+    ge_test_assertions = ge_test_assertions && mpgl::tests::compare( \
     leftIter , leftSent , rightIter , rightSent );
 
 #define ConstexprOnThrow(assertion, exception) \
@@ -41,10 +41,10 @@
     ge_tests_asserts.push_back(assertion);
 
 #define Equal(left, right) \
-    ge_tests_asserts.push_back(ge::tests::compare(left, right));
+    ge_tests_asserts.push_back(mpgl::tests::compare(left, right));
 
 #define EqualIter(leftIter, leftSent, rightIter, rightSent) \
-    ge_tests_asserts.push_back(ge::tests::compare( \
+    ge_tests_asserts.push_back(mpgl::tests::compare( \
     leftIter , leftSent , rightIter , rightSent );
 
 #define OnThrow(assertion, exception) \

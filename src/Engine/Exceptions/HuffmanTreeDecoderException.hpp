@@ -2,7 +2,7 @@
 
 #include "HuffmanTreeException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class HuffmanTreeDecoderException : public HuffmanTreeException {
     public:

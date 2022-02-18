@@ -4,7 +4,7 @@
 
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct TickEvent : public EventBase {
         explicit TickEvent(void) noexcept = default;

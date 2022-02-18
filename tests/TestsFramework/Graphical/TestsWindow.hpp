@@ -2,7 +2,7 @@
 
 #include "ResultWindow.hpp"
 
-namespace ge::tests {
+namespace mpgl::tests {
 
     class TestsWindow {
     public:

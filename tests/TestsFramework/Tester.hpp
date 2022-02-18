@@ -5,7 +5,7 @@
 #include <vector>
 #include <tuple>
 
-namespace ge::tests {
+namespace mpgl::tests {
 
     typedef std::vector<bool>                   AssertVector;
     typedef std::function<void(AssertVector&)>  TestFunction;

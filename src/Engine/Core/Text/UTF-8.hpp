@@ -5,7 +5,7 @@
 #include <iterator>
 #include <string>
 
-namespace ge {
+namespace mpgl {
 
     template <std::integral Tp, uint8 Length>
         requires ConstexprConstructible<std::string>

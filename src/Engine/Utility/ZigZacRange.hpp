@@ -6,7 +6,7 @@
 #include <vector>
 #include <array>
 
-namespace ge {
+namespace mpgl {
 
     template <uint8 Size>
         requires (Size > 1)

@@ -3,7 +3,7 @@
 #include "../Mathematics/Vector.hpp"
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct MouseMotionEvent : public EventBase {
         explicit MouseMotionEvent(void) noexcept = default;

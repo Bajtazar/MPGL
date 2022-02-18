@@ -3,7 +3,7 @@
 #include "../../IO/Logger.hpp"
 #include "../../Exceptions/ShaderProgramLinkingException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     uint32 ShaderProgram::lastProgramID = 0u;
 

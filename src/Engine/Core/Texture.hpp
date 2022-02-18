@@ -12,7 +12,7 @@
 #include "../Collections/Bitmap.hpp"
 #include "../IO/ImageLoading/ImageLoader.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Texture {
     public:

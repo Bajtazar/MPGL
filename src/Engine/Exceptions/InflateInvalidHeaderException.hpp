@@ -2,7 +2,7 @@
 
 #include "InflateException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct InflateInvalidHeaderException : public InflateException {
         explicit InflateInvalidHeaderException(void) noexcept = default;

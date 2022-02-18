@@ -5,7 +5,7 @@
 #include "../../Exceptions/ImageLoadingInvalidTypeException.hpp"
 #include "../../Exceptions/ImageLoadingFileCorruptionException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     const std::string BMPLoader<Policy>::Tag{"bmp"};

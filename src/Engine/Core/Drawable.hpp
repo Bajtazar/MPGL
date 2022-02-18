@@ -2,7 +2,7 @@
 
 #include "Context/Context.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Drawable : virtual protected GraphicalObject {
     public:

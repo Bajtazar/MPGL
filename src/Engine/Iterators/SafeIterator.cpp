@@ -1,6 +1,6 @@
 #include "SafeIterator.hpp"
 
-namespace ge {
+namespace mpgl {
 
     SafeIterator<std::istreambuf_iterator<char>,
         std::istreambuf_iterator<char>>::value_type

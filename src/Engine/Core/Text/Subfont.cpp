@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-namespace ge {
+namespace mpgl {
 
     Subfont::Subfont(std::string const& path) {
         TTFLoader loader{path};

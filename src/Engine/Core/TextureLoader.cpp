@@ -26,7 +26,7 @@
 
 #include "../Exceptions/StackedExceptions.hpp"
 
-namespace ge {
+namespace mpgl {
 
     [[nodiscard]] TexturePack
         TextureLoaderBase::getTextures(void) const

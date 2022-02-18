@@ -7,7 +7,7 @@
 
 #include "Types.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <typename T, typename... Args>
         requires std::constructible_from<T, Args...>

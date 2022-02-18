@@ -6,7 +6,7 @@
 
 #include "../Exceptions/SafeIteratorOutOfRangeException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <class Iter, std::sentinel_for<Iter> Sent = Iter>
         requires (std::random_access_iterator<Iter> ||

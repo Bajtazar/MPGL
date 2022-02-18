@@ -2,7 +2,7 @@
 
 #include "../Angular.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Triangle : public Angular {
     public:

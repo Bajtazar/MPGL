@@ -6,7 +6,7 @@
 
 #include <array>
 
-namespace ge {
+namespace mpgl {
 
     class FontRasterizer : private GraphicalObject {
     public:

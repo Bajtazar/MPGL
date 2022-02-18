@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace ge {
+namespace mpgl {
 
     class FontNoRegualrException : public std::exception {
     public:

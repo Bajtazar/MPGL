@@ -9,7 +9,7 @@
 #include <ranges>
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     HuffmanTree<uint16>::Decoder Inflate<Policy>::fixedCodeDecoder{};

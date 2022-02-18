@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ge {
+namespace mpgl {
 
     typedef signed char                 int8;
     typedef signed short int            int16;

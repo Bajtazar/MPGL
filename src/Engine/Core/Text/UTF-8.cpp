@@ -1,6 +1,6 @@
 #include "UTF-8.hpp"
 
-namespace ge {
+namespace mpgl {
 
     uint32 fromUTF8(std::string unicodeString) {
         uint8 bitmask = unicodeString.size() != 1 ? (

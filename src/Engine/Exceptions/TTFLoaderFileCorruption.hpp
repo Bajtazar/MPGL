@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace ge {
+namespace mpgl {
 
     class TTFLoaderFileCorruption : public std::exception {
     public:

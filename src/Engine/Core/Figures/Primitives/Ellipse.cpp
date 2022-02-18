@@ -1,7 +1,7 @@
 #include "Ellipse.hpp"
 #include "../../../Mathematics/Systems.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Ellipse::Vertices Ellipse::ellipseVertices(Vector2f const& center,
         Vector2f const& semiAxis, float32 angle) noexcept

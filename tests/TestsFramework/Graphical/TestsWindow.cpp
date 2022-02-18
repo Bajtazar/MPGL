@@ -1,6 +1,6 @@
 #include "TestsWindow.hpp"
 
-namespace ge::tests {
+namespace mpgl::tests {
 
     TestsWindow::TestsWindow(void) noexcept
         : results{Tester::testFunctions()} {}

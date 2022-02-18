@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace ge {
+namespace mpgl {
 
     class ShaderCompilationException : public std::exception {
     public:

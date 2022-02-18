@@ -6,7 +6,7 @@
 #include <chrono>
 #include <ctime>
 
-namespace ge {
+namespace mpgl {
 
     void Logger::saveOpenGl(const std::string& infoLog, const std::string& title) noexcept {
         std::stringstream ss = getTimeInString();

@@ -2,7 +2,7 @@
 
 #include "Canva.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template class Canva<uint8>;
 

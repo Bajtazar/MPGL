@@ -2,7 +2,7 @@
 
 #include "../../Traits/Types.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct Options {
         uint16              openGLMajorVersion        = 3;

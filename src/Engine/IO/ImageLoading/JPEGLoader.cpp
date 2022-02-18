@@ -13,7 +13,7 @@
 #include <bitset>
 #include <array>
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     const std::string JPEGLoader<Policy>::Tag{"jpeg"};
@@ -150,7 +150,7 @@ namespace ge {
         std::array<uint8, 17> symbolsLengths{};
         std::ranges::for_each(symbolsLengths | std::views::drop(1), [&data](auto& symbol)
             { symbol = *data; ++data; });
-        if (ge::accumulate(symbolsLengths, 0u) != length)
+        if (mpgl::accumulate(symbolsLengths, 0u) != length)
             throw ImageLoadingFileCorruptionException{this->loader.fileName};
         std::vector<uint8> characters(length, 0);
         std::ranges::for_each(characters, [&data](auto& symbol){ symbol = *data; ++data; });

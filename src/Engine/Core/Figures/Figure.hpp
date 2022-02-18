@@ -4,7 +4,7 @@
 #include "../Shaders/Shadeable.hpp"
 #include "../Transformations/Transformable2D.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Figure : public Shape, public Shadeable,
         public Transformable2D

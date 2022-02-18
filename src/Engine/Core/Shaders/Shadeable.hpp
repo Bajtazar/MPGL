@@ -3,7 +3,7 @@
 #include "ShaderProgram.hpp"
 #include "../Drawable.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Shadeable : virtual public Drawable {
     public:

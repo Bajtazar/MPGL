@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace ge {
+namespace mpgl {
 
     Texture::Options::Options(TextureWrapper verticalWrapping,
         TextureWrapper horizontalWrapping,

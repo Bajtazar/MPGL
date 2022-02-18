@@ -26,7 +26,7 @@
 #include <math.h>
 #include <numbers>
 
-using namespace ge;
+using namespace mpgl;
 
 int main(void) noexcept {
     Window window{640_x + 480_y, "Hello World!"};

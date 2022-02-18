@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-namespace ge {
+namespace mpgl {
 
     class TickRegister : public RegisterInterface {
     public:

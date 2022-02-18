@@ -2,7 +2,7 @@
 #include "../Views.hpp"
 #include "../../../Utility/Ranges.hpp"
 
-namespace ge {
+namespace mpgl {
 
     Points::Points(std::size_t vertices, Color const& color)
         : ResizableAngular{vertices, color} {}

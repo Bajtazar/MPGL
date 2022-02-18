@@ -3,7 +3,7 @@
 #include "../Exceptions/CircularListEmptyException.hpp"
 #include "../Traits/Concepts.hpp"
 
-namespace ge {
+namespace mpgl {
 
     template <NotReference Tp, Allocator<Tp> Alloc = std::allocator<Tp>>
     class CircularList {

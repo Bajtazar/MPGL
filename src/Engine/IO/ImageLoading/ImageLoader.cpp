@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-namespace ge {
+namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     ImageLoader<Policy>::ImageLoader(Policy policy, const std::string& fileName)

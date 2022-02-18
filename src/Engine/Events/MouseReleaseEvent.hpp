@@ -3,7 +3,7 @@
 #include "../IO/Devices/Mouse.hpp"
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct MouseReleaseEvent : public EventBase {
         explicit MouseReleaseEvent(void) noexcept = default;

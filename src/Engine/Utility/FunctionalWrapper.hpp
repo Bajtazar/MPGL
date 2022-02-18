@@ -3,7 +3,7 @@
 #include <concepts>
 #include <memory>
 
-namespace ge {
+namespace mpgl {
 
     template <class Derived, class Base = Derived>
         requires std::derived_from<Derived, Base>

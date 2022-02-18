@@ -8,7 +8,7 @@
 
 #include <glad/glad.h>
 
-namespace ge {
+namespace mpgl {
 
     class Logger {
     public:

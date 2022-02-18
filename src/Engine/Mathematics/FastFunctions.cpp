@@ -4,7 +4,7 @@
 #include <intrin.h>
 #endif
 
-namespace ge {
+namespace mpgl {
 
     #ifdef __GNUC__
     uint8 fastLog2(uint32 number) noexcept {

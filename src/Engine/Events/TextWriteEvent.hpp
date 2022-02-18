@@ -4,7 +4,7 @@
 
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct TextWriteEvent : public EventBase {
         explicit TextWriteEvent(void) noexcept = default;

@@ -2,7 +2,7 @@
 
 #include "ImageLoadingException.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class ImageLoadingUnsuportedFileType : public ImageLoadingException {
     public:

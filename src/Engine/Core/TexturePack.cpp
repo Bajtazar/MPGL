@@ -1,6 +1,6 @@
 #include "TexturePack.hpp"
 
-namespace ge {
+namespace mpgl {
 
     TexturePack::Value const&
         TexturePack::operator[] (Key const& key) const noexcept

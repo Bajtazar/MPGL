@@ -3,7 +3,7 @@
 #include "../Mathematics/Vector.hpp"
 #include "Event.hpp"
 
-namespace ge {
+namespace mpgl {
 
     struct ScreenTransformationEvent : public EventBase {
         explicit ScreenTransformationEvent(void) noexcept = default;

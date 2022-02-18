@@ -4,7 +4,7 @@
 
 #include <optional>
 
-namespace ge {
+namespace mpgl {
 
     class LineStrip : public ResizableAngular {
     public:

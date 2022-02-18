@@ -1,7 +1,7 @@
 #include "Tetragon.hpp"
 #include "../Views.hpp"
 
-namespace ge {
+namespace mpgl {
 
     void Tetragon::generateBuffers(void) noexcept {
         glGenBuffers(1, &elementArrayBuffer);

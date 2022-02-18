@@ -3,7 +3,7 @@
 #include "Glyph.hpp"
 #include "TTFLoader.hpp"
 
-namespace ge {
+namespace mpgl {
 
     class Subfont {
     public:

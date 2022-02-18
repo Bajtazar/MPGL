@@ -4,7 +4,7 @@
 #include <intrin.h>
 #endif
 
-namespace ge {
+namespace mpgl {
 
     #ifdef __GNUC__
     uint16 FFT::convolutionSize(uint8 number) noexcept {

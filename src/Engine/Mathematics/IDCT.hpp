@@ -9,7 +9,7 @@
 #include <climits>
 #include <array>
 
-namespace ge {
+namespace mpgl {
 
     template <uint8 Precision = 8>
         requires IsPowerOf2<uint8, Precision>
@@ -25,7 +25,7 @@ namespace ge {
             PrecMatrix<Tp> const& matrix) const noexcept;
     private:
         consteval static uint8 log2N(void) noexcept
-            { return ::ge::log2N<uint8, Precision>(); }
+            { return ::mpgl::log2N<uint8, Precision>(); }
 
         typedef VectorC<Precision>                          ComplexVec;
 

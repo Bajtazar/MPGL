@@ -12,7 +12,7 @@
 #include <bitset>
 #include <map>
 
-namespace ge {
+namespace mpgl {
 
     template <typename CharType = uint8, SizeType FrequencyType = std::size_t>
     class HuffmanTree {

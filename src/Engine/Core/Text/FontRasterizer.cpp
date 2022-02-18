@@ -4,7 +4,7 @@
 
 #include <math.h>
 
-namespace ge {
+namespace mpgl {
 
     FontRasterizer::FontRasterizer(FontData const& mainData,
         GlyphData const& glyph, size_type size)

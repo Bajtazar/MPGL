@@ -5,7 +5,7 @@
 
 #include <optional>
 
-namespace ge {
+namespace mpgl {
 
     struct Glyph {
         typedef std::optional<Texture>          TextureVar;
@@ -59,22 +59,22 @@ namespace ge {
 namespace std {
 
     template <>
-    struct tuple_size<ge::Glyph> : integral_constant<size_t, 4> {};
+    struct tuple_size<mpgl::Glyph> : integral_constant<size_t, 4> {};
 
     template <>
-    struct tuple_element<0, ge::Glyph>
-        { using type = ge::Glyph::TextureVar; };
+    struct tuple_element<0, mpgl::Glyph>
+        { using type = mpgl::Glyph::TextureVar; };
 
     template <>
-    struct tuple_element<1, ge::Glyph>
-        { using type = ge::Vector2u; };
+    struct tuple_element<1, mpgl::Glyph>
+        { using type = mpgl::Vector2u; };
 
     template <>
-    struct tuple_element<2, ge::Glyph>
-        { using type = ge::Vector2i; };
+    struct tuple_element<2, mpgl::Glyph>
+        { using type = mpgl::Vector2i; };
 
     template <>
-    struct tuple_element<3, ge::Glyph>
-        { using type = ge::uint32; };
+    struct tuple_element<3, mpgl::Glyph>
+        { using type = mpgl::uint32; };
 
 }

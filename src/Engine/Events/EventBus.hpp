@@ -13,7 +13,7 @@
 #include "KeyPressEvent.hpp"
 #include "ScrollEvent.hpp"
 
-namespace ge {
+namespace mpgl {
 
     typedef UniversalRegister<ScreenTransformationEvent,
         void(ScreenTransformationEvent::*)(Vector2u const&),

@@ -2,7 +2,7 @@
 
 #include <exception>
 
-namespace ge {
+namespace mpgl {
 
     struct HuffmanTreeException : public std::exception {
         virtual const char* what(void) const noexcept { return std::exception::what(); }
