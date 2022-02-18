@@ -129,6 +129,10 @@ namespace ge {
     concept SameRangeType = std::same_as<
         std::ranges::range_value_t<Range>, Tp>;
 
+    template <class Iter, typename Tp>
+    concept SameIterType = std::same_as<
+        std::iter_value_t<Iter>, Tp>;
+
     template <class Range, typename Base>
     concept UnderlyingRange = FlexibleRange<Range>
         && SameRangeType<Range, Base>;

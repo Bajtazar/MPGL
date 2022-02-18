@@ -22,36 +22,28 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#pragma once
+#include "TextureLoader.hpp"
+
+#include "../Exceptions/StackedExceptions.hpp"
 
 namespace ge {
 
-    /**
-     * Base exception for all MPGL exceptions
-     */
-    struct MPGLException {
-        constexpr MPGLException(void) noexcept = default;
+    [[nodiscard]] TexturePack
+        TextureLoaderBase::getTextures(void) const
+    {
+        if (!exceptions.empty())
+            throw StackedExceptions{exceptions};
+        return TexturePack{textures};
+    }
 
-        constexpr MPGLException(MPGLException const&) = default;
-        constexpr MPGLException(MPGLException&&) = default;
+    void TextureLoaderBase::tryLoad(void) {
+        if (loadingStatus() != 1.)
+            load();
+    }
 
-        constexpr MPGLException& operator=(
-            MPGLException const&) = default;
-        constexpr MPGLException& operator=(
-            MPGLException&&) = default;
-
-        /**
-         * Pure virtual function that has to be implemented by
-         * derived classes
-         *
-         * @return message associated with an exception
-         */
-        constexpr virtual const char* what(void) const noexcept = 0;
-
-        /**
-         * Virtual destructor of MPGLException
-         */
-        constexpr virtual ~MPGLException(void) noexcept = default;
-    };
+    void TextureLoaderBase::loadAll(void) {
+        while (loadingStatus() != 1.)
+            load();
+    }
 
 }
