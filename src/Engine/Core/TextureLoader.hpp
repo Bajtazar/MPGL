@@ -80,6 +80,8 @@ namespace mpgl {
 
         /**
          * Returns the TexturePack object with all loaded textures.
+         * Textures are associated with their path shortened by
+         * the direction path
          *
          * @throw StackedExceptions exception object containing
          * pointers (std::exception_ptr) to all exceptions
@@ -117,7 +119,7 @@ namespace mpgl {
     class TextureLoaderSequenced : public TextureLoaderBase {
     public:
         /**
-         * @brief Construct a new Texture Loader Sequenced object.
+         * Construct a new Texture Loader Sequenced object.
          * Loads all files from the given directory path and uses
          * them to make textures
          *
