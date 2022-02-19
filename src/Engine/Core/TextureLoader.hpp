@@ -376,7 +376,7 @@ namespace mpgl {
     void TextureLoaderParallel<SP>::pushTasks(Paths const& paths) {
         for (auto const& path : paths)
             imageQueue.emplace_back(path,
-                threadpool.append([path, this]() -> Image {
+                threadpool.appendTask([path, this]() -> Image {
                     return ImageLoader{securityToken, path}.getImage();
                 }));
     }

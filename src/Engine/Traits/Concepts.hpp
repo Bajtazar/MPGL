@@ -101,7 +101,7 @@ namespace mpgl {
     concept IsPowerOf2 = std::integral<T> && (Size == (1 << log2N<T, Size>()));
 
     template <typename T>
-    concept NotReference = !std::is_reference_v<T>;
+    concept PureType = !std::is_reference_v<T>;
 
     template <typename T>
     concept Adaptable =
@@ -186,7 +186,7 @@ namespace mpgl {
         && Range::size() == Size;
 
     template <class Alloc, typename Tp>
-    concept Allocator = NotReference<Tp> && requires {
+    concept Allocator = PureType<Tp> && requires {
         typename Alloc::value_type;
         typename Alloc::size_type;
     } && std::same_as<typename Alloc::value_type, Tp>

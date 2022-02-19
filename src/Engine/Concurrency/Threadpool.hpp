@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include "../Collections/CircularList.hpp"
@@ -12,6 +37,10 @@
 
 namespace mpgl {
 
+    /**
+     * Manages a threadpool. Automaticly distributes tasks between
+     * working threads and allows to get task future
+     */
     class Threadpool {
     public:
         template <std::invocable Func>
@@ -24,6 +53,14 @@ namespace mpgl {
         template <std::ranges::input_range Range>
         using ResultVector = std::vector<ResultOfRange<Range>>;
 
+        /**
+         * Construct a new Threadpool object. Creates the
+         * given number of working threads. If the given number
+         * is equal 0 then it determines the number of working
+         * threads itself
+         *
+         * @param size the number of working threads
+         */
         explicit Threadpool(uint32 size = 0);
 
         Threadpool(Threadpool&&) = delete;
@@ -32,20 +69,49 @@ namespace mpgl {
         Threadpool& operator=(Threadpool&&) = delete;
         Threadpool& operator=(Threadpool const&) = delete;
 
+        /**
+         * Appends task to the queue. Tries to distribute tasks
+         * equally. Returns future of the given invocable
+         *
+         * @tparam Func the type of the task
+         * @param task the invocable to be executed
+         * @return the future of the given invocable
+         */
         template <std::invocable Func>
         [[nodiscard]] FutureOf<Func>
-            append(Func&& task);
+            appendTask(Func&& task);
 
+        /**
+         * Executes given tasks in the threadpool and waits unitl
+         * all of them are executed
+         *
+         * @tparam Range the type of tasks range
+         * @param tasks the range with tasks
+         */
         template <std::ranges::input_range Range>
             requires (std::invocable<std::ranges::range_value_t<Range>>
                 && std::same_as<ResultOfRange<Range>, void>)
         void performTasks(Range&& tasks);
 
+        /**
+         * Executes given tasks in the threadpool and waits unitl
+         * all of them are executed. Returns results of tasks
+         * in std::vector in the same order they were given
+         *
+         * @tparam Range the type of range with tasks
+         * @param tasks the range with tasks
+         * @return the vector with tasks results
+         */
         template <std::ranges::input_range Range>
             requires std::invocable<std::ranges::range_value_t<Range>>
         [[nodiscard]] ResultVector<Range>
             performTasks(Range&& tasks);
 
+        /**
+         * Destroy the Threadpool object. Requests all working
+         * threads to stop and waits until there is no running
+         * working thread
+         */
         ~Threadpool(void) noexcept
             { stopSource.request_stop(); }
     private:
@@ -69,12 +135,30 @@ namespace mpgl {
         typedef std::stop_token                     StopToken;
         typedef std::stop_source                    StopSource;
 
+        /**
+         * Wraps the link to the working task queue and provides
+         * threadsafety
+         */
         class QueueLink{
         public:
+            /**
+             * Construct a new Queue Link object
+             */
             explicit QueueLink(void) noexcept = default;
 
+            /**
+             * Set the link object
+             *
+             * @param attachment the new link attachment
+             */
             void setLink(Attachment attachment) noexcept;
 
+            /**
+             * Emplace task into one of the working queues
+             *
+             * @tparam Func the invocable type
+             * @param package the packaged invocable
+             */
             template <std::invocable Func>
             void emplaceTask(Package<Func>&& package);
         private:
@@ -85,12 +169,33 @@ namespace mpgl {
             Mutex                                   mutex;
         };
 
+        /**
+         * The working function executed inside working thread
+         *
+         * @param stopToken the stop token
+         * @param queueLink link to the workers task queue
+         */
         void worker(StopToken stopToken,
             Attachment queueLink) noexcept;
 
+        /**
+         * Acquires task from workers queue and tries to steal
+         * task from other queues when its local queue is empty
+         *
+         * @param localQueue link to the workers task queue
+         * @return optional object with task if task was
+         * acquired successfully or empty object
+         */
         OptionalTask acquireTask(
             Attachment const& localQueue) noexcept;
 
+        /**
+         * Returns the size of the threadpool. Generates size
+         * automatically if size is equal 0
+         *
+         * @param size the size given by user
+         * @return the true size of the threadpool
+         */
         static uint32 threadpoolSize(uint32 size) noexcept;
 
         Threads                                     threads;
@@ -148,7 +253,7 @@ namespace mpgl {
 
     template <std::invocable Func>
     [[nodiscard]] Threadpool::FutureOf<Func>
-        Threadpool::append(Func&& task)
+        Threadpool::appendTask(Func&& task)
     {
         Package<Func> package{std::move(task)};
         FutureOf<Func> future = package.get_future();
@@ -173,7 +278,7 @@ namespace mpgl {
         if constexpr (std::ranges::sized_range<Range>)
             futures.reserve(tasks.size());
         for (auto&& task : tasks)
-            futures.emplace_back(append(task));
+            futures.emplace_back(appendTask(task));
         std::ranges::for_each(futures, &std::future<void>::get);
     }
 
@@ -189,7 +294,7 @@ namespace mpgl {
             results.reserve(tasks.size());
         }
         for (auto&& task : tasks)
-            futures.emplace_back(append(task));
+            futures.emplace_back(appendTask(task));
         std::ranges::transform(futures, std::back_inserter(results),
             &FutureOfRange<Range>::get);
         return results;

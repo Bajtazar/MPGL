@@ -5,7 +5,7 @@
 
 namespace mpgl {
 
-    template <NotReference Tp, Allocator<Tp> Alloc = std::allocator<Tp>>
+    template <PureType Tp, Allocator<Tp> Alloc = std::allocator<Tp>>
     class CircularList {
     public:
         typedef Tp                                  value_type;
@@ -150,7 +150,7 @@ namespace mpgl {
         NodePtr                                     sentinel;
     };
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     template <typename... Args>
     constexpr CircularList<Tp, Alloc>::NodePtr
         CircularList<Tp, Alloc>::construct(Args&&... args)
@@ -161,7 +161,7 @@ namespace mpgl {
         return node;
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr void CircularList<Tp, Alloc>::destroy(
         NodePtr node) noexcept
     {
@@ -169,7 +169,7 @@ namespace mpgl {
         NodeAllocTraits::deallocate(alloc, node, 1);
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     template <typename... Args>
     constexpr void CircularList<Tp, Alloc>::addNode(
             Args&&... args)
@@ -180,7 +180,7 @@ namespace mpgl {
             sentinel->nextNode->lastNode = node;
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>::iterator
         CircularList<Tp, Alloc>::push(const_reference value)
     {
@@ -193,7 +193,7 @@ namespace mpgl {
         return iterator{ sentinel };
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>::iterator
         CircularList<Tp, Alloc>::push(value_type&& value)
     {
@@ -206,7 +206,7 @@ namespace mpgl {
         return iterator{ sentinel };
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     template <typename... Args>
         requires std::constructible_from<Tp, Args...>
     constexpr CircularList<Tp, Alloc>::iterator
@@ -221,7 +221,7 @@ namespace mpgl {
         return iterator{ sentinel };
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>::value_type
         CircularList<Tp, Alloc>::pop(void)
     {
@@ -239,7 +239,7 @@ namespace mpgl {
         return value;
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     template <std::input_iterator Iter,
         std::sentinel_for<Iter> Sent>
     constexpr CircularList<Tp, Alloc>::CircularList(
@@ -254,7 +254,7 @@ namespace mpgl {
             addNode(*iter);
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr void CircularList<Tp, Alloc>::buildListFromList(
         const_iterator iter)
     {
@@ -267,14 +267,14 @@ namespace mpgl {
             addNode(*iter);
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     template <std::ranges::input_range Range>
     constexpr CircularList<Tp, Alloc>::CircularList(
         Range&& range, Alloc const& alloc)
             : CircularList{std::ranges::begin(range),
             std::ranges::end(range), alloc} {}
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>::CircularList(
         CircularList const& list) : sentinel{nullptr}
     {
@@ -283,14 +283,14 @@ namespace mpgl {
         buildListFromList(list.attachment());
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>::CircularList(
         CircularList&& list) noexcept : sentinel{list.sentinel}
     {
         list.sentinel = nullptr;
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>&
         CircularList<Tp, Alloc>::operator=(
             CircularList const& list)
@@ -302,7 +302,7 @@ namespace mpgl {
         return *this;
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>&
         CircularList<Tp, Alloc>::operator=(
             CircularList&& list) noexcept
@@ -313,7 +313,7 @@ namespace mpgl {
         return *this;
     }
 
-    template <NotReference Tp, Allocator<Tp> Alloc>
+    template <PureType Tp, Allocator<Tp> Alloc>
     constexpr CircularList<Tp, Alloc>::~CircularList(
         void) noexcept
     {

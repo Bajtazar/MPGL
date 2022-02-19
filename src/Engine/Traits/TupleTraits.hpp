@@ -8,18 +8,18 @@ namespace mpgl {
 
     class  TupleHelperFn {
     private:
-        template <NotReference Tp, std::size_t... I>
+        template <PureType Tp, std::size_t... I>
         static constexpr auto tupleConstructor(
             std::index_sequence<I...>) noexcept
                 -> decltype(std::tuple{(I, std::declval<Tp>())...});
     public:
-        template <NotReference Tp, std::size_t Dimm>
+        template <PureType Tp, std::size_t Dimm>
             requires (Dimm != 0)
         static constexpr auto tensorConstructor(void) noexcept
             -> decltype(tupleConstructor<Tp>(
                 std::make_index_sequence<Dimm>{}));
 
-        template <NotReference Tp, std::size_t Dimm, std::size_t... Dimensions>
+        template <PureType Tp, std::size_t Dimm, std::size_t... Dimensions>
             requires (Dimm != 0 && sizeof...(Dimensions) > 0)
         static constexpr auto tensorConstructor(void) noexcept
             -> decltype(tensorConstructor<decltype(
@@ -35,10 +35,10 @@ namespace mpgl {
         }(std::tuple{std::forward<Args>(args)...}, std::make_index_sequence<sizeof...(Args)>{});
     }
 
-    template <NotReference T, std::size_t Size>
+    template <PureType T, std::size_t Size>
     using UniformTuple = decltype(TupleHelperFn::tensorConstructor<T, Size>());
 
-    template <NotReference T, std::size_t... Dimensions>
+    template <PureType T, std::size_t... Dimensions>
     using TensorTuple = decltype(TupleHelperFn::tensorConstructor<T, Dimensions...>());
 
     template <typename... Args>
