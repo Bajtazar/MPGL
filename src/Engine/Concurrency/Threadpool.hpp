@@ -204,15 +204,31 @@ namespace mpgl {
         StopSource                                  stopSource;
     };
 
+    /**
+     * Wraps tasks and serves as an unified task container
+     */
     class Threadpool::TaskWrapper {
     public:
+        /**
+         * Construct a new Task Wrapper object. Wraps the given
+         * task package
+         *
+         * @tparam Func the type of package
+         * @param function the package
+         */
         template <std::invocable Func>
         explicit TaskWrapper(Func&& function) noexcept
             : workerPtr{std::make_unique<TaskWorker<Func>>(
                 std::move(function))} {}
 
+        /**
+         * Construct a new Task Wrapper object
+         */
         TaskWrapper(void) noexcept = default;
 
+        /**
+         * Calls the operator() on the wrapped object
+         */
         void operator() (void) noexcept
             { workerPtr->operator()(); }
 
@@ -222,25 +238,61 @@ namespace mpgl {
         TaskWrapper& operator=(TaskWrapper&&) noexcept = default;
         TaskWrapper& operator=(TaskWrapper const&) = delete;
 
+        /**
+         * Destroy the Task Wrapper object
+         */
         ~TaskWrapper(void) = default;
     private:
+        /**
+         * Interface of the working task
+         */
         struct Worker {
+            /**
+             * Construct a new Worker object
+             */
             explicit Worker(void) noexcept = default;
 
+            /**
+             * Pure virtual operator() which has to be
+             * implemented in derived class. Should
+             * clall the wrapped function operator()
+             */
             virtual void operator() (void) noexcept = 0;
 
+            /**
+             * Destroy the Worker object
+             */
             virtual ~Worker(void) noexcept = default;
         };
 
+        /**
+         * Wraper which allows to save multiple different
+         * invocables in the same collection using
+         * Worker interface
+         *
+         * @tparam Func the wrapped invocable type
+         */
         template <std::invocable Func>
         class TaskWorker : public Worker {
         public:
+            /**
+             * Construct a new Task Worker object which
+             * wrapps the given invocable
+             *
+             * @param function the given invocable object
+             */
             explicit TaskWorker(Func&& function) noexcept
                 : function{std::move(function)} {}
 
+            /**
+             * Class the operator() on the wrapped object
+             */
             void operator() (void) noexcept
                 { function(); }
 
+            /**
+             * Destroy the Task Worker object
+             */
             ~TaskWorker(void) noexcept = default;
         private:
             Func                                function;
