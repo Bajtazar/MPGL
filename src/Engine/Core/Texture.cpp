@@ -4,17 +4,6 @@
 
 namespace mpgl {
 
-    Texture::Options::Options(TextureWrapper verticalWrapping,
-        TextureWrapper horizontalWrapping,
-        MinifyingTextureFilter minifyingFilter,
-        MagnifyingTextureFilter magnifyingFilter,
-        Color borderColor, bool mipmaps) noexcept
-            : verticalWrapping{verticalWrapping},
-            horizontalWrapping{horizontalWrapping},
-            minifyingFilter{minifyingFilter},
-            magnifyingFilter{magnifyingFilter},
-            borderColor{borderColor}, mipmaps(mipmaps) {}
-
     Texture::Options::Underlying
         Texture::Options::getOptions(void) const noexcept
     {

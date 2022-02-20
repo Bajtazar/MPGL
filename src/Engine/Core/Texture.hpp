@@ -36,6 +36,7 @@ namespace mpgl {
                 Nearest                   = GL_NEAREST,
                 Linear                    = GL_LINEAR
             };
+
             TextureWrapper                  verticalWrapping;
             TextureWrapper                  horizontalWrapping;
             MinifyingTextureFilter          minifyingFilter;
@@ -43,7 +44,7 @@ namespace mpgl {
             Color                           borderColor;
             bool                            mipmaps;
 
-            Options(TextureWrapper verticalWrapping =
+            constexpr Options(TextureWrapper verticalWrapping =
                         TextureWrapper::Repeat,
                     TextureWrapper horizontalWrapping =
                         TextureWrapper::Repeat,
@@ -72,6 +73,7 @@ namespace mpgl {
             Options const& options = {}) noexcept;
         explicit Texture(Bitmap const& bitmap,
             Options const& options = {}) noexcept;
+        explicit Texture(Options const& options = {}) noexcept;
 
         Texture(Texture const& texture) = default;
         Texture(Texture&& texture) = default;
@@ -94,8 +96,6 @@ namespace mpgl {
         typedef std::function<void(
             uint32*)>                       Deleter;
 
-        explicit Texture(Options const& options) noexcept;
-
         void loadImage(Image const& image,
             Options const& options) const;
         void generateMipmaps(Options const& options) const noexcept;
@@ -112,5 +112,16 @@ namespace mpgl {
     {
         loadImage(ImageLoader{policy, fileName}.getImage());
     }
+
+    constexpr Texture::Options::Options(TextureWrapper verticalWrapping,
+        TextureWrapper horizontalWrapping,
+        MinifyingTextureFilter minifyingFilter,
+        MagnifyingTextureFilter magnifyingFilter,
+        Color borderColor, bool mipmaps) noexcept
+            : verticalWrapping{verticalWrapping},
+            horizontalWrapping{horizontalWrapping},
+            minifyingFilter{minifyingFilter},
+            magnifyingFilter{magnifyingFilter},
+            borderColor{borderColor}, mipmaps(mipmaps) {}
 
 }
