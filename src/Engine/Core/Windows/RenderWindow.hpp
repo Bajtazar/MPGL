@@ -35,7 +35,7 @@ namespace mpgl {
      * the texture which simplifies interaction. Allows to perform
      * events on handled objects like a normal window
      */
-    class FramedWindow : public WindowBase,
+    class RenderWindow : public WindowBase,
         public ScreenTransformationEvent,
         public MouseReleaseEvent,
         public WindowCloseEvent,
@@ -67,10 +67,10 @@ namespace mpgl {
          *
          * @param options the texture options
          */
-        explicit FramedWindow(Options const& options
+        explicit RenderWindow(Options const& options
             = defaultOptions);
 
-        FramedWindow(FramedWindow const&) = delete;
+        RenderWindow(RenderWindow const&) = delete;
 
         /**
          * Construct a new Framed Window object from a given
@@ -78,9 +78,9 @@ namespace mpgl {
          *
          * @param window the moved framed window
          */
-        FramedWindow(FramedWindow&& window) noexcept;
+        RenderWindow(RenderWindow&& window) noexcept;
 
-        FramedWindow& operator=(FramedWindow const&) = delete;
+        RenderWindow& operator=(RenderWindow const&) = delete;
 
         /**
          * Assigns the given rvalue Franed Window object
@@ -88,7 +88,7 @@ namespace mpgl {
          * @param window the given rvalue Framed Window object
          * @return reference to this object
          */
-        FramedWindow& operator=(FramedWindow&& window) noexcept;
+        RenderWindow& operator=(RenderWindow&& window) noexcept;
 
         /**
          * Renders the frame into the texture
@@ -186,7 +186,7 @@ namespace mpgl {
         /**
          * Destroy the Framed Window object
          */
-        ~FramedWindow(void) noexcept;
+        ~RenderWindow(void) noexcept;
     private:
         Texture                                     windowTexture;
         uint32                                      framebuffer;

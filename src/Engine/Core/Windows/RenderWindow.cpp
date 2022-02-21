@@ -23,13 +23,13 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include "FramedWindow.hpp"
+#include "RenderWindow.hpp"
 
 #include "../../Exceptions/FramedWindowCompileException.hpp"
 
 namespace mpgl {
 
-    FramedWindow::FramedWindow(Options const& options)
+    RenderWindow::RenderWindow(Options const& options)
         : windowTexture{options}
     {
         glGenFramebuffers(1, &framebuffer);
@@ -46,7 +46,7 @@ namespace mpgl {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void FramedWindow::finishTextureSetting(
+    void RenderWindow::finishTextureSetting(
         Options const& options) noexcept
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
@@ -59,13 +59,13 @@ namespace mpgl {
             GL_TEXTURE_2D, windowTexture.getTexture(), 0);
     }
 
-    void FramedWindow::bindDepthAndStencil(void) noexcept {
+    void RenderWindow::bindDepthAndStencil(void) noexcept {
         glFramebufferTexture2D(GL_FRAMEBUFFER,
             GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
             windowTexture.getTexture(), 0);
     }
 
-    void FramedWindow::bindRenderbuffer(void) noexcept {
+    void RenderWindow::bindRenderbuffer(void) noexcept {
         glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
             context.windowDimensions[0],
@@ -76,7 +76,7 @@ namespace mpgl {
             renderbuffer);
     }
 
-    FramedWindow::FramedWindow(FramedWindow&& window) noexcept
+    RenderWindow::RenderWindow(RenderWindow&& window) noexcept
         : windowTexture{std::move(window.windowTexture)},
         framebuffer{window.framebuffer},
         renderbuffer{window.renderbuffer}
@@ -85,10 +85,10 @@ namespace mpgl {
         window.framebuffer = window.renderbuffer = 0;
     }
 
-    FramedWindow&
-        FramedWindow::operator=(FramedWindow&& window) noexcept
+    RenderWindow&
+        RenderWindow::operator=(RenderWindow&& window) noexcept
     {
-        this->~FramedWindow();
+        this->~RenderWindow();
         windowTexture = std::move(window.windowTexture);
         framebuffer = window.framebuffer;
         renderbuffer = window.renderbuffer;
@@ -97,18 +97,18 @@ namespace mpgl {
         return *this;
     }
 
-    void FramedWindow::bind(Color const& color) noexcept {
+    void RenderWindow::bind(Color const& color) noexcept {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClearColor(color.red(), color.green(), color.blue(),
             color.alpha());
         glClear(ClearMask);
     }
 
-    void FramedWindow::unbind(void) noexcept {
+    void RenderWindow::unbind(void) noexcept {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void FramedWindow::render(Color const& color) noexcept {
+    void RenderWindow::render(Color const& color) noexcept {
         bind(color);
         std::ranges::for_each(drawables,
             [](auto const& drawable){ drawable->copyToGPU(); });
@@ -117,54 +117,54 @@ namespace mpgl {
         unbind();
     }
 
-    void FramedWindow::onScreenTransformation(
+    void RenderWindow::onScreenTransformation(
         Vector2u const& oldDimensions) noexcept
     {
         get<ScreenTransformationRegister>(events).onEvent(
             oldDimensions);
     }
 
-    void FramedWindow::onMouseRelease(
+    void RenderWindow::onMouseRelease(
         MouseButton const& button) noexcept
     {
         get<MouseReleaseRegister>(events).onEvent(button);
     }
 
-    void FramedWindow::onWindowClose(void) noexcept {
+    void RenderWindow::onWindowClose(void) noexcept {
         get<WindowCloseRegister>(events).onEvent();
     }
 
-    void FramedWindow::onMouseMotion(
+    void RenderWindow::onMouseMotion(
         Vector2f const& position) noexcept
     {
         get<MouseMotionRegister>(events).onEvent(position);
     }
 
-    void FramedWindow::onMousePress(
+    void RenderWindow::onMousePress(
         MouseButton const& button) noexcept
     {
         get<MousePressRegister>(events).onEvent(button);
     }
 
-    void FramedWindow::onKeyRelease(Key const& key) noexcept {
+    void RenderWindow::onKeyRelease(Key const& key) noexcept {
         get<KeyReleaseRegister>(events).onEvent(key);
     }
 
-    void FramedWindow::onTextWrite(
+    void RenderWindow::onTextWrite(
         std::string const& unicodeString) noexcept
     {
         get<TextWriteRegister>(events).onEvent(unicodeString);
     }
 
-    void FramedWindow::onKeyPress(Key const& key) noexcept {
+    void RenderWindow::onKeyPress(Key const& key) noexcept {
         get<KeyPressRegister>(events).onEvent(key);
     }
 
-    void FramedWindow::onScroll(Vector2f const& scroll) noexcept {
+    void RenderWindow::onScroll(Vector2f const& scroll) noexcept {
         get<ScrollRegistry>(events).onEvent(scroll);
     }
 
-    void FramedWindow::onTick(
+    void RenderWindow::onTick(
         std::chrono::milliseconds const& duration) noexcept
     {
         std::ranges::for_each(get<TickRegister>(events),
@@ -172,7 +172,7 @@ namespace mpgl {
             { drawable->onTick(duration); });
     }
 
-    FramedWindow::~FramedWindow(void) noexcept {
+    RenderWindow::~RenderWindow(void) noexcept {
         glDeleteFramebuffers(1, &framebuffer);
         glDeleteRenderbuffers(1, &renderbuffer);
     }
