@@ -51,7 +51,7 @@ namespace mpgl {
         typedef Texture::Options                    Options;
 
         /**
-         * The default texture options for Framed Window class
+         * The default texture options for Render Window class
          */
         constexpr static Options                    defaultOptions = {
             Options::TextureWrapper::ClampToEdge,
@@ -62,7 +62,7 @@ namespace mpgl {
         };
 
         /**
-         * Construct a new Framed Window object with given
+         * Construct a new Render Window object with given
          * texture options
          *
          * @param options the texture options
@@ -73,8 +73,8 @@ namespace mpgl {
         RenderWindow(RenderWindow const&) = delete;
 
         /**
-         * Construct a new Framed Window object from a given
-         * rvalue Framed Window object
+         * Construct a new Render Window object from a given
+         * rvalue Render Window object
          *
          * @param window the moved framed window
          */
@@ -85,7 +85,7 @@ namespace mpgl {
         /**
          * Assigns the given rvalue Franed Window object
          *
-         * @param window the given rvalue Framed Window object
+         * @param window the given rvalue Render Window object
          * @return reference to this object
          */
         RenderWindow& operator=(RenderWindow&& window) noexcept;
@@ -184,7 +184,7 @@ namespace mpgl {
             { return windowTexture; }
 
         /**
-         * Destroy the Framed Window object
+         * Destroy the Render Window object
          */
         ~RenderWindow(void) noexcept;
     private:
