@@ -12,8 +12,6 @@
 
 namespace mpgl {
 
-    class WindowInterface;
-
     struct Context {
         explicit Context(void) noexcept;
 
@@ -32,16 +30,14 @@ namespace mpgl {
         static Context                              context;
 
         static bool isCommunicationThread(void) noexcept;
-
-        friend class WindowInterface;
+    protected:
+        static void setCommunicationThread(
+            Vector2u const& dimensions,
+            Options const& options) noexcept;
     private:
         typedef std::atomic<std::thread::id>        AtomicThreadID;
 
         static_assert((context, true));
-
-        static void setCommunicationThread(
-            Vector2u const& dimensions,
-            Options const& options) noexcept;
 
         static AtomicThreadID                       communicationID;
     };

@@ -1,14 +1,40 @@
-#include "WindowInterface.hpp"
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
+#include "WindowPlatform.hpp"
 
-#include "../Exceptions/RenderWindowInvalidArgsException.hpp"
-#include "../Exceptions/RenderWindowGladException.hpp"
-#include "Text/UTF-8.hpp"
+#include "../../Exceptions/RenderWindowInvalidArgsException.hpp"
+#include "../../Exceptions/RenderWindowGladException.hpp"
+#include "../Text/UTF-8.hpp"
 
 namespace mpgl {
 
-    WindowInterface::WindowInterface(Vector2u dimensions,
+    WindowPlatform::WindowPlatform(Vector2u dimensions,
         std::string title, Options const& options)
-        : dimensions{dimensions}, options{options}
+        : dimensions{dimensions}, options{options},
+        title{title}, window{nullptr}
     {
         setWindowOptions();
         window = glfwCreateWindow(dimensions[0], dimensions[1],
@@ -21,19 +47,19 @@ namespace mpgl {
         setCallbacks();
     }
 
-    void WindowInterface::setContextWindow(void) noexcept {
+    void WindowPlatform::setContextWindow(void) noexcept {
         glfwMakeContextCurrent(window);
         setCommunicationThread(dimensions, options);
     }
 
-    void WindowInterface::setDimensions(Vector2u const& dimm) noexcept {
-        context.windowDimensions = dimensions = dimm;
+    void WindowPlatform::setDimensions(Vector2u const& dim) noexcept {
+        context.windowDimensions = dimensions = dim;
     }
 
     void framebufferCallback(GLFWwindow* window, int32 width,
         int32 height) noexcept
     {
-        WindowInterface* render = static_cast<WindowInterface*>(
+        WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         Vector2u oldDimensions = render->dimensions;
@@ -47,7 +73,7 @@ namespace mpgl {
         [[maybe_unused]] int32 scancode, int32 action,
         [[maybe_unused]] int32 mods) noexcept
     {
-        WindowInterface* render = static_cast<WindowInterface*>(
+        WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         auto keyCode = static_cast<Key>(static_cast<int16>(key));
         if (action == GLFW_PRESS)
@@ -59,7 +85,7 @@ namespace mpgl {
     void mouseButtonCallback(GLFWwindow* window, int32 button,
         int32 action, [[maybe_unused]] int32 mods) noexcept
     {
-        WindowInterface* render = static_cast<WindowInterface*>(
+        WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         auto buttonCode = static_cast<MouseButton>(
             static_cast<uint8>(button));
@@ -72,14 +98,14 @@ namespace mpgl {
     }
 
     void textCallback(GLFWwindow* window, uint32 character) noexcept {
-        WindowInterface* render = static_cast<WindowInterface*>(
+        WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         get<TextWriteRegister>(render->events).onEvent(
             toUTF8(character));
     }
 
     void windowCloseCallback(GLFWwindow* window) noexcept {
-        WindowInterface* render = static_cast<WindowInterface*>(
+        WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         get<WindowCloseRegister>(render->events).onEvent();
     }
@@ -87,13 +113,13 @@ namespace mpgl {
     void mousePosCallback(GLFWwindow* window, float64 xpos,
         float64 ypos) noexcept
     {
-        WindowInterface* render = static_cast<WindowInterface*>(
+        WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         get<MouseMotionRegister>(render->events).onEvent(
             Vector2f{xpos, ypos});
     }
 
-    void WindowInterface::setCallbacks(void) noexcept {
+    void WindowPlatform::setCallbacks(void) noexcept {
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferCallback);
         glfwSetKeyCallback(window, keyCallback);
@@ -103,7 +129,7 @@ namespace mpgl {
         glfwSetWindowCloseCallback(window, windowCloseCallback);
     }
 
-    void WindowInterface::setWindowOptions(void) const noexcept {
+    void WindowPlatform::setWindowOptions(void) const noexcept {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,
             options.openGLMajorVersion);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
@@ -116,26 +142,26 @@ namespace mpgl {
         glfwWindowHint(GLFW_SAMPLES, options.antiAliasingSamples);
     }
 
-    void WindowInterface::draw(void) const noexcept {
+    void WindowPlatform::draw(void) const noexcept {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    void WindowInterface::clear(const Color& color) const noexcept {
+    void WindowPlatform::clear(const Color& color) const noexcept {
         glClearColor(color.red(), color.green(),
             color.blue(), color.alpha());
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    WindowInterface::~WindowInterface(void) noexcept {
+    WindowPlatform::~WindowPlatform(void) noexcept {
         glfwDestroyWindow(window);
     }
 
-    void WindowInterface::openWindow(void) noexcept {
+    void WindowPlatform::openWindow(void) noexcept {
         glfwSetWindowShouldClose(window, false);
     }
 
-    void WindowInterface::closeWindow(void) noexcept {
+    void WindowPlatform::closeWindow(void) noexcept {
         glfwSetWindowShouldClose(window, true);
     }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/Window.hpp"
 #include "Core/Figures/Angular.hpp"
 #include "Core/Figures/Sprite.hpp"
 #include "Core/Figures/Primitives/Triangle.hpp"
@@ -10,6 +9,8 @@
 #include "Core/Figures/Primitives/Ellipse.hpp"
 #include "Core/Figures/Primitives/LineStrip.hpp"
 #include "Core/Figures/Primitives/Points.hpp"
+#include "Core/Windows/Window.hpp"
+#include "Core/Windows/RenderingAdapter.hpp"
 #include "Core/DrawableCollection.hpp"
 #include "Core/Figures/Views.hpp"
 #include "Core/TextureLoader.hpp"
