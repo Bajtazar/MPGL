@@ -55,12 +55,16 @@ namespace mpgl {
          * color
          *
          * @param renderWindow the Render Window reference
+         * @param cleaning the buffer cleaning options
          * @param background the color of the background used by
          * the render method
          */
         explicit RenderingAdapter(RenderWindow& renderWindow,
+            CleaningOptions const& cleaning
+            = CleaningOptions::ColorAndDepthAndStencil,
             Color const& background = {}) noexcept
-                : reference{renderWindow}, background{background} {}
+                : background{background}, cleaning{cleaning},
+                reference{renderWindow} {}
 
         RenderingAdapter(RenderingAdapter const&) noexcept = default;
         RenderingAdapter(RenderingAdapter&&) noexcept = default;
@@ -168,6 +172,7 @@ namespace mpgl {
         typedef std::reference_wrapper<RenderWindow>    RenderWindowRef;
 
         Color                                           background;
+        CleaningOptions                                 cleaning;
         RenderWindowRef                                 reference;
     };
 

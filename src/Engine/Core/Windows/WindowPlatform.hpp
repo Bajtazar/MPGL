@@ -150,16 +150,6 @@ namespace mpgl {
             std::string title, Options const& options = Options{});
 
         /**
-         * Construct a new Window Platform object. Moves the
-         * existing window pointer
-         *
-         * @param window the GLFW pointer
-         */
-        explicit WindowPlatform(
-            GLFWwindow *window) noexcept
-                : window{window} {}
-
-        /**
          * Returns whether the window should be closed
          *
          * @return if the window should be closed

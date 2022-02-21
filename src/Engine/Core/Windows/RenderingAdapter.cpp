@@ -76,7 +76,7 @@ namespace mpgl {
     void RenderingAdapter::onTick(
         std::chrono::milliseconds const& duration) noexcept
     {
-        reference.get().render(background);
+        reference.get().render(cleaning, background);
         reference.get().onTick(duration);
     }
 

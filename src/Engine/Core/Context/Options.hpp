@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include "../../Traits/Types.hpp"
+#include "CleaningOptions.hpp"
 
 namespace mpgl {
 
@@ -34,6 +34,9 @@ namespace mpgl {
      * to determine the renderer and platform settings.
      */
     struct Options {
+        /// The window cleaning options
+        CleaningOptions     cleaningOptions           =
+            CleaningOptions::ColorAndDepthAndStencil;
         /// The major opengl version
         uint16              openGLMajorVersion        = 3;
         /// The minor opengl version

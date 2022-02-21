@@ -97,19 +97,27 @@ namespace mpgl {
         return *this;
     }
 
-    void RenderWindow::bind(Color const& color) noexcept {
+    void RenderWindow::bind(
+        CleaningOptions const& cleaning,
+        [[maybe_unused]] Color const& color) noexcept
+    {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glClearColor(color.red(), color.green(), color.blue(),
-            color.alpha());
-        glClear(ClearMask);
+        if (cleaning != CleaningOptions::None) {
+            glClearColor(color.red(), color.green(), color.blue(),
+                color.alpha());
+            // change to std::to_underlying in C++23
+            glClear(static_cast<uint32>(cleaning));
+        }
     }
 
     void RenderWindow::unbind(void) noexcept {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void RenderWindow::render(Color const& color) noexcept {
-        bind(color);
+    void RenderWindow::render(CleaningOptions const& cleaning,
+        Color const& color) noexcept
+    {
+        bind(cleaning, color);
         std::ranges::for_each(drawables,
             [](auto const& drawable){ drawable->copyToGPU(); });
         std::ranges::for_each(drawables,

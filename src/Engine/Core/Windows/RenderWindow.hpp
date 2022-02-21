@@ -93,9 +93,12 @@ namespace mpgl {
         /**
          * Renders the frame into the texture
          *
+         * @param cleaning the buffer cleaning options
          * @param color the color of the background
          */
-        void render(Color const& color = {}) noexcept;
+        void render(CleaningOptions const& cleaning
+            = CleaningOptions::ColorAndDepthAndStencil,
+            Color const& color = {}) noexcept;
 
         /**
          * Perform screen transformation on the inside
@@ -213,9 +216,11 @@ namespace mpgl {
         /**
          * Binds current framebuffer object
          *
+         * @param cleaning the buffer cleaning options
          * @param color the color of the background
          */
-        void bind(Color const& color) noexcept;
+        void bind(CleaningOptions const& cleaning,
+            Color const& color) noexcept;
 
         /**
          * Unbinds the current framebuffer

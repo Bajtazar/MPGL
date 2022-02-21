@@ -148,9 +148,12 @@ namespace mpgl {
     }
 
     void WindowPlatform::clear(const Color& color) const noexcept {
-        glClearColor(color.red(), color.green(),
-            color.blue(), color.alpha());
-        glClear(GL_COLOR_BUFFER_BIT);
+        if (options.cleaningOptions != CleaningOptions::None) {
+            glClearColor(color.red(), color.green(),
+                color.blue(), color.alpha());
+            // change to std::to_underlying in C++23
+            glClear(static_cast<uint32>(options.cleaningOptions));
+        }
     }
 
     WindowPlatform::~WindowPlatform(void) noexcept {

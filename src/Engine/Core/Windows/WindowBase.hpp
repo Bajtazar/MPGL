@@ -273,10 +273,6 @@ namespace mpgl {
 
         EventBus                                    events;
         Drawables                                   drawables;
-
-        static constexpr uint32                     ClearMask {
-            GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
-            GL_STENCIL_BUFFER_BIT };
     };
 
     template <Event Tp>
