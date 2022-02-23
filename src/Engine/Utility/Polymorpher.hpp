@@ -68,11 +68,14 @@ namespace mpgl {
          *
          * @tparam Fn the invocable type
          * @param invocable the invocable object
+         * @tparam Args the types of invocable arguments
+         * @param args the rest of invocable arguments
          * @return the result of invocation
          */
-        template <typename Fn>
-            requires std::conjunction_v<std::is_invocable<Fn, Types&>...>
-        decltype(auto) invoke(Fn&& invocable);
+        template <typename Fn, typename... Args>
+            requires std::conjunction_v<std::is_invocable<
+                Fn, Types&, Args...>...>
+        decltype(auto) invoke(Fn&& invocable, Args&&... args);
 
         /**
          * Invokes given invocable on the constant underlying object.
@@ -80,34 +83,51 @@ namespace mpgl {
          *
          * @tparam Fn the invocable type
          * @param invocable the invocable object
+         * @tparam Args the types of invocable arguments
+         * @param args the rest of invocable arguments
          * @return the result of invocation
          */
-        template <typename Fn>
+        template <typename Fn, typename... Args>
             requires std::conjunction_v<std::is_invocable<Fn,
-                Types const&>...>
-        decltype(auto) invoke(Fn&& invocable) const;
+                Types const&, Args...>...>
+        decltype(auto) invoke(Fn&& invocable, Args&&... args) const;
 
         /**
          * Destroy the Polymorpher object
          */
         ~Polymorpher(void) = default;
     private:
-        std::variant<Types...>                  variant;
+        std::variant<Types...>                          variant;
     };
 
     template <class... Types>
-    template <typename Fn>
-        requires std::conjunction_v<std::is_invocable<Fn, Types&>...>
-    decltype(auto) Polymorpher<Types...>::invoke(Fn&& invocable) {
-        return std::visit(variant, invocable);
+    template <typename Fn, typename... Args>
+        requires std::conjunction_v<std::is_invocable<
+            Fn, Types&, Args...>...>
+    decltype(auto) Polymorpher<Types...>::invoke(
+        Fn&& invocable, Args&&... args)
+    {
+        return std::visit(variant,
+            [&invocable, ...args=std::forward<Args>(args)](auto&& base)
+        {
+            return std::invoke(invocable, base,
+                std::forward<Args>(args)...);
+        });
     }
 
     template <class... Types>
-    template <typename Fn>
+    template <typename Fn, typename... Args>
         requires std::conjunction_v<std::is_invocable<Fn,
-            Types const&>...>
-    decltype(auto) Polymorpher<Types...>::invoke(Fn&& invocable) const {
-        return std::visit(variant, invocable);
+            Types const&, Args...>...>
+    decltype(auto) Polymorpher<Types...>::invoke(
+        Fn&& invocable, Args&&... args) const
+    {
+        return std::visit(variant,
+            [&invocable, ...args=std::forward<Args>(args)](auto&& base)
+        {
+            return std::invoke(invocable, base,
+                std::forward<Args>(args)...);
+        });
     }
 
 }
