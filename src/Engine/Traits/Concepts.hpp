@@ -208,4 +208,7 @@ namespace mpgl {
      && std::is_move_assignable_v<Alloc>
      && NothrowMoveAssignable<Alloc>;
 
+    template <class Tp, class... Args>
+    concept BelongTo = (std::same_as<Tp, Args> || ...);
+
 }
