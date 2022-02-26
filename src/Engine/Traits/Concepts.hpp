@@ -211,4 +211,20 @@ namespace mpgl {
     template <class Tp, class... Args>
     concept BelongTo = (std::same_as<Tp, Args> || ...);
 
+    template <class Tp>
+    concept Bindable = PureType<Tp> && requires(Tp const& type) {
+        type.bind();
+        { type.unbind() } -> std::same_as<void>;
+    };
+
+    template <class Tp>
+    concept ReturnBindable = Bindable<Tp> && requires(Tp const& type) {
+        { type.bind() } -> std::move_constructible;
+    };
+
+    template <class Tp>
+    concept NonReturnBindable = Bindable<Tp> && requires(Tp const& type) {
+        { type.bind() } -> std::same_as<void>;
+    };
+
 }
