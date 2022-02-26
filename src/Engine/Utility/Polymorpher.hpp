@@ -108,11 +108,12 @@ namespace mpgl {
         Fn&& invocable, Args&&... args)
     {
         return std::visit(variant,
-            [&invocable, ...args=std::forward<Args>(args)](auto&& base)
-        {
-            return std::invoke(invocable, base,
-                std::forward<Args>(args)...);
-        });
+            [&invocable, ...args=std::forward<Args>(args)]
+            (auto&& base) {
+                return std::invoke(invocable, base,
+                    std::forward<Args>(args)...);
+            }
+        );
     }
 
     template <class... Types>
@@ -123,11 +124,12 @@ namespace mpgl {
         Fn&& invocable, Args&&... args) const
     {
         return std::visit(variant,
-            [&invocable, ...args=std::forward<Args>(args)](auto&& base)
-        {
-            return std::invoke(invocable, base,
-                std::forward<Args>(args)...);
-        });
+            [&invocable, ...args=std::forward<Args>(args)]
+            (auto&& base) {
+                return std::invoke(invocable, base,
+                    std::forward<Args>(args)...);
+            }
+        );
     }
 
 }
