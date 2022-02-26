@@ -56,7 +56,7 @@ namespace mpgl {
          * @return whether template strings are equal
          */
         template <std::size_t S1, std::size_t S2>
-        friend constexpr bool operator==(
+        [[nodiscard]] friend constexpr bool operator==(
             TemplateString<S1> const& leftString,
             TemplateString<S2> const& rightString) noexcept;
 
@@ -65,7 +65,7 @@ namespace mpgl {
     };
 
     template <std::size_t S1, std::size_t S2>
-    constexpr bool operator==(
+    [[nodiscard]] constexpr bool operator==(
         TemplateString<S1> const& leftString,
         TemplateString<S2> const& rightString) noexcept
     {

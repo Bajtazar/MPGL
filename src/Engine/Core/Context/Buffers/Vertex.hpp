@@ -83,16 +83,18 @@ namespace mpgl {
          *
          * @return the representation type of the vertex component
          */
-        consteval static VertexComponentType vertexType(void) noexcept
-            { return CT; }
+        [[nodiscard]] consteval static VertexComponentType
+            vertexType(void) noexcept
+                { return CT; }
 
         /**
          * Returns the vertex component name
          *
          * @return the vertex component name
          */
-        consteval static decltype(Name) componentName(void) noexcept
-            { return Name; }
+        [[nodiscard]] consteval static decltype(Name)
+            componentName(void) noexcept
+                { return Name; }
 
         /// The element handled by the vertex component
         Tp                                              element;
@@ -292,7 +294,7 @@ namespace mpgl {
          * vertex component
          */
         template <TemplateString Name>
-        constexpr VertexElementT<Name, Vertex>&
+        [[nodiscard]] constexpr VertexElementT<Name, Vertex>&
             get(void) & noexcept;
 
         /**
@@ -304,7 +306,7 @@ namespace mpgl {
          * in the vertex component
          */
         template <TemplateString Name>
-        constexpr VertexElementT<Name, Vertex> const&
+        [[nodiscard]] constexpr VertexElementT<Name, Vertex> const&
             get(void) const& noexcept;
 
         /**
@@ -316,7 +318,7 @@ namespace mpgl {
          * vertex component
          */
         template <TemplateString Name>
-        constexpr VertexElementT<Name, Vertex>&&
+        [[nodiscard]] constexpr VertexElementT<Name, Vertex>&&
             get(void) && noexcept;
 
         /**
@@ -329,7 +331,7 @@ namespace mpgl {
          */
         template <std::size_t Index>
             requires (Index < sizeof...(Components))
-        constexpr VertexElementT<Index, Vertex>&
+        [[nodiscard]] constexpr VertexElementT<Index, Vertex>&
             get(void) & noexcept;
 
         /**
@@ -342,7 +344,7 @@ namespace mpgl {
          */
         template <std::size_t Index>
             requires (Index < sizeof...(Components))
-        constexpr VertexElementT<Index, Vertex> const&
+        [[nodiscard]] constexpr VertexElementT<Index, Vertex> const&
             get(void) const& noexcept;
 
         /**
@@ -355,7 +357,7 @@ namespace mpgl {
          */
         template <std::size_t Index>
             requires (Index < sizeof...(Components))
-        constexpr VertexElementT<Index, Vertex>&&
+        [[nodiscard]] constexpr VertexElementT<Index, Vertex>&&
             get(void) && noexcept;
 
         /**
@@ -369,7 +371,8 @@ namespace mpgl {
          *
          * @return the array with the memory layout
          */
-        static constexpr MetaArray constructMemoryLayout(void) noexcept;
+        [[nodiscard]] static constexpr MetaArray
+            constructMemoryLayout(void) noexcept;
 
         /**
          * Constructs the components layout in the meta array
@@ -394,8 +397,8 @@ namespace mpgl {
          * @param type the given vertex component type
          * @return the size in bytes of the given type
          */
-        static constexpr uint8 typeSize(
-            VertexComponentType type) noexcept;
+        [[nodiscard]] static constexpr uint8
+            typeSize(VertexComponentType type) noexcept;
     public:
         /// contains the memory layout of the vertex metastruct
         static constexpr const MetaArray                memoryLayout
@@ -405,7 +408,7 @@ namespace mpgl {
     #pragma pack(pop)
 
     template <VertexComponents... Components>
-    constexpr Vertex<Components...>::MetaArray
+    [[nodiscard]] constexpr Vertex<Components...>::MetaArray
         Vertex<Components...>::constructMemoryLayout(void) noexcept
     {
         MetaArray array;
@@ -442,7 +445,7 @@ namespace mpgl {
     }
 
     template <VertexComponents... Components>
-    constexpr uint8 Vertex<Components...>::typeSize(
+    [[nodiscard]] constexpr uint8 Vertex<Components...>::typeSize(
         VertexComponentType type) noexcept
     {
         switch (type) {
@@ -472,7 +475,7 @@ namespace mpgl {
     {
         static_assert(Name == Element::componentName(),
             "Invalid field name");
-        return Element{};
+        return element;
     }
 
     template <TemplateString Name, VertexComponents... Components>
@@ -482,15 +485,16 @@ namespace mpgl {
             Element element, Rest... rest) noexcept
     {
         if constexpr (Name == Element::componentName())
-            return Element{};
+            return element;
         else
             return deduceType(rest...);
     }
 
     template <VertexComponents... Components>
     template <TemplateString Name>
-    constexpr VertexElementT<Name, Vertex<Components...>>&
-        Vertex<Components...>::get(void) & noexcept
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Components...>>&
+            Vertex<Components...>::get(void) & noexcept
     {
         using Under = VertexElement<Name, Vertex>::ComponentType;
         return std::get<Under>(static_cast<
@@ -499,8 +503,9 @@ namespace mpgl {
 
     template <VertexComponents... Components>
     template <TemplateString Name>
-    constexpr VertexElementT<Name, Vertex<Components...>> const&
-        Vertex<Components...>::get(void) const& noexcept
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Components...>> const&
+            Vertex<Components...>::get(void) const& noexcept
     {
         using Under = VertexElement<Name, Vertex>::ComponentType;
         return std::get<Under>(static_cast<
@@ -509,8 +514,9 @@ namespace mpgl {
 
     template <VertexComponents... Components>
     template <TemplateString Name>
-    constexpr VertexElementT<Name, Vertex<Components...>>&&
-        Vertex<Components...>::get(void) && noexcept
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Components...>>&&
+            Vertex<Components...>::get(void) && noexcept
     {
         using Under = VertexElement<Name, Vertex>::ComponentType;
         return std::move(std::get<Under>(static_cast<
@@ -520,8 +526,9 @@ namespace mpgl {
     template <VertexComponents... Components>
     template <std::size_t Index>
         requires (Index < sizeof...(Components))
-    constexpr VertexElementT<Index, Vertex<Components...>>&
-        Vertex<Components...>::get(void) & noexcept
+    [[nodiscard]] constexpr
+        VertexElementT<Index, Vertex<Components...>>&
+            Vertex<Components...>::get(void) & noexcept
     {
         using Under = VertexElement<Index, Vertex>::ComponentType;
         return std::get<Under>(static_cast<
@@ -531,8 +538,9 @@ namespace mpgl {
     template <VertexComponents... Components>
     template <std::size_t Index>
         requires (Index < sizeof...(Components))
-    constexpr VertexElementT<Index, Vertex<Components...>> const&
-        Vertex<Components...>::get(void) const& noexcept
+    [[nodiscard]] constexpr
+        VertexElementT<Index, Vertex<Components...>> const&
+            Vertex<Components...>::get(void) const& noexcept
     {
         using Under = VertexElement<Index, Vertex>::ComponentType;
         return std::get<Under>(static_cast<
@@ -542,8 +550,9 @@ namespace mpgl {
     template <VertexComponents... Components>
     template <std::size_t Index>
         requires (Index < sizeof...(Components))
-    constexpr VertexElementT<Index, Vertex<Components...>>&&
-        Vertex<Components...>::get(void) && noexcept
+    [[nodiscard]] constexpr
+        VertexElementT<Index, Vertex<Components...>>&&
+            Vertex<Components...>::get(void) && noexcept
     {
         using Under = VertexElement<Index, Vertex>::ComponentType;
         return std::move(std::get<Under>(static_cast<
