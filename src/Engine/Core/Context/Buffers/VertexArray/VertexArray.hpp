@@ -116,7 +116,48 @@ namespace mpgl {
          * @param mode the drawing mode
          * @param size the number of drawed vertices
          */
-        void draw(DrawMode mode, uint32 size) const noexcept;
+        void drawArrays(DrawMode mode, uint32 size) const noexcept;
+
+        /**
+         * Draws the attached vertex buffer and element buffer
+         * on the screen
+         *
+         * @param mode the drawing mode
+         * @param size the number of drawed indices
+         * @param dataType the type of the indices
+         */
+        void drawElements(
+            DrawMode mode,
+            uint32 size,
+            DataType dataType) const noexcept;
+
+        /**
+         * Draws instances of the attached vertex buffer on the
+         * screen
+         *
+         * @param mode the drawing mode
+         * @param size the number of drawed vertices
+         * @param instances the number of drawed instances
+         */
+        void drawInstancedArrays(
+            DrawMode mode,
+            uint32 size,
+            uint32 instances) const noexcept;
+
+        /**
+         * Draws instances of the attached vertex buffer and the
+         * element buffer on the screen
+         *
+         * @param mode the drawing mode
+         * @param size the number of drawed indices
+         * @param dataType the type of the indices
+         * @param instances the number of drawed instances
+         */
+        void drawInstancedElements(
+            DrawMode mode,
+            uint32 size,
+            DataType dataType,
+            uint32 instances) const noexcept;
 
         /**
          * Destroy the Vertex Array object

@@ -27,9 +27,7 @@
 
 #include "../../../Traits/TemplateString.hpp"
 #include "../../../Utility/FixedRange.hpp"
-#include "../../../Traits/Types.hpp"
-
-#include <glad/glad.h>
+#include "../DataType.hpp"
 
 #include <array>
 #include <tuple>
@@ -37,44 +35,18 @@
 namespace mpgl {
 
     /**
-     * The base representation types for the vertex component. All
+     * Stores informations about vertex component. Allows access
+     * to underlying element also providing informations about
+     * component name and its representation type. All
      * components are set in the vertex array object as vectors
      * of representation types. The component element types
      * should be wrapped vectors of one of below types
-     */
-    enum class VertexComponentType : uint16 {
-        /// The 8-bit signed integer
-        Int8                                          = GL_BYTE,
-        /// the 8-bit unsigned integer
-        UInt8                                         = GL_UNSIGNED_BYTE,
-        /// the 16-bit signed integer
-        Int16                                         = GL_SHORT,
-        /// the 16-bit unsigned integer
-        UInt16                                        = GL_UNSIGNED_SHORT,
-        /// the 32-bit signed integer
-        Int32                                         = GL_INT,
-        /// the 32-bit unsigned integer
-        UInt32                                        = GL_UNSIGNED_INT,
-        /// the 16-bit floating point
-        Float16                                       = GL_HALF_FLOAT,
-        /// the 32-bit floating point (single precision)
-        Float32                                       = GL_FLOAT,
-        /// the 64-bit floating point (double precision)
-        Float64                                       = GL_DOUBLE,
-        /// the 32-bit fixed point [16:16]
-        Fixed                                         = GL_FIXED
-    };
-
-    /**
-     * Stores informations about vertex component. Allows access
-     * to underlying element also providing informations about
-     * component name and its representation type
      *
      * @tparam Name the name of the component
      * @tparam Tp the type of underlying element
      * @tparam CT the component representation type
      */
-    template <TemplateString Name, typename Tp, VertexComponentType CT>
+    template <TemplateString Name, typename Tp, DataType CT>
     struct VertexComponent {
         typedef Tp                                      BaseType;
 
@@ -83,7 +55,7 @@ namespace mpgl {
          *
          * @return the representation type of the vertex component
          */
-        [[nodiscard]] consteval static VertexComponentType
+        [[nodiscard]] consteval static DataType
             vertexType(void) noexcept
                 { return CT; }
 
@@ -117,8 +89,7 @@ namespace mpgl {
          * @tparam CT the representation of the vertex component
          * @return std::true_type
          */
-        template <TemplateString Name, typename Up,
-            VertexComponentType CT>
+        template <TemplateString Name, typename Up, DataType CT>
         static constexpr auto helper(VertexComponent<Name, Up, CT>
             ) -> std::true_type;
         /**
@@ -262,8 +233,7 @@ namespace mpgl {
          * component, the offset from the begining of the layout
          * [in bits] to the component and the represented type
          */
-        typedef std::tuple<uint16, uint32,
-            VertexComponentType>                        MetaTuple;
+        typedef std::tuple<uint16, uint32, DataType>    MetaTuple;
         typedef FixedRange<sizeof...(Components),
             std::array<MetaTuple,
             sizeof...(Components)>>                     MetaArray;
@@ -398,7 +368,7 @@ namespace mpgl {
          * @return the size in bytes of the given type
          */
         [[nodiscard]] static constexpr uint8
-            typeSize(VertexComponentType type) noexcept;
+            typeSize(DataType type) noexcept;
     public:
         /// contains the memory layout of the vertex metastruct
         static constexpr const MetaArray                memoryLayout
@@ -446,22 +416,22 @@ namespace mpgl {
 
     template <VertexComponents... Components>
     [[nodiscard]] constexpr uint8 Vertex<Components...>::typeSize(
-        VertexComponentType type) noexcept
+        DataType type) noexcept
     {
         switch (type) {
-            case VertexComponentType::Int8:
-            case VertexComponentType::UInt8:
+            case DataType::Int8:
+            case DataType::UInt8:
                 return 1;
-            case VertexComponentType::Int16:
-            case VertexComponentType::UInt16:
-            case VertexComponentType::Float16:
+            case DataType::Int16:
+            case DataType::UInt16:
+            case DataType::Float16:
                 return 2;
-            case VertexComponentType::Int32:
-            case VertexComponentType::UInt32:
-            case VertexComponentType::Float32:
-            case VertexComponentType::Fixed:
+            case DataType::Int32:
+            case DataType::UInt32:
+            case DataType::Float32:
+            case DataType::Fixed:
                 return 4;
-            case VertexComponentType::Float64:
+            case DataType::Float64:
                 return 8;
         }
         return 0;

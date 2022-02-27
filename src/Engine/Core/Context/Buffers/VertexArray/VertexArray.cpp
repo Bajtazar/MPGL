@@ -55,9 +55,42 @@ namespace mpgl {
         glBindVertexArray(0);
     }
 
-    void VertexArray::draw(DrawMode mode, uint32 size) const noexcept {
+    void VertexArray::drawArrays(
+        DrawMode mode, uint32 size) const noexcept
+    {
         // Change static cast to std::to_underlying in C++23
         glDrawArrays(static_cast<uint16>(mode), 0, size);
+    }
+
+    void VertexArray::drawElements(
+        DrawMode mode,
+        uint32 size,
+        DataType dataType) const noexcept
+    {
+        // Change static cast to std::to_underlying in C++23
+        glDrawElements(static_cast<uint16>(mode), size,
+            static_cast<uint16>(dataType), 0);
+    }
+
+    void VertexArray::drawInstancedArrays(
+        DrawMode mode,
+        uint32 size,
+        uint32 instances) const noexcept
+    {
+        // Change static cast to std::to_underlying in C++23
+        glDrawArraysInstanced(static_cast<uint16>(mode), 0,
+            size, instances);
+    }
+
+    void VertexArray::drawInstancedElements(
+        DrawMode mode,
+        uint32 size,
+        DataType dataType,
+        uint32 instances) const noexcept
+    {
+        // Change static cast to std::to_underlying in C++23
+        glDrawElementsInstanced(static_cast<uint16>(mode), size,
+            static_cast<uint16>(dataType), 0, instances);
     }
 
     VertexArray::~VertexArray(void) noexcept {
