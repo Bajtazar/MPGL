@@ -80,7 +80,7 @@ namespace mpgl {
         template <std::ranges::contiguous_range Range>
             requires std::ranges::sized_range<Range>
         void setBufferData(Range&& range,
-            BufferType const& type = BufferType::Static) noexcept;
+            BufferType const& type = BufferType::Static) const noexcept;
 
         /**
          * Maps the pointer to the given buffer
@@ -170,7 +170,7 @@ namespace mpgl {
         requires std::ranges::sized_range<Range>
     void VertexBuffer::setBufferData(
         Range&& range,
-        BufferType const& type) noexcept
+        BufferType const& type) const noexcept
     {
         glBindBuffer(GL_ARRAY_BUFFER, bufferID);
         glBufferData(GL_ARRAY_BUFFER,
