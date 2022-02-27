@@ -83,28 +83,6 @@ namespace mpgl {
             BufferType const& type = BufferType::Static) noexcept;
 
         /**
-         * Mass initalizes vertex buffers and returns the range
-         * with created vertex buffer objects. Creates buffers
-         * faster than individual constructors
-         *
-         * @tparam Range the type of the returned range
-         * @param size the number of th returned buffers
-         * @return the range with created buffers
-         */
-        template <UnderlyingRange<VertexBuffer> Range>
-        static Range initializeBuffers(uint32 size);
-
-        /**
-         * Destroys all of the given buffers and performs
-         * faster than individual destructors
-         *
-         * @tparam Range the type of range with buffers
-         * @param range the range with buffers
-         */
-        template <UnderlyingRange<VertexBuffer> Range>
-        static void destroyBuffers(Range&& range);
-
-        /**
          * Maps the pointer to the given buffer
          *
          * @return the pointer to the mapped memory
@@ -200,28 +178,6 @@ namespace mpgl {
             // change to std::to_underlying in C++23
             std::ranges::data(range), static_cast<uint16>(type));
         bindDefaultBuffer();
-    }
-
-    template <UnderlyingRange<VertexBuffer> Range>
-    Range VertexBuffer::initializeBuffers(uint32 size) {
-        std::vector<uint32> buffers;
-        buffers.resize(size);
-        glGenBuffers(size, buffers.data());
-        Range vertexBuffers;
-        vertexBuffers.reserve(size);
-        std::ranges::transform(
-            buffers, std::back_inserter(vertexBuffers),
-            [](auto const& bufferID) { return VertexBuffer(bufferID); });
-        return vertexBuffers;
-    }
-
-    template <UnderlyingRange<VertexBuffer> Range>
-    void VertexBuffer::destroyBuffers(Range&& range) {
-        auto view = range | std::views::transform(&VertexBuffer::bufferID);
-        std::vector<uint32> bufferIDs{std::ranges::begin(view),
-            std::ranges::end(view)};
-        glDeleteBuffers(bufferIDs.size(), bufferIDs.data());
-        std::ranges::fill(view, 0);
     }
 
 }
