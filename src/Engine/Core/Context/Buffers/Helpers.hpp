@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include "ElementArrayBuffer/ElementArrayBuffer.hpp"
 #include "VertexBuffer/VertexBuffer.hpp"
 #include "VertexArray/VertexArray.hpp"
 
@@ -77,6 +78,10 @@ namespace mpgl {
     using initializeVertexArrays = BuffersInitializer<
         VertexArray, glGenVertexArrays, Range>;
 
+    template <UnderlyingRange<ElementArrayBuffer> Range>
+    using initializElementArrayBuffers = BuffersInitializer<
+        ElementArrayBuffer, glGenBuffers, Range>;
+
     /**
      * Buffet destruction helper. Destroys buffers
      * of the given type
@@ -117,5 +122,10 @@ namespace mpgl {
     template <UnderlyingRange<VertexArray> Range>
     using destroyVertexArrays = BuffersDestroyer<VertexArray,
         glDeleteVertexArrays, &VertexArray::arrayID, Range>;
+
+    template <UnderlyingRange<ElementArrayBuffer> Range>
+    using destroyElementArrayBuffers = BuffersDestroyer<
+        ElementArrayBuffer, glDeleteBuffers,
+        &ElementArrayBuffer::elementID, Range>;
 
 }

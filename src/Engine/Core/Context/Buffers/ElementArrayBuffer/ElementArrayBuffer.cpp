@@ -61,7 +61,8 @@ namespace mpgl {
     }
 
     ElementArrayBuffer::~ElementArrayBuffer(void) noexcept {
-        glDeleteBuffers(1, &elementID);
+        if (elementID)
+            glDeleteBuffers(1, &elementID);
     }
 
 }

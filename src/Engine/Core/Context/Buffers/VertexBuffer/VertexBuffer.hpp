@@ -103,7 +103,7 @@ namespace mpgl {
          * Destroy the Vertex Buffer object
          */
         ~VertexBuffer(void) noexcept;
-    private:
+
         /**
          * Construct a new Vertex Buffer object. Moves the
          * already existing handle to the vertex buffer
@@ -111,7 +111,7 @@ namespace mpgl {
          * @param bufferID the moved buffer id
          */
         explicit VertexBuffer(uint32 bufferID) noexcept;
-
+    private:
         uint32                                  bufferID;
     };
 

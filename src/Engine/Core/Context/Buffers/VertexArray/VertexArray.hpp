@@ -163,7 +163,7 @@ namespace mpgl {
          * Destroy the Vertex Array object
          */
         ~VertexArray(void) noexcept;
-    private:
+
         /**
          * Construct a new Vertex Array object. Moves the
          * already existing handle to the vertex array
@@ -171,7 +171,7 @@ namespace mpgl {
          * @param arrayID the moved array id
          */
         explicit VertexArray(uint32 arrayID) noexcept;
-
+    private:
         uint32                                      arrayID;
     };
 

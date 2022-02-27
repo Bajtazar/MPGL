@@ -100,7 +100,7 @@ namespace mpgl {
          * Destroy the Element Array Buffer object
          */
         ~ElementArrayBuffer(void) noexcept;
-    private:
+
         /**
          * Construct a new Element Array Buffer object. Moves the
          * already existing handle to the element array buffer
@@ -108,7 +108,7 @@ namespace mpgl {
          * @param elementID the moved element id
          */
         explicit ElementArrayBuffer(uint32 elementID) noexcept;
-
+    private:
         uint32                                  elementID;
     };
 

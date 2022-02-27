@@ -27,7 +27,7 @@
 
 #include "../../../Traits/TemplateString.hpp"
 #include "../../../Utility/FixedRange.hpp"
-#include "../DataType.hpp"
+#include "DataType.hpp"
 
 #include <array>
 #include <tuple>
