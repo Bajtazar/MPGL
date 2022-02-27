@@ -28,104 +28,275 @@
 #include "ElementArrayBuffer/ElementArrayBuffer.hpp"
 #include "VertexBuffer/VertexBuffer.hpp"
 #include "VertexArray/VertexArray.hpp"
+#include "FrameBuffer/FrameBuffer.hpp"
 
 namespace mpgl {
 
-    typedef void(*BufferGenerator)(GLsizei, GLuint*);
-    typedef void(*BufferDestroyer)(GLsizei, const GLuint*);
+    namespace details {
+
+        /// Generates normal buffers
+        inline auto generateBuffers = [] (uint32 size, uint32* ptr) {
+            glGenBuffers(size, ptr);
+        };
+
+        /// Generates vertex arrays
+        inline auto generateArrays = [] (uint32 size, uint32* ptr) {
+            glGenVertexArrays(size, ptr);
+        };
+
+        /// Destroys normal buffers
+        inline auto destroyBuffers = [] (uint32 size, uint32* const ptr)
+        {
+            glDeleteBuffers(size, ptr);
+        };
+
+        /// Destroys vertex arrays
+        inline auto destroyArrays = [] (uint32 size, uint32* const ptr)
+        {
+            glDeleteVertexArrays(size, ptr);
+        };
+
+    }
 
     /**
-     * Buffet initialization helper. Initializes buffers
-     * of the given type
-     *
-     * @tparam BufferType the buffer type
-     * @tparam generator the generating function pointer
-     * @tparam Range the range with created buffers
+     * Allows to allocate many buffers at once, saving time on
+     * individual draw calls
      */
-    template <typename BufferType,
-        BufferGenerator generator,
-        UnderlyingRange<BufferType> Range>
-    struct BuffersInitializer {
+    struct BuffersManagement {
 
         /**
-         * Mass initalizes buffers and returns the range
-         * with created buffer objects. Creates buffers
-         * faster than individual constructors
+         * Buffer initialization helper. Initializes buffers
+         * of the given type
          *
+         * @tparam BufferType the buffer type
+         * @tparam generator the generating function pointer
          * @tparam Range the type of the returned range
-         * @param size the number of th returned buffers
-         * @return the range with created buffers
          */
-        [[nodiscard]] Range operator() (uint32 size) const {
-            std::vector<uint32> buffers;
-            buffers.resize(size);
-            generator(size, buffers.data());
-            Range handlers;
-            handlers.reserve(size);
-            std::ranges::transform(
-                buffers, std::back_inserter(handlers),
-                [](auto const& bufferID) { return BufferType(bufferID); });
-            return handlers;
-        }
+        template <typename BufferType, auto generator,
+            UnderlyingRange<BufferType> Range>
+        struct BuffersInitializer {
 
-    };
+            /**
+             * Mass initalizes buffers and returns the range
+             * with created buffer objects. Creates buffers
+             * faster than individual constructors
+             *
+             * @tparam Range the type of the returned range
+             * @param size the number of the returned buffers
+             * @return the range with created buffers
+             */
+            [[nodiscard]] Range operator() (uint32 size) const {
+                std::vector<uint32> buffers;
+                buffers.resize(size);
+                generator(size, buffers.data());
+                Range handlers;
+                handlers.reserve(size);
+                std::ranges::transform(
+                    buffers, std::back_inserter(handlers),
+                    [](auto const& bufferID) { return BufferType(bufferID); });
+                return handlers;
+            }
 
-    template <UnderlyingRange<VertexBuffer> Range>
-    using initializeVertexBuffers = BuffersInitializer<
-        VertexBuffer, glGenBuffers, Range>;
-
-    template <UnderlyingRange<VertexArray> Range>
-    using initializeVertexArrays = BuffersInitializer<
-        VertexArray, glGenVertexArrays, Range>;
-
-    template <UnderlyingRange<ElementArrayBuffer> Range>
-    using initializElementArrayBuffers = BuffersInitializer<
-        ElementArrayBuffer, glGenBuffers, Range>;
-
-    /**
-     * Buffet destruction helper. Destroys buffers
-     * of the given type
-     *
-     * @tparam BufferType the buffer type
-     * @tparam destroyer the destroying function pointer
-     * @tparam projection the projection with the buffer
-     * member pointer
-     * @tparam Range the range with buffers
-     */
-    template <typename BufferType,
-        BufferDestroyer destroyer,
-        uint32 BufferType::* projection,
-        UnderlyingRange<BufferType> Range>
-    struct BuffersDestroyer {
+        };
 
         /**
-         * Destroys all of the given buffers and performs
-         * faster than individual destructors
+         * Buffer initialization helper. Initializes the Frame
+         * Buffers
          *
-         * @tparam Range the type of range with buffers
-         * @param range the range with buffers
+         * @tparam Range the Frame Buffers range
          */
-        void operator() (Range&& range) const {
-            auto view = range | std::views::transform(projection);
-            std::vector<uint32> bufferIDs{std::ranges::begin(view),
-                std::ranges::end(view)};
-            destroyer(bufferIDs.size(), bufferIDs.data());
-            std::ranges::fill(view, 0);
-        }
+        template <UnderlyingRange<FrameBuffer> Range>
+        struct BuffersInitializer<FrameBuffer, nullptr, Range> {
+
+            /**
+             * Mass initalizes frame buffers and returns the range
+             * with created buffer objects. Creates buffers
+             * faster than individual constructors
+             *
+             * @param size the number of the returned frame buffers
+             * @return the range with created buffers
+             */
+            [[nodiscard]] Range operator() (uint32 size) const {
+                std::vector<uint32> framebuffers;
+                std::vector<uint32> renderbuffers;
+                framebuffers.resize(size);
+                renderbuffers.resize(size);
+                glGenFramebuffers(size, framebuffers.data());
+                glGenRenderbuffers(size, renderbuffers.data());
+                Range handlers;
+                handlers.reserve(size);
+                for (uint32 i = 0;i < size; ++i)
+                    handlers.emplace_back(FrameBuffer{framebuffers[i],
+                        renderbuffers[i]});
+                return handlers;
+            }
+
+        };
+
+        /**
+         * Buffet destruction helper. Destroys buffers
+         * of the given type
+         *
+         * @tparam BufferType the buffer type
+         * @tparam destroyer the destroying function pointer
+         * @tparam Range the type of range with buffers
+         */
+        template <typename BufferType, auto destroyer,
+            UnderlyingRange<BufferType> Range>
+        struct BuffersDestroyer {
+
+            /**
+             * Destroys all of the given buffers and performs
+             * it faster than individual destructors
+             *
+             * @tparam Range the type of range with buffers
+             * @param range the range with buffers
+             */
+            void operator() (Range&& range) const {
+                auto view = range | std::views::transform(
+                    [](auto& element) -> uint32& {
+                        return element.getBuffer(); });
+                std::vector<uint32> bufferIDs{std::ranges::begin(view),
+                    std::ranges::end(view)};
+                destroyer(bufferIDs.size(), bufferIDs.data());
+                std::ranges::fill(view, 0);
+            }
+
+        };
+
+        /**
+         * Buffet destruction helper. Destroys frame buffers
+         *
+         * @tparam Range the type of range with frame buffers
+         */
+        template <UnderlyingRange<FrameBuffer> Range>
+        struct BuffersDestroyer<FrameBuffer, nullptr, Range> {
+
+            /**
+             * Destroys all of the given frame buffers and
+             * performs it faster than individual destructors
+             *
+             * @tparam Range the type of range with frame buffers
+             * @param range the range with frame buffers
+             */
+            void operator() (Range&& range) const {
+                auto frame = range | std::views::transform(
+                    &FrameBuffer::frameID);
+                auto render = range | std::views::transform(
+                    &FrameBuffer::renderID);
+                std::vector<uint32> frameIDs{frame.begin(), frame.end()};
+                std::vector<uint32> renderIDs{render.begin(), render.end()};
+                glDeleteFramebuffers(frameIDs.size(), frameIDs.data());
+                glDeleteRenderbuffers(renderIDs.size(), renderIDs.data());
+                std::ranges::fill(frame, 0);
+                std::ranges::fill(render, 0);
+            }
+
+        };
 
     };
 
+    /**
+     * Initializes the vertex buffers
+     *
+     * @tparam Range the type of the retured range
+     * @param size the number of created buffers
+     * @return the range with created buffers
+     */
     template <UnderlyingRange<VertexBuffer> Range>
-    using destroyVertexBuffers = BuffersDestroyer<VertexBuffer,
-        glDeleteBuffers, &VertexBuffer::bufferID, Range>;
+    Range initializeVertexBuffers(uint32 size) {
+        return BuffersManagement::BuffersInitializer<VertexBuffer,
+            details::generateBuffers, Range>{}(size);
+    }
 
+    /**
+     * Initializes the vertex arrays
+     *
+     * @tparam Range the type of the retured range
+     * @param size the number of created arrays
+     * @return the range with created arrays
+     */
     template <UnderlyingRange<VertexArray> Range>
-    using destroyVertexArrays = BuffersDestroyer<VertexArray,
-        glDeleteVertexArrays, &VertexArray::arrayID, Range>;
+    Range initializeVertexArrays(uint32 size) {
+        return BuffersManagement::BuffersInitializer<VertexArray,
+            details::generateArrays, Range>{}(size);
+    }
 
+    /**
+     * Initializes the element array buffers
+     *
+     * @tparam Range the type of the retured range
+     * @param size the number of created buffers
+     * @return the range with created buffers
+     */
     template <UnderlyingRange<ElementArrayBuffer> Range>
-    using destroyElementArrayBuffers = BuffersDestroyer<
-        ElementArrayBuffer, glDeleteBuffers,
-        &ElementArrayBuffer::elementID, Range>;
+    Range initializeElementArrayBuffers(uint32 size) {
+        return BuffersManagement::BuffersInitializer<ElementArrayBuffer,
+            details::generateBuffers, Range>{}(size);
+    }
+
+    /**
+     * Initializes the frame buffers
+     *
+     * @tparam Range the type of the retured range
+     * @param size the number of created buffers
+     * @return the range with created buffers
+     */
+    template <UnderlyingRange<FrameBuffer> Range>
+    Range initializeFrameBuffers(uint32 size) {
+        return BuffersManagement::BuffersInitializer<FrameBuffer,
+            nullptr, Range>{}(size);
+    }
+
+    /**
+     * Destroyes the vertex buffers
+     *
+     * @tparam Range the type of the range with buffers
+     * @param range the range with buffers
+     */
+    template <UnderlyingRange<VertexBuffer> Range>
+    void destroyVertexBuffers(Range&& range) {
+        BuffersManagement::BuffersDestroyer<VertexBuffer,
+            details::destroyBuffers, Range>
+                {}(std::forward<Range>(range));
+    }
+
+    /**
+     * Destroyes the vertex arrays
+     *
+     * @tparam Range the type of the range with arrays
+     * @param range the range with arrays
+     */
+    template <UnderlyingRange<VertexArray> Range>
+    void destroyVertexArrays(Range&& range) {
+        BuffersManagement::BuffersDestroyer<VertexArray,
+            details::destroyArrays, Range>
+                {}(std::forward<Range>(range));
+    }
+
+    /**
+     * Destroyes the element array buffers
+     *
+     * @tparam Range the type of the range with buffers
+     * @param range the range with buffers
+     */
+    template <UnderlyingRange<ElementArrayBuffer> Range>
+    void destroyElementArrayBuffers(Range&& range) {
+        BuffersManagement::BuffersDestroyer<ElementArrayBuffer,
+            details::destroyBuffers, Range>{}(
+                std::forward<Range>(range));
+    }
+
+    /**
+     * Destroyes the frame buffers
+     *
+     * @tparam Range the type of the range with buffers
+     * @param range the range with buffers
+     */
+    template <UnderlyingRange<FrameBuffer> Range>
+    void destroyFrameBuffers(Range&& range) {
+        BuffersManagement::BuffersDestroyer<FrameBuffer, nullptr,
+            Range>{}(std::forward<Range>(range));
+    }
 
 }

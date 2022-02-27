@@ -30,6 +30,11 @@
 namespace mpgl {
 
     /**
+     * Buffers Management declaration
+     */
+    class BuffersManagement;
+
+    /**
      * Manages the handle to the OpenGL element array buffer object
      */
     class ElementArrayBuffer : private GraphicalObject {
@@ -101,6 +106,8 @@ namespace mpgl {
          */
         ~ElementArrayBuffer(void) noexcept;
 
+        friend class BuffersManagement;
+    private:
         /**
          * Construct a new Element Array Buffer object. Moves the
          * already existing handle to the element array buffer
@@ -108,7 +115,15 @@ namespace mpgl {
          * @param elementID the moved element id
          */
         explicit ElementArrayBuffer(uint32 elementID) noexcept;
-    private:
+
+        /**
+         * Returns the reference to the inner buffer
+         *
+         * @return the reference to the inner buffer
+         */
+        uint32& getBuffer(void) noexcept
+            { return elementID; }
+
         uint32                                  elementID;
     };
 

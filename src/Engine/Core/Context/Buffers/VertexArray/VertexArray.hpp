@@ -31,6 +31,11 @@
 namespace mpgl {
 
     /**
+     * Buffers Management declaration
+     */
+    class BuffersManagement;
+
+    /**
      * Manages the handle to the OpenGL vertex array object
      */
     class VertexArray : private GraphicalObject {
@@ -164,6 +169,8 @@ namespace mpgl {
          */
         ~VertexArray(void) noexcept;
 
+        friend class BuffersManagement;
+    private:
         /**
          * Construct a new Vertex Array object. Moves the
          * already existing handle to the vertex array
@@ -171,7 +178,15 @@ namespace mpgl {
          * @param arrayID the moved array id
          */
         explicit VertexArray(uint32 arrayID) noexcept;
-    private:
+
+        /**
+         * Returns the reference to the inner buffer
+         *
+         * @return the reference to the inner buffer
+         */
+        uint32& getBuffer(void) noexcept
+            { return arrayID; }
+
         uint32                                      arrayID;
     };
 

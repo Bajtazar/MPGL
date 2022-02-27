@@ -30,6 +30,11 @@
 namespace mpgl {
 
     /**
+     * Buffers Management declaration
+     */
+    class BuffersManagement;
+
+    /**
      * Manages the handle to the OpenGL frame buffer object and
      * render buffer object
      */
@@ -99,6 +104,8 @@ namespace mpgl {
          */
         ~FrameBuffer(void) noexcept;
 
+        friend class BuffersManagement;
+    private:
         /**
          * Construct a new Frame Buffer object. Moves the already
          * existing handle to the frame buffer and render buffer
@@ -107,7 +114,7 @@ namespace mpgl {
          * @param renderID the moved render buffer id
          */
         explicit FrameBuffer(uint32 frameID, uint32 renderID) noexcept;
-    private:
+
         uint32                              frameID;
         uint32                              renderID;
     };
