@@ -10,4 +10,4 @@ Makefile.save.*
 *.png
 *.jpeg
 glad.c
-textures/
+./textures/

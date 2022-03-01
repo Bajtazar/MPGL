@@ -101,7 +101,7 @@ namespace mpgl {
         /**
          * Generates mipmaps
          */
-        void generateMipmas(void) const noexcept;
+        void generateMipmaps(void) const noexcept;
 
         /**
          * Sets the given parameters on the texture buffer object

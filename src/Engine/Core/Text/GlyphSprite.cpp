@@ -1,5 +1,7 @@
 #include "GlyphSprite.hpp"
 
+#include "../Context/Buffers/BindGuard.hpp"
+
 namespace mpgl {
 
     template <bool IsMonochromatic>
@@ -159,12 +161,12 @@ namespace mpgl {
 
     template <bool IsMonochromatic>
     void GlyphSprite<IsMonochromatic>::draw(void) const noexcept {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+        auto const& textureBuffer = texture.getTextureBuffer();
+        textureBuffer.activate();
+        BindGuard guard{textureBuffer};
         glBindVertexArray(vertexArrayObject);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     template <bool IsMonochromatic>

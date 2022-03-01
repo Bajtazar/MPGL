@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../Color.hpp"
-#include "../Texture.hpp"
+
 #include "../Drawable.hpp"
+#include "../Textures/Texture.hpp"
 #include "../../Utility/Adapter.hpp"
 #include "../../Mathematics/Systems.hpp"
 #include "../Transformations/Transformable2D.hpp"

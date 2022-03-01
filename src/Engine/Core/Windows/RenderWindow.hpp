@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include "../Texture.hpp"
+#include "../Textures/Texture.hpp"
 #include "WindowBase.hpp"
 
 namespace mpgl {
@@ -198,14 +198,12 @@ namespace mpgl {
         /**
          * Finishes the texture configuration
          *
+         * @param buffer the texture buffer
          * @param options the texture options
          */
-        void finishTextureSetting(Options const& options) noexcept;
-
-        /**
-         * Binds depth and stencil buffers to framebuffer
-         */
-        void bindDepthAndStencil(void) noexcept;
+        void finishTextureSetting(
+            TextureBuffer const& buffer,
+            Options const& options) noexcept;
 
         /**
          * Binds renderbuffer to framebuffer

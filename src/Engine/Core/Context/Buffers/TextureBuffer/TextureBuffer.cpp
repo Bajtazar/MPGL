@@ -60,7 +60,7 @@ namespace mpgl {
             GL_UNSIGNED_BYTE, imagePtr);
     }
 
-    void TextureBuffer::generateMipmas(void) const noexcept {
+    void TextureBuffer::generateMipmaps(void) const noexcept {
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
@@ -104,7 +104,8 @@ namespace mpgl {
     }
 
     TextureBuffer::~TextureBuffer(void) noexcept {
-        glDeleteTextures(1, &textureID);
+        if (textureID)
+            glDeleteTextures(1, &textureID);
     }
 
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Color.hpp"
-#include "../Texture.hpp"
+#include "../Textures/Texture.hpp"
 #include "../Shaders/Shadeable.hpp"
 #include "../../Utility/Adapter.hpp"
 #include "../Transformations/Transformable2D.hpp"

@@ -36,8 +36,9 @@ namespace mpgl {
         glGenRenderbuffers(1, &renderbuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
-        finishTextureSetting(options);
-        bindDepthAndStencil();
+        auto const& buffer = windowTexture.getTextureBuffer();
+        finishTextureSetting(buffer, options);
+        buffer.connectToDepthAndStencilBuffer();
         bindRenderbuffer();
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER)
@@ -47,22 +48,15 @@ namespace mpgl {
     }
 
     void RenderWindow::finishTextureSetting(
+        TextureBuffer const& buffer,
         Options const& options) noexcept
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+        buffer.loadImage(TextureBuffer::PixelFormat::RGBA,
             context.windowDimensions[0],
-            context.windowDimensions[1], 0, GL_RGBA,
-            GL_UNSIGNED_BYTE, NULL);
+            context.windowDimensions[1], nullptr);
         if (options.mipmaps)
-            glGenerateMipmap(GL_TEXTURE_2D);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-            GL_TEXTURE_2D, windowTexture.getTexture(), 0);
-    }
-
-    void RenderWindow::bindDepthAndStencil(void) noexcept {
-        glFramebufferTexture2D(GL_FRAMEBUFFER,
-            GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
-            windowTexture.getTexture(), 0);
+            buffer.generateMipmaps();
+        buffer.connectToFramebuffer();
     }
 
     void RenderWindow::bindRenderbuffer(void) noexcept {

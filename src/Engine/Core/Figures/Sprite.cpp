@@ -1,6 +1,7 @@
 #include "Sprite.hpp"
 #include "Views.hpp"
 #include "../../Mathematics/Systems.hpp"
+#include "../Context/Buffers/BindGuard.hpp"
 
 #include <algorithm>
 
@@ -181,13 +182,13 @@ namespace mpgl {
 
     template <bool IsColorable>
     void Sprite<IsColorable>::draw(void) const noexcept {
+        auto const& textureBuffer = texture.getTextureBuffer();
         shaderProgram->use();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+        textureBuffer.activate();
+        BindGuard guard{textureBuffer};
         glBindVertexArray(vertexArrayObject);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     template <bool IsColorable>

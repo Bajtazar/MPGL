@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include "Texture.hpp"
+#include "Textures/Texture.hpp"
 
 #include <algorithm>
 #include <vector>
