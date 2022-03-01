@@ -26,6 +26,7 @@
 #pragma once
 
 #include "ElementArrayBuffer/ElementArrayBuffer.hpp"
+#include "TextureBuffer/TextureBuffer.hpp"
 #include "VertexBuffer/VertexBuffer.hpp"
 #include "VertexArray/VertexArray.hpp"
 #include "FrameBuffer/FrameBuffer.hpp"
@@ -34,27 +35,86 @@ namespace mpgl {
 
     namespace details {
 
-        /// Generates normal buffers
-        inline auto generateBuffers = [] (uint32 size, uint32* ptr) {
+        typedef void(*BuffersGenerator)(uint32, uint32*);
+        typedef void(*BuffersDestroyer)(uint32, uint32* const);
+
+        /**
+         * Generates the normal buffers
+         *
+         * @param size the number of generated buffers
+         * @param ptr the pointer to the buffers array
+         */
+        void generateBuffers(
+            uint32 size,
+            uint32* ptr) noexcept
+        {
             glGenBuffers(size, ptr);
-        };
+        }
 
-        /// Generates vertex arrays
-        inline auto generateArrays = [] (uint32 size, uint32* ptr) {
+        /**
+         * Generates the vertex arrays
+         *
+         * @param size the number of generated buffers
+         * @param ptr the pointer to the buffers array
+         */
+        void generateArrays(
+            uint32 size,
+            uint32* ptr) noexcept
+        {
             glGenVertexArrays(size, ptr);
-        };
+        }
 
-        /// Destroys normal buffers
-        inline auto destroyBuffers = [] (uint32 size, uint32* const ptr)
+        /**
+         * Destroys the texture buffers
+         *
+         * @param size the number of destroyed buffers
+         * @param ptr the pointer to the buffers array
+         */
+        void generateTextures(
+            uint32 size,
+            uint32* const ptr) noexcept
+        {
+            glGenTextures(size, ptr);
+        }
+
+        /**
+         * Destroys the normal buffers
+         *
+         * @param size the number of destroyed buffers
+         * @param ptr the pointer to the buffers array
+         */
+        void destroyBuffers(
+            uint32 size,
+            uint32* const ptr) noexcept
         {
             glDeleteBuffers(size, ptr);
-        };
+        }
 
-        /// Destroys vertex arrays
-        inline auto destroyArrays = [] (uint32 size, uint32* const ptr)
+        /**
+         * Destroys the vertex arrays
+         *
+         * @param size the number of destroyed buffers
+         * @param ptr the pointer to the buffers array
+         */
+        void destroyArrays(
+            uint32 size,
+            uint32* const ptr) noexcept
         {
             glDeleteVertexArrays(size, ptr);
-        };
+        }
+
+        /**
+         * Destroys the texture buffers
+         *
+         * @param size the number of destroyed buffers
+         * @param ptr the pointer to the buffers array
+         */
+        void destroyTextures(
+            uint32 size,
+            uint32* const ptr) noexcept
+        {
+            glDeleteTextures(size, ptr);
+        }
 
     }
 
@@ -249,7 +309,20 @@ namespace mpgl {
     }
 
     /**
-     * Destroyes the vertex buffers
+     * Initalizes the texture buffers
+     *
+     * @tparam Range the type of the retured range
+     * @param size the number of created buffers
+     * @return the range with created buffers
+     */
+    template <UnderlyingRange<TextureBuffer> Range>
+    Range initializeTextureBuffers(uint32 size) {
+        return BuffersManagement::BuffersInitializer<TextureBuffer,
+            details::generateTextures, Range>{}(size);
+    }
+
+    /**
+     * Destroys the vertex buffers
      *
      * @tparam Range the type of the range with buffers
      * @param range the range with buffers
@@ -262,7 +335,7 @@ namespace mpgl {
     }
 
     /**
-     * Destroyes the vertex arrays
+     * Destroys the vertex arrays
      *
      * @tparam Range the type of the range with arrays
      * @param range the range with arrays
@@ -275,7 +348,7 @@ namespace mpgl {
     }
 
     /**
-     * Destroyes the element array buffers
+     * Destroys the element array buffers
      *
      * @tparam Range the type of the range with buffers
      * @param range the range with buffers
@@ -288,7 +361,7 @@ namespace mpgl {
     }
 
     /**
-     * Destroyes the frame buffers
+     * Destroys the frame buffers
      *
      * @tparam Range the type of the range with buffers
      * @param range the range with buffers
@@ -297,6 +370,19 @@ namespace mpgl {
     void destroyFrameBuffers(Range&& range) {
         BuffersManagement::BuffersDestroyer<FrameBuffer, nullptr,
             Range>{}(std::forward<Range>(range));
+    }
+
+    /**
+     * Destroys the texture buffers
+     *
+     * @tparam Range the type of the range with buffers
+     * @param range the range with buffers
+     */
+    template <UnderlyingRange<TextureBuffer> Range>
+    void destroyTextureBuffers(Range&& range) {
+        BuffersManagement::BuffersDestroyer<TextureBuffer,
+            details::destroyTextures, Range>{}(
+                std::forward<Range>(range));
     }
 
 }
