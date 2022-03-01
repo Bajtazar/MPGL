@@ -25,7 +25,7 @@
  */
 #include "TextureLoader.hpp"
 
-#include "../Exceptions/StackedExceptions.hpp"
+#include "../../Exceptions/StackedExceptions.hpp"
 
 namespace mpgl {
 

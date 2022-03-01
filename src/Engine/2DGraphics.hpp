@@ -13,6 +13,6 @@
 #include "Core/Windows/RenderingAdapter.hpp"
 #include "Core/DrawableCollection.hpp"
 #include "Core/Figures/Views.hpp"
-#include "Core/TextureLoader.hpp"
+#include "Core/Textures/TextureLoader.hpp"
 #include "Core/Text/UTF-8.hpp"
 #include "Core/Text/Text.hpp"

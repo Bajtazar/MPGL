@@ -26,10 +26,10 @@
 #pragma once
 
 #include "TexturePack.hpp"
-#include "../IO/FileIO.hpp"
-#include "../Utility/Security.hpp"
-#include "../Utility/Execution.hpp"
-#include "../Concurrency/Threadpool.hpp"
+#include "../../IO/FileIO.hpp"
+#include "../../Utility/Security.hpp"
+#include "../../Utility/Execution.hpp"
+#include "../../Concurrency/Threadpool.hpp"
 
 #include <algorithm>
 #include <vector>
