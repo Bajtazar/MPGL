@@ -38,7 +38,10 @@ namespace mpgl {
      * @tparam Tp the bindable type
      */
     template <Bindable Tp>
-    class BindGuard {};
+    class BindGuard;
+
+    template <Bindable Tp>
+    BindGuard(Tp const&) -> BindGuard<Tp>;
 
     /**
      * Ensures that the given bindable object will be unbinded
@@ -100,9 +103,9 @@ namespace mpgl {
          * object
          */
         ~BindGuard(void) noexcept
-            { bindable.get().unbind(); }
+            { bindable.unbind(); }
     private:
-        Bindable                                            bindable;
+        Tp const&                                           bindable;
         BindResult                                          result;
     };
 
@@ -125,7 +128,7 @@ namespace mpgl {
          * @param bindable
          */
         explicit BindGuard(Tp const& bindable) noexcept
-            : bindable{bindable} {}
+            : bindable{bindable} { bindable.bind(); }
 
         BindGuard(BindGuard const&) = delete;
         BindGuard(BindGuard&&) = delete;
@@ -138,9 +141,9 @@ namespace mpgl {
          * object
          */
         ~BindGuard(void) noexcept
-            { bindable.get().unbind(); }
+            { bindable.unbind(); }
     private:
-        Bindable                                            bindable;
+        Tp const&                                            bindable;
     };
 
 }
