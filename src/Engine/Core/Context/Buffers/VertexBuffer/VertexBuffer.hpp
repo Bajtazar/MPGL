@@ -88,6 +88,17 @@ namespace mpgl {
             BufferType const& type = BufferType::Static) const noexcept;
 
         /**
+         * Copy the given data to the vertex buffer object
+         * omiting buffer reallocation
+         *
+         * @tparam Range the data range type
+         * @param range the range with given data
+         */
+        template <std::ranges::contiguous_range Range>
+            requires std::ranges::sized_range<Range>
+        void changeBufferData(Range&& range) const noexcept;
+
+        /**
          * Maps the pointer to the given buffer
          *
          * @return the pointer to the mapped memory
@@ -192,6 +203,18 @@ namespace mpgl {
             sizeof(std::ranges::range_value_t<Range>) * range.size(),
             // change to std::to_underlying in C++23
             std::ranges::data(range), static_cast<uint16>(type));
+        bindDefaultBuffer();
+    }
+
+    template <std::ranges::contiguous_range Range>
+        requires std::ranges::sized_range<Range>
+    void VertexBuffer::changeBufferData(
+        Range&& range) const noexcept
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+        glBufferSubData(GL_ARRAY_BUFFER, 0,
+            sizeof(std::ranges::range_value_t<Range>) * range.size(),
+            std::ranges::data(range));
         bindDefaultBuffer();
     }
 
