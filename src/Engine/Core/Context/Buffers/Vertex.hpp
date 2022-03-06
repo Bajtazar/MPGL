@@ -27,6 +27,7 @@
 
 #include "../../../Traits/TemplateString.hpp"
 #include "../../../Utility/FixedRange.hpp"
+#include "../../../Traits/TupleTraits.hpp"
 #include "DataType.hpp"
 
 #include <array>
@@ -209,11 +210,11 @@ namespace mpgl {
      * The convenient shortcut for the Vertex Element type
      *
      * @tparam Identifier the element identifier
-     * @tparam VertexType the type of the vertex
+     * @tparam VT the type of the vertex
      */
-    template <auto Identifier, class VertexType>
+    template <auto Identifier, class VT>
     using VertexElementT =
-        typename VertexElement<Identifier, VertexType>::Type;
+        typename VertexElement<Identifier, VT>::Type;
 
     #pragma pack(push, 1)
 
@@ -331,6 +332,46 @@ namespace mpgl {
             get(void) && noexcept;
 
         /**
+         * Returns the reference to element handled by the vertex
+         * component with the given name
+         *
+         * @tparam Name the name of the component
+         * @param vertex the reference to the vertex
+         * @return The reference to the element handled in the
+         * vertex component
+         */
+        template <TemplateString Field>
+        [[nodiscard]] friend constexpr VertexElementT<Field, Vertex>&
+            get(Vertex& vertex) noexcept;
+
+        /**
+         * Returns the constant reference to element handled by
+         * the vertex component with the given name
+         *
+         * @tparam Name the name of the component
+         * @param vertex the constant reference to the vertex
+         * @return The constant reference to the element handled
+         * in the vertex component
+         */
+        template <TemplateString Field>
+        [[nodiscard]] friend constexpr
+            VertexElementT<Field, Vertex> const&
+                get(Vertex const& vertex) noexcept;
+
+        /**
+         * Returns the rvalue to element handled by the vertex
+         * component with the given name
+         *
+         * @tparam Name the name of the component
+         * @param vertex the rvalue to the vertex
+         * @return The rvalue to the element handled in the
+         * vertex component
+         */
+        template <TemplateString Field>
+        [[nodiscard]] friend constexpr VertexElementT<Field, Vertex>&&
+            get(Vertex&& vertex) noexcept;
+
+        /**
          * Destroys the vertex object
          */
         constexpr ~Vertex(void) noexcept = default;
@@ -376,6 +417,48 @@ namespace mpgl {
     };
 
     #pragma pack(pop)
+
+    /**
+     * Helper metastruct. Provides information whether the given
+     * type is the vertex type
+     *
+     * @tparam Tp the checked type
+     */
+    template <class Tp>
+    class IsVertexTypeHelper {
+        /**
+         * Method choosen by the compiler when the given type
+         * is the vertex type
+         *
+         * @tparam Components the vertex components types
+         * @return std::true_type
+         */
+        template <VertexComponents... Components>
+        static constexpr auto helper(Vertex<Components...>
+            ) -> std::true_type;
+        /**
+         * Method choosen by the compiler when the given type
+         * is not the vertex type
+         *
+         * @param ... whichever type
+         * @return std::false_type
+         */
+        static constexpr auto helper(...) -> std::false_type;
+    public:
+        /**
+         * Returns whether the given type is a vertex type
+         */
+        static constexpr bool value = std::same_as<
+            decltype(helper(std::declval<Tp>())), std::true_type>;
+    };
+
+    /**
+     * Checks whether the given type is the vertex
+     *
+     * @tparam Tp the checked type
+     */
+    template <class Tp>
+    concept VertexType = IsVertexTypeHelper<Tp>::value;
 
     template <VertexComponents... Components>
     [[nodiscard]] constexpr Vertex<Components...>::MetaArray
@@ -467,8 +550,21 @@ namespace mpgl {
             Vertex<Components...>::get(void) & noexcept
     {
         using Under = VertexElement<Name, Vertex>::ComponentType;
+
         return std::get<Under>(static_cast<
             BaseTuple&>(*this)).element;
+    }
+
+    template <TemplateString Name, VertexComponents... Comps>
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Comps...>>&
+            get(Vertex<Comps...>& vertex) noexcept
+    {
+        using Under = VertexElement<Name,
+            Vertex<Comps...>>::ComponentType;
+
+        return std::get<Under>(static_cast<
+            Vertex<Comps...>::BaseTuple&>(vertex)).element;
     }
 
     template <VertexComponents... Components>
@@ -478,8 +574,21 @@ namespace mpgl {
             Vertex<Components...>::get(void) const& noexcept
     {
         using Under = VertexElement<Name, Vertex>::ComponentType;
+
         return std::get<Under>(static_cast<
             BaseTuple const&>(*this)).element;
+    }
+
+    template <TemplateString Name, VertexComponents... Comps>
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Comps...>> const&
+            get(Vertex<Comps...> const& vertex) noexcept
+    {
+        using Under = VertexElement<Name,
+            Vertex<Comps...>>::ComponentType;
+
+        return std::get<Under>(static_cast<
+            Vertex<Comps...>::BaseTuple const&>(vertex)).element;
     }
 
     template <VertexComponents... Components>
@@ -489,8 +598,21 @@ namespace mpgl {
             Vertex<Components...>::get(void) && noexcept
     {
         using Under = VertexElement<Name, Vertex>::ComponentType;
+
         return std::move(std::get<Under>(static_cast<
             BaseTuple&&>(*this)).element);
+    }
+
+    template <TemplateString Name, VertexComponents... Comps>
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Comps...>>&&
+            get(Vertex<Comps...>&& vertex) noexcept
+    {
+        using Under = VertexElement<Name,
+            Vertex<Comps...>>::ComponentType;
+
+        return std::move(std::get<Under>(static_cast<
+            Vertex<Comps...>::BaseTuple&&>(vertex)).element);
     }
 
     template <VertexComponents... Components>
@@ -501,6 +623,7 @@ namespace mpgl {
             Vertex<Components...>::get(void) & noexcept
     {
         using Under = VertexElement<Index, Vertex>::ComponentType;
+
         return std::get<Under>(static_cast<
             BaseTuple&>(*this)).element;
     }
@@ -513,6 +636,7 @@ namespace mpgl {
             Vertex<Components...>::get(void) const& noexcept
     {
         using Under = VertexElement<Index, Vertex>::ComponentType;
+
         return std::get<Under>(static_cast<
             BaseTuple const&>(*this)).element;
     }
@@ -525,6 +649,7 @@ namespace mpgl {
             Vertex<Components...>::get(void) && noexcept
     {
         using Under = VertexElement<Index, Vertex>::ComponentType;
+
         return std::move(std::get<Under>(static_cast<
             BaseTuple&&>(*this)).element);
     }
