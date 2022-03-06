@@ -1,275 +1,307 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
-#include <iterator>
-#include <ranges>
+#include "../Context/Buffers/VertexTraits.hpp"
 
 namespace mpgl {
 
-    template <class T>
-    using position_t = decltype(std::declval<std::ranges::range_value_t<T>>().position);
+    namespace details {
 
-    template <class T>
-    using color_t = decltype(std::declval<std::ranges::range_value_t<T>>().color);
+        /**
+         * Checks whether a range contains the vertices
+         * containing given field
+         *
+         * @tparam Range the range type
+         * @tparam Field the field name
+         */
+        template <class Range, TemplateString Field>
+        concept FieldedVertexCollection =
+            std::ranges::input_range<Range>
+            && VertexField<std::ranges::range_value_t<Range>, Field>;
 
-    template <class T>
-    using coords_t = decltype(std::declval<std::ranges::range_value_t<T>>().textureCoords);
+    }
 
-    template <std::ranges::input_range Range>
-        requires (std::ranges::view<Range> &&
-            requires (std::ranges::range_value_t<Range> vertex) { vertex.position; })
-    class PositionView : public std::ranges::view_interface<PositionView<Range>> {
+    /**
+     * Allows to get only elements with the given field name
+     * from the range of vertices
+     *
+     * @tparam Field the field name
+     * @tparam Range the range with vertices
+     */
+    template <TemplateString Field, std::ranges::view Range>
+        requires (details::FieldedVertexCollection<Range, Field>)
+    class VertexComponentView
+        : public std::ranges::view_interface<
+            VertexComponentView<Field, Range>>
+    {
     public:
-        constexpr explicit PositionView(void) noexcept = default;
-        constexpr explicit PositionView(Range base_) noexcept : base_{base_} {}
+        using ValueType = VertexElementT<Field,
+            std::ranges::range_value_t<Range>>;
 
-        class iterator : public std::iterator<std::input_iterator_tag, position_t<Range>> {
+        /**
+         * Construct a new vertex component view object
+         */
+        constexpr explicit VertexComponentView(
+            void) noexcept = default;
+
+        /**
+         * Construct a new vertex component view object
+         * from a given range object
+         *
+         * @param baseObj the given range object
+         */
+        constexpr explicit VertexComponentView(Range baseObj)
+            : baseObj{baseObj} {}
+
+        /**
+         * The inner view iterator
+         */
+        class iterator : public std::iterator<
+            std::input_iterator_tag, ValueType>
+        {
         public:
             using inner_iter =                  std::ranges::iterator_t<Range>;
-            using value_type =                  position_t<Range>;
+            using value_type =                  ValueType;
             using reference =                   value_type&;
             using iterator_category =           std::input_iterator_tag;
             using difference_type =             std::ptrdiff_t;
 
+            /**
+             * Construct a new iterator object
+             */
             explicit iterator(void) noexcept = default;
+
+            /**
+             * Construct a new iterator object from a given
+             * inner iter object
+             *
+             * @param iter the inner iter object
+             */
             explicit iterator(inner_iter const& iter) noexcept
                 : iter{iter} {}
 
+            /**
+             * Pre-increments the inner iterator by one
+             *
+             * @return the reference to object
+             */
             iterator& operator++(void) noexcept
                 { ++iter; return *this; }
+
+            /**
+             * Post-increments the inner iterator by one
+             *
+             * @return the copy of the iterator
+             */
             iterator operator++(int) noexcept
                 { auto tmp = *this; ++iter; return tmp; }
-            friend bool operator== (iterator const& left, iterator const& right) noexcept
-                { return left.iter == right.iter; }
 
-            auto& operator*(void) const noexcept
-                {return iter->position; }
+            /**
+             * Returns whether two iterators are equal
+             *
+             * @param left the left iterator object
+             * @param right the right iterator object
+             * @return if the iterators are equal
+             */
+            friend bool operator== (iterator const& left,
+                iterator const& right) noexcept
+                    { return left.iter == right.iter; }
+
+            /**
+             * Returns the iterator value
+             *
+             * @return the iterator value
+             */
+            decltype(auto) operator*(void) const noexcept
+                { return get<Field>(*iter); }
         private:
             inner_iter                          iter;
         };
 
-        constexpr Range const& base(void) const
-            { return base_; }
-        constexpr Range&& base(void)
-            { return std::move(base_); }
+        /**
+         * Returns the constant reference to the range held by
+         * the view
+         *
+         * @return the constant reference to the range
+         */
+        constexpr Range const& base(void) const &
+            { return baseObj; }
 
+        /**
+         * Returns the rvalue to the range held by
+         * the view
+         *
+         * @return the rvalue to the range
+         */
+        constexpr Range&& base(void) &&
+            { return std::move(baseObj); }
+
+        /**
+         * Returns an iterator to the begining of the range
+         *
+         * @return the iterator to the begining of the range
+         */
         constexpr iterator begin(void) const
-            { return iterator{ std::ranges::begin(base_) }; }
+            { return iterator{ std::ranges::begin(baseObj) }; }
+
+        /**
+         * Returns an iterator to the end of the range
+         *
+         * @return the iterator to the end of the range
+         */
         constexpr iterator end(void) const
-            { return iterator{ std::ranges::end(base_) }; }
-        constexpr auto size(void) const noexcept requires std::ranges::sized_range<Range const>
-            { return std::ranges::size(base_); }
+            { return iterator{ std::ranges::end(baseObj) }; }
+
+        /**
+         * Returns the size of the range
+         *
+         * @return the size of the range
+         */
+        constexpr auto size(void) const noexcept
+            requires std::ranges::sized_range<Range>
+                { return std::ranges::size(baseObj); }
     private:
-        Range                                   base_;
+        Range                                   baseObj;
     };
 
-    template <class Range>
-    PositionView(Range&& base) -> PositionView<std::views::all_t<Range>>;
-
-    template <std::ranges::input_range Range>
-        requires (std::ranges::view<Range>
-            && requires (std::ranges::range_value_t<Range> vertex) { vertex.color; })
-    class ColorView : public std::ranges::view_interface<ColorView<Range>> {
-    public:
-        constexpr explicit ColorView(void) noexcept = default;
-        constexpr explicit ColorView(Range base_) noexcept : base_{base_} {}
-
-        class iterator : public std::iterator<std::input_iterator_tag, color_t<Range>> {
-        public:
-            using inner_iter =                  std::ranges::iterator_t<Range>;
-            using value_type =                  color_t<Range>;
-            using reference =                   value_type&;
-            using iterator_category =           std::input_iterator_tag;
-            using difference_type =             std::ptrdiff_t;
-
-            explicit iterator(void) noexcept = default;
-            explicit iterator(inner_iter const& iter) noexcept : iter{iter} {}
-
-            iterator& operator++(void) noexcept
-                { ++iter; return *this; }
-            iterator operator++(int) noexcept
-                { auto tmp = *this; ++iter; return tmp; }
-            friend bool operator==(iterator const& left, iterator const& right) noexcept
-                { return left.iter == right.iter; }
-
-            auto& operator*(void) const noexcept
-                {return iter->color; }
-        private:
-            inner_iter                          iter;
-        };
-
-        constexpr const Range& base(void) const
-            { return base_; }
-        constexpr Range&& base(void)
-            { return std::move(base_); }
-
-        constexpr iterator begin(void) const
-            { return iterator{ std::ranges::begin(base_) }; }
-        constexpr iterator end(void) const
-            { return iterator{ std::ranges::end(base_) }; }
-        constexpr auto size(void) const noexcept requires std::ranges::sized_range<Range const>
-            { return std::ranges::size(base_); }
-    private:
-        Range                                   base_;
-    };
-
-    template <class Range>
-    ColorView(Range&& base) -> ColorView<std::views::all_t<Range>>;
-
-    template <std::ranges::input_range Range>
-        requires (std::ranges::view<Range>
-            && requires (std::ranges::range_value_t<Range> vertex) { vertex.textureCoords; })
-    class TextureCoordsView : public std::ranges::view_interface<TextureCoordsView<Range>> {
-    public:
-        constexpr explicit TextureCoordsView(void) noexcept = default;
-        constexpr explicit TextureCoordsView(Range base_) noexcept : base_{base_} {}
-
-        class iterator : public std::iterator<std::input_iterator_tag, coords_t<Range>> {
-            using inner_iter =                  std::ranges::iterator_t<Range>;
-            using value_type =                  coords_t<Range>;
-            using reference =                   value_type&;
-            using iterator_category =           std::input_iterator_tag;
-            using difference_type =             std::ptrdiff_t;
-
-            explicit iterator(void) noexcept = default;
-            explicit iterator(inner_iter const& iter) noexcept : iter{iter} {}
-
-            iterator& operator++(void) noexcept
-                { ++iter; return *this; }
-            iterator operator++(int) noexcept
-                { auto tmp = *this; ++iter; return *this; }
-
-            friend bool operator== (iterator const& left, iterator const& right) noexcept
-                { return left.iter == right.iter; }
-
-            auto& operator*(void) const noexcept
-                { return iter->textureCoords; }
-        private:
-            inner_iter                          iter;
-        };
-
-        constexpr const Range& base(void) const
-            { return base_; }
-        constexpr Range&& base(void)
-            { return std::move(base_); }
-
-        constexpr iterator begin(void) const
-            { return iterator{ std::ranges::begin(base_) }; }
-        constexpr iterator end(void) const
-            { return iterator{ std::ranges::end(base_) }; }
-
-        constexpr auto size(void) const noexcept requires std::ranges::sized_range<Range const>
-            { return std::ranges::size(base_); }
-    private:
-        Range                                   base_;
-    };
-
-    template <class Range>
-    TextureCoordsView(Range&& base) -> TextureCoordsView<std::views::all_t<Range>>;
+    template <TemplateString Field, class Range>
+    VertexComponentView(Range&& base) ->
+        VertexComponentView<Field, std::views::all_t<Range>>;
 
     namespace details {
 
-        struct PositionViewRangeAdaptorClosure {
-            constexpr PositionViewRangeAdaptorClosure(void) noexcept = default;
+        /**
+         * The adaptor closure for the vertex component view
+         *
+         * @tparam Field the field name
+         */
+        template <TemplateString Field>
+        struct VertexComponentViewAdaptorClosure {
+            /**
+             * Constructs the vertex component view adaptor closure
+             */
+            constexpr VertexComponentViewAdaptorClosure(
+                void) noexcept = default;
 
+            /**
+             * Returns a view to the given range
+             *
+             * @tparam Range the range type
+             * @param range the vertices range
+             * @return the view of the range
+             */
             template <std::ranges::viewable_range Range>
-                requires requires (std::ranges::range_value_t<Range> vertex) { vertex.position; }
             constexpr auto operator() (Range&& range) const noexcept {
-                return PositionView{ std::forward<Range>(range) };
+                return VertexComponentView<Field,
+                    std::views::all_t<Range>>{
+                        std::forward<Range>(range) };
             }
         };
 
-        struct PositionViewRangeAdaptor {
+        /**
+         * The adaptor for the vertex component view
+         *
+         * @tparam Field the field name
+         */
+        template <TemplateString Field>
+        struct VertexComponentViewAdaptor {
+            /**
+             * Returns a view to the given range
+             *
+             * @tparam Range the range type
+             * @param range the vertices range
+             * @return the view of the range
+             */
             template <std::ranges::viewable_range Range>
-                requires requires (std::ranges::range_value_t<Range> vertex) { vertex.position; }
             constexpr auto operator() (Range&& range) const noexcept {
-                return PositionView{ std::forward<Range>(range) };
+                return VertexComponentView<Field,
+                    std::views::all_t<Range>>{
+                        std::forward<Range>(range) };
             }
 
+            /**
+             * Returns a closure for the given view
+             *
+             * @return the view closure
+             */
             constexpr auto operator() (void) const noexcept {
-                return PositionViewRangeAdaptorClosure{};
+                return VertexComponentViewAdaptorClosure<Field>{};
             }
         };
 
-        struct ColorViewRangeAdaptorClosure {
-            constexpr ColorViewRangeAdaptorClosure(void) noexcept = default;
-
-            template <std::ranges::viewable_range Range>
-                requires requires (std::ranges::range_value_t<Range> vertex) { vertex.color; }
-            constexpr auto operator() (Range&& range) const noexcept {
-                return ColorView{ std::forward<Range>(range) };
-            }
-        };
-
-        struct ColorViewRangeAdaptor {
-            template <std::ranges::viewable_range Range>
-                requires requires (std::ranges::range_value_t<Range> vertex) { vertex.color; }
-            constexpr auto operator() (Range&& range) const noexcept {
-                return ColorView{ std::forward<Range>(range) };
-            }
-
-            constexpr auto operator() (void) const noexcept {
-                return ColorViewRangeAdaptorClosure{};
-            }
-        };
-
-        struct TextureCoordsViewRangeAdaptorClosure {
-            constexpr TextureCoordsViewRangeAdaptorClosure(void) noexcept = default;
-
-            template <std::ranges::viewable_range Range>
-                requires requires (std::ranges::range_value_t<Range> vertex) { vertex.textureCoords; }
-            constexpr auto operator() (Range&& range) const noexcept {
-                return TextureCoordsView{ std::forward<Range>(range) };
-            }
-        };
-
-        struct TextureCoordsViewRangeAdaptor {
-            template <std::ranges::viewable_range Range>
-                requires requires (std::ranges::range_value_t<Range> vertex) { vertex.textureCoords; }
-            constexpr auto operator() (Range&& range) const noexcept {
-                return TextureCoordsView{ std::forward<Range>(range) };
-            }
-
-            constexpr auto operator() (void) const noexcept {
-                return TextureCoordsViewRangeAdaptorClosure{};
-            }
-        };
-
-        template <std::ranges::viewable_range Range>
-        constexpr auto operator | (Range&& range, PositionViewRangeAdaptorClosure const& closure) noexcept {
+        /**
+         * Connects the closure with the range
+         *
+         * @tparam Range the range type
+         * @tparam Field the field name
+         * @param range the vertices range
+         * @param closure the view closure
+         * @return the view of the range
+         */
+        template <std::ranges::viewable_range Range,
+            TemplateString Field>
+        constexpr auto operator | (Range&& range,
+            VertexComponentViewAdaptorClosure<Field> const& closure
+            ) noexcept
+        {
             return closure(std::forward<Range>(range));
         }
 
-        template <std::ranges::viewable_range Range>
-        constexpr auto operator | (Range&& range, PositionViewRangeAdaptor const& adaptor) noexcept {
-            return adaptor(std::forward<Range>(range));
-        }
-
-        template <std::ranges::viewable_range Range>
-        constexpr auto operator | (Range&& range, ColorViewRangeAdaptorClosure const& closure) noexcept {
-            return closure(std::forward<Range>(range));
-        }
-
-        template <std::ranges::viewable_range Range>
-        constexpr auto operator | (Range&& range, ColorViewRangeAdaptor const& adaptor) noexcept {
-            return adaptor(std::forward<Range>(range));
-        }
-
-        template <std::ranges::viewable_range Range>
-        constexpr auto operator | (Range&& range, TextureCoordsViewRangeAdaptorClosure const& closure) noexcept {
-            return closure(std::forward<Range>(range));
-        }
-
-        template <std::ranges::viewable_range Range>
-        constexpr auto operator | (Range&& range, TextureCoordsViewRangeAdaptor const& adaptor) noexcept {
+        /**
+         * Connects the adaptor with the range
+         *
+         * @tparam Range the range type
+         * @tparam Field the field name
+         * @param range the vertices range
+         * @param adaptor the view adaptor
+         * @return the view of the range
+         */
+        template <std::ranges::viewable_range Range,
+            TemplateString Field>
+        constexpr auto operator | (Range&& range,
+            VertexComponentViewAdaptor<Field> const& adaptor) noexcept
+        {
             return adaptor(std::forward<Range>(range));
         }
 
     }
 
     namespace views {
-        inline constexpr details::PositionViewRangeAdaptor      position;
-        inline constexpr details::ColorViewRangeAdaptor         color;
-        inline constexpr details::TextureCoordsViewRangeAdaptor textureCoords;
+
+        /// The position view
+        inline constexpr
+            details::VertexComponentViewAdaptor<"position">         position;
+        /// The color view
+        inline constexpr
+            details::VertexComponentViewAdaptor<"color">            color;
+        /// The texure position view
+        inline constexpr
+            details::VertexComponentViewAdaptor<"texCoords">        texCoords;
+
     }
 
 }
