@@ -99,6 +99,11 @@ namespace mpgl {
         void changeBufferData(Range&& range) const noexcept;
 
         /**
+         * Binds the vertex buffer object
+         */
+        void bind(void) const noexcept;
+
+        /**
          * Maps the pointer to the given buffer
          *
          * @return the pointer to the mapped memory
@@ -113,7 +118,7 @@ namespace mpgl {
         /**
          * Binds the default buffer
          */
-        static void bindDefaultBuffer(void) noexcept;
+        void unbind(void) const noexcept;
 
         /**
          * Destroy the Vertex Buffer object
@@ -198,12 +203,10 @@ namespace mpgl {
         Range&& range,
         BufferType const& type) const noexcept
     {
-        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
         glBufferData(GL_ARRAY_BUFFER,
             sizeof(std::ranges::range_value_t<Range>) * range.size(),
             // change to std::to_underlying in C++23
             std::ranges::data(range), static_cast<uint16>(type));
-        bindDefaultBuffer();
     }
 
     template <std::ranges::contiguous_range Range>
@@ -211,11 +214,9 @@ namespace mpgl {
     void VertexBuffer::changeBufferData(
         Range&& range) const noexcept
     {
-        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
         glBufferSubData(GL_ARRAY_BUFFER, 0,
             sizeof(std::ranges::range_value_t<Range>) * range.size(),
             std::ranges::data(range));
-        bindDefaultBuffer();
     }
 
 }

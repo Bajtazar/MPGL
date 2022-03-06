@@ -61,8 +61,12 @@ namespace mpgl {
         glUnmapBuffer(GL_ARRAY_BUFFER);
     }
 
-    void VertexBuffer::bindDefaultBuffer(void) noexcept {
+    void VertexBuffer::unbind(void) const noexcept {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    void VertexBuffer::bind(void) const noexcept {
+        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
     }
 
     VertexBuffer::~VertexBuffer(void) noexcept {
