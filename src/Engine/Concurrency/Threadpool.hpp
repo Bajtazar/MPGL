@@ -255,7 +255,7 @@ namespace mpgl {
             /**
              * Pure virtual operator() which has to be
              * implemented in derived class. Should
-             * clall the wrapped function operator()
+             * call the wrapped function operator()
              */
             virtual void operator() (void) noexcept = 0;
 
