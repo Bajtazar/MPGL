@@ -342,7 +342,14 @@ namespace mpgl {
          */
         template <TemplateString Field>
         [[nodiscard]] friend constexpr VertexElementT<Field, Vertex>&
-            get(Vertex& vertex) noexcept;
+            get(Vertex& vertex) noexcept
+        {
+            using Under = VertexElement<Field,
+                Vertex>::ComponentType;
+
+            return std::get<Under>(static_cast<
+                Vertex::BaseTuple&>(vertex)).element;
+        }
 
         /**
          * Returns the constant reference to element handled by
@@ -356,7 +363,14 @@ namespace mpgl {
         template <TemplateString Field>
         [[nodiscard]] friend constexpr
             VertexElementT<Field, Vertex> const&
-                get(Vertex const& vertex) noexcept;
+                get(Vertex const& vertex) noexcept
+        {
+            using Under = VertexElement<Field,
+                Vertex>::ComponentType;
+
+            return std::get<Under>(static_cast<
+                Vertex::BaseTuple const&>(vertex)).element;
+        }
 
         /**
          * Returns the rvalue to element handled by the vertex
@@ -369,7 +383,14 @@ namespace mpgl {
          */
         template <TemplateString Field>
         [[nodiscard]] friend constexpr VertexElementT<Field, Vertex>&&
-            get(Vertex&& vertex) noexcept;
+            get(Vertex&& vertex) noexcept
+        {
+            using Under = VertexElement<Field,
+                Vertex>::ComponentType;
+
+            return std::move(std::get<Under>(static_cast<
+                Vertex::BaseTuple&&>(vertex)).element);
+        }
 
         /**
          * Destroys the vertex object
@@ -417,48 +438,6 @@ namespace mpgl {
     };
 
     #pragma pack(pop)
-
-    /**
-     * Helper metastruct. Provides information whether the given
-     * type is the vertex type
-     *
-     * @tparam Tp the checked type
-     */
-    template <class Tp>
-    class IsVertexTypeHelper {
-        /**
-         * Method choosen by the compiler when the given type
-         * is the vertex type
-         *
-         * @tparam Components the vertex components types
-         * @return std::true_type
-         */
-        template <VertexComponents... Components>
-        static constexpr auto helper(Vertex<Components...>
-            ) -> std::true_type;
-        /**
-         * Method choosen by the compiler when the given type
-         * is not the vertex type
-         *
-         * @param ... whichever type
-         * @return std::false_type
-         */
-        static constexpr auto helper(...) -> std::false_type;
-    public:
-        /**
-         * Returns whether the given type is a vertex type
-         */
-        static constexpr bool value = std::same_as<
-            decltype(helper(std::declval<Tp>())), std::true_type>;
-    };
-
-    /**
-     * Checks whether the given type is the vertex
-     *
-     * @tparam Tp the checked type
-     */
-    template <class Tp>
-    concept VertexType = IsVertexTypeHelper<Tp>::value;
 
     template <VertexComponents... Components>
     [[nodiscard]] constexpr Vertex<Components...>::MetaArray
@@ -555,18 +534,6 @@ namespace mpgl {
             BaseTuple&>(*this)).element;
     }
 
-    template <TemplateString Name, VertexComponents... Comps>
-    [[nodiscard]] constexpr
-        VertexElementT<Name, Vertex<Comps...>>&
-            get(Vertex<Comps...>& vertex) noexcept
-    {
-        using Under = VertexElement<Name,
-            Vertex<Comps...>>::ComponentType;
-
-        return std::get<Under>(static_cast<
-            Vertex<Comps...>::BaseTuple&>(vertex)).element;
-    }
-
     template <VertexComponents... Components>
     template <TemplateString Name>
     [[nodiscard]] constexpr
@@ -577,18 +544,6 @@ namespace mpgl {
 
         return std::get<Under>(static_cast<
             BaseTuple const&>(*this)).element;
-    }
-
-    template <TemplateString Name, VertexComponents... Comps>
-    [[nodiscard]] constexpr
-        VertexElementT<Name, Vertex<Comps...>> const&
-            get(Vertex<Comps...> const& vertex) noexcept
-    {
-        using Under = VertexElement<Name,
-            Vertex<Comps...>>::ComponentType;
-
-        return std::get<Under>(static_cast<
-            Vertex<Comps...>::BaseTuple const&>(vertex)).element;
     }
 
     template <VertexComponents... Components>
