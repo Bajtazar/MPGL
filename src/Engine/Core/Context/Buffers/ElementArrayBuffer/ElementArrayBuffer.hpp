@@ -89,7 +89,7 @@ namespace mpgl {
         template <std::ranges::contiguous_range Range>
             requires std::ranges::sized_range<Range>
         void setBufferData(Range&& range,
-            BufferType const& type = BufferType::Static) noexcept;
+            BufferType const& type = BufferType::Static) const noexcept;
 
         /**
          * Binds the element array buffer object
@@ -131,7 +131,7 @@ namespace mpgl {
         requires std::ranges::sized_range<Range>
     void ElementArrayBuffer::setBufferData(
         Range&& range,
-        BufferType const& type) noexcept
+        BufferType const& type) const noexcept
     {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
             sizeof(std::ranges::range_value_t<Range>) * range.size(),
