@@ -57,7 +57,6 @@ namespace mpgl {
         typedef std::chrono::steady_clock           ThreadClock;
         typedef ThreadClock::time_point             TimePoint;
 
-        void copyDrawablesToGPU(void) const noexcept;
         void drawDrawables(void) const noexcept;
         void draw(void) noexcept;
         void clear(Color const&) noexcept;

@@ -48,11 +48,6 @@ namespace mpgl {
             reinterpret_cast<void*>(this));
     }
 
-    void Window::copyDrawablesToGPU(void) const noexcept {
-        std::ranges::for_each(drawables, [](auto const& drawable)
-            { drawable->copyToGPU(); });
-    }
-
     void Window::drawDrawables(void) const noexcept {
         std::ranges::for_each(drawables, [](const auto& drawable)
             { drawable->draw(); });
@@ -84,7 +79,6 @@ namespace mpgl {
 
     int32 Window::windowLoop(const Color& background) noexcept {
         openWindow();
-        copyDrawablesToGPU();
         while (!shouldWindowClose()) {
             clear(background);
             get<TickRegister>(events).onEvent();

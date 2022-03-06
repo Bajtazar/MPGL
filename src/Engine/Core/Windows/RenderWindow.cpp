@@ -113,8 +113,6 @@ namespace mpgl {
     {
         bind(cleaning, color);
         std::ranges::for_each(drawables,
-            [](auto const& drawable){ drawable->copyToGPU(); });
-        std::ranges::for_each(drawables,
             [](auto const& drawable){ drawable->draw(); });
         unbind();
     }
