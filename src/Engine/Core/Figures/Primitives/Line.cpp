@@ -1,4 +1,31 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include "Line.hpp"
+
+#include "../../Context/Buffers/BindGuard.hpp"
 
 namespace mpgl {
 
@@ -10,32 +37,16 @@ namespace mpgl {
 
     Line::Line(Color const& color) : Angular{2, color} {}
 
-    Line::Line(Line const& line)
-        : Angular{line} {}
-
-    Line& Line::operator= (Line const& line) {
-        Angular::operator=(line);
-        return *this;
-    }
-
-    Line::Line(Line&& line) noexcept
-        : Angular{std::move(line)} {}
-
-    Line& Line::operator= (Line&& line) noexcept {
-        Angular::operator=(std::move(line));
-        return *this;
-    }
-
     Vector2f Line::getLineCenter(void) const noexcept {
-        return (Vector2f{vertices[0].position}
-            + Vector2f{vertices[1].position}) / 2.f;
+        return (Vector2f{get<"position">(vertices[0])}
+            + Vector2f{get<"position">(vertices[1])}) / 2.f;
     }
 
     void Line::draw(void) const noexcept {
+        actualizeBufferBeforeDraw();
         shaderProgram->use();
-        glBindVertexArray(vertexArrayObject);
-        glDrawArrays(GL_LINES, 0, 2);
-        glBindVertexArray(0);
+        BindGuard<VertexArray> vaoGuard{vertexArray};
+        vertexArray.drawArrays(VertexArray::DrawMode::Lines, 2);
     }
 
 }
