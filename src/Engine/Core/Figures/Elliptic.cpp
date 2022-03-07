@@ -29,18 +29,11 @@
 
 namespace mpgl {
 
-    Elliptic::Elliptic(size_t size, Color const& color,
-        std::string const& programName, Executable exec)
-            : Figure{programName, std::move(exec)},
-            color{color}, vertices{size, Vertex{Vector2f{}}}
-    {
-        initializeBuffers();
-    }
-
     Elliptic::Elliptic(Vertices vertices,
-        std::string const& programName, Executable exec)
+        std::string const& programName, Executable exec,
+        Color const& color)
             : Figure{programName, std::move(exec)},
-            vertices{std::move(vertices)}
+            color{color}, vertices{std::move(vertices)}
     {
         initializeBuffers();
     }
@@ -67,6 +60,16 @@ namespace mpgl {
         vertices.reserve(shape.vertices.size());
         std::ranges::copy(shape.vertices, std::back_inserter(vertices));
         return *this;
+    }
+
+    void Elliptic::actualizeBufferBeforeDraw(void) const noexcept {
+        if (isModified) {
+            {
+                BindGuard<VertexBuffer> vboGuard{vertexBuffer};
+                vertexBuffer.changeBufferData(vertices);
+            }
+            isModified = false;
+        }
     }
 
 }

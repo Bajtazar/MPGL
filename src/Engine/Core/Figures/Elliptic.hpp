@@ -125,34 +125,20 @@ namespace mpgl {
         virtual ~Elliptic(void) noexcept = default;
     protected:
         /**
-         * Construct a new Elliptic object. Creates the
-         * vertices vector of a given size with a given color.
-         * Sets the given shader
-         *
-         * @param size the size of the vertices vector
-         * @param color the color of the vertices
-         * @param programName the shader program name
-         * @param exec the shader's executible
-         */
-        explicit Elliptic(
-            size_t size,
-            Color const& color,
-            std::string const& programName,
-            Executable exec);
-
-        /**
          * Construct a new Elliptic object with given
-         * vector of vertices, program name and
+         * vector of vertices, color, program name and
          * the executable
          *
          * @param vertices the vector of vertices
          * @param programName the shader program name
          * @param exec the shader's executible
+         * @param color the ellipse's color
          */
         explicit Elliptic(
             Vertices vertices,
             std::string const& programName,
-            Executable exec);
+            Executable exec,
+            Color const& color);
 
         /**
          * Construct a new Elliptic object from a given
@@ -186,10 +172,9 @@ namespace mpgl {
         void initializeBuffers(void) const noexcept;
 
         /**
-         * Pure virtual function. Has to be overloaded.
          * Actualizes vertex buffer before draw
          */
-        virtual void actualizeBufferBeforeDraw(void) const noexcept = 0;
+        void actualizeBufferBeforeDraw(void) const noexcept;
 
         static constexpr const Indexes                  indexes {
             0, 1, 2, 0, 3, 2};

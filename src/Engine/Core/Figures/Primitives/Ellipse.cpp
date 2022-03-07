@@ -1,157 +1,130 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include "Ellipse.hpp"
+#include "../Views.hpp"
 #include "../../../Mathematics/Systems.hpp"
+#include "../../Context/Buffers/BindGuard.hpp"
 
 namespace mpgl {
 
+    Ellipse::Executable const Ellipse::shaderExec
+        = [](ProgramPtr& program)
+    {
+        program->use();
+        program->setUniform("aafactor", (float)
+            context.windowOptions.antiAliasingSamples / 4.f);
+    };
+
     Ellipse::Vertices Ellipse::ellipseVertices(Vector2f const& center,
-        Vector2f const& semiAxis, float32 angle) noexcept
+        Vector2f const& semiAxis, float32 angle)
     {
         Matrix2f rotation = rotationMatrix<float32>(angle);
         Vector2f rot1 = rotation * semiAxis;
         Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
         return {
-            center - rot2,
-            center + rot1,
-            center + rot2,
-            center - rot1
+            Vertex{center - rot2},
+            Vertex{center + rot1},
+            Vertex{center + rot2},
+            Vertex{center - rot1}
         };
     }
 
     Ellipse::Vertices Ellipse::circleVertices(Vector2f const& center,
-        float32 radius) noexcept
+        float32 radius)
     {
         Vector2f semiMajor = Vector2f{radius, 0.f};
         Vector2f semiMinor = Vector2f{0.f, radius};
         return {
-            center - semiMajor + semiMinor,
-            center + semiMajor + semiMinor,
-            center + semiMajor - semiMinor,
-            center - semiMajor - semiMinor
+            Vertex{center - semiMajor + semiMinor},
+            Vertex{center + semiMajor + semiMinor},
+            Vertex{center + semiMajor - semiMinor},
+            Vertex{center - semiMajor - semiMinor}
         };
     }
 
-    void Ellipse::generateBuffers(void) noexcept {
-        glGenVertexArrays(1, &vertexArrayObject);
-        glGenBuffers(1, &vertexBuffer);
-        glGenBuffers(1, &elementArrayBuffer);
-    }
-
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
-        Color const& color, float32 angle) noexcept
-            : Shadeable{"2DEllipse"}, vertices{ellipseVertices(center, semiAxis, angle)},
-            color{color}
+        Color const& color, float angle)
+            : Elliptic{ellipseVertices(center, semiAxis, angle), "2DEllipse",
+                shaderExec, color}
     {
-        generateBuffers();
-        recalculateUniforms();
+        actualizeOutline();
     }
 
-    Ellipse::Ellipse(Vector2f const& center, float32 radius,
-        Color const& color) noexcept
-            : Shadeable{"2DEllipse"}, vertices{circleVertices(center, radius)}, color{color}
+    Ellipse::Ellipse(Vector2f const& center, float radius,
+        Color const& color)
+            : Elliptic{circleVertices(center, radius), "2DEllipse",
+                shaderExec, color}
     {
-        generateBuffers();
-        recalculateUniforms();
+        actualizeOutline();
     }
 
-    Ellipse::Ellipse(Ellipse const& ellipse) noexcept
-        : vertices{ellipse.vertices}, transform{ellipse.transform},
-        color{ellipse.color}
-    {
-        generateBuffers();
-        shaderProgram = ellipse.shaderProgram;
+    void Ellipse::actualizeOutline(void) noexcept {
+        outlineTransform = *invert(transpose(
+            Matrix2f{Vector2f{get<"position">(vertices[1])}
+                - Vector2f{get<"position">(vertices[0])},
+            Vector2f{get<"position">(vertices[3])}
+                - Vector2f{get<"position">(vertices[0])}}));
     }
 
-    Ellipse::Ellipse(Ellipse&& ellipse) noexcept
-        : vertices{std::move(ellipse.vertices)}, transform{ellipse.transform},
-        color{ellipse.color},
-        vertexBuffer{ellipse.vertexBuffer}, vertexArrayObject{
-        ellipse.vertexArrayObject}, elementArrayBuffer{
-        ellipse.elementArrayBuffer}
-    {
-        ellipse.vertexBuffer = 0;
-        ellipse.vertexArrayObject = 0;
-        ellipse.elementArrayBuffer = 0;
-        shaderProgram = std::move(shaderProgram);
+    Vector2f Ellipse::getCenter(void) const noexcept {
+        return (Vector2f{get<"position">(vertices[3])}
+            + Vector2f{get<"position">(vertices[1])}) / 2.f;
     }
 
-    Ellipse& Ellipse::operator= (Ellipse const& ellipse) noexcept {
-        std::ranges::copy(ellipse.vertices, vertices.begin());
-        shaderProgram = ellipse.shaderProgram;
-        transform = ellipse.transform;
-        color = ellipse.color;
-        return *this;
-    }
-
-    Ellipse& Ellipse::operator= (Ellipse&& ellipse) noexcept {
-        this->~Ellipse();
-        vertexArrayObject = ellipse.vertexArrayObject;
-        vertexBuffer = ellipse.vertexBuffer;
-        elementArrayBuffer = ellipse.elementArrayBuffer;
-        shaderProgram = std::move(ellipse.shaderProgram);
-        transform = ellipse.transform;
-        color = ellipse.color;
-        ellipse.vertexArrayObject = 0;
-        ellipse.vertexBuffer = 0;
-        ellipse.elementArrayBuffer = 0;
-        return *this;
-    }
-
-    void Ellipse::recalculateUniforms(void) noexcept {
-        transform = *invert(transpose(
-            Matrix2f{Vector2f{vertices[1]} - Vector2f{vertices[0]},
-            Vector2f{vertices[3]} - Vector2f{vertices[0]}}));
-    }
-
-    void Ellipse::bindBuffers(void) const noexcept {
-        glBindVertexArray(vertexArrayObject);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Adapter<Vector2f>) * 4,
-            vertices.data(), GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(uint32),
-            indexes.data(), GL_STATIC_DRAW);
-    }
-
-    void Ellipse::copyBuffersToGPU(void) const noexcept {
-        auto size = sizeof(Adapter<Vector2f>);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, size, nullptr);
-        glEnableVertexAttribArray(0);
-    }
-
-    void Ellipse::unbindBuffers(void) const noexcept {
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-
-    void Ellipse::copyToGPU(void) const noexcept {
-        bindBuffers();
-        copyBuffersToGPU();
-        unbindBuffers();
+    Vector2f Ellipse::getSemiAxis(void) const noexcept {
+        return {
+            (Vector2f{get<"position">(vertices[1])}
+                - Vector2f{get<"position">(vertices[0])}).length(),
+            (Vector2f{get<"position">(vertices[3])}
+                - Vector2f{get<"position">(vertices[0])}).length()
+        };
     }
 
     void Ellipse::onScreenTransformation(Vector2u const& oldDimensions) noexcept {
-        for (auto& vertexPosition : vertices) {
+        for (auto& vertexPosition : vertices | views::position) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * static_cast<Vector2f>(oldDimensions)
                 / static_cast<Vector2f>(context.windowDimensions) - 1.f;
         }
-        copyToGPU();
-        recalculateUniforms();
+        actualizeOutline();
+        isModified = true;
     }
 
     void Ellipse::translate(Vector2f const& shift) noexcept {
-        for (auto& vertexPosition : vertices)
+        for (auto& vertexPosition : vertices | views::position)
             vertexPosition = Vector2f(vertexPosition) + shift;
-        copyToGPU();
-        recalculateUniforms();
+        actualizeOutline();
+        isModified = true;
     }
 
     void Ellipse::scale(Vector2f const& center, float32 factor) noexcept {
-        for (auto& vertexPosition : vertices)
+        for (auto& vertexPosition : vertices | views::position)
             vertexPosition = (static_cast<Vector2f>(vertexPosition) - center) * factor + center;
-        copyToGPU();
-        recalculateUniforms();
+        actualizeOutline();
+        isModified = true;
     }
 
     void Ellipse::rotate(Vector2f const& center, float32 angle) noexcept {
@@ -159,41 +132,25 @@ namespace mpgl {
     }
 
     void Ellipse::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
-        for (auto& vertexPosition : vertices) {
+        for (auto& vertexPosition : vertices | views::position) {
             Vector2f position = vertexPosition;
             Vector2f radius = position - center;
             vertexPosition = rotation * radius + center;
         }
-        copyToGPU();
-        recalculateUniforms();
-    }
-
-    Vector2f Ellipse::getCenter(void) const noexcept {
-        return (Vector2f{vertices[3]} + Vector2f{vertices[1]}) / 2.f;
-    }
-
-    Vector2f Ellipse::getSemiAxis(void) const noexcept {
-        return {
-            (Vector2f{vertices[1]} - Vector2f{vertices[0]}).length(),
-            (Vector2f{vertices[3]} - Vector2f{vertices[0]}).length()
-        };
+        actualizeOutline();
+        isModified = true;
     }
 
     void Ellipse::draw(void) const noexcept {
+        actualizeBufferBeforeDraw();
         shaderProgram->use();
         shaderProgram->setUniform("color", color);
-        shaderProgram->setUniform("shift", Vector2f{vertices.front()});
-        shaderProgram->setUniform("transform", transform);
-        glBindVertexArray(vertexArrayObject);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    Ellipse::~Ellipse(void) noexcept {
-        glDeleteBuffers(1, &elementArrayBuffer);
-        glDeleteBuffers(1, &vertexBuffer);
-        glDeleteVertexArrays(1, &vertexArrayObject);
+        shaderProgram->setUniform("shift",
+            Vector2f{get<"position">(vertices.front())});
+        shaderProgram->setUniform("transform", outlineTransform);
+        BindGuard<VertexArray> vaoGuard{vertexArray};
+        vertexArray.drawElements(VertexArray::DrawMode::Triangles,
+            6, DataType::UInt32);
     }
 
 }
