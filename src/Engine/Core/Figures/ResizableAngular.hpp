@@ -120,7 +120,7 @@ namespace mpgl {
          * vertices positions and their common color
          *
          * @tparam ColorTp the type of the color vector
-         * @tparam Args the vertices position vector types
+         * @tparam Args the parameter pack of 2D vectors
          * @param color the color of the vertices
          * @param positions the positions of the vertices
          */
@@ -133,7 +133,7 @@ namespace mpgl {
          * Construct a new Resizable Angular object from a given
          * vertices positions
          *
-         * @tparam Args the vertices position vector types
+         * @tparam Args the parameter pack of 2D vectors
          * @param positions the positions of the vertices
          */
         template <AllConvertible<Vector2f>... Args>
