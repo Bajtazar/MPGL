@@ -32,8 +32,7 @@ namespace mpgl {
     /**
      * Represents the polygon figure
      */
-    class Polygon : public ResizableAngular {
-    public:
+    struct Polygon : public ResizableAngular {
         /**
          * Construct a new circle-like Polygon object with
          * the given radius, center, number of segments and color

@@ -32,10 +32,9 @@
 namespace mpgl {
 
     /**
-     * Represents the points in space
+     * Represents the points on the screen
      */
-    class Points : public ResizableAngular {
-    public:
+    struct Points : public ResizableAngular {
         /**
          * Construct a new Points object with given number of points
          * and theirs color

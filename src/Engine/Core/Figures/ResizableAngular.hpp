@@ -164,12 +164,13 @@ namespace mpgl {
         requires std::constructible_from<Color, ColorTp>
     ResizableAngular::ResizableAngular(ColorTp&& color,
         Args&&... positions)
-            : Angular{Vertices{Vertex{std::forward<Args>(positions),
-                color}...}} {}
+            : Angular{Vertices{Vertex{Vector2f{
+                std::forward<Args>(positions)},
+                std::forward<ColorTp>(color)}...}} {}
 
     template <AllConvertible<Vector2f>... Args>
     ResizableAngular::ResizableAngular(Args&&... positions)
-        : Angular{Vertices{Vertex{std::forward<Args>(positions),
-            {}}...}} {}
+        : Angular{Vertices{Vertex{Vector2f{
+            std::forward<Args>(positions)}, Color{}}...}} {}
 
 }

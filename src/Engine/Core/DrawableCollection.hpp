@@ -49,7 +49,6 @@ namespace mpgl {
         void call(Signature signature, Args&&... args) noexcept(
             std::is_nothrow_invocable_v<Signature, Base, Args...>);
 
-        void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
         void draw(size_type begin, size_type end) const noexcept
             requires std::ranges::random_access_range<Sequence>;
@@ -94,12 +93,6 @@ namespace mpgl {
     {
         std::ranges::for_each(*this, [&](auto& drawable)
             { (drawable->signature)(std::forward<Args>(args)...); });
-    }
-
-    template <DrawableType Base, std::ranges::input_range Sequence>
-    void DrawableCollectionBase<Base, Sequence>::copyToGPU(void) const noexcept {
-        std::ranges::for_each(*this, [](auto const& drawable)
-            { drawable.copyToGPU(); });
     }
 
     template <DrawableType Base, std::ranges::input_range Sequence>
