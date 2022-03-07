@@ -30,7 +30,7 @@
 namespace mpgl {
 
     /**
-     * Represents the polygon figure
+     * Represents a polygon figure
      */
     struct Polygon : public ResizableAngular {
         /**

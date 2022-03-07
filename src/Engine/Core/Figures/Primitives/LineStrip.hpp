@@ -27,12 +27,10 @@
 
 #include "../ResizableAngular.hpp"
 
-#include <optional>
-
 namespace mpgl {
 
     /**
-     * Represents the line strip on the screen
+     * Represents a line strip on the screen
      */
     struct LineStrip : public ResizableAngular {
         /**

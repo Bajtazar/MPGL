@@ -30,7 +30,7 @@
 namespace mpgl {
 
     /**
-     * Represents the triangle figure
+     * Represents a triangle figure
      */
     struct Triangle : public Angular {
         /**

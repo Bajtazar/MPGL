@@ -30,7 +30,7 @@
 namespace mpgl {
 
     /**
-     * Represents the line figure
+     * Represents a line figure
      */
     struct Line : public Angular {
         /**
