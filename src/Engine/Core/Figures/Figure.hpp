@@ -144,7 +144,7 @@ namespace mpgl {
 
         Figure& operator=(Figure&& shape) noexcept = default;
 
-        mutable bool                                modified;
+        mutable bool                                isModified = false;
     };
 
 }

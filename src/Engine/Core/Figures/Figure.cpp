@@ -28,18 +28,18 @@
 namespace mpgl {
 
     Figure::Figure(std::string const& programName)
-        : Shadeable{programName}, modified{false} {}
+        : Shadeable{programName}, isModified{false} {}
 
     Figure::Figure(std::string const& programName,
         Executable exec) : Shadeable{programName, exec},
-            modified{false} {}
+            isModified{false} {}
 
     Figure::Figure(Figure const& shape)
-        : Shadeable{shape.shaderProgram}, modified{false} {}
+        : Shadeable{shape.shaderProgram}, isModified{false} {}
 
     Figure& Figure::operator=(Figure const& shape) {
         shaderProgram = shape.shaderProgram;;
-        modified = false;
+        isModified = true;
         return *this;
     }
 

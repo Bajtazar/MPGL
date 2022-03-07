@@ -105,7 +105,7 @@ namespace mpgl {
          * @return the reference to vertex with the given index
          */
         Vertex& operator[] (std::size_t index) noexcept
-            { modified = true; return vertices[index]; }
+            { isModified = true; return vertices[index]; }
 
         /**
          * Returns the constant reference to vertex with
@@ -124,7 +124,7 @@ namespace mpgl {
          * @return the reference to the front vertex
          */
         Vertex& front(void) noexcept
-            { modified = true; return vertices.front(); }
+            { isModified = true; return vertices.front(); }
 
         /**
          * Returns the constant reference to the front vertex
@@ -140,7 +140,7 @@ namespace mpgl {
          * @return the reference to the back vertex
          */
         Vertex& back(void) noexcept
-            { modified = true; return vertices.back(); }
+            { isModified = true; return vertices.back(); }
 
         /**
          * Returns the constant reference to the back vertex
@@ -171,7 +171,7 @@ namespace mpgl {
          * @return the iterator to the begining of the vertices
          */
         iterator begin(void) noexcept
-            { modified = true; return vertices.begin(); }
+            { isModified = true; return vertices.begin(); }
 
         /**
          * Returns the iterator to the end of the vertices
@@ -179,7 +179,7 @@ namespace mpgl {
          * @return the iterator to the end of the vertices
          */
         iterator end(void) noexcept
-            { modified = true; return vertices.end(); }
+            { isModified = true; return vertices.end(); }
 
         /**
          * Returns the constant iterator to the begining
@@ -229,7 +229,7 @@ namespace mpgl {
          * the vertices
          */
         reverse_iterator rbegin(void) noexcept
-            { modified = true; return vertices.rbegin(); }
+            { isModified = true; return vertices.rbegin(); }
 
         /**
          * Returns the reverse iterator to the begining of
@@ -239,7 +239,7 @@ namespace mpgl {
          * the vertices
          */
         reverse_iterator rend(void) noexcept
-            { modified = true; return vertices.rend(); }
+            { isModified = true; return vertices.rend(); }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -332,21 +332,6 @@ namespace mpgl {
          * Actualizes vertex buffer before draw
          */
         void actualizeBufferBeforeDraw(void) const noexcept;
-
-        /**
-         * Virtual method. Attaches buffers before operations
-         */
-        virtual void attachBuffers(void) const noexcept;
-
-        /**
-         * Virtual method. Sets the buffers data
-         */
-        virtual void setBuffers(void) const noexcept;
-
-        /**
-         * Virtual method. Detaches buffers after operations
-         */
-        virtual void detachBuffers(void) const noexcept;
 
         Vertices                            vertices;
     };

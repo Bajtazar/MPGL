@@ -30,25 +30,11 @@
 
 namespace mpgl {
 
-    void Angular::attachBuffers(void) const noexcept {
-        vertexArray.bind();
-        vertexBuffer.bind();
-    }
-
-    void Angular::setBuffers(void) const noexcept {
+    void Angular::initializeBuffers(void) const noexcept {
+        BindGuard<VertexArray> vaoGuard{vertexArray};
+        BindGuard<VertexBuffer> vboGuard{vertexBuffer};
         vertexBuffer.setBufferData(vertices);
         vertexArray.setArrayData(vertices.front());
-    }
-
-    void Angular::detachBuffers(void) const noexcept {
-        vertexBuffer.unbind();
-        vertexArray.unbind();
-    }
-
-    void Angular::initializeBuffers(void) const noexcept {
-        attachBuffers();
-        setBuffers();
-        detachBuffers();
     }
 
     Angular::Angular(size_t size, Color const& color)
@@ -71,12 +57,12 @@ namespace mpgl {
     }
 
     void Angular::actualizeBufferBeforeDraw(void) const noexcept {
-        if (modified) {
+        if (isModified) {
             {
                 BindGuard<VertexBuffer> vboGuard{vertexBuffer};
                 vertexBuffer.changeBufferData(vertices);
             }
-            modified = false;
+            isModified = false;
         }
     }
 
@@ -85,7 +71,6 @@ namespace mpgl {
         vertices.clear();
         vertices.reserve(shape.vertices.size());
         std::ranges::copy(shape.vertices, std::back_inserter(vertices));
-        modified = true;
         return *this;
     }
 
@@ -98,14 +83,14 @@ namespace mpgl {
                 oldDimensions) / vectorCast<float32>(
                     context.windowDimensions) - 1.f;
         }
-        modified = true;
+        isModified = true;
     }
 
     void Angular::translate(Vector2f const& shift) noexcept {
         for (auto& vertexPosition : vertices | views::position)
             vertexPosition = static_cast<Vector2f>(
                 vertexPosition) + shift;
-        modified = true;
+        isModified = true;
     }
 
     void Angular::rotate(
@@ -124,7 +109,7 @@ namespace mpgl {
             Vector2f radius = position - center;
             vertexPosition = rotation * radius + center;
         }
-        modified = true;
+        isModified = true;
     }
 
     void Angular::scale(
@@ -134,7 +119,7 @@ namespace mpgl {
         for (auto& vertexPos : vertices | views::position)
             vertexPos = (static_cast<Vector2f>(vertexPos) - center
                 ) * factor + center;
-        modified = true;
+        isModified = true;
     }
 
 }
