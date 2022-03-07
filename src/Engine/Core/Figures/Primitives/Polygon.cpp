@@ -1,5 +1,6 @@
 #include "Polygon.hpp"
 
+#include "../../Context/Buffers/BindGuard.hpp"
 #include "../../../Mathematics/Systems.hpp"
 #include "../Views.hpp"
 
@@ -15,38 +16,21 @@ namespace mpgl {
     {
         float32 increment = 2.f *
             std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;
-        vertices.front().position = center;
+        get<"position">(vertices.front()) = center;
         for (auto& position : vertices | std::views::drop(1) |
-            mpgl::views::position)
+            views::position)
         {
             position = polarToCartesian(Vector2f{radius, angle}) + center;
             angle += increment;
         }
     }
 
-    Polygon::Polygon(Polygon const& polygon)
-        : ResizableAngular{
-            static_cast<ResizableAngular const&>(polygon)} {}
-
-    Polygon::Polygon(Polygon&& polygon) noexcept
-        : ResizableAngular{
-            static_cast<ResizableAngular&&>(polygon)} {}
-
-    Polygon& Polygon::operator= (Polygon const& polygon) {
-        ResizableAngular::operator=(polygon);
-        return *this;
-    }
-
-    Polygon& Polygon::operator= (Polygon&& polygon) noexcept {
-        ResizableAngular::operator=(std::move(polygon));
-        return *this;
-    }
-
     void Polygon::draw(void) const noexcept {
+        actualizeBufferBeforeDraw();
         shaderProgram->use();
-        glBindVertexArray(vertexArrayObject);
-        glDrawArrays(GL_TRIANGLE_FAN, 0,  vertices.size());
-        glBindVertexArray(0);
+        BindGuard<VertexArray> vaoGuard{vertexArray};
+        vertexArray.drawArrays(VertexArray::DrawMode::TriangleFan,
+            vertices.size());
     }
 
 }
