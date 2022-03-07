@@ -309,9 +309,9 @@ namespace mpgl {
          *
          * @param shape the given angular constant reference
          */
-        explicit Angular(Angular const& shape);
+        Angular(Angular const& shape);
 
-        explicit Angular(Angular&& shape) noexcept = default;
+        Angular(Angular&& shape) noexcept = default;
 
         /**
          * Assigns the given constant reference to the object
