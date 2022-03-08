@@ -195,6 +195,25 @@ namespace mpgl {
             float32 angle = 0.f);
 
         /**
+         * Construct a new ring with given center,
+         * color, outer and inner semi-axis. The
+         * angle specifies a counterclockwise angle
+         * between the x-axis and x-semi-axis component
+         *
+         * @param center the center of the ring
+         * @param outerSemiAxis the semi-axis of the outer ellipse
+         * @param innerSemiAxis the semi-axis of the inner ellipse
+         * @param color the color of the ring
+         * @param angle the angle between x-axis and semi-axis
+         */
+        Ring(
+            Vector2f const& center,
+            Vector2f const& outerSemiAxis,
+            Vector2f const& innerSemiAxis,
+            Color const& color = {},
+            float32 angle = 0.f);
+
+        /**
          * Construct a new circular ring with given center,
          * radius, color and inner ellipse
          *
@@ -207,6 +226,21 @@ namespace mpgl {
             Vector2f const& center,
             float32 radius,
             InnerEllipse const& innerEllipse = {},
+            Color const& color = {});
+
+        /**
+         * Construct a new circular ring with given center,
+         * inner and outer radius and ring color
+         *
+         * @param center the center of the ring
+         * @param outerRadius the radius of the outer circle
+         * @param innerRadius the radius of the inner circle
+         * @param color the color of the ring
+         */
+        Ring(
+            Vector2f const& center,
+            float32 outerRadius,
+            float32 innerRadius,
             Color const& color = {});
 
         Ring(Ring const& ring) = default;

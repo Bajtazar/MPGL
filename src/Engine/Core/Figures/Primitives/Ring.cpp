@@ -173,6 +173,22 @@ namespace mpgl {
         actualizeMatrices();
     }
 
+    Ring::Ring(
+        Vector2f const& center,
+        Vector2f const& outerSemiAxis,
+        Vector2f const& innerSemiAxis,
+        Color const& color,
+        float32 angle) : Ring{center, outerSemiAxis,
+            InnerEllipse{center, innerSemiAxis,
+                angle}, color, angle} {}
+
+    Ring::Ring(
+        Vector2f const& center,
+        float32 outerRadius,
+        float32 innerRadius,
+        Color const& color) : Ring{center, outerRadius,
+            InnerEllipse{center, innerRadius}, color} {}
+
     void Ring::actualizeMatrices(void) noexcept {
         outline = *invert(transpose(
             Matrix2f{Vector2f{get<"position">(vertices[1])}
