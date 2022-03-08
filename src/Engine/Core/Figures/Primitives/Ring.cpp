@@ -82,11 +82,15 @@ namespace mpgl {
         ));
     }
 
-    Vector2f Ring::InnerEllipse::getCenter(void) const noexcept {
+    [[nodiscard]] Vector2f
+        Ring::InnerEllipse::getCenter(void) const noexcept
+    {
         return (Vector2f{vertices[3]} + Vector2f{vertices[1]}) / 2.f;
     }
 
-    Vector2f Ring::InnerEllipse::getSemiAxis(void) const noexcept {
+    [[nodiscard]] Vector2f
+        Ring::InnerEllipse::getSemiAxis(void) const noexcept
+    {
         return {
             (Vector2f{vertices[1]} - Vector2f{vertices[0]}).length(),
             (Vector2f{vertices[3]} - Vector2f{vertices[0]}).length()
@@ -197,12 +201,14 @@ namespace mpgl {
                 - Vector2f{get<"position">(vertices[0])}}));
     }
 
-    Vector2f Ring::getCenter(void) const noexcept {
+    [[nodiscard]] Vector2f Ring::getCenter(void) const noexcept {
         return (Vector2f{get<"position">(vertices[3])}
             + Vector2f{get<"position">(vertices[1])}) / 2.f;
     }
 
-    Vector2f Ring::getOuterSemiAxis(void) const noexcept {
+    [[nodiscard]] Vector2f Ring::getOuterSemiAxis(
+        void) const noexcept
+    {
         return {
             (Vector2f{get<"position">(vertices[1])}
                 - Vector2f{get<"position">(vertices[0])}).length(),

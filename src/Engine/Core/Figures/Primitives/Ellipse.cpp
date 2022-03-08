@@ -62,12 +62,12 @@ namespace mpgl {
                 - Vector2f{get<"position">(vertices[0])}}));
     }
 
-    Vector2f Ellipse::getCenter(void) const noexcept {
+    [[nodiscard]] Vector2f Ellipse::getCenter(void) const noexcept {
         return (Vector2f{get<"position">(vertices[3])}
             + Vector2f{get<"position">(vertices[1])}) / 2.f;
     }
 
-    Vector2f Ellipse::getSemiAxis(void) const noexcept {
+    [[nodiscard]] Vector2f Ellipse::getSemiAxis(void) const noexcept {
         return {
             (Vector2f{get<"position">(vertices[1])}
                 - Vector2f{get<"position">(vertices[0])}).length(),

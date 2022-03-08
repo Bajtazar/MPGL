@@ -116,7 +116,7 @@ namespace mpgl {
          *
          * @return the constant reference to the elliptic color
          */
-        Color const& getColor(void) const noexcept
+        [[nodiscard]] Color const& getColor(void) const noexcept
             { return color; }
 
         /**

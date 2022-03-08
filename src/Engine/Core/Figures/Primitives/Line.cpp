@@ -37,7 +37,7 @@ namespace mpgl {
 
     Line::Line(Color const& color) : Angular{2, color} {}
 
-    Vector2f Line::getLineCenter(void) const noexcept {
+    [[nodiscard]] Vector2f Line::getLineCenter(void) const noexcept {
         return (Vector2f{get<"position">(vertices[0])}
             + Vector2f{get<"position">(vertices[1])}) / 2.f;
     }

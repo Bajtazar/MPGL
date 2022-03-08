@@ -86,7 +86,7 @@ namespace mpgl {
          *
          * @return the vector containing center
          */
-        OptionalVec2f getCenter(void) const noexcept;
+        [[nodiscard]] OptionalVec2f getCenter(void) const noexcept;
 
         /**
          * Virtual Destructor. Destroys the Resizable Angular object

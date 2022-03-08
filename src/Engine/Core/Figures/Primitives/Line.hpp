@@ -65,7 +65,7 @@ namespace mpgl {
          *
          * @return the center of the line
          */
-        Vector2f getLineCenter(void) const noexcept;
+        [[nodiscard]] Vector2f getLineCenter(void) const noexcept;
 
         /**
          * Draws the line on the screen

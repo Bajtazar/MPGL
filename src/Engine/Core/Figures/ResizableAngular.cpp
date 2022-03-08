@@ -44,7 +44,7 @@ namespace mpgl {
         return *this;
     }
 
-    ResizableAngular::OptionalVec2f
+    [[nodiscard]] ResizableAngular::OptionalVec2f
         ResizableAngular::getCenter(void) const noexcept
     {
         if (!vertices.size())

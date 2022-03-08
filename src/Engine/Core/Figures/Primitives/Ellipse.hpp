@@ -126,7 +126,7 @@ namespace mpgl {
          *
          * @return the position of the center of the ellipse
          */
-        Vector2f getCenter(void) const noexcept;
+        [[nodiscard]] Vector2f getCenter(void) const noexcept;
 
         /**
          * Returns the semi-axis of the ellipse. If they are
@@ -134,7 +134,7 @@ namespace mpgl {
          *
          * @return the semi-axis of the ellipse
          */
-        Vector2f getSemiAxis(void) const noexcept;
+        [[nodiscard]] Vector2f getSemiAxis(void) const noexcept;
 
         /**
          * Destroy the Ellipse object

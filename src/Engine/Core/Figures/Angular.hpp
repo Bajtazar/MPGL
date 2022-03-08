@@ -104,8 +104,9 @@ namespace mpgl {
          * @param index the vertex's index
          * @return the reference to vertex with the given index
          */
-        Vertex& operator[] (std::size_t index) noexcept
-            { isModified = true; return vertices[index]; }
+        [[nodiscard]] Vertex&
+            operator[] (std::size_t index) noexcept
+                { isModified = true; return vertices[index]; }
 
         /**
          * Returns the constant reference to vertex with
@@ -115,15 +116,16 @@ namespace mpgl {
          * @return the constant reference to vertex with
          * the given index
          */
-        Vertex const& operator[] (std::size_t index) const noexcept
-            { return vertices[index]; }
+        [[nodiscard]] Vertex const&
+            operator[] (std::size_t index) const noexcept
+                { return vertices[index]; }
 
         /**
          * Returns the reference to the front vertex
          *
          * @return the reference to the front vertex
          */
-        Vertex& front(void) noexcept
+        [[nodiscard]] Vertex& front(void) noexcept
             { isModified = true; return vertices.front(); }
 
         /**
@@ -131,7 +133,7 @@ namespace mpgl {
          *
          * @return the constant reference to the front vertex
          */
-        Vertex const& front(void) const noexcept
+        [[nodiscard]] Vertex const& front(void) const noexcept
             { return vertices.front(); }
 
         /**
@@ -139,7 +141,7 @@ namespace mpgl {
          *
          * @return the reference to the back vertex
          */
-        Vertex& back(void) noexcept
+        [[nodiscard]] Vertex& back(void) noexcept
             { isModified = true; return vertices.back(); }
 
         /**
@@ -147,7 +149,7 @@ namespace mpgl {
          *
          * @return the constant reference to the back vertex
          */
-        Vertex const& back(void) const noexcept
+        [[nodiscard]] Vertex const& back(void) const noexcept
             { return vertices.back(); }
 
         using iterator                    = Vertices::iterator;
@@ -162,7 +164,7 @@ namespace mpgl {
          *
          * @return the number of vertices
          */
-        std::size_t size(void) const noexcept
+        [[nodiscard]] std::size_t size(void) const noexcept
             { return vertices.size(); }
 
         /**
@@ -170,7 +172,7 @@ namespace mpgl {
          *
          * @return the iterator to the begining of the vertices
          */
-        iterator begin(void) noexcept
+        [[nodiscard]] iterator begin(void) noexcept
             { isModified = true; return vertices.begin(); }
 
         /**
@@ -178,7 +180,7 @@ namespace mpgl {
          *
          * @return the iterator to the end of the vertices
          */
-        iterator end(void) noexcept
+        [[nodiscard]] iterator end(void) noexcept
             { isModified = true; return vertices.end(); }
 
         /**
@@ -188,7 +190,7 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the vertices
          */
-        const_iterator begin(void) const noexcept
+        [[nodiscard]] const_iterator begin(void) const noexcept
             { return vertices.begin(); }
 
         /**
@@ -198,7 +200,7 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the vertices
          */
-        const_iterator end(void) const noexcept
+        [[nodiscard]] const_iterator end(void) const noexcept
             { return vertices.end(); }
 
         /**
@@ -208,7 +210,7 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the vertices
          */
-        const_iterator cbegin(void) const noexcept
+        [[nodiscard]] const_iterator cbegin(void) const noexcept
             { return vertices.begin(); }
 
         /**
@@ -218,7 +220,7 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the vertices
          */
-        const_iterator cend(void) const noexcept
+        [[nodiscard]] const_iterator cend(void) const noexcept
             { return vertices.end(); }
 
         /**
@@ -228,8 +230,9 @@ namespace mpgl {
          * @return the reverse iterator to the end of
          * the vertices
          */
-        reverse_iterator rbegin(void) noexcept
-            { isModified = true; return vertices.rbegin(); }
+        [[nodiscard]] reverse_iterator
+            rbegin(void) noexcept
+                { isModified = true; return vertices.rbegin(); }
 
         /**
          * Returns the reverse iterator to the begining of
@@ -238,8 +241,9 @@ namespace mpgl {
          * @return the reverse iterator to the begining of
          * the vertices
          */
-        reverse_iterator rend(void) noexcept
-            { isModified = true; return vertices.rend(); }
+        [[nodiscard]] reverse_iterator
+            rend(void) noexcept
+                { isModified = true; return vertices.rend(); }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -248,8 +252,9 @@ namespace mpgl {
          * @return the constant reverse iterator to the end of
          * the vertices
          */
-        const_reverse_iterator rbegin(void) const noexcept
-            { return vertices.rbegin(); }
+        [[nodiscard]] const_reverse_iterator
+            rbegin(void) const noexcept
+                { return vertices.rbegin(); }
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -258,8 +263,9 @@ namespace mpgl {
          * @return the constant reverse iterator to the begining of
          * the vertices
          */
-        const_reverse_iterator rend(void) const noexcept
-            { return vertices.rend(); }
+        [[nodiscard]] const_reverse_iterator
+            rend(void) const noexcept
+                { return vertices.rend(); }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -268,8 +274,9 @@ namespace mpgl {
          * @return the constant reverse iterator to the end of
          * the vertices
          */
-        const_reverse_iterator crbegin(void) const noexcept
-            { return vertices.crbegin(); }
+        [[nodiscard]] const_reverse_iterator
+            crbegin(void) const noexcept
+                { return vertices.crbegin(); }
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -278,8 +285,9 @@ namespace mpgl {
          * @return the constant reverse iterator to the begining of
          * the vertices
          */
-        const_reverse_iterator crend(void) const noexcept
-            { return vertices.crend(); }
+        [[nodiscard]] const_reverse_iterator
+            crend(void) const noexcept
+                { return vertices.crend(); }
 
         /**
          * Virtual destructor. Destroy the Angular object

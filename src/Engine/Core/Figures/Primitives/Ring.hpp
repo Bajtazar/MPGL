@@ -125,7 +125,7 @@ namespace mpgl {
              *
              * @return the position of the center of the ellipse
              */
-            Vector2f getCenter(void) const noexcept;
+            [[nodiscard]] Vector2f getCenter(void) const noexcept;
 
             /**
              * Returns the semi-axis of the ellipse. If they are
@@ -133,7 +133,7 @@ namespace mpgl {
              *
              * @return the semi-axis of the ellipse
              */
-            Vector2f getSemiAxis(void) const noexcept;
+            [[nodiscard]] Vector2f getSemiAxis(void) const noexcept;
 
             /**
              * Destroy the Inner Ellipse object
@@ -305,7 +305,7 @@ namespace mpgl {
          *
          * @return the center of the ring
          */
-        Vector2f getCenter(void) const noexcept;
+        [[nodiscard]] Vector2f getCenter(void) const noexcept;
 
         /**
          * Returns the outer semi-axis of the ring. If they are
@@ -313,7 +313,7 @@ namespace mpgl {
          *
          * @return the outer semi-axis of the ring
          */
-        Vector2f getOuterSemiAxis(void) const noexcept;
+        [[nodiscard]] Vector2f getOuterSemiAxis(void) const noexcept;
 
         /**
          * Returns the inner semi-axis of the ring. If they are
@@ -321,7 +321,7 @@ namespace mpgl {
          *
          * @return the inner semi-axis of the ring
          */
-        Vector2f getInnerSemiAxis(void) const noexcept
+        [[nodiscard]] Vector2f getInnerSemiAxis(void) const noexcept
             { return innerEllipse.getSemiAxis(); }
 
         /**
@@ -329,7 +329,7 @@ namespace mpgl {
          *
          * @return the reference to the inner ellipse
          */
-        InnerEllipse& getInnerEllipse(void) noexcept
+        [[nodiscard]] InnerEllipse& getInnerEllipse(void) noexcept
             { return innerEllipse; }
 
         /**
@@ -337,8 +337,9 @@ namespace mpgl {
          *
          * @return the constant reference to the inner ellipse
          */
-        InnerEllipse const& getInnerEllipse(void) const noexcept
-            { return innerEllipse; }
+        [[nodiscard]] InnerEllipse const&
+            getInnerEllipse(void) const noexcept
+                { return innerEllipse; }
 
         /**
          * Destroy the Ring object
