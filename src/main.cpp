@@ -53,9 +53,6 @@ public:
     void onScreenTransformation(Vector2u const& oldDim) noexcept
         { square.onScreenTransformation(oldDim); }
 
-    void copyToGPU(void) const noexcept
-        { square.copyToGPU(); }
-
     void draw(void) const noexcept
         { square.draw(); }
 
@@ -63,6 +60,33 @@ public:
 private:
     Sprite<true>                            square;
     uint32 const                            rotationTime;
+};
+
+class RotatingRing : public Drawable,
+    public TickEvent, public ScreenTransformationEvent
+{
+public:
+    RotatingRing(void) : ring{200_x + 400_y, 50.f,
+        Ring::InnerEllipse{200_x + 400_y, 25.f}, Color::Red},
+            time{0} {}
+
+    void onTick(std::chrono::milliseconds const& duration) noexcept {
+        time += duration.count();
+        ring.getInnerEllipse().translate({
+            std::cos(time * std::numbers::pi / 2000.f) * duration.count()
+            * std::numbers::pi / 80.f, 0.f});
+    }
+
+    void onScreenTransformation(Vector2u const& oldDim) noexcept
+        { ring.onScreenTransformation(oldDim); }
+
+    void draw(void) const noexcept
+        { ring.draw(); }
+
+    ~RotatingRing(void) noexcept = default;
+private:
+    Ring                                    ring;
+    uint32                                  time;
 };
 
 int main(void) noexcept {
@@ -86,13 +110,14 @@ int main(void) noexcept {
 
     window.emplaceDrawable<Text<>>(font, 18, 20_x + 300_y, "Witaj świecie!");
 
-    window.emplaceDrawable<DrawableCollection<LineStrip>>();
-    auto& array = dynamic_cast<DrawableCollection<LineStrip>&>(*window[2]);
+    window.emplaceDrawable<DrawableCollection<LineLoop>>();
+    auto& array = dynamic_cast<DrawableCollection<LineLoop>&>(*window[2]);
     array.emplace_back(Color::White, 400_x + 400_y, 300_x + 300_y, 400_x + 300_y);
     array.emplace_back(Color::Green, 200_x + 200_y, 200_x + 300_y, 300_x + 200_y);
 
     window.emplaceDrawable<RotatingSprite>(4, pack["pad.jpeg"]);
-    window.emplaceDrawable<Ellipse>(200_x + 400_y, 40_x + 20_y, Color::Red);
+
+    window.emplaceDrawable<RotatingRing>();
 
     return window.windowLoop(Color{0.2f, 0.3f, 0.3f, 1.f});
 }

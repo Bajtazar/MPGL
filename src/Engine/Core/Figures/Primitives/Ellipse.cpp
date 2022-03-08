@@ -34,43 +34,16 @@ namespace mpgl {
         = [](ProgramPtr& program)
     {
         program->use();
-        program->setUniform("aafactor", (float)
+        program->setUniform("aafactor", (float32)
             context.windowOptions.antiAliasingSamples / 4.f);
     };
-
-    Ellipse::Vertices Ellipse::ellipseVertices(Vector2f const& center,
-        Vector2f const& semiAxis, float32 angle)
-    {
-        Matrix2f rotation = rotationMatrix<float32>(angle);
-        Vector2f rot1 = rotation * semiAxis;
-        Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
-        return {
-            Vertex{center - rot2},
-            Vertex{center + rot1},
-            Vertex{center + rot2},
-            Vertex{center - rot1}
-        };
-    }
-
-    Ellipse::Vertices Ellipse::circleVertices(Vector2f const& center,
-        float32 radius)
-    {
-        Vector2f semiMajor = Vector2f{radius, 0.f};
-        Vector2f semiMinor = Vector2f{0.f, radius};
-        return {
-            Vertex{center - semiMajor + semiMinor},
-            Vertex{center + semiMajor + semiMinor},
-            Vertex{center + semiMajor - semiMinor},
-            Vertex{center - semiMajor - semiMinor}
-        };
-    }
 
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
         Color const& color, float angle)
             : Elliptic{ellipseVertices(center, semiAxis, angle), "2DEllipse",
                 shaderExec, color}
     {
-        actualizeOutline();
+        actualizeMatrices();
     }
 
     Ellipse::Ellipse(Vector2f const& center, float radius,
@@ -78,10 +51,10 @@ namespace mpgl {
             : Elliptic{circleVertices(center, radius), "2DEllipse",
                 shaderExec, color}
     {
-        actualizeOutline();
+        actualizeMatrices();
     }
 
-    void Ellipse::actualizeOutline(void) noexcept {
+    void Ellipse::actualizeMatrices(void) noexcept {
         outlineTransform = *invert(transpose(
             Matrix2f{Vector2f{get<"position">(vertices[1])}
                 - Vector2f{get<"position">(vertices[0])},
@@ -103,41 +76,52 @@ namespace mpgl {
         };
     }
 
-    void Ellipse::onScreenTransformation(Vector2u const& oldDimensions) noexcept {
+    void Ellipse::onScreenTransformation(
+        Vector2u const& oldDimensions) noexcept
+    {
         for (auto& vertexPosition : vertices | views::position) {
             Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * static_cast<Vector2f>(oldDimensions)
-                / static_cast<Vector2f>(context.windowDimensions) - 1.f;
+            position = (position + 1.f) * static_cast<Vector2f>(
+                oldDimensions) / static_cast<Vector2f>(
+                    context.windowDimensions) - 1.f;
         }
-        actualizeOutline();
+        actualizeMatrices();
         isModified = true;
     }
 
     void Ellipse::translate(Vector2f const& shift) noexcept {
-        for (auto& vertexPosition : vertices | views::position)
-            vertexPosition = Vector2f(vertexPosition) + shift;
-        actualizeOutline();
+        for (auto& position : vertices | views::position)
+            position = Vector2f(position) + shift;
+        actualizeMatrices();
         isModified = true;
     }
 
-    void Ellipse::scale(Vector2f const& center, float32 factor) noexcept {
-        for (auto& vertexPosition : vertices | views::position)
-            vertexPosition = (static_cast<Vector2f>(vertexPosition) - center) * factor + center;
-        actualizeOutline();
+    void Ellipse::scale(
+        Vector2f const& center,
+        float32 factor) noexcept
+    {
+        for (auto& position : vertices | views::position)
+            position = (static_cast<Vector2f>(position)
+                - center) * factor + center;
+        actualizeMatrices();
         isModified = true;
     }
 
-    void Ellipse::rotate(Vector2f const& center, float32 angle) noexcept {
+    void Ellipse::rotate(
+        Vector2f const& center,
+        float32 angle) noexcept
+    {
         rotate(center, rotationMatrix<float32>(angle));
     }
 
-    void Ellipse::rotate(Vector2f const& center, Matrix2f const& rotation) noexcept {
-        for (auto& vertexPosition : vertices | views::position) {
-            Vector2f position = vertexPosition;
-            Vector2f radius = position - center;
-            vertexPosition = rotation * radius + center;
-        }
-        actualizeOutline();
+    void Ellipse::rotate(
+        Vector2f const& center,
+        Matrix2f const& rotation) noexcept
+    {
+        for (auto& position : vertices | views::position)
+            position = rotation * (
+                Vector2f(position) - center) + center;
+        actualizeMatrices();
         isModified = true;
     }
 

@@ -19,7 +19,6 @@ namespace mpgl {
         ShaderProgram const& getProgram(void) const noexcept
             { return *shaderProgram; }
 
-        virtual void copyToGPU(void) const noexcept = 0;
         virtual void draw(void) const noexcept = 0;
 
         virtual ~Shadeable(void) noexcept = default;

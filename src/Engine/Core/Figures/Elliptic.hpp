@@ -167,14 +167,42 @@ namespace mpgl {
         Vertices                                        vertices;
 
         /**
-         * Initializes inner buffers
-         */
-        void initializeBuffers(void) const noexcept;
-
-        /**
          * Actualizes vertex buffer before draw
          */
         void actualizeBufferBeforeDraw(void) const noexcept;
+
+        /**
+         * Constructs the vector with ellipse vertices
+         *
+         * @param center the center of the ellipse
+         * @param semiAxis the semi-axis of the ellipse
+         * @param angle the angle between x-axis and semi-axis
+         * @return the ellipse's vertices
+         */
+        static Vertices ellipseVertices(Vector2f const& center,
+            Vector2f const& semiAxis, float32 angle);
+
+        /**
+         * Constructs the vector with circle vertices
+         *
+         * @param center the center of the circle
+         * @param radius the radius of the circle
+         * @return the circle's vertices
+         */
+        static Vertices circleVertices(Vector2f const& center,
+            float32 radius);
+
+        /**
+         * Pure virtual method. Has to be overloaded. Actualizes
+         * the matrices responsible for the elliptic shape
+         */
+        virtual void actualizeMatrices(void) noexcept = 0;
+    private:
+        /**
+         * Initializes inner buffers
+         */
+
+        void initializeBuffers(void) const noexcept;
 
         static constexpr const Indexes                  indexes {
             0, 1, 2, 0, 3, 2};

@@ -130,7 +130,7 @@ namespace mpgl {
 
         /**
          * Returns the semi-axis of the ellipse. If they are
-         * equal then the ellipse is circle
+         * equal then the ellipse is a circle
          *
          * @return the semi-axis of the ellipse
          */
@@ -147,30 +147,9 @@ namespace mpgl {
         static const Executable                     shaderExec;
 
         /**
-         * Constructs the vector with ellipse vertices
-         *
-         * @param center the center of the ellipse
-         * @param semiAxis the semi-axis of the ellipse
-         * @param angle the angle between x-axis and semi-axis
-         * @return the ellipse's vertices
+         * Actualizes the matrices responsible for the outline
          */
-        static Vertices ellipseVertices(Vector2f const& center,
-            Vector2f const& semiAxis, float32 angle);
-
-        /**
-         * Constructs the vector with circle vertices
-         *
-         * @param center the center of the circle
-         * @param radius the radius of the circle
-         * @return the circle's vertices
-         */
-        static Vertices circleVertices(Vector2f const& center,
-            float32 radius);
-
-        /**
-         * Actualizes the matrix responsible for the outline
-         */
-        void actualizeOutline(void) noexcept;
+        void actualizeMatrices(void) noexcept final;
     };
 
 }
