@@ -57,12 +57,14 @@ namespace mpgl {
          */
         explicit Shape(void) noexcept = default;
 
-        explicit Shape(Shape&& shape) noexcept = default;
+        Shape(Shape&& shape) noexcept = default;
 
         Shape& operator=(Shape&& shape) noexcept = default;
 
         VertexBuffer                            vertexBuffer;
         VertexArray                             vertexArray;
+
+        mutable bool                            isModified = false;
     };
 
 }

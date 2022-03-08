@@ -34,8 +34,8 @@ namespace mpgl {
     /**
      * Base class for the two-dimensional figures
      */
-    class Figure : public Shape, public Shadeable,
-        public Transformable2D
+    class Figure : public virtual Shape, public Shadeable,
+        public virtual Transformable2D
     {
     public:
         /**
@@ -142,9 +142,15 @@ namespace mpgl {
          */
         Figure& operator=(Figure const& shape);
 
-        Figure& operator=(Figure&& shape) noexcept = default;
-
-        mutable bool                                isModified = false;
+        /**
+         * Assigns the given rvalue reference to the object
+         *
+         * @note Wvirtual-move-assign warning workaround
+         *
+         * @param shape the given figure rvalue reference
+         * @return the reference to this object
+         */
+        Figure& operator=(Figure&& shape) noexcept;
     };
 
 }

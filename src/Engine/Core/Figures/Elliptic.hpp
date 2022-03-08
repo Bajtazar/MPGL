@@ -201,7 +201,6 @@ namespace mpgl {
         /**
          * Initializes inner buffers
          */
-
         void initializeBuffers(void) const noexcept;
 
         static constexpr const Indexes                  indexes {
