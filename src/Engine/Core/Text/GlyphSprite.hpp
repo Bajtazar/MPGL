@@ -1,227 +1,154 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
-#include "../Color.hpp"
-
-#include "../Drawable.hpp"
-#include "../Textures/Texture.hpp"
-#include "../../Utility/Adapter.hpp"
-#include "../../Mathematics/Systems.hpp"
-#include "../Transformations/Transformable2D.hpp"
-
-#include <utility>
-#include <variant>
-#include <array>
+#include "../Textures/Texturable.hpp"
 
 namespace mpgl {
 
-    class MonochromaticFontVertex {
+    /**
+     * Represents the lightweight sprite dependent from
+     * external commands in order to gain performance boost.
+     * Cannot be drawn alone
+     *
+     * @tparam IsColorable specifies whether the vertices
+     * should contain information about color
+     */
+    template <bool IsColorable>
+    class GlyphSprite : public Texturable<IsColorable> {
     public:
-        explicit MonochromaticFontVertex(Vector2f const& position,
-            Vector2f const& textureCoords) noexcept
-            : position{position}, textureCoords{textureCoords} {}
+        /**
+         * Construct a new Glyph Sprite object with given
+         * texture
+         *
+         * @param texture the texture drawn by sprite
+         */
+        GlyphSprite(Texture const& texture = {});
 
-        Adapter<Vector2f>                           position;
-        Vector2f                                    textureCoords;
-
-        template <std::size_t Index>
-            requires (Index < 2)
-        constexpr auto&& get(void) & noexcept
-            { return helper<Index>(*this); }
-
-        template <std::size_t Index>
-            requires (Index < 2)
-        constexpr auto&& get(void) const& noexcept
-            { return helper<Index>(*this); }
-    private:
-        template <std::size_t Index, class Base>
-        constexpr auto&& helper(Base&& base) const noexcept {
-            if constexpr (!Index)
-                return std::forward<Base>(base).position;
-            else
-                return std::forward<Base>(base).textureCoords;
-        }
-    };
-
-    class PolichromaticFontVertex {
-    public:
-        explicit PolichromaticFontVertex(Vector2f const& position,
-            Color const& color,
-            Vector2f const& textureCoords) noexcept
-            : position{position}, color{color},
-                textureCoords{textureCoords} {}
-
-        Adapter<Vector2f>                           position;
-        Vector2f                                    textureCoords;
-        Color                                       color;
-
-        template <std::size_t Index>
-            requires (Index < 3)
-        constexpr auto&& get(void) & noexcept
-            { return helper<Index>(*this); }
-
-        template <std::size_t Index>
-            requires (Index < 3)
-        constexpr auto&& get(void) const& noexcept
-            { return helper<Index>(*this); }
-    private:
-        template <std::size_t Index, class Base>
-        constexpr auto&& helper(Base&& base) const noexcept {
-            if constexpr (Index == 0)
-                return std::forward<Base>(base).position;
-            else if constexpr (Index == 2)
-                return std::forward<Base>(base).color;
-            else
-                return std::forward<Base>(base).textureCoords;
-        }
-    };
-
-    // custom texture allocators will be add
-    template <bool IsMonochromatic>
-    class GlyphSprite : public Transformable2D,
-        private GraphicalObject
-    {
-    public:
-        using Vertex = std::conditional_t<IsMonochromatic,
-            MonochromaticFontVertex, PolichromaticFontVertex>;
-
-        typedef std::array<Vertex, 4>               Vertices;
-        typedef std::array<uint32, 6>               Indexes;
-
-        GlyphSprite(Texture const& texture, Color const& color = {});
-        // parallelogram
+        /**
+         * Construct a new Glyph Sprite object with given
+         * texture and color
+         *
+         * @param texture the texture drawn by sprite
+         * @param color sprite's color
+         */
         GlyphSprite(Texture const& texture,
-            Vector2f const& firstVertex, Vector2f const& secondVertex,
-            Vector2f const& thirdVertex, Color const& color = {});
-        //rectangle parallel to x and y axis
-        GlyphSprite(Texture const& texture,
-            Vector2f const& firstVertex, Vector2f const& dimensions,
-            Color const& color = {});
+            Color const& color) requires (IsColorable);
 
-        GlyphSprite(GlyphSprite const& sprite) noexcept;
-        GlyphSprite(GlyphSprite&& sprite) noexcept;
+        /**
+         * Construct a new parallelogram-like Glyph Sprite
+         * object from a given three vertices and sprite's
+         * texture
+         *
+         * @param texture the texture drawn by sprite
+         * @param firstVertex the first vertex position
+         * @param secondVertex the second vertex position
+         * @param thirdVertex the third vertex position
+         */
+        GlyphSprite(
+            Texture const& texture,
+            Vector2f const& firstVertex,
+            Vector2f const& secondVertex,
+            Vector2f const& thirdVertex);
 
-        GlyphSprite& operator= (GlyphSprite const& sprite) noexcept;
-        GlyphSprite& operator= (GlyphSprite&& sprite) noexcept;
+        /**
+         * Construct a new parallelogram-like Glyph Sprite
+         * object from a given three vertices, sprite's
+         * texture and its color
+         *
+         * @param texture the texture drawn by sprite
+         * @param firstVertex the first vertex position
+         * @param secondVertex the second vertex position
+         * @param thirdVertex the third vertex position
+         * @param color the sprite's color
+         */
+        GlyphSprite(
+            Texture const& texture,
+            Vector2f const& firstVertex,
+            Vector2f const& secondVertex,
+            Vector2f const& thirdVertex,
+            Color const& color) requires (IsColorable);
 
-        void copyToGPU(void) const noexcept;
+        /**
+         * @brief Construct a new rectangular Glyph Sprite
+         * object. The edges are parallel to x and y axis
+         *
+         * @param texture the sprite's texture
+         * @param firstVertex the first vertex position
+         * @param dimensions the sprite's dimensions
+         */
+        GlyphSprite(
+            Texture const& texture,
+            Vector2f const& firstVertex,
+            Vector2f const& dimensions);
+
+        /**
+         * @brief Construct a new rectangular Glyph Sprite
+         * object. The edges are parallel to x and y axis.
+         * Colors sprite with given color
+         *
+         * @param texture the sprite's texture
+         * @param firstVertex the first vertex position
+         * @param dimensions the sprite's dimensions
+         * @param color the sprite's color
+         */
+        GlyphSprite(
+            Texture const& texture,
+            Vector2f const& firstVertex,
+            Vector2f const& dimensions,
+            Color const& color) requires (IsColorable);
+
+        GlyphSprite(GlyphSprite const& sprite) = default;
+        GlyphSprite(GlyphSprite&& sprite) noexcept = default;
+
+        GlyphSprite& operator= (
+            GlyphSprite const& sprite) = default;
+        GlyphSprite& operator= (
+            GlyphSprite&& sprite) noexcept = default;
+
+        /**
+         * Draws sprite on the screen
+         */
         void draw(void) const noexcept;
 
-        void onScreenTransformation(
-            Vector2u const& oldDimensions) noexcept final;
-        void translate(
-            Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center,
-            float32 factor) noexcept final;
-        void rotate(Vector2f const& center,
-            float32 angle) noexcept final;
-        void rotate(Vector2f const& center,
-            Matrix2f const& rotation) noexcept final;
-
-        Vertex& operator[] (std::size_t index) noexcept
-            { return vertices[index]; }
-        const Vertex& operator[] (std::size_t index) const noexcept
-            { return vertices[index]; }
-
+        /**
+         * Sets the sprite's color
+         *
+         * @param color the sprite's new color
+         */
         void setColor(Color const& color = {}) noexcept
-            requires (!IsMonochromatic);
+            requires (IsColorable);
 
-        consteval std::size_t size(void) const noexcept
-            { return 4; }
-
-        using iterator = typename Vertices::iterator;
-        using const_iterator = typename Vertices::const_iterator;
-        using reverse_iterator = typename Vertices::reverse_iterator;
-        using const_reverse_iterator =
-            typename Vertices::const_reverse_iterator;
-
-        iterator begin(void) noexcept
-            { return vertices.begin(); }
-        iterator end(void) noexcept
-            { return vertices.end(); }
-
-        const_iterator begin(void) const noexcept
-            { return vertices.begin(); }
-        const_iterator end(void) const noexcept
-            { return vertices.end(); }
-
-        const_iterator cbegin(void) const noexcept
-            { return vertices.cbegin(); }
-        const_iterator cend(void) const noexcept
-            { return vertices.cend(); }
-
-        reverse_iterator rbegin(void) noexcept
-            { return vertices.rbegin(); }
-        reverse_iterator rend(void) noexcept
-            { return vertices.rend(); }
-
-        const_reverse_iterator rbegin(void) const noexcept
-            { return vertices.rbegin(); }
-        const_reverse_iterator rend(void) const noexcept
-            { return vertices.rend(); }
-
-        const_reverse_iterator crbegin(void) const noexcept
-            { return vertices.crbegin(); }
-        const_reverse_iterator crend(void) const noexcept
-            { return vertices.crend(); }
-
-        ~GlyphSprite(void) noexcept;
-    private:
-        Vertices                                    vertices;
-        Texture                                     texture;
-        uint32                                      elementArrayBuffer;
-        uint32                                      vertexBuffer;
-        uint32                                      vertexArrayObject;
-
-        Vertices makeVertexArray(Color const& color) noexcept;
-        void bindBuffers(void) const noexcept;
-        void copyBuffersToGPU(void) const noexcept;
-        void unbindBuffers(void) const noexcept;
-
-        static constexpr const Indexes              indexes = {
-            {0, 1, 2, 0, 3, 2}};
+        /**
+         * Destroy the Glyph Sprite object
+         */
+        ~GlyphSprite(void) noexcept = default;
     };
 
     template class GlyphSprite<true>;
     template class GlyphSprite<false>;
-
-    typedef GlyphSprite<true>                       MonoGlyphSprite;
-    typedef GlyphSprite<false>                      PoliGlyphSprite;
-
-}
-
-namespace std {
-
-    template <>
-    struct tuple_size<mpgl::MonochromaticFontVertex>
-        : integral_constant<size_t, 2> {};
-
-    template <>
-    struct tuple_element<0, mpgl::MonochromaticFontVertex> {
-        using type = mpgl::Adapter<mpgl::Vector2f>;
-    };
-
-    template <>
-    struct tuple_element<1, mpgl::MonochromaticFontVertex> {
-        using type = mpgl::Vector2f;
-    };
-
-    template <>
-    struct tuple_size<mpgl::PolichromaticFontVertex>
-        : integral_constant<size_t, 3> {};
-
-    template <>
-    struct tuple_element<0, mpgl::PolichromaticFontVertex> {
-        using type = mpgl::Adapter<mpgl::Vector2f>;
-    };
-
-    template <>
-    struct tuple_element<1, mpgl::PolichromaticFontVertex> {
-        using type = mpgl::Color;
-    };
-
-    template <>
-    struct tuple_element<2, mpgl::PolichromaticFontVertex> {
-        using type = mpgl::Vector2f;
-    };
 
 }

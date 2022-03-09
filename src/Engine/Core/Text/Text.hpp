@@ -165,7 +165,6 @@ namespace mpgl {
         Vector2f getPosition(void) const noexcept;
         float32 getAngle(void) const noexcept { return angle; }
 
-        void copyToGPU(void) const noexcept final;
         void draw(void) const noexcept final;
 
         void onScreenTransformation(Vector2u const& oldDimensions) noexcept final;

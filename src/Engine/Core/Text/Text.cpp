@@ -1,6 +1,7 @@
 #include "Text.hpp"
 #include "UTF-8.hpp"
 #include "../Figures/Views.hpp"
+#include "../../Mathematics/Systems.hpp"
 
 namespace mpgl {
 
@@ -60,8 +61,12 @@ namespace mpgl {
                 Vector2f xVersor = rotation * Vector2f{float32(glyph->get().dimensions[0]), 0.f} * scale;
                 Vector2f yVersor = rotation * Vector2f{0.f, float32(glyph->get().dimensions[1])} * scale;
                 Vector2f bearing = rotation * vectorCast<float32>(glyph->get().bearing) * scale;
-                glyphs.emplace_back(*texture, position + bearing,
-                    position + bearing + yVersor, position + bearing + xVersor, color);
+                // if constexpr (IsPolichromatic)
+                    // glyphs.emplace_back(*texture, position + bearing,
+                    //     position + bearing + yVersor, position + bearing + xVersor, color);
+                // else
+                    glyphs.emplace_back(*texture, position + bearing,
+                        position + bearing + yVersor, position + bearing + xVersor);
             }
             position += rotation * Vector2f{float32(glyph->get().advance * scale), 0.f};
         }
@@ -88,11 +93,6 @@ namespace mpgl {
     }
 
     template <bool IsPolichromatic>
-    void Text<IsPolichromatic>::copyToGPU(void) const noexcept {
-        std::ranges::for_each(glyphs, [](auto const& glyph) { glyph.copyToGPU(); });
-    }
-
-    template <bool IsPolichromatic>
     void Text<IsPolichromatic>::draw(void) const noexcept {
         shaderProgram->use();
         if constexpr (!IsPolichromatic)
@@ -110,15 +110,15 @@ namespace mpgl {
         auto const& glyph = font.get()(type)(index, level);
         Vector2f bearing = rotation * vectorCast<float32>(
             glyph->get().bearing) * scale;
-        return Vector2f{glyphs.front()[0].position} - bearing;
+        return Vector2f{get<"position">(glyphs.front()[0])} - bearing;
     }
 
     template <bool IsPolichromatic>
     Vector2f Text<IsPolichromatic>::getDimensions(void) const noexcept {
         if (glyphs.size())
-            return {(static_cast<Vector2f>(glyphs.size() > 1 ? glyphs.back()[2].position
-                : glyphs.front()[2].position) - static_cast<Vector2f>(
-                glyphs.front()[1].position)).length(), float32(size)};
+            return {(static_cast<Vector2f>(glyphs.size() > 1 ? get<"position">(glyphs.back()[2])
+                : get<"position">(glyphs.front()[2])) - static_cast<Vector2f>(
+                get<"position">(glyphs.front()[1]))).length(), float32(size)};
         return {0.f, 0.f};
     }
 
@@ -126,7 +126,6 @@ namespace mpgl {
     Text<IsPolichromatic>& Text<IsPolichromatic>::operator+= (std::string const& left) {
         text += left;
         drawGlyphs(parseString(left));
-        copyToGPU();
         return *this;
     }
 
@@ -135,7 +134,6 @@ namespace mpgl {
         position = getPosition();
         text.clear();
         glyphs.clear();
-        copyToGPU();
     }
 
     template <bool IsPolichromatic>
@@ -143,7 +141,6 @@ namespace mpgl {
         position = getPosition();
         glyphs.clear();
         drawGlyphs(parseString(text));
-        copyToGPU();
     }
 
     template <bool IsPolichromatic>

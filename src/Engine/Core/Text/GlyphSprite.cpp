@@ -1,237 +1,116 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include "GlyphSprite.hpp"
 
+#include "../Figures/Views.hpp"
 #include "../Context/Buffers/BindGuard.hpp"
 
 namespace mpgl {
 
-    template <bool IsMonochromatic>
-        GlyphSprite<IsMonochromatic>::Vertices
-    GlyphSprite<IsMonochromatic>::makeVertexArray(
-        [[maybe_unused]]Color const& color) noexcept
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::GlyphSprite(
+        Texture const& texture,
+        Color const& color) requires (IsColorable)
+            : Texturable<IsColorable>{texture, color} {}
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::GlyphSprite(
+        Texture const& texture)
+            : Texturable<IsColorable>{texture} {}
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::GlyphSprite(
+        Texture const& texture,
+        Vector2f const& firstVertex,
+        Vector2f const& secondVertex,
+        Vector2f const& thirdVertex)
+            : Texturable<IsColorable>{{
+                    firstVertex,
+                    secondVertex,
+                    thirdVertex + secondVertex - firstVertex,
+                    thirdVertex
+                }, texture} {}
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::GlyphSprite(
+        Texture const& texture,
+        Vector2f const& firstVertex,
+        Vector2f const& secondVertex,
+        Vector2f const& thirdVertex,
+        Color const& color) requires (IsColorable)
+            : Texturable<IsColorable>{{
+                    firstVertex,
+                    secondVertex,
+                    thirdVertex + secondVertex - firstVertex,
+                    thirdVertex
+                }, texture, color} {}
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::GlyphSprite(
+        Texture const& texture,
+        Vector2f const& firstVertex,
+        Vector2f const& dimensions)
+            : Texturable<IsColorable>{{
+                firstVertex,
+                firstVertex + Vector2f{0.f, dimensions[1]},
+                firstVertex + dimensions,
+                firstVertex + Vector2f{dimensions[0], 0.f}
+            }, texture} {}
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::GlyphSprite(
+        Texture const& texture,
+        Vector2f const& firstVertex,
+        Vector2f const& dimensions,
+        Color const& color) requires (IsColorable)
+            : Texturable<IsColorable>{{
+                firstVertex,
+                firstVertex + Vector2f{0.f, dimensions[1]},
+                firstVertex + dimensions,
+                firstVertex + Vector2f{dimensions[0], 0.f}
+            }, texture, color} {}
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::setColor(
+        Color const& color) noexcept requires (IsColorable)
     {
-        if constexpr (IsMonochromatic) {
-            return {Vertex{{}, {0.f, 0.f}}, Vertex{{}, {0.f, 1.f}},
-                Vertex{{}, {1.f, 1.f}}, Vertex{{}, {1.f, 0.f}}};
-        } else
-            return {Vertex{{}, color, {0.f, 0.f}},
-                Vertex{{}, color, {0.f, 1.f}},
-                Vertex{{}, color, {1.f, 1.f}},
-                Vertex{{}, color, {1.f, 0.f}}};
+        std::ranges::for_each(this->vertices | views::color,
+            [&color](auto& vertexColor){ vertexColor = color; });
+        this->isModified = true;
     }
 
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(Texture const& texture,
-        Color const& color)
-            : vertices{makeVertexArray(color)}, texture{texture},
-            elementArrayBuffer{0}, vertexBuffer{0},
-            vertexArrayObject{0}
-    {
-        glGenVertexArrays(1, &vertexArrayObject);
-        glGenBuffers(1, &vertexBuffer);
-        glGenBuffers(1, &elementArrayBuffer);
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(Texture const& texture,
-        Vector2f const& firstVertex, Vector2f const& secondVertex,
-        Vector2f const& thirdVertex,Color const& color)
-            : GlyphSprite{texture, color}
-    {
-        vertices[0].position = firstVertex;
-        vertices[1].position = secondVertex;
-        vertices[2].position = thirdVertex +
-            secondVertex - firstVertex;
-        vertices[3].position = thirdVertex;
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(Texture const& texture,
-        Vector2f const& firstVertex, Vector2f const& dimensions,
-        Color const& color)
-            : GlyphSprite{texture, color}
-    {
-        vertices[0].position = firstVertex;
-        vertices[1].position = firstVertex +
-            Vector2f{0.f, dimensions[1]};
-        vertices[2].position = firstVertex + dimensions;
-        vertices[3].position = firstVertex +
-            Vector2f{dimensions[0], 0.f};
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(
-        GlyphSprite const& sprite) noexcept
-            :  GlyphSprite{sprite.texture}
-    {
-        std::ranges::copy(sprite, begin());
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::GlyphSprite(
-        GlyphSprite&& sprite) noexcept
-            : vertices{std::move(sprite.vertices)},
-            texture{sprite.texture}
-    {
-        vertexArrayObject = sprite.vertexArrayObject;
-        vertexBuffer = sprite.vertexBuffer;
-        elementArrayBuffer = sprite.elementArrayBuffer;
-        sprite.vertexArrayObject = sprite.vertexBuffer =
-            sprite.elementArrayBuffer = 0;
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>&
-        GlyphSprite<IsMonochromatic>::operator=(
-            GlyphSprite const& sprite) noexcept
-    {
-        std::ranges::copy(sprite, begin());
-        return *this;
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>&
-        GlyphSprite<IsMonochromatic>::operator=(
-            GlyphSprite&& sprite) noexcept
-    {
-        this->~GlyphSprite();
-        vertexArrayObject = sprite.vertexArrayObject;
-        vertexBuffer = sprite.vertexBuffer;
-        elementArrayBuffer = sprite.elementArrayBuffer;
-        sprite.vertexArrayObject = sprite.vertexBuffer =
-            sprite.elementArrayBuffer = 0;
-        return *this;
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::setColor(
-        Color const& color) noexcept requires (!IsMonochromatic)
-    {
-        std::ranges::for_each(vertices, [&color](auto& vertex)
-            { vertex.color = color; });
-        copyToGPU();
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::bindBuffers(
-        void) const noexcept
-    {
-        glBindVertexArray(vertexArrayObject);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4,
-            vertices.data(), GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() *
-            sizeof(uint32), indexes.data(), GL_STATIC_DRAW);
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::copyBuffersToGPU(
-        void) const noexcept
-    {
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-            sizeof(Vertex), nullptr);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-            sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(float32)));
-        glEnableVertexAttribArray(1);
-        if constexpr (!IsMonochromatic) {
-            glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE,
-                sizeof(Vertex), reinterpret_cast<void*>(4 * sizeof(float32)));
-            glEnableVertexAttribArray(2);
-        }
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::unbindBuffers(
-        void) const noexcept
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::copyToGPU(
-        void) const noexcept
-    {
-        bindBuffers();
-        copyBuffersToGPU();
-        unbindBuffers();
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::draw(void) const noexcept {
-        auto const& textureBuffer = texture.getTextureBuffer();
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::draw(void) const noexcept {
+        this->actualizeBufferBeforeDraw();
+        auto const& textureBuffer = this->texture.getTextureBuffer();
         textureBuffer.activate();
-        BindGuard guard{textureBuffer};
-        glBindVertexArray(vertexArrayObject);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::onScreenTransformation(
-        Vector2u const& oldDimensions) noexcept
-    {
-        for (auto& vertexPosition : vertices |
-            std::views::transform(&Vertex::position))
-        {
-            Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * vectorCast<float32>(
-                oldDimensions) / vectorCast<float32>(
-                    context.windowDimensions) - 1.f;
-        }
-        copyToGPU();
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::translate(
-        Vector2f const& shift) noexcept
-    {
-        for (auto& vertexPosition : vertices |
-            std::views::transform(&Vertex::position))
-                vertexPosition = Vector2f(vertexPosition) + shift;
-        copyToGPU();
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::scale(
-        Vector2f const& center, float32 factor) noexcept
-    {
-        for (auto& vertexPosition : vertices |
-            std::views::transform(&Vertex::position))
-        {
-            vertexPosition = (Vector2f(vertexPosition) - center)
-                * factor + center;
-        }
-        copyToGPU();
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::rotate(
-        Vector2f const& center, float32 angle) noexcept
-    {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    template <bool IsMonochromatic>
-    void GlyphSprite<IsMonochromatic>::rotate(
-        Vector2f const& center, Matrix2f const& rotation) noexcept
-    {
-        for (auto& vertexPosition : vertices |
-            std::views::transform(&Vertex::position))
-        {
-            Vector2f radius = Vector2f(vertexPosition) - center;
-            vertexPosition = rotation * radius + center;
-        }
-        copyToGPU();
-    }
-
-    template <bool IsMonochromatic>
-    GlyphSprite<IsMonochromatic>::~GlyphSprite(void) noexcept {
-        glDeleteBuffers(1, &elementArrayBuffer);
-        glDeleteBuffers(1, &vertexBuffer);
-        glDeleteVertexArrays(1, &vertexArrayObject);
+        BindGuard textureGuard{textureBuffer};
+        BindGuard vaoGuard{this->vertexArray};
+        this->vertexArray.drawElements(
+            VertexArray::DrawMode::Triangles, 6, DataType::UInt32);
     }
 
 }
