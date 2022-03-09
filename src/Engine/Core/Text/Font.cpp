@@ -1,4 +1,30 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include "Font.hpp"
+
 #include "../../IO/FileIO.hpp"
 #include "../../IO/Logger.hpp"
 #include "../../Utility/StringAlgorithm.hpp"
@@ -15,8 +41,13 @@ namespace mpgl {
         {Type::Bold, "bold"}
     };
 
-    Font::Font(std::string const& fontName,
-        std::string fontDirectory) : fontName{toLower(fontName)}, mask{0}
+    Font::Container::Container(std::string const& fontName)
+        : fontName{toLower(fontName)}, mask{0} {}
+
+    Font::Font(
+        std::string const& fontName,
+        std::string fontDirectory)
+            : pointer{new Container{fontName}}
     {
         if (!fontDirectory.size())
             fontDirectory = fontName;
@@ -27,33 +58,39 @@ namespace mpgl {
             [](auto const& string) { return toLower(string); });
         std::ranges::for_each(typeVector, [&](const auto& pair) {
             findSubfont(files, signatures, pair.second, pair.first); });
-        if (!subfonts.contains(Type::Regular))
+        if (!pointer->subfonts.contains(Type::Regular))
             throw FontNoRegualrException{fontName};
     }
 
-    void Font::findSubfont(Files& files, Files& signatures,
-        std::string const& type, Type const& flag)
+    void Font::findSubfont(
+        Files& files,
+        Files& signatures,
+        std::string const& type,
+        Type const& flag)
     {
         for (std::size_t i = files.size() - 1; i < files.size(); --i)
-            if (std::string::npos != signatures[i].find(fontName))
+            if (std::string::npos != signatures[i].find(pointer->fontName))
                 if (std::string::npos != signatures[i].find_last_of(type))
                     return addSubfont(i, files, signatures, flag);
     }
 
-    void Font::addSubfont(std::size_t position,
-        Files& files, Files& signatures, Type const& flag)
+    void Font::addSubfont(
+        std::size_t position,
+        Files& files,
+        Files& signatures,
+        Type const& flag)
     {
-        subfonts.emplace(flag, Subfont{files[position]});
+        pointer->subfonts.emplace(flag, Subfont{files[position]});
         files.erase(files.cbegin() + position);
         signatures.erase(signatures.cbegin() + position);
-        mask += static_cast<uint8>(flag);
+        pointer->mask += static_cast<uint8>(flag);
     }
 
     Subfont& Font::operator() (Type const& type) {
-        if (type & mask)
-            return subfonts.at(type);
-        Logger::logInvalidFont(fontName, typeVector.at(type));
-        return subfonts.at(Type::Regular);
+        if (type & pointer->mask)
+            return pointer->subfonts.at(type);
+        Logger::logInvalidFont(pointer->fontName, typeVector.at(type));
+        return pointer->subfonts.at(Type::Regular);
     }
 
     uint8 operator& (Font::Type const& left, uint8 right) noexcept {
