@@ -308,6 +308,30 @@ namespace mpgl {
                 { return vertices.crend(); }
 
         /**
+         * Sets the current texture object
+         *
+         * @param texture the constant reference to the texture
+         */
+        void setTexture(Texture const& texture)
+            { this->texture = texture; }
+
+        /**
+         * Sets the current texture object
+         *
+         * @param texture the rvalue reference to the texture
+         */
+        void setTexture(Texture&& texture)
+            { this->texture = std::move(texture); }
+
+        /**
+         * Returns the constant reference to the texture
+         *
+         * @return the constant reference to the texture
+         */
+        Texture const& getTexture(void) const noexcept
+            { return texture; }
+
+        /**
          * Virtual destructor. Destroy the Texturable object
          */
         virtual ~Texturable(void) noexcept = default;
@@ -391,19 +415,24 @@ namespace mpgl {
          * Creates the four vertices vector with the correct
          * texture positions
          *
+         * @param positions the vertices positions
          * @return the vertices vector
          */
-        static Vertices makeVertices(void);
+        static Vertices makeVertices(
+            Matrix<float32, 4, 2> const& positions = {});
 
         /**
          * Creates the four vertices vector with the correct
          * texture positions and with a given color
          *
          * @param color the color of the vertices
+         * @param positions the vertices positions
          * @return the vertices vector
          */
         static Vertices makeVertices(
-            Color const& color) requires IsColorable;
+            Color const& color,
+            Matrix<float32, 4, 2> const& positions = {}
+            ) requires IsColorable;
     };
 
     typedef Texturable<true>                            ColorableTexturable;

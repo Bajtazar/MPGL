@@ -34,30 +34,33 @@ namespace mpgl {
     template <bool IsColorable>
     Texturable<IsColorable>::Vertices
         Texturable<IsColorable>::makeVertices(
-            Color const& color) requires IsColorable
+            Color const& color,
+            Matrix<float32, 4, 2> const& positions
+            ) requires IsColorable
     {
         return {
-            Vertex{Vector2f{}, Vector2f{0.f, 0.f}, color},
-            Vertex{Vector2f{}, Vector2f{0.f, 1.f}, color},
-            Vertex{Vector2f{}, Vector2f{1.f, 1.f}, color},
-            Vertex{Vector2f{}, Vector2f{1.f, 0.f}, color}
+            Vertex{positions[0], Vector2f{0.f, 0.f}, color},
+            Vertex{positions[1], Vector2f{0.f, 1.f}, color},
+            Vertex{positions[2], Vector2f{1.f, 1.f}, color},
+            Vertex{positions[3], Vector2f{1.f, 0.f}, color}
         };
     }
 
     template <bool IsColorable>
     Texturable<IsColorable>::Vertices
-        Texturable<IsColorable>::makeVertices(void)
+        Texturable<IsColorable>::makeVertices(
+            Matrix<float32, 4, 2> const& positions)
     {
         if constexpr (IsColorable)
-            return {Vertex{Vector2f{}, Vector2f{0.f, 0.f}, Color{}},
-                Vertex{Vector2f{}, Vector2f{0.f, 1.f}, Color{}},
-                Vertex{Vector2f{}, Vector2f{1.f, 1.f}, Color{}},
-                Vertex{Vector2f{}, Vector2f{1.f, 0.f}, Color{}}};
+            return {Vertex{positions[0], Vector2f{0.f, 0.f}, Color{}},
+                Vertex{positions[1], Vector2f{0.f, 1.f}, Color{}},
+                Vertex{positions[2], Vector2f{1.f, 1.f}, Color{}},
+                Vertex{positions[3], Vector2f{1.f, 0.f}, Color{}}};
         else
-            return {Vertex{Vector2f{}, Vector2f{0.f, 0.f}},
-                Vertex{Vector2f{}, Vector2f{0.f, 1.f}},
-                Vertex{Vector2f{}, Vector2f{1.f, 1.f}},
-                Vertex{Vector2f{}, Vector2f{1.f, 0.f}}};
+            return {Vertex{positions[0], Vector2f{0.f, 0.f}},
+                Vertex{positions[1], Vector2f{0.f, 1.f}},
+                Vertex{positions[2], Vector2f{1.f, 1.f}},
+                Vertex{positions[3], Vector2f{1.f, 0.f}}};
     }
 
     template <bool IsColorable>
