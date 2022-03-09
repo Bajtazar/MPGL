@@ -337,6 +337,7 @@ namespace mpgl {
         virtual ~Texturable(void) noexcept = default;
     protected:
         typedef std::array<uint32, 6>                   Indexes;
+        typedef std::array<Vector2f, 4>                 Positions;
 
         /**
          * Construct a new Texturable object from a given texture
@@ -360,10 +361,21 @@ namespace mpgl {
          * Construct a new Texturable object from a given vertices
          * vector and with a given texture
          *
-         * @param vertices the vertices vector
+         * @param positions the vertices positions
          * @param texture the texture object
          */
-        Texturable(Vertices vertices, Texture const& texture = {});
+        Texturable(Positions positions, Texture const& texture);
+
+        /**
+         * Construct a new Texturable object from a given vertices
+         * vector with a given texture using given color
+         *
+         * @param positions the vertices positions
+         * @param texture the texture object
+         * @param color the vertices color
+         */
+        Texturable(Positions positions, Texture const& texture,
+            Color const& color) requires (IsColorable);
 
         /**
          * Construct a new Texturable object from a given
@@ -419,7 +431,7 @@ namespace mpgl {
          * @return the vertices vector
          */
         static Vertices makeVertices(
-            Matrix<float32, 4, 2> const& positions = {});
+            Positions const& positions = {});
 
         /**
          * Creates the four vertices vector with the correct
@@ -431,7 +443,7 @@ namespace mpgl {
          */
         static Vertices makeVertices(
             Color const& color,
-            Matrix<float32, 4, 2> const& positions = {}
+            Positions const& positions = {}
             ) requires IsColorable;
     };
 

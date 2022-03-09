@@ -35,7 +35,7 @@ namespace mpgl {
     Texturable<IsColorable>::Vertices
         Texturable<IsColorable>::makeVertices(
             Color const& color,
-            Matrix<float32, 4, 2> const& positions
+            Positions const& positions
             ) requires IsColorable
     {
         return {
@@ -49,7 +49,7 @@ namespace mpgl {
     template <bool IsColorable>
     Texturable<IsColorable>::Vertices
         Texturable<IsColorable>::makeVertices(
-            Matrix<float32, 4, 2> const& positions)
+            Positions const& positions)
     {
         if constexpr (IsColorable)
             return {Vertex{positions[0], Vector2f{0.f, 0.f}, Color{}},
@@ -89,6 +89,26 @@ namespace mpgl {
     Texturable<IsColorable>::Texturable(
         Texture const& texture) : vertices{makeVertices()},
             texture{texture}
+    {
+        initializeBuffers();
+    }
+
+    template <bool IsColorable>
+    Texturable<IsColorable>::Texturable(
+        Positions vertices,
+        Texture const& texture)
+            : vertices{makeVertices(vertices)}, texture{texture}
+    {
+        initializeBuffers();
+    }
+
+    template <bool IsColorable>
+    Texturable<IsColorable>::Texturable(
+        Positions vertices,
+        Texture const& texture,
+        Color const& color) requires (IsColorable)
+            : vertices{makeVertices(color, vertices)},
+                texture{texture}
     {
         initializeBuffers();
     }
