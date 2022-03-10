@@ -169,7 +169,7 @@ namespace mpgl {
         /**
          * Actualizes vertex buffer before draw
          */
-        void actualizeBufferBeforeDraw(void) const noexcept;
+        virtual void actualizeBufferBeforeDraw(void) const noexcept;
 
         /**
          * Constructs the vector with ellipse vertices

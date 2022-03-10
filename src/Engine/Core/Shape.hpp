@@ -61,6 +61,13 @@ namespace mpgl {
 
         Shape& operator=(Shape&& shape) noexcept = default;
 
+        /**
+         * Pure virtual method. Has to be overloaded. Actualizes
+         * buffers before drawing them
+         */
+        virtual void actualizeBufferBeforeDraw(
+            void) const noexcept = 0;
+
         VertexBuffer                            vertexBuffer;
         VertexArray                             vertexArray;
 

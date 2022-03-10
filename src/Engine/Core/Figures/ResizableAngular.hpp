@@ -155,7 +155,8 @@ namespace mpgl {
          * Actualizes vertex buffer before draw. Overloads
          * the Angular implementation
          */
-        void actualizeBufferBeforeDraw(void) const noexcept;
+        void actualizeBufferBeforeDraw(
+            void) const noexcept override final;
 
         mutable bool                                    isExtended = false;
     };
