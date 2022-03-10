@@ -29,22 +29,6 @@
 
 namespace mpgl {
 
-    namespace details {
-
-        /**
-         * Checks whether a range contains the vertices
-         * containing given field
-         *
-         * @tparam Range the range type
-         * @tparam Field the field name
-         */
-        template <class Range, TemplateString Field>
-        concept FieldedVertexCollection =
-            std::ranges::input_range<Range>
-            && VertexField<std::ranges::range_value_t<Range>, Field>;
-
-    }
-
     /**
      * Allows to get only elements with the given field name
      * from the range of vertices
@@ -53,7 +37,7 @@ namespace mpgl {
      * @tparam Range the range with vertices
      */
     template <TemplateString Field, std::ranges::view Range>
-        requires (details::FieldedVertexCollection<Range, Field>)
+        requires (FieldedVertexCollection<Range, Field>)
     class VertexComponentView
         : public std::ranges::view_interface<
             VertexComponentView<Field, Range>>

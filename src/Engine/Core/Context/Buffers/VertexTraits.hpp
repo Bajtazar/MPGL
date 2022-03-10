@@ -120,4 +120,16 @@ namespace mpgl {
     template <typename Tp, TemplateString Field>
     concept VertexField = VertexFieldHelper<Field, Tp>::value;
 
+    /**
+     * Checks whether a range contains the vertices
+     * containing given field
+     *
+     * @tparam Range the range type
+     * @tparam Field the field name
+     */
+    template <class Range, TemplateString Field>
+    concept FieldedVertexCollection =
+        std::ranges::input_range<Range>
+        && VertexField<std::ranges::range_value_t<Range>, Field>;
+
 }
