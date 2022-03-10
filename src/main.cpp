@@ -24,6 +24,7 @@
  *  distribution
  */
 #include "Engine/2DGraphics.hpp"
+
 #include <math.h>
 #include <numbers>
 
@@ -66,9 +67,8 @@ class RotatingRing : public Drawable,
     public TickEvent, public ScreenTransformationEvent
 {
 public:
-    RotatingRing(void) : ring{200_x + 400_y, 50.f,
-        Ring::InnerEllipse{200_x + 400_y, 25.f}, Color::Red},
-            time{0} {}
+    RotatingRing(void) : ring{200_x + 400_y, 50.f, 25.f, Color::Red},
+        time{0} {}
 
     void onTick(std::chrono::milliseconds const& duration) noexcept {
         time += duration.count();

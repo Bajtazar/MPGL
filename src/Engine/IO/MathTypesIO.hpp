@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include "Matrix.hpp"
+#include "../Mathematics/Matrix.hpp"
 
 #include <istream>
 #include <ostream>
