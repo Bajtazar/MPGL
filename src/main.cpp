@@ -38,10 +38,10 @@ public:
         : square{texture, 100_x + 100_y, 100_x + 100_y},
         rotationTime{rotationTime}
     {
-        square[0].color = Color::Red;
-        square[1].color = Color::Green;
-        square[2].color = Color::Blue;
-        square[3].color = Color::Yellow;
+        get<"color">(square[0]) = Color::Red;
+        get<"color">(square[1]) = Color::Green;
+        get<"color">(square[2]) = Color::Blue;
+        get<"color">(square[3]) = Color::Yellow;
     }
 
     void onTick(std::chrono::milliseconds const& duration) noexcept {
