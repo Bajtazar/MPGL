@@ -37,10 +37,29 @@ namespace mpgl {
      * should contain information about color
      */
     template <bool IsColorable>
-    class ShadeableSprite : public Texturable<IsColorable>,
+    class ShadeableSprite : public Texturable,
         public Figure
     {
+    private:
+        /// The default texturable vertex
+        using DefaultVertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter<Vector2f>,
+                DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>
+        >;
+
+        /// The colorable texturable vertex
+        using ColorableVertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter<Vector2f>,
+                DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
     public:
+        using Vertex = std::conditional_t<IsColorable, ColorableVertex,
+            DefaultVertex>;
+
+        typedef std::vector<Vertex>                     Vertices;
         /**
          * Pure virtual function. Has to be overloaded.
          * Allows to draw an object
@@ -125,7 +144,7 @@ namespace mpgl {
          */
         virtual ~ShadeableSprite(void) noexcept = default;
     protected:
-        typedef Texturable<IsColorable>::Positions  Positions;
+        typedef Texturable::Positions           Positions;
 
         /**
          * Construct a new Shadeable Sprite object from a given
@@ -181,10 +200,25 @@ namespace mpgl {
             std::string const& shaderName,
             Color const& color) requires IsColorable;
 
-        ShadeableSprite(ShadeableSprite const&) = default;
+        /**
+         * Construct a new Shadeable Sprite object from a
+         * given constant reference shadeable sprite object
+         *
+         * @param spite the constant reference to the shadeable
+         * sprite object
+         */
+        ShadeableSprite(ShadeableSprite const& sprite);
+
         ShadeableSprite(ShadeableSprite&&) noexcept = default;
 
-        ShadeableSprite& operator=(ShadeableSprite const&) = default;
+        /**
+         * Assigns a given shadeable sprite to this object
+         *
+         * @param sprite the constant reference to sprite object
+         * @return the reference to this object
+         */
+        ShadeableSprite& operator=(
+            ShadeableSprite const& sprite);
 
         /**
          * Assigns the given rvalue reference to the object
@@ -196,7 +230,42 @@ namespace mpgl {
          */
         ShadeableSprite& operator=(
             ShadeableSprite&& sprite) noexcept;
+
+        /**
+         * Actualizes buffers before draw
+         */
+        virtual void actualizeBufferBeforeDraw(void) const noexcept;
+
+        Vertices                                vertices;
     private:
+        /**
+         * Creates the four vertices vector with the correct
+         * texture positions
+         *
+         * @param positions the vertices positions
+         * @return the vertices vector
+         */
+        static Vertices makeVertices(
+            Positions const& positions = {});
+
+        /**
+         * Creates the four vertices vector with the correct
+         * texture positions and with a given color
+         *
+         * @param color the color of the vertices
+         * @param positions the vertices positions
+         * @return the vertices vector
+         */
+        static Vertices makeVertices(
+            Color const& color,
+            Positions const& positions = {}
+            ) requires IsColorable;
+
+        /**
+         * Initializes inner buffers
+         */
+        void initializeBuffers(void) const noexcept;
+
         /// The shader initializing program
         static Executable const                 shaderExec;
     };
