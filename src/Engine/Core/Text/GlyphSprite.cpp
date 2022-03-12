@@ -26,20 +26,72 @@
 #include "GlyphSprite.hpp"
 
 #include "../Figures/Views.hpp"
+#include "../../Mathematics/Systems.hpp"
 #include "../Context/Buffers/BindGuard.hpp"
 
 namespace mpgl {
 
     template <bool IsColorable>
+    GlyphSprite<IsColorable>::Vertices
+        GlyphSprite<IsColorable>::makeVertices(
+            Color const& color,
+            Positions const& positions
+            ) requires IsColorable
+    {
+        return {
+            Vertex{positions[0], Vector2f{0.f, 0.f}, color},
+            Vertex{positions[1], Vector2f{0.f, 1.f}, color},
+            Vertex{positions[2], Vector2f{1.f, 1.f}, color},
+            Vertex{positions[3], Vector2f{1.f, 0.f}, color}
+        };
+    }
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::Vertices
+        GlyphSprite<IsColorable>::makeVertices(
+            Positions const& positions)
+    {
+        if constexpr (IsColorable)
+            return {Vertex{positions[0], Vector2f{0.f, 0.f}, Color{}},
+                Vertex{positions[1], Vector2f{0.f, 1.f}, Color{}},
+                Vertex{positions[2], Vector2f{1.f, 1.f}, Color{}},
+                Vertex{positions[3], Vector2f{1.f, 0.f}, Color{}}};
+        else
+            return {Vertex{positions[0], Vector2f{0.f, 0.f}},
+                Vertex{positions[1], Vector2f{0.f, 1.f}},
+                Vertex{positions[2], Vector2f{1.f, 1.f}},
+                Vertex{positions[3], Vector2f{1.f, 0.f}}};
+    }
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::initializeBuffers(
+        void) const noexcept
+    {
+        BindGuard<VertexArray> vaoGuard{vertexArray};
+        BindGuard<VertexBuffer> vboGuard{vertexBuffer};
+        elementBuffer.bind();
+        elementBuffer.setBufferData(indexes);
+        vertexBuffer.setBufferData(vertices);
+        vertexArray.setArrayData(vertices.front());
+    }
+
+    template <bool IsColorable>
     GlyphSprite<IsColorable>::GlyphSprite(
         Texture const& texture,
         Color const& color) requires (IsColorable)
-            : Texturable<IsColorable>{texture, color} {}
+            : Texturable{texture},
+                vertices{makeVertices(color)}
+    {
+        initializeBuffers();
+    }
 
     template <bool IsColorable>
     GlyphSprite<IsColorable>::GlyphSprite(
         Texture const& texture)
-            : Texturable<IsColorable>{texture} {}
+            : Texturable{texture}
+    {
+        initializeBuffers();
+    }
 
     template <bool IsColorable>
     GlyphSprite<IsColorable>::GlyphSprite(
@@ -47,12 +99,15 @@ namespace mpgl {
         Vector2f const& firstVertex,
         Vector2f const& secondVertex,
         Vector2f const& thirdVertex)
-            : Texturable<IsColorable>{{
+            : Texturable{texture}, vertices{makeVertices({
                     firstVertex,
                     secondVertex,
                     thirdVertex + secondVertex - firstVertex,
                     thirdVertex
-                }, texture} {}
+            })}
+    {
+        initializeBuffers();
+    }
 
     template <bool IsColorable>
     GlyphSprite<IsColorable>::GlyphSprite(
@@ -61,24 +116,30 @@ namespace mpgl {
         Vector2f const& secondVertex,
         Vector2f const& thirdVertex,
         Color const& color) requires (IsColorable)
-            : Texturable<IsColorable>{{
+            : Texturable{texture}, vertices{makeVertices(color, {
                     firstVertex,
                     secondVertex,
                     thirdVertex + secondVertex - firstVertex,
                     thirdVertex
-                }, texture, color} {}
+            })}
+    {
+        initializeBuffers();
+    }
 
     template <bool IsColorable>
     GlyphSprite<IsColorable>::GlyphSprite(
         Texture const& texture,
         Vector2f const& firstVertex,
         Vector2f const& dimensions)
-            : Texturable<IsColorable>{{
+            : Texturable{texture}, vertices{makeVertices({
                 firstVertex,
                 firstVertex + Vector2f{0.f, dimensions[1]},
                 firstVertex + dimensions,
                 firstVertex + Vector2f{dimensions[0], 0.f}
-            }, texture} {}
+            })}
+    {
+        initializeBuffers();
+    }
 
     template <bool IsColorable>
     GlyphSprite<IsColorable>::GlyphSprite(
@@ -86,12 +147,22 @@ namespace mpgl {
         Vector2f const& firstVertex,
         Vector2f const& dimensions,
         Color const& color) requires (IsColorable)
-            : Texturable<IsColorable>{{
+            : Texturable{texture}, vertices{makeVertices(color, {
                 firstVertex,
                 firstVertex + Vector2f{0.f, dimensions[1]},
                 firstVertex + dimensions,
                 firstVertex + Vector2f{dimensions[0], 0.f}
-            }, texture, color} {}
+            })}
+    {
+        initializeBuffers();
+    }
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>::GlyphSprite(GlyphSprite const& sprite)
+        : Texturable{sprite}, vertices{sprite.vertices}
+    {
+        initializeBuffers();
+    }
 
     template <bool IsColorable>
     void GlyphSprite<IsColorable>::setColor(
@@ -111,6 +182,83 @@ namespace mpgl {
         BindGuard vaoGuard{this->vertexArray};
         this->vertexArray.drawElements(
             VertexArray::DrawMode::Triangles, 6, DataType::UInt32);
+    }
+
+    template <bool IsColorable>
+    GlyphSprite<IsColorable>& GlyphSprite<IsColorable>::operator=(
+        GlyphSprite const& texturable)
+    {
+        texture = texturable.texture;
+        isModified = true;
+        vertices.clear();
+        vertices.reserve(texturable.vertices.size());
+        std::ranges::copy(texturable.vertices, std::back_inserter(vertices));
+        return *this;
+    }
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::actualizeBufferBeforeDraw(
+        void) const noexcept
+    {
+        if (isModified) {
+            {
+                BindGuard<VertexBuffer> vboGuard{vertexBuffer};
+                vertexBuffer.changeBufferData(vertices);
+            }
+            isModified = false;
+        }
+    }
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::onScreenTransformation(
+        Vector2u const& oldDimensions) noexcept
+    {
+        for (auto& vertexPosition : vertices | views::position) {
+            Vector2f& position = vertexPosition.get();
+            position = (position + 1.f) * static_cast<Vector2f>(
+                oldDimensions) / static_cast<Vector2f>(
+                    context.windowDimensions) - 1.f;
+        }
+        isModified = true;
+    }
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::translate(
+        Vector2f const& shift) noexcept
+    {
+        for (auto& position : vertices | views::position)
+            position = Vector2f(position) + shift;
+        isModified = true;
+    }
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::scale(
+        Vector2f const& center,
+        float32 factor) noexcept
+    {
+        for (auto& position : vertices | views::position)
+            position = (static_cast<Vector2f>(position)
+                - center) * factor + center;
+        isModified = true;
+    }
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::rotate(
+        Vector2f const& center,
+        float32 angle) noexcept
+    {
+        rotate(center, rotationMatrix<float32>(angle));
+    }
+
+    template <bool IsColorable>
+    void GlyphSprite<IsColorable>::rotate(
+        Vector2f const& center,
+        Matrix2f const& rotation) noexcept
+    {
+        for (auto& position : vertices | views::position)
+            position = rotation * (
+                Vector2f(position) - center) + center;
+        isModified = true;
     }
 
 }
