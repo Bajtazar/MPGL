@@ -64,6 +64,14 @@ namespace mpgl {
         std::array<char, Size>                      string;
     };
 
+    /**
+     * Holds multiple template strings
+     *
+     * @tparam Strings the template strings
+     */
+    template <TemplateString... Strings>
+    struct TSHolder {};
+
     template <std::size_t S1, std::size_t S2>
     [[nodiscard]] constexpr bool operator==(
         TemplateString<S1> const& leftString,
