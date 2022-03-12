@@ -39,6 +39,9 @@ namespace mpgl {
     template <bool IsColorable>
     class Sprite : public ShadeableSprite<IsColorable> {
     public:
+        typedef ShadeableSprite<IsColorable>::Vertex    Vertex;
+        typedef ShadeableSprite<IsColorable>::Vertices  Vertices;
+
         /**
          * Construct a new Sprite object with a given
          * texture
@@ -129,6 +132,194 @@ namespace mpgl {
          * Draws the sprite on the screen
          */
         void draw(void) const noexcept final;
+
+        /**
+         * Returns the reference to vertex with the given index
+         *
+         * @param index the vertex's index
+         * @return the reference to vertex with the given index
+         */
+        [[nodiscard]] Vertex& operator[] (std::size_t index) noexcept
+            { this->isModified = true; return this->vertices[index]; }
+
+        /**
+         * Returns the constant reference to vertex with
+         * the given index
+         *
+         * @param index the vertex's index
+         * @return the constant reference to vertex with
+         * the given index
+         */
+        [[nodiscard]] Vertex const& operator[] (
+            std::size_t index) const noexcept
+                { return this->vertices[index]; }
+
+        /**
+         * Returns the reference to the front vertex
+         *
+         * @return the reference to the front vertex
+         */
+        [[nodiscard]] Vertex& front(void) noexcept
+            { this->isModified = true; return this->vertices.front(); }
+
+        /**
+         * Returns the constant reference to the front vertex
+         *
+         * @return the constant reference to the front vertex
+         */
+        [[nodiscard]] Vertex const& front(void) const noexcept
+            { return this->vertices.front(); }
+
+        /**
+         * Returns the reference to the back vertex
+         *
+         * @return the reference to the back vertex
+         */
+        [[nodiscard]] Vertex& back(void) noexcept
+            { this->isModified = true; return this->vertices.back(); }
+
+        /**
+         * Returns the constant reference to the back vertex
+         *
+         * @return the constant reference to the back vertex
+         */
+        Vertex const& back(void) const noexcept
+            { return this->vertices.back(); }
+
+        using iterator                    = Vertices::iterator;
+        using const_iterator              = Vertices::const_iterator;
+        using reverse_iterator
+            = Vertices::reverse_iterator;
+        using const_reverse_iterator
+            = Vertices::const_reverse_iterator;
+
+        /**
+         * Returns the number of vertices in the object
+         *
+         * @return the number of vertices
+         */
+        [[nodiscard]] std::size_t size(void) const noexcept
+            { return this->vertices.size(); }
+
+        /**
+         * Returns the iterator to the begining of the vertices
+         *
+         * @return the iterator to the begining of the vertices
+         */
+        [[nodiscard]] iterator begin(void) noexcept
+            { this->isModified = true; return this->vertices.begin(); }
+
+        /**
+         * Returns the iterator to the end of the vertices
+         *
+         * @return the iterator to the end of the vertices
+         */
+        [[nodiscard]] iterator end(void) noexcept
+            { this->isModified = true; return this->vertices.end(); }
+
+        /**
+         * Returns the constant iterator to the begining
+         * of the vertices
+         *
+         * @return the constant iterator to the begining
+         * of the vertices
+         */
+        [[nodiscard]] const_iterator begin(void) const noexcept
+            { return this->vertices.begin(); }
+
+        /**
+         * Returns the constant iterator to the end
+         * of the vertices
+         *
+         * @return the constant iterator to the end
+         * of the vertices
+         */
+        [[nodiscard]] const_iterator end(void) const noexcept
+            { return this->vertices.end(); }
+
+        /**
+         * Returns the constant iterator to the begining
+         * of the vertices
+         *
+         * @return the constant iterator to the begining
+         * of the vertices
+         */
+        [[nodiscard]] const_iterator cbegin(void) const noexcept
+            { return this->vertices.begin(); }
+
+        /**
+         * Returns the constant iterator to the end
+         * of the vertices
+         *
+         * @return the constant iterator to the end
+         * of the vertices
+         */
+        [[nodiscard]] const_iterator cend(void) const noexcept
+            { return this->vertices.end(); }
+
+        /**
+         * Returns the reverse iterator to the end of
+         * the vertices
+         *
+         * @return the reverse iterator to the end of
+         * the vertices
+         */
+        [[nodiscard]] reverse_iterator rbegin(void) noexcept
+            { this->isModified = true; return this->vertices.rbegin(); }
+
+        /**
+         * Returns the reverse iterator to the begining of
+         * the vertices
+         *
+         * @return the reverse iterator to the begining of
+         * the vertices
+         */
+        [[nodiscard]] reverse_iterator rend(void) noexcept
+            { this->isModified = true; return this->vertices.rend(); }
+
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the vertices
+         *
+         * @return the constant reverse iterator to the end of
+         * the vertices
+         */
+        [[nodiscard]] const_reverse_iterator
+            rbegin(void) const noexcept
+                { return this->vertices.rbegin(); }
+
+        /**
+         * Returns the constant reverse iterator to the begining of
+         * the vertices
+         *
+         * @return the constant reverse iterator to the begining of
+         * the vertices
+         */
+        [[nodiscard]] const_reverse_iterator
+            rend(void) const noexcept
+                { return this->vertices.rend(); }
+
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the vertices
+         *
+         * @return the constant reverse iterator to the end of
+         * the vertices
+         */
+        [[nodiscard]] const_reverse_iterator
+            crbegin(void) const noexcept
+                { return this->vertices.crbegin(); }
+
+        /**
+         * Returns the constant reverse iterator to the begining of
+         * the vertices
+         *
+         * @return the constant reverse iterator to the begining of
+         * the vertices
+         */
+        [[nodiscard]] const_reverse_iterator
+            crend(void) const noexcept
+                { return this->vertices.crend(); }
 
         /**
          *  Destroy the Sprite object
