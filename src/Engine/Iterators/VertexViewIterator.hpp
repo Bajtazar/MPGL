@@ -208,4 +208,39 @@ namespace mpgl {
         Iter                                    iter;
     };
 
+    /**
+     * Creates Vertex View Iterator type from a given
+     * iterator type and template string holder type
+     *
+     * @tparam Iter the random access iterator
+     * @tparam Tp the holder type
+     */
+    template <std::random_access_iterator Iter, typename Tp>
+    struct VertexViewIterFromHolder;
+
+    /**
+     * Creates Vertex View Iterator type from a given
+     * iterator type and template string holder type
+     *
+     * @tparam Iter the random access iterator
+     * @tparam Fields the views fields
+     */
+    template <std::random_access_iterator Iter,
+        TemplateString... Fields>
+    struct VertexViewIterFromHolder<Iter, TSHolder<Fields...>> {
+        using Type = VertexViewIterator<Iter, Fields...>;
+    };
+
+    /**
+     * Returns the Vertex View Iterator type from a given
+     * random access iterator type and template string
+     * holder type
+     *
+     * @tparam Iter the random access iterator
+     * @tparam Tp the holder type
+     */
+    template <std::random_access_iterator Iter, typename Tp>
+    using VertexViewIterFromHolderT = typename
+        VertexViewIterFromHolder<Iter, Tp>::Type;
+
 }
