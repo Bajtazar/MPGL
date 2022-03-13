@@ -215,8 +215,18 @@ namespace mpgl {
          *
          * @return the constant reference to the texture buffer object
          */
-        TextureBuffer const& getTextureBuffer(void) const noexcept
-            { return *texturePtr; }
+        [[nodiscard]] TextureBuffer const&
+            getTextureBuffer(void) const noexcept
+                { return texturePtr->textureBuffer; }
+
+        /**
+         * Returns a constant reference to the texture size vector
+         *
+         * @return the constant reference to the texture size vector
+         */
+        [[nodiscard]] Vector2u const&
+            getTextureDimensions(void) const noexcept
+                { return texturePtr->textureSize; }
 
         /**
          * Returns the newly created texture with a pattern indicating
@@ -225,18 +235,27 @@ namespace mpgl {
          * @param options the texture initialization options
          * @return the texture with the default pattern
          */
-        static Texture defaultTexture(Options const& options = {
-            Options::TextureWrapper::ClampToEdge,
-            Options::TextureWrapper::ClampToEdge,
-            Options::MinifyingTextureFilter::Nearest,
-            Options::MagnifyingTextureFilter::Nearest});
+        [[nodiscard]] static Texture
+            defaultTexture(Options const& options = {
+                Options::TextureWrapper::ClampToEdge,
+                Options::TextureWrapper::ClampToEdge,
+                Options::MinifyingTextureFilter::Nearest,
+                Options::MagnifyingTextureFilter::Nearest});
 
         /**
          * Destroy the Texture object
          */
         ~Texture(void) noexcept = default;
     private:
-        typedef std::shared_ptr<TextureBuffer>      BufferPtr;
+        /**
+         * Holds texture arguments
+         */
+        struct Holder {
+            TextureBuffer                           textureBuffer;
+            Vector2u                                textureSize;
+        };
+
+        typedef std::shared_ptr<Holder>             BufferPtr;
 
         BufferPtr                                   texturePtr;
     };

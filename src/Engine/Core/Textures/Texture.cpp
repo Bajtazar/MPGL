@@ -28,13 +28,14 @@
 namespace mpgl {
 
     Texture::Texture(Options const& options)
-        : texturePtr{new TextureBuffer{}}
+        : texturePtr{new Holder{}}
     {
-        texturePtr->bind();
+        texturePtr->textureBuffer.bind();
         for (auto const& [filter, mode] : options.getOptions())
-            texturePtr->setParameter(filter, mode);
+            texturePtr->textureBuffer.setParameter(filter, mode);
         if (options.isBorder())
-            texturePtr->setBorderColor(options.borderColor);
+            texturePtr->textureBuffer.setBorderColor(
+                options.borderColor);
     }
 
     Texture::Texture(
@@ -46,25 +47,31 @@ namespace mpgl {
         Image const& image,
         Options const& options) : Texture{options}
     {
-        texturePtr->loadImage(TextureBuffer::PixelFormat::RGBA,
+        texturePtr->textureBuffer.loadImage(
+            TextureBuffer::PixelFormat::RGBA,
             image.getWidth(), image.getHeight(),
             image.getMemoryPtr());
+        texturePtr->textureSize = image.size();
         if (options.mipmaps)
-            texturePtr->generateMipmaps();
+            texturePtr->textureBuffer.generateMipmaps();
     }
 
     Texture::Texture(
         Bitmap const& bitmap,
         Options const& options) : Texture{options}
     {
-        texturePtr->loadImage(TextureBuffer::PixelFormat::R,
+        texturePtr->textureBuffer.loadImage(
+            TextureBuffer::PixelFormat::R,
             bitmap.getWidth(), bitmap.getHeight(),
             bitmap.getMemoryPtr());
+        texturePtr->textureSize = bitmap.size();
         if (options.mipmaps)
-            texturePtr->generateMipmaps();
+            texturePtr->textureBuffer.generateMipmaps();
     }
 
-    Texture Texture::defaultTexture(Options const& options) {
+    [[nodiscard]] Texture Texture::defaultTexture(
+        Options const& options)
+    {
         Image image{8, 8};
         for (uint8 i = 0; i != 4; ++i) {
             for (uint8 j = 0; j != 4; ++j) {
