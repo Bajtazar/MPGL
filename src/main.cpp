@@ -36,7 +36,7 @@ class RotatingSprite : public Drawable,
 public:
     RotatingSprite(uint32 rotationTime,
             Texture const& texture)
-        : square{texture, 150_x + 150_y, 50.f},
+        : square{texture, 150_x + 150_y, 50.f, 25.f},
         rotationTime{rotationTime}
     {
         get<"color">(square[0]) = Color::Red;
@@ -59,7 +59,7 @@ public:
 
     ~RotatingSprite(void) noexcept = default;
 private:
-    EllipseSprite<true>                     square;
+    RingSprite<true>                        square;
     uint32 const                            rotationTime;
 };
 

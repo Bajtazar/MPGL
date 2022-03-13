@@ -185,11 +185,7 @@ namespace mpgl {
          */
         ~EllipseSprite(void) noexcept = default;
     private:
-        typedef Shadeable::Executable                   Executable;
-
         Matrix2f                                        outline;
-
-        static const Executable                         shaderExec;
 
         /**
          * Actualizes the matrices responsible for the outline

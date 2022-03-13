@@ -14,6 +14,7 @@
 #include "Core/Windows/RenderingAdapter.hpp"
 #include "Core/Textures/Sprite.hpp"
 #include "Core/Textures/EllipseSprite.hpp"
+#include "Core/Textures/RingSprite.hpp"
 #include "Core/DrawableCollection.hpp"
 #include "Core/Figures/Views.hpp"
 #include "Core/Textures/TextureLoader.hpp"
