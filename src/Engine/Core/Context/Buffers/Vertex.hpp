@@ -281,16 +281,28 @@ namespace mpgl {
             get(void) const& noexcept;
 
         /**
-         * Returns the rvalue to element handled by the vertex
+         * Returns the reference to element handled by the vertex
          * component with the given name
          *
          * @tparam Name the name of the component
-         * @return The rvalue to the element handled in the
+         * @return The reference to the element handled in the
          * vertex component
          */
         template <TemplateString Name>
-        [[nodiscard]] constexpr VertexElementT<Name, Vertex>&&
+        [[nodiscard]] constexpr VertexElementT<Name, Vertex>&
             get(void) && noexcept;
+
+        /**
+         * Returns the constant reference to element handled by
+         * the vertex component with the given name
+         *
+         * @tparam Name the name of the component
+         * @return The constant reference to the element handled in the
+         * vertex component
+         */
+        template <TemplateString Name>
+        [[nodiscard]] constexpr VertexElementT<Name, Vertex> const&
+            get(void) const&& noexcept;
 
         /**
          * Returns the reference to element handled by the vertex
@@ -319,17 +331,30 @@ namespace mpgl {
             get(void) const& noexcept;
 
         /**
-         * Returns the rvalue to element handled by the vertex
+         * Returns the reference to element handled by the vertex
          * component with the given index
          *
          * @tparam Index the index of the component
-         * @return The rvalue to the element handled in the
+         * @return The reference to the element handled in the
          * vertex component
          */
         template <std::size_t Index>
             requires (Index < sizeof...(Components))
-        [[nodiscard]] constexpr VertexElementT<Index, Vertex>&&
+        [[nodiscard]] constexpr VertexElementT<Index, Vertex>&
             get(void) && noexcept;
+
+        /**
+         * Returns the constant reference to element handled by
+         * the vertex component with the given index
+         *
+         * @tparam Index the index of the component
+         * @return The constant reference to the element handled in the
+         * vertex component
+         */
+        template <std::size_t Index>
+            requires (Index < sizeof...(Components))
+        [[nodiscard]] constexpr VertexElementT<Index, Vertex> const&
+            get(void) const&& noexcept;
 
         /**
          * Returns the reference to element handled by the vertex
@@ -373,23 +398,43 @@ namespace mpgl {
         }
 
         /**
-         * Returns the rvalue to element handled by the vertex
+         * Returns the reference to element handled by the vertex
          * component with the given name
          *
          * @tparam Name the name of the component
          * @param vertex the rvalue to the vertex
-         * @return The rvalue to the element handled in the
+         * @return The reference to the element handled in the
          * vertex component
          */
         template <TemplateString Field>
-        [[nodiscard]] friend constexpr VertexElementT<Field, Vertex>&&
+        [[nodiscard]] friend constexpr VertexElementT<Field, Vertex>&
             get(Vertex&& vertex) noexcept
         {
             using Under = VertexElement<Field,
                 Vertex>::ComponentType;
 
-            return std::move(std::get<Under>(static_cast<
-                Vertex::BaseTuple&&>(vertex)).element);
+            return std::get<Under>(static_cast<
+                Vertex::BaseTuple&&>(vertex)).element;
+        }
+
+        /**
+         * Returns the constant reference to element handled by
+         * the vertex component with the given name
+         *
+         * @tparam Name the name of the component
+         * @param vertex the rvalue to the vertex
+         * @return The constant reference to the element handled in the
+         * vertex component
+         */
+        template <TemplateString Field>
+        [[nodiscard]] friend constexpr VertexElementT<Field, Vertex> const&
+            get(Vertex const&& vertex) noexcept
+        {
+            using Under = VertexElement<Field,
+                Vertex>::ComponentType;
+
+            return std::get<Under>(static_cast<
+                Vertex::BaseTuple const&&>(vertex)).element;
         }
 
         /**
@@ -549,25 +594,49 @@ namespace mpgl {
     template <VertexComponents... Components>
     template <TemplateString Name>
     [[nodiscard]] constexpr
-        VertexElementT<Name, Vertex<Components...>>&&
+        VertexElementT<Name, Vertex<Components...>>&
             Vertex<Components...>::get(void) && noexcept
     {
         using Under = VertexElement<Name, Vertex>::ComponentType;
 
-        return std::move(std::get<Under>(static_cast<
-            BaseTuple&&>(*this)).element);
+        return std::get<Under>(static_cast<
+            BaseTuple&&>(*this)).element;
+    }
+
+    template <VertexComponents... Components>
+    template <TemplateString Name>
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Components...>> const&
+            Vertex<Components...>::get(void) const&& noexcept
+    {
+        using Under = VertexElement<Name, Vertex>::ComponentType;
+
+        return std::get<Under>(static_cast<
+            BaseTuple const&&>(*this)).element;
     }
 
     template <TemplateString Name, VertexComponents... Comps>
     [[nodiscard]] constexpr
-        VertexElementT<Name, Vertex<Comps...>>&&
+        VertexElementT<Name, Vertex<Comps...>>&
             get(Vertex<Comps...>&& vertex) noexcept
     {
         using Under = VertexElement<Name,
             Vertex<Comps...>>::ComponentType;
 
-        return std::move(std::get<Under>(static_cast<
-            Vertex<Comps...>::BaseTuple&&>(vertex)).element);
+        return std::get<Under>(static_cast<
+            Vertex<Comps...>::BaseTuple&&>(vertex)).element;
+    }
+
+    template <TemplateString Name, VertexComponents... Comps>
+    [[nodiscard]] constexpr
+        VertexElementT<Name, Vertex<Comps...>> const&
+            get(Vertex<Comps...> const&& vertex) noexcept
+    {
+        using Under = VertexElement<Name,
+            Vertex<Comps...>>::ComponentType;
+
+        return std::get<Under>(static_cast<
+            Vertex<Comps...>::BaseTuple const&&>(vertex)).element;
     }
 
     template <VertexComponents... Components>
@@ -600,13 +669,26 @@ namespace mpgl {
     template <std::size_t Index>
         requires (Index < sizeof...(Components))
     [[nodiscard]] constexpr
-        VertexElementT<Index, Vertex<Components...>>&&
+        VertexElementT<Index, Vertex<Components...>>&
             Vertex<Components...>::get(void) && noexcept
     {
         using Under = VertexElement<Index, Vertex>::ComponentType;
 
-        return std::move(std::get<Under>(static_cast<
-            BaseTuple&&>(*this)).element);
+        return std::get<Under>(static_cast<
+            BaseTuple&&>(*this)).element;
+    }
+
+    template <VertexComponents... Components>
+    template <std::size_t Index>
+        requires (Index < sizeof...(Components))
+    [[nodiscard]] constexpr
+        VertexElementT<Index, Vertex<Components...>> const&
+            Vertex<Components...>::get(void) const&& noexcept
+    {
+        using Under = VertexElement<Index, Vertex>::ComponentType;
+
+        return std::get<Under>(static_cast<
+            BaseTuple const&&>(*this)).element;
     }
 
 }
