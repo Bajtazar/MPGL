@@ -233,6 +233,33 @@ namespace mpgl {
             crend(void) const noexcept;
 
         /**
+         * Sets the given shader program
+         *
+         * @param program the constant reference to the
+         * shader program object
+         */
+        void setShader(
+            ShaderProgram const& program) noexcept override final;
+
+        /**
+         * Sets the given shader program
+         *
+         * @param program the rvalue reference to the
+         * shader program object
+         */
+        void setShader(
+            ShaderProgram&& program) noexcept override final;
+
+        /**
+         * Sets the given shader program from an internal
+         * library
+         *
+         * @param name the name of the shader program
+         */
+        void setShader(
+            std::string const& name) override final;
+
+        /**
          * Virtual destructor. Destroy the Elliptic Sprite object
          */
         virtual ~EllipticSprite(void) noexcept = default;
@@ -305,6 +332,10 @@ namespace mpgl {
          * the matrices responsible for the elliptic shape
          */
         virtual void actualizeMatrices(void) noexcept = 0;
+    private:
+        typedef Shadeable::Executable                   Executable;
+
+        static Executable const                         shaderExec;
     };
 
     template class EllipticSprite<true>;

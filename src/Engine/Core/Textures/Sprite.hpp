@@ -322,16 +322,47 @@ namespace mpgl {
                 { return this->vertices.crend(); }
 
         /**
+         * Sets the given shader program
+         *
+         * @param program the constant reference to the
+         * shader program object
+         */
+        void setShader(
+            ShaderProgram const& program) noexcept override final;
+
+        /**
+         * Sets the given shader program
+         *
+         * @param program the rvalue reference to the
+         * shader program object
+         */
+        void setShader(
+            ShaderProgram&& program) noexcept override final;
+
+        /**
+         * Sets the given shader program from an internal
+         * library
+         *
+         * @param name the name of the shader program
+         */
+        void setShader(
+            std::string const& name) override final;
+
+        /**
          *  Destroy the Sprite object
          */
         ~Sprite(void) noexcept = default;
     private:
+        typedef Shadeable::Executable               Executable;
+
         /**
          * Returns the shader name used by sprite implementation
          *
          * @return the shader name used by sprite implementation
          */
         static std::string shaderName(void) noexcept;
+
+        static const Executable                     shaderExec;
     };
 
     template class Sprite<true>;

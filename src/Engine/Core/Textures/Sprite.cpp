@@ -38,15 +38,48 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    Sprite<IsColorable>::Executable const
+        Sprite<IsColorable>::shaderExec
+            = [](Shadeable::ProgramPtr& program)
+    {
+        program->use();
+        program->setUniform("tex", 0);
+    };
+
+    template <bool IsColorable>
+    void Sprite<IsColorable>::setShader(
+        ShaderProgram const& program) noexcept
+    {
+        Shadeable::setShader(program);
+        shaderExec(this->shaderProgram);
+    }
+
+    template <bool IsColorable>
+    void Sprite<IsColorable>::setShader(
+        ShaderProgram&& program) noexcept
+    {
+        Shadeable::setShader(std::move(program));
+        shaderExec(this->shaderProgram);
+    }
+
+    template <bool IsColorable>
+    void Sprite<IsColorable>::setShader(
+        std::string const& name)
+    {
+        Shadeable::setShader(name, shaderExec);
+    }
+
+    template <bool IsColorable>
     Sprite<IsColorable>::Sprite(Texture const& texture)
-        : ShadeableSprite<IsColorable>{texture, shaderName()} {}
+        : ShadeableSprite<IsColorable>{texture, shaderName(),
+            shaderExec} {}
 
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(
         Texture const& texture,
         Color const& color) requires (IsColorable)
             : ShadeableSprite<IsColorable>{
-                texture, shaderName(), color} {}
+                texture, shaderName(), shaderExec, color} {}
 
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(
@@ -59,7 +92,7 @@ namespace mpgl {
                 secondVertex,
                 thirdVertex + secondVertex - firstVertex,
                 thirdVertex
-            }, texture, shaderName()} {}
+            }, texture, shaderName(), shaderExec} {}
 
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(
@@ -73,7 +106,7 @@ namespace mpgl {
                 secondVertex,
                 thirdVertex + secondVertex - firstVertex,
                 thirdVertex
-            }, texture, shaderName(), color} {}
+            }, texture, shaderName(), shaderExec, color} {}
 
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(
@@ -85,7 +118,7 @@ namespace mpgl {
                 firstVertex + Vector2f{0.f, dimensions[1]},
                 firstVertex + dimensions,
                 firstVertex + Vector2f{dimensions[0], 0.f}
-            }, texture, shaderName()} {}
+            }, texture, shaderName(), shaderExec} {}
 
     template <bool IsColorable>
     Sprite<IsColorable>::Sprite(
@@ -98,7 +131,7 @@ namespace mpgl {
                 firstVertex + Vector2f{0.f, dimensions[1]},
                 firstVertex + dimensions,
                 firstVertex + Vector2f{dimensions[0], 0.f}
-            }, texture, shaderName(), color} {}
+            }, texture, shaderName(), shaderExec, color} {}
 
     template <bool IsColorable>
     void Sprite<IsColorable>::draw(void) const noexcept {

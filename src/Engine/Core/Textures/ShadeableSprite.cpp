@@ -64,15 +64,6 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    ShadeableSprite<IsColorable>::Executable const
-        ShadeableSprite<IsColorable>::shaderExec
-            = [](ProgramPtr& program)
-    {
-        program->use();
-        program->setUniform("tex", 0);
-    };
-
-    template <bool IsColorable>
     void ShadeableSprite<IsColorable>::initializeBuffers(
         void) const noexcept
     {
@@ -82,29 +73,6 @@ namespace mpgl {
         elementBuffer.setBufferData(indexes);
         vertexBuffer.setBufferData(vertices);
         vertexArray.setArrayData(vertices.front());
-    }
-
-    template <bool IsColorable>
-    void ShadeableSprite<IsColorable>::setShader(
-        ShaderProgram const& program) noexcept
-    {
-        Shadeable::setShader(program);
-        shaderExec(shaderProgram);
-    }
-
-    template <bool IsColorable>
-    void ShadeableSprite<IsColorable>::setShader(
-        ShaderProgram&& program) noexcept
-    {
-        Shadeable::setShader(std::move(program));
-        shaderExec(shaderProgram);
-    }
-
-    template <bool IsColorable>
-    void ShadeableSprite<IsColorable>::setShader(
-        std::string const& name)
-    {
-        Shadeable::setShader(name, shaderExec);
     }
 
     template <bool IsColorable>
@@ -162,9 +130,10 @@ namespace mpgl {
     template <bool IsColorable>
     ShadeableSprite<IsColorable>::ShadeableSprite(
         Texture const& texture,
-        std::string const& shaderName)
+        std::string const& shaderName,
+        Executable shaderInit)
             : Texturable{texture},
-                Figure{shaderName, shaderExec},
+                Figure{shaderName, shaderInit},
                 vertices{makeVertices()}
     {
         initializeBuffers();
@@ -174,9 +143,10 @@ namespace mpgl {
     ShadeableSprite<IsColorable>::ShadeableSprite(
         Texture const& texture,
         std::string const& shaderName,
+        Executable shaderInit,
         Color const& color) requires (IsColorable)
             : Texturable{texture},
-                Figure{shaderName, shaderExec},
+                Figure{shaderName, shaderInit},
                 vertices{makeVertices(color)}
     {
         initializeBuffers();
@@ -186,9 +156,10 @@ namespace mpgl {
     ShadeableSprite<IsColorable>::ShadeableSprite(
         Positions positions,
         Texture const& texture,
-        std::string const& shaderName)
+        std::string const& shaderName,
+        Executable shaderInit)
             : Texturable{texture},
-                Figure{shaderName, shaderExec},
+                Figure{shaderName, shaderInit},
                 vertices{makeVertices(positions)}
     {
         initializeBuffers();
@@ -199,9 +170,10 @@ namespace mpgl {
         Positions positions,
         Texture const& texture,
         std::string const& shaderName,
+        Executable shaderInit,
         Color const& color) requires (IsColorable)
             : Texturable{texture},
-                Figure{shaderName, shaderExec},
+                Figure{shaderName, shaderInit},
                 vertices{makeVertices(color, positions)}
     {
         initializeBuffers();

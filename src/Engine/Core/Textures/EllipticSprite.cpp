@@ -64,12 +64,46 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    EllipticSprite<IsColorable>::Executable const
+        EllipticSprite<IsColorable>::shaderExec
+            = [](Shadeable::ProgramPtr& program)
+    {
+        program->use();
+        program->setUniform("tex", 0);
+        program->setUniform("aafactor", (float32)
+            GraphicalObject::context.windowOptions.antiAliasingSamples / 4.f);
+    };
+
+    template <bool IsColorable>
+    void EllipticSprite<IsColorable>::setShader(
+        ShaderProgram const& program) noexcept
+    {
+        Shadeable::setShader(program);
+        shaderExec(this->shaderProgram);
+    }
+
+    template <bool IsColorable>
+    void EllipticSprite<IsColorable>::setShader(
+        ShaderProgram&& program) noexcept
+    {
+        Shadeable::setShader(std::move(program));
+        shaderExec(this->shaderProgram);
+    }
+
+    template <bool IsColorable>
+    void EllipticSprite<IsColorable>::setShader(
+        std::string const& name)
+    {
+        Shadeable::setShader(name, shaderExec);
+    }
+
+    template <bool IsColorable>
     EllipticSprite<IsColorable>::EllipticSprite(
         Positions positions,
         Texture const& texture,
         std::string const& programName)
             : ShadeableSprite<IsColorable>{
-                positions, texture, programName} {}
+                positions, texture, programName, shaderExec} {}
 
     template <bool IsColorable>
     EllipticSprite<IsColorable>::EllipticSprite(
@@ -78,7 +112,7 @@ namespace mpgl {
         std::string const& programName,
         Color const& color) requires (IsColorable)
             : ShadeableSprite<IsColorable>{
-                positions, texture, programName, color} {}
+                positions, texture, programName, shaderExec, color} {}
 
     template <bool IsColorable>
     [[nodiscard]] EllipticSprite<IsColorable>::VertexView

@@ -113,33 +113,6 @@ namespace mpgl {
             Matrix2f const& rotation) noexcept;
 
         /**
-         * Sets the given shader program
-         *
-         * @param program the constant reference to the
-         * shader program object
-         */
-        virtual void setShader(
-            ShaderProgram const& program) noexcept override;
-
-        /**
-         * Sets the given shader program
-         *
-         * @param program the rvalue reference to the
-         * shader program object
-         */
-        virtual void setShader(
-            ShaderProgram&& program) noexcept override;
-
-        /**
-         * Sets the given shader program from an internal
-         * library
-         *
-         * @param name the name of the shader program
-         */
-        virtual void setShader(
-            std::string const& name) override;
-
-        /**
          * Destroy the Shadeable Sprite object
          */
         virtual ~ShadeableSprite(void) noexcept = default;
@@ -152,10 +125,12 @@ namespace mpgl {
          *
          * @param texture the texture object
          * @param shaderName the shader program name
+         * @param shaderInit the invocable that initializes the shader
          */
         ShadeableSprite(
             Texture const& texture,
-            std::string const& shaderName);
+            std::string const& shaderName,
+            Executable shaderInit);
 
         /**
          * Construct a new Shadeable Sprite object from a given
@@ -163,11 +138,13 @@ namespace mpgl {
          *
          * @param texture the texture object
          * @param shaderName the shader program name
+         * @param shaderInit the invocable that initializes the shader
          * @param color the color of the vertices
          */
         ShadeableSprite(
             Texture const& texture,
             std::string const& shaderName,
+            Executable shaderInit,
             Color const& color) requires IsColorable;
 
         /**
@@ -178,11 +155,13 @@ namespace mpgl {
          * @param positions the vertices positions
          * @param texture the texture object
          * @param shaderName the shader program name
+         * @param shaderInit the invocable that initializes the shader
          */
         ShadeableSprite(
             Positions positions,
             Texture const& texture,
-            std::string const& shaderName);
+            std::string const& shaderName,
+            Executable shaderInit);
 
         /**
          * Construct a new Shadeable Sprite object from a given
@@ -192,12 +171,14 @@ namespace mpgl {
          * @param positions the vertices positions
          * @param texture the texture object
          * @param shaderName the shader program name
+         * @param shaderInit the invocable that initializes the shader
          * @param color the vertices color
          */
         ShadeableSprite(
             Positions positions,
             Texture const& texture,
             std::string const& shaderName,
+            Executable shaderInit,
             Color const& color) requires IsColorable;
 
         /**
@@ -266,9 +247,6 @@ namespace mpgl {
          * Initializes inner buffers
          */
         void initializeBuffers(void) const noexcept;
-
-        /// The shader initializing program
-        static Executable const                 shaderExec;
     };
 
     template class ShadeableSprite<true>;
