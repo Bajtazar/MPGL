@@ -31,13 +31,15 @@
 using namespace mpgl;
 
 class RotatingSprite : public Drawable,
-    public TickEvent, public ScreenTransformationEvent
+    public TickEvent, public ScreenTransformationEvent,
+    public KeyPressEvent
 {
 public:
     RotatingSprite(uint32 rotationTime,
-            Texture const& texture)
+            Texture const& texture, Font& font)
         : square{texture, 150_x + 150_y, 50.f, 25.f},
-        rotationTime{rotationTime}
+        rotationTime{rotationTime},
+        name{font, 18, 100_x + 80_y, "Konwolucja: Brak"}
     {
         get<"color">(square[0]) = Color::Red;
         get<"color">(square[1]) = Color::Green;
@@ -51,16 +53,50 @@ public:
             * duration.count());
     }
 
-    void onScreenTransformation(Vector2u const& oldDim) noexcept
-        { square.onScreenTransformation(oldDim); }
+    void onScreenTransformation(Vector2u const& oldDim) noexcept {
+        square.onScreenTransformation(oldDim);
+        name.draw();
+    }
 
-    void draw(void) const noexcept
-        { square.draw(); }
+    void draw(void) const noexcept {
+        square.draw();
+        name.draw();
+    }
+
+    void onKeyPress(Key const& key) noexcept {
+        switch (key) {
+            case Key::Q:
+                square.resetConvolution();
+                name.setString("Konwolucja: Brak");
+                return;
+            case Key::W:
+                square.setConvolution(kernels::gaussian);
+                name.setString("Konwolucja: Gaussowska");
+                return;
+            case Key::E:
+                square.setConvolution(kernels::mean);
+                name.setString("Konwolucja: Pudełkowa");
+                return;
+            case Key::R:
+                square.setConvolution(kernels::laplacian);
+                name.setString("Konwolucja: Laplace'a");
+                return;
+            case Key::T:
+                square.setConvolution(kernels::embos);
+                name.setString("Konwolucja: Embos");
+                return;
+            case Key::Y:
+                square.setConvolution(kernels::sharpness);
+                name.setString("Konwolucja: Wyostrzająca");
+                return;
+        }
+    }
 
     ~RotatingSprite(void) noexcept = default;
 private:
-    RingSprite<true>                        square;
-    uint32 const                            rotationTime;
+    Text<false>                                 name;
+    RingSprite<true>                            square;
+    uint32 const                                rotationTime;
 };
 
 class RotatingRing : public Drawable,
@@ -115,8 +151,7 @@ int main(void) noexcept {
     array.emplace_back(Color::White, 400_x + 400_y, 300_x + 300_y, 400_x + 300_y);
     array.emplace_back(Color::Green, 200_x + 200_y, 200_x + 300_y, 300_x + 200_y);
 
-    window.emplaceDrawable<RotatingSprite>(4, pack["pad.jpeg"]);
-
+    window.emplaceDrawable<RotatingSprite>(4, pack["pad.jpeg"], font);
     window.emplaceDrawable<RotatingRing>();
 
     window.windowLoop(Color{0.2f, 0.3f, 0.3f, 1.f});

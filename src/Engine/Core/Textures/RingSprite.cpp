@@ -354,6 +354,22 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    void RingSprite<IsColorable>::setConvolution(
+        Matrix3f const& convolution)
+    {
+        this->setShader(
+            IsColorable ? "2DCTRingConv" : "2DTRingConv");
+        this->shaderProgram->setUniform("convolution", convolution);
+        this->shaderProgram->setUniform(
+            "screen", this->texture.getTextureDimensions());
+    }
+
+    template <bool IsColorable>
+    void RingSprite<IsColorable>::resetConvolution(void) {
+        this->setShader(shaderName());
+    }
+
+    template <bool IsColorable>
     void RingSprite<IsColorable>::setUniforms(void) const noexcept {
         this->shaderProgram->setUniform("outerShift",
             Vector2f{get<"position">(this->vertices.front())});

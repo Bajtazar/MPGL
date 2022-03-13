@@ -425,6 +425,18 @@ namespace mpgl {
                 { return innerEllipse; }
 
         /**
+         * Applies convolution shader with given convolution matrix
+         *
+         * @param convolution the convolution matrix
+         */
+        void setConvolution(Matrix3f const& convolution) final;
+
+        /**
+         * Applies default shader - removes convolution
+         */
+        void resetConvolution(void) final;
+
+        /**
          * Destroy the Ring Sprite object
          */
         ~RingSprite(void) noexcept = default;
