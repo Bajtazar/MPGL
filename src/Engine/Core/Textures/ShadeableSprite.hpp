@@ -60,6 +60,7 @@ namespace mpgl {
             DefaultVertex>;
 
         typedef std::vector<Vertex>                     Vertices;
+
         /**
          * Pure virtual function. Has to be overloaded.
          * Allows to draw an object
