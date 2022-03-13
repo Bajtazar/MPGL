@@ -119,5 +119,6 @@ int main(void) noexcept {
 
     window.emplaceDrawable<RotatingRing>();
 
-    return window.windowLoop(Color{0.2f, 0.3f, 0.3f, 1.f});
+    window.windowLoop(Color{0.2f, 0.3f, 0.3f, 1.f});
+    return 0;
 }

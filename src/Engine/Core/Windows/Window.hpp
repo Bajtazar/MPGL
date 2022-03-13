@@ -29,9 +29,24 @@
 
 namespace mpgl {
 
+    /**
+     * Creates window and renders a given content on the screen.
+     * Calls the objects inheireiting from specific event when this
+     * event occurs
+     */
     class Window : public WindowPlatform {
     public:
-        explicit Window(Vector2u const& dimensions,
+        /**
+         * Creates a new window with given dimensions, title
+         * and options
+         *
+         * @param dimensions the dimensions of the window
+         * @param title the title of the window
+         * @param options the options which determins different
+         * behaviours of window
+         */
+        explicit Window(
+            Vector2u const& dimensions,
             std::string const& title,
             Options const& options = Options{});
 
@@ -41,13 +56,39 @@ namespace mpgl {
         Window& operator= (const Window& window) noexcept = delete;
         Window& operator= (Window&& window) noexcept = delete;
 
+        /**
+         * Sets this window as a context one
+         */
         void setContextWindow(void) noexcept;
 
-        bool setFPSLimit(std::size_t fpsLimit) noexcept;
+        /**
+         * Restrains the maximum number of frames per second
+         * rendered in the window. When 0 is given, then
+         * removes the limit
+         *
+         * @param fpsLimit the fps limit
+         */
+        void setFPSLimit(std::size_t fpsLimit) noexcept;
+
+        /**
+         * Sets the window tickrate
+         *
+         * @param ticks the number of ticks per second
+         */
         void setTickrate(std::size_t ticks) noexcept;
 
-        int32 windowLoop(Color const& background = Color::Black) noexcept;
+        /**
+         * Draw frames until the window has to be closed
+         *
+         * @param background the background color
+         */
+        void windowLoop(Color const& background = Color::Black) noexcept;
 
+        /**
+         * Returns a reference to the shader library object
+         *
+         * @return the reference to the shader library object
+         */
         [[nodiscard]] ShaderLibrary& getShaderLib(void) noexcept
             { return shaders; }
 
@@ -58,14 +99,28 @@ namespace mpgl {
          */
         [[nodiscard]] Image saveWindowScreen(void) const final;
 
+        /**
+         * Destroy the Window object
+         */
         ~Window(void) noexcept;
     private:
         typedef std::chrono::microseconds           Duration;
         typedef std::chrono::steady_clock           ThreadClock;
         typedef ThreadClock::time_point             TimePoint;
 
+        /**
+         * Draws drawables on the screen
+         */
         void drawDrawables(void) const noexcept;
+
+        /**
+         * Draws the frame in the window
+         */
         void draw(void) noexcept;
+
+        /**
+         * Clears the screen in the window
+         */
         void clear(Color const&) noexcept;
 
         ShaderLibrary                               shaders;

@@ -63,12 +63,10 @@ namespace mpgl {
         std::this_thread::sleep_until(lastTime + sleepTime);
     }
 
-    bool Window::setFPSLimit(std::size_t fpsLimit) noexcept {
-        if (fpsLimit) {
-            sleepTime = 1'000'000us / fpsLimit;
-            return true;
-        }
-        return false;
+    void Window::setFPSLimit(std::size_t fpsLimit) noexcept {
+        sleepTime = fpsLimit ? (1'000'000us / fpsLimit) :
+            (0us / std::size_t(1));
+        // changes the std::duration type
     }
 
     void Window::setTickrate(std::size_t ticks) noexcept {
@@ -77,7 +75,7 @@ namespace mpgl {
             ticks ? TickRegister::Duration{1'000ms} / ticks : 0ms);
     }
 
-    int32 Window::windowLoop(const Color& background) noexcept {
+    void Window::windowLoop(const Color& background) noexcept {
         openWindow();
         while (!shouldWindowClose()) {
             clear(background);
@@ -85,7 +83,6 @@ namespace mpgl {
             drawDrawables();
             draw();
         }
-        return 0;
     }
 
     Image Window::saveWindowScreen(void) const {
