@@ -134,6 +134,24 @@ namespace mpgl {
             }, texture, shaderName(), shaderExec, color} {}
 
     template <bool IsColorable>
+    void Sprite<IsColorable>::setConvolution(
+        Matrix3f const& convolution)
+    {
+        Shadeable::setShader(
+            IsColorable ? "2DCTextureConv" : "2DTextureConv");
+        this->shaderProgram->use();
+        this->shaderProgram->setUniform("tex", 0);
+        this->shaderProgram->setUniform("convolution", convolution);
+        this->shaderProgram->setUniform(
+            "screen", this->texture.getTextureDimensions());
+    }
+
+    template <bool IsColorable>
+    void Sprite<IsColorable>::resetConvolution(void) {
+        setShader(shaderName());
+    }
+
+    template <bool IsColorable>
     void Sprite<IsColorable>::draw(void) const noexcept {
         this->actualizeBufferBeforeDraw();
         auto const& textureBuffer = this->texture.getTextureBuffer();

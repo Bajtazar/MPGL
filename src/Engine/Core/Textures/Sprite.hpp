@@ -349,6 +349,19 @@ namespace mpgl {
             std::string const& name) override final;
 
         /**
+         * Applies convolution shader with given convolution matrix
+         *
+         * @param convolution the convolution matrix
+         */
+        virtual void setConvolution(
+            Matrix3f const& convolution) final;
+
+        /**
+         * Applies default shader - removes convolution
+         */
+        virtual void resetConvolution(void) final;
+
+        /**
          *  Destroy the Sprite object
          */
         ~Sprite(void) noexcept = default;

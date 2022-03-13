@@ -24,13 +24,33 @@
  *  distribution
  */
 #version 330 core
-layout (location = 0) in vec2 position;
-layout (location = 1) in vec2 inTextureCoords;
 
-out vec2 textureCoords;
+in vec2 textureCoords;
+in vec4 color;
 
-void main()
-{
-    gl_Position = vec4(position.xy, 0.0, 1.0);
-    textureCoords = inTextureCoords;
+uniform mat3 convolution;
+uniform sampler2D tex;
+uniform uvec2 screen;
+
+vec2 screenStep = vec2(1.) / screen;
+
+vec2 offsetTable[9] = vec2[](
+    vec2(-screenStep.x, screenStep.y),
+    vec2(0.f, screenStep.y),
+    screenStep,
+    vec2(-screenStep.x, 0.f),
+    vec2(0.f),
+    vec2(screenStep.x, 0.f),
+    -screenStep,
+    vec2(0., -screenStep.y),
+    vec2(screenStep.x, -screenStep.y)
+);
+
+void main() {
+    vec3 convColor = vec3(0.);
+    for (int x = 0; x < 3; ++x)
+        for (int y = 0; y < 3; ++y)
+            convColor += convolution[y][x] * vec3(texture(
+                tex, textureCoords.st + offsetTable[3 * y + x]));
+    gl_FragColor = vec4(convColor.xyz, 1.) * color;
 }
