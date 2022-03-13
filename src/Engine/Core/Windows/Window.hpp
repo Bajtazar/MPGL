@@ -51,6 +51,13 @@ namespace mpgl {
         [[nodiscard]] ShaderLibrary& getShaderLib(void) noexcept
             { return shaders; }
 
+        /**
+         * Saves the current window screen to the image
+         *
+         * @return the window screen shot
+         */
+        [[nodiscard]] Image saveWindowScreen(void) const final;
+
         ~Window(void) noexcept;
     private:
         typedef std::chrono::microseconds           Duration;

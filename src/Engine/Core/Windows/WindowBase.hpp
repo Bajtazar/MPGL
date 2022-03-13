@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include "../../Collections/Image.hpp"
 #include "../../Events/EventBus.hpp"
 #include "../Context/Context.hpp"
 #include "../Drawable.hpp"
@@ -259,6 +260,14 @@ namespace mpgl {
         [[nodiscard]] const_reverse_iterator
             crend(void) const noexcept
                 { return drawables.crend(); }
+
+        /**
+         * Pure virtual method. Has to be overloaded. Saves the
+         * current window screen to the image
+         *
+         * @return the window screen shot
+         */
+        [[nodiscard]] virtual Image saveWindowScreen(void) const = 0;
 
         /**
          * Virtual destructor. Destroy the Window Base object

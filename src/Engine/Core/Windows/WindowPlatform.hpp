@@ -170,6 +170,14 @@ namespace mpgl {
         void draw(void) const noexcept;
 
         /**
+         * Pure virtual method. Has to be overloaded. Saves the
+         * current window screen to the image
+         *
+         * @return the window screen shot
+         */
+        [[nodiscard]] virtual Image saveWindowScreen(void) const = 0;
+
+        /**
          * Sets the window as the current one
          */
         void setContextWindow(void) noexcept;

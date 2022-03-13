@@ -104,6 +104,15 @@ namespace mpgl {
         }
     }
 
+    Image RenderWindow::saveWindowScreen(void) const {
+        Image image{context.windowDimensions};
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glReadPixels(0, 0, image.getWidth(), image.getHeight(),
+            GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        return image;
+    }
+
     void RenderWindow::unbind(void) noexcept {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

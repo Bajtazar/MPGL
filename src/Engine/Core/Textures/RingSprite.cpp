@@ -360,7 +360,7 @@ namespace mpgl {
         this->shaderProgram->setUniform("innerShift",
             Vector2f{innerEllipse.vertices.front()});
         this->shaderProgram->setUniform("outerTransform", outline);
-        this-> shaderProgram->setUniform("innerTransform",
+        this->shaderProgram->setUniform("innerTransform",
             innerEllipse.outline);
     }
 

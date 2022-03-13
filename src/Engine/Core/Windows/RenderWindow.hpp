@@ -187,6 +187,13 @@ namespace mpgl {
             { return windowTexture; }
 
         /**
+         * Saves the current window screen to the image.
+         *
+         * @return the window screen shot
+         */
+        [[nodiscard]] Image saveWindowScreen(void) const final;
+
+        /**
          * Destroy the Render Window object
          */
         ~RenderWindow(void) noexcept;
@@ -217,7 +224,8 @@ namespace mpgl {
          * @param cleaning the buffer cleaning options
          * @param color the color of the background
          */
-        void bind(CleaningOptions const& cleaning,
+        void bind(
+            CleaningOptions const& cleaning,
             Color const& color) noexcept;
 
         /**
