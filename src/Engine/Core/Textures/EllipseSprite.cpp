@@ -164,6 +164,22 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    void EllipseSprite<IsColorable>::setConvolution(
+        Matrix3f const& convolution)
+    {
+        this->setShader(
+            IsColorable ? "2DCTEllipseConv" : "2DTEllipseConv");
+        this->shaderProgram->setUniform("convolution", convolution);
+        this->shaderProgram->setUniform(
+            "screen", this->texture.getTextureDimensions());
+    }
+
+    template <bool IsColorable>
+    void EllipseSprite<IsColorable>::resetConvolution(void) {
+        this->setShader(shaderName());
+    }
+
+    template <bool IsColorable>
     void EllipseSprite<IsColorable>::draw(void) const noexcept {
         auto const& textureBuffer = this->texture.getTextureBuffer();
         this->actualizeBufferBeforeDraw();

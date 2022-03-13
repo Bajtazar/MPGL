@@ -181,6 +181,18 @@ namespace mpgl {
         [[nodiscard]] Vector2f getSemiAxis(void) const noexcept;
 
         /**
+         * Applies convolution shader with given convolution matrix
+         *
+         * @param convolution the convolution matrix
+         */
+        void setConvolution(Matrix3f const& convolution) final;
+
+        /**
+         * Applies default shader - removes convolution
+         */
+        void resetConvolution(void) final;
+
+        /**
          * Destroy the Ellipse Sprite object
          */
         ~EllipseSprite(void) noexcept = default;

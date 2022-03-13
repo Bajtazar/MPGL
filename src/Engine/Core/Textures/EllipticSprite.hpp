@@ -260,6 +260,21 @@ namespace mpgl {
             std::string const& name) override final;
 
         /**
+         * Pure virtual method. Has to be overloaded. Applies
+         * convolution shader with given convolution matrix
+         *
+         * @param convolution the convolution matrix
+         */
+        virtual void setConvolution(
+            Matrix3f const& convolution) = 0;
+
+        /**
+         * Pure virtual method. Has to be overloaded. Applies
+         * default shader - removes convolution
+         */
+        virtual void resetConvolution(void) = 0;
+
+        /**
          * Virtual destructor. Destroy the Elliptic Sprite object
          */
         virtual ~EllipticSprite(void) noexcept = default;
