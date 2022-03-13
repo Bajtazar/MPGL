@@ -183,7 +183,7 @@ namespace mpgl {
          *
          * @return the constant reference to the back vertex
          */
-        Vertex const& back(void) const noexcept
+        [[nodiscard]] Vertex const& back(void) const noexcept
             { return this->vertices.back(); }
 
         using iterator                    = Vertices::iterator;

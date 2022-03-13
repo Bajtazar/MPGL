@@ -234,7 +234,8 @@ namespace mpgl {
         /**
          * Actualizes buffers before draw
          */
-        virtual void actualizeBufferBeforeDraw(void) const noexcept;
+        virtual void actualizeBufferBeforeDraw(
+            void) const noexcept final;
 
         Vertices                                vertices;
     private:
