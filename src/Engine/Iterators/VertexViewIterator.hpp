@@ -43,9 +43,16 @@ namespace mpgl {
     class VertexViewIterator {
     private:
         using ProjectedVertex = std::iter_value_t<Iter>;
+        using IterReturnType = decltype(*std::declval<Iter>());
+
+        template <typename Tp>
+        using Projected = std::conditional_t<
+            std::is_assignable_v<IterReturnType, IterReturnType>,
+            std::remove_reference_t<Tp>&,
+            std::remove_reference_t<Tp> const&>;
     public:
         using value_type = Vertex<VertexComponent<Fields,
-            std::remove_reference_t<VertexElementT<Fields, ProjectedVertex>>&,
+            Projected<VertexElementT<Fields, ProjectedVertex>>,
             VertexElement<Fields, ProjectedVertex>::ComponentType::vertexType()
         >...>;
         using iterator_category = std::random_access_iterator_tag;
