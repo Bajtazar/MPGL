@@ -114,6 +114,21 @@ namespace mpgl {
             Matrix2f const& rotation) noexcept;
 
         /**
+         * Pure virtual method. Has to be overloaded. Applies
+         * convolution shader with given convolution matrix
+         *
+         * @param convolution the convolution matrix
+         */
+        virtual void setConvolution(
+            Matrix3f const& convolution) = 0;
+
+        /**
+         * Pure virtual method. Has to be overloaded. Applies
+         * default shader - removes convolution
+         */
+        virtual void resetConvolution(void) = 0;
+
+        /**
          * Destroy the Shadeable Sprite object
          */
         virtual ~ShadeableSprite(void) noexcept = default;
