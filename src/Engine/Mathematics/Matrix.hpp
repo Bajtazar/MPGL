@@ -1029,7 +1029,7 @@ namespace mpgl {
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols,
         Arithmetic Up = Tp>
             requires (Rows == Cols && Cols > 1)
-    constexpr Up determinent(
+    constexpr Up det(
         Matrix<Tp, Rows, Cols> const& matrix) noexcept
     {
         Matrix<Up, Rows, Rows> luMatrix = matrix;
