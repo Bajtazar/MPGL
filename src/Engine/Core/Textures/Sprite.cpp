@@ -90,7 +90,7 @@ namespace mpgl {
             : ShadeableSprite<IsColorable>{{
                 firstVertex,
                 secondVertex,
-                thirdVertex + secondVertex - firstVertex,
+                thirdVertex + firstVertex - secondVertex,
                 thirdVertex
             }, texture, shaderName(), shaderExec} {}
 
@@ -104,7 +104,7 @@ namespace mpgl {
             : ShadeableSprite<IsColorable>{{
                 firstVertex,
                 secondVertex,
-                thirdVertex + secondVertex - firstVertex,
+                thirdVertex + firstVertex - secondVertex,
                 thirdVertex
             }, texture, shaderName(), shaderExec, color} {}
 

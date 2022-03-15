@@ -66,7 +66,7 @@ namespace mpgl {
                     //     position + bearing + yVersor, position + bearing + xVersor, color);
                 // else
                     glyphs.emplace_back(*texture, position + bearing,
-                        position + bearing + yVersor, position + bearing + xVersor);
+                        position + bearing + yVersor, position + bearing + xVersor + yVersor);
             }
             position += rotation * Vector2f{float32(glyph->get().advance * scale), 0.f};
         }

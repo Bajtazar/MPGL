@@ -100,10 +100,10 @@ namespace mpgl {
         Vector2f const& secondVertex,
         Vector2f const& thirdVertex)
             : Texturable{texture}, vertices{makeVertices({
-                    firstVertex,
-                    secondVertex,
-                    thirdVertex + secondVertex - firstVertex,
-                    thirdVertex
+                firstVertex,
+                secondVertex,
+                thirdVertex,
+                thirdVertex - secondVertex + firstVertex
             })}
     {
         initializeBuffers();
@@ -117,10 +117,10 @@ namespace mpgl {
         Vector2f const& thirdVertex,
         Color const& color) requires (IsColorable)
             : Texturable{texture}, vertices{makeVertices(color, {
-                    firstVertex,
-                    secondVertex,
-                    thirdVertex + secondVertex - firstVertex,
-                    thirdVertex
+                firstVertex,
+                secondVertex,
+                thirdVertex,
+                thirdVertex - secondVertex + firstVertex
             })}
     {
         initializeBuffers();
