@@ -200,6 +200,10 @@ namespace mpgl {
     constexpr Tp dot(Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) noexcept;
 
+    template <Arithmetic Tp>
+    constexpr Tp cross(Vector<Tp, 2> const& left,
+        Vector<Tp, 2> const& right) noexcept;
+
     template <Arithmetic Up, Arithmetic Tp, std::size_t Size>
     constexpr Vector<Up, Size>
         vectorCast(Vector<Tp, Size> const& vector) noexcept;
@@ -260,6 +264,13 @@ namespace mpgl {
     {
         return std::inner_product(left.begin(), left.end(),
             right.begin(), static_cast<Tp>(0));
+    }
+
+    template <Arithmetic Tp>
+    constexpr Tp cross(Vector<Tp, 2> const& left,
+        Vector<Tp, 2> const& right) noexcept
+    {
+        return left[0] * right[1] - left[1] * right[0];
     }
 
     template <Arithmetic Up, Arithmetic Tp, std::size_t Size>
