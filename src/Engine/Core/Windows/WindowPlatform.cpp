@@ -116,7 +116,8 @@ namespace mpgl {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         get<MouseMotionRegister>(render->events).onEvent(
-            Vector2f{xpos, ypos});
+            Vector2f{xpos,
+                GraphicalObject::context.windowDimensions[1] - ypos});
     }
 
     void WindowPlatform::setCallbacks(void) noexcept {
