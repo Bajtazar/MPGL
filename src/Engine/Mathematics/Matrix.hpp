@@ -1075,17 +1075,20 @@ namespace mpgl {
 
     typedef Matrix<float32, 2, 2>           Matrix2f;
     typedef Matrix<int32, 2, 2>             Matrix2i;
+    typedef Matrix<float64, 2, 2>           Matrix2d;
     typedef Matrix<uint32, 2, 2>            Matrix2u;
     typedef MatrixC<2, 2>                   Matrix2c;
 
     typedef Matrix<float32, 3, 3>           Matrix3f;
     typedef Matrix<int32, 3, 3>             Matrix3i;
+    typedef Matrix<float64, 3, 3>           Matrix3d;
     typedef Matrix<uint32, 3, 3>            Matrix3u;
     typedef MatrixC<3, 3>                   Matrix3c;
 
     typedef Matrix<float32, 4, 4>           Matrix4f;
     typedef Matrix<int32, 4, 4>             Matrix4i;
     typedef Matrix<uint32, 4, 4>            Matrix4u;
+    typedef Matrix<float64, 4, 4>           Matrix4d;
     typedef MatrixC<4, 4>                   Matrix4c;
 
 }

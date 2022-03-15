@@ -512,16 +512,19 @@ namespace mpgl {
     typedef Vector<float32, 2>          Vector2f;
     typedef Vector<uint32, 2>           Vector2u;
     typedef Vector<int32, 2>            Vector2i;
+    typedef Vector<float64, 2>          Vector2d;
     typedef VectorC<2>                  Vector2c;
 
     typedef Vector<float32, 3>          Vector3f;
     typedef Vector<uint32, 3>           Vector3u;
     typedef Vector<int32, 3>            Vector3i;
+    typedef Vector<float64, 3>          Vector3d;
     typedef VectorC<3>                  Vector3c;
 
     typedef Vector<float32, 4>          Vector4f;
     typedef Vector<uint32, 4>           Vector4u;
     typedef Vector<int32, 4>            Vector4i;
+    typedef Vector<float64, 4>          Vector4d;
     typedef VectorC<4>                  Vector4c;
 
     template <Arithmetic Tp>
