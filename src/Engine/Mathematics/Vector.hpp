@@ -197,7 +197,7 @@ namespace mpgl {
     };
 
     template <Arithmetic Tp, std::size_t Size>
-    constexpr Tp dotProduct(Vector<Tp, Size> const& left,
+    constexpr Tp dot(Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) noexcept;
 
     template <Arithmetic Up, Arithmetic Tp, std::size_t Size>
@@ -255,7 +255,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Size>
-    constexpr Tp dotProduct(Vector<Tp, Size> const& left,
+    constexpr Tp dot(Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) noexcept
     {
         return std::inner_product(left.begin(), left.end(),
