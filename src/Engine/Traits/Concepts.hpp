@@ -45,8 +45,9 @@ namespace mpgl {
     template <typename T>
     concept Absolute = std::same_as<T, std::remove_cvref_t<T>>;
 
-    template <typename T, typename... Args>
-    concept AllAbsolutelySame = AllSame<T, std::remove_cvref_t<Args>...>;
+    template <typename Tp, typename... Args>
+    concept AllAbsolutelySame = AllSame<std::remove_cvref_t<Tp>,
+        std::remove_cvref_t<Args>...>;
 
     template <typename T, typename... Args>
     concept AllConvertible = std::conjunction_v<std::is_convertible<Args, T>...>;
