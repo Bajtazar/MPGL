@@ -127,7 +127,6 @@ namespace mpgl {
             Vector2d const& secondVertex,
             Vector2d const& thirdVertex) const noexcept;
 
-
         ElementArrayBuffer                          elementBuffer;
     };
 

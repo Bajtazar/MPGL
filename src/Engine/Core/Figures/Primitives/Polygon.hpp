@@ -32,7 +32,8 @@ namespace mpgl {
     /**
      * Represents a polygon figure
      */
-    struct Polygon : public ResizableAngular {
+    class Polygon : public ResizableAngular {
+    public:
         /**
          * Construct a new circle-like Polygon object with
          * the given radius, center, number of segments and color
@@ -81,9 +82,33 @@ namespace mpgl {
         void draw(void) const noexcept;
 
         /**
+         * Checks whether a given point is located inside the polygon
+         *
+         * @param position the point position [pixel position]
+         * @return if the given point is inside the polygon
+         */
+        [[nodiscard]] bool contains(
+            Vector2f const& position) const noexcept /*final*/;
+
+        /**
          * Destroy the Polygon object
          */
         ~Polygon(void) noexcept = default;
+    private:
+        /**
+         * Calculates whether a given point is inside subtriangle
+         *
+         * @param position the point position
+         * @param firstVertex the first vertex position
+         * @param secondVertex the second vertex position
+         * @param thirdVertex the third vertex position
+         * @return if the given point is inside subtriangle
+         */
+        [[nodiscard]] bool insideSubtriangle(
+            Vector2d const& position,
+            Vector2d const& firstVertex,
+            Vector2d const& secondVertex,
+            Vector2d const& thirdVertex) const noexcept;
     };
 
     template <class ColorTp, AllConvertible<Vector2f>... Vectors>

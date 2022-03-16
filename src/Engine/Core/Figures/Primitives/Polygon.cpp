@@ -58,4 +58,31 @@ namespace mpgl {
             vertices.size());
     }
 
+    [[nodiscard]] bool Polygon::insideSubtriangle(
+        Vector2d const& position,
+        Vector2d const& firstVertex,
+        Vector2d const& secondVertex,
+        Vector2d const& thirdVertex) const noexcept
+    {
+        Vector2d v1 = secondVertex - firstVertex;
+        Vector2d v2 = thirdVertex - firstVertex;
+        double base = cross(v1, v2);
+        double a = (cross(position, v2) - cross(firstVertex, v2)) / base;
+        double b = (cross(firstVertex, v1) - cross(position, v1)) / base;
+        return (a >= 0) && (b >= 0) && (a + b <= 1);
+    }
+
+    [[nodiscard]] bool Polygon::contains(
+        Vector2f const& position) const noexcept
+    {
+        Vector2d normalized = Adapter<Vector2f>{position}.get();
+        for (std::size_t i = 2; i < size(); ++i)
+            if (insideSubtriangle(normalized,
+                get<"position">(vertices[0]).get(),
+                get<"position">(vertices[i - 1]).get(),
+                get<"position">(vertices[i]).get()))
+                    return true;
+        return false;
+    }
+
 }
