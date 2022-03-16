@@ -292,8 +292,7 @@ namespace mpgl {
             Matrix2f const& transform) const noexcept
     {
         Vector2f local = transform * (position - shift);
-        float radius = (local - Vector2f{0.5f, 0.5f}).length();
-        return radius <= 0.5;
+        return (local - 0.5f).length() <= 0.5;
     }
 
     [[nodiscard]] bool Ring::contains(
