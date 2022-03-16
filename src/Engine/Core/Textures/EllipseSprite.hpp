@@ -199,7 +199,7 @@ namespace mpgl {
          * @return if the given point is inside the ellipse
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept /*final*/;
+            Vector2f const& position) const noexcept final;
 
         /**
          * Destroy the Ellipse Sprite object

@@ -80,7 +80,7 @@ namespace mpgl {
          * @return if the given point is one of the points
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept /*final*/;
+            Vector2f const& position) const noexcept final;
 
         /**
          * Draws the polygon on the screen

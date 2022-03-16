@@ -84,7 +84,7 @@ namespace mpgl {
          * @return if the given point is on the line loop
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept /*final*/;
+            Vector2f const& position) const noexcept final;
 
         /**
          * Destroy the Line Strip object

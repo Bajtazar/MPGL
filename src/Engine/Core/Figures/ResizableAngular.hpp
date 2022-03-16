@@ -46,6 +46,18 @@ namespace mpgl {
         virtual void draw(void) const noexcept = 0;
 
         /**
+         * Pure virtual function. Has to be overloaded.
+         * Checks whether given point position is located
+         * inside of the figure [boundry is concidered
+         * as a part of the figure]
+         *
+         * @param position the point position
+         * @return if point is inside figure
+         */
+        [[nodiscard]] virtual bool contains(
+            Vector2f const& position) const noexcept = 0;
+
+        /**
          * Changes size of the vertices array
          *
          * @param size the new size of the vertices array

@@ -95,7 +95,7 @@ namespace mpgl {
          * @return if the given point is inside the tetragon
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept /*final*/;
+            Vector2f const& position) const noexcept final;
 
         /**
          * Destroy the Tetragon object

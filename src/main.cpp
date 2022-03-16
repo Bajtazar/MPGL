@@ -32,7 +32,7 @@ using namespace mpgl;
 
 class RotatingSprite : public Drawable,
     public TickEvent, public ScreenTransformationEvent,
-    public KeyPressEvent
+    public KeyPressEvent, public MouseMotionEvent
 {
 public:
     RotatingSprite(uint32 rotationTime,
@@ -49,7 +49,7 @@ public:
 
     void onTick(std::chrono::milliseconds const& duration) noexcept {
         square.rotate(150_x + 150_y,
-            2 * std::numbers::pi / (1000 * rotationTime)
+            sign * 2 * std::numbers::pi / (1000 * rotationTime)
             * duration.count());
     }
 
@@ -92,15 +92,21 @@ public:
         }
     }
 
+    void onMouseMotion(Vector2f const& motion) noexcept {
+        sign = square.contains(motion) ? 2 : 1;
+    }
+
     ~RotatingSprite(void) noexcept = default;
 private:
     Text<false>                                 name;
     RingSprite<true>                            square;
     uint32 const                                rotationTime;
+    uint32                                      sign = 1;
 };
 
 class RotatingRing : public Drawable,
-    public TickEvent, public ScreenTransformationEvent
+    public TickEvent, public ScreenTransformationEvent,
+    public MouseMotionEvent
 {
 public:
     RotatingRing(void) : ring{200_x + 400_y, 50.f, 25.f, Color::Red},
@@ -119,10 +125,21 @@ public:
     void draw(void) const noexcept
         { ring.draw(); }
 
+    void onMouseMotion(Vector2f const& motion) noexcept {
+        if (ring.contains(motion) != clicked) {
+            if (clicked)
+                ring.setColor(Color::Red);
+            else
+                ring.setColor(Color::Blue);
+            clicked = !clicked;
+        }
+    }
+
     ~RotatingRing(void) noexcept = default;
 private:
     Ring                                    ring;
     uint32                                  time;
+    bool                                    clicked = false;
 };
 
 int main(void) noexcept {
