@@ -12,6 +12,17 @@ namespace mpgl {
         return value < Tp{0} ? Tp{-1} : !value ? Tp{0} : Tp{1};
     }
 
+    template <std::totally_ordered Tp>
+    inline constexpr bool between(
+        Tp const& first,
+        Tp const& second,
+        Tp const& checked) noexcept
+    {
+        if (first < second)
+            return (first <= checked) && (checked <= second);
+        return (second <= checked) && (checked <= first);
+    }
+
     template <Mathematical Tp>
     inline constexpr Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
