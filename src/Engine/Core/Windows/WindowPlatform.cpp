@@ -169,4 +169,12 @@ namespace mpgl {
         glfwSetWindowShouldClose(window, true);
     }
 
+    [[nodiscard]] Vector2f WindowPlatform::getMousePosition(
+        void) const noexcept
+    {
+        Vector2d position;
+        glfwGetCursorPos(window, &position[0], &position[1]);
+        return position;
+    }
+
 }
