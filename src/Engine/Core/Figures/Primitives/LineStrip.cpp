@@ -47,8 +47,8 @@ namespace mpgl {
         Vector2f const& position,
         std::size_t index) const noexcept
     {
-        return between(get<"position">(vertices[index - 1]).get()[0],
-            get<"position">(vertices[index]).get()[0], position[0]);
+        return between(get<"position">(vertices[index - 1]).get(),
+            get<"position">(vertices[index]).get(), position);
     }
 
     [[nodiscard]] bool LineStrip::onLine(

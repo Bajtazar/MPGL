@@ -23,6 +23,18 @@ namespace mpgl {
         return (second <= checked) && (checked <= first);
     }
 
+    template <std::totally_ordered Tp, std::size_t Size>
+    inline constexpr bool between(
+        Vector<Tp, Size> const& first,
+        Vector<Tp, Size> const& second,
+        Vector<Tp, Size> const& checked) noexcept
+    {
+        for (std::size_t i = 0; i < Size; ++i)
+            if (!between(first[i], second[i], checked[i]))
+                return false;
+        return true;
+    }
+
     template <Mathematical Tp>
     inline constexpr Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept

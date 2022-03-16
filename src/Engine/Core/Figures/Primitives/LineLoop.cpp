@@ -47,8 +47,8 @@ namespace mpgl {
         Vector2f const& position,
         std::size_t index) const noexcept
     {
-        return between(get<"position">(vertices[index - 1]).get()[0],
-            get<"position">(vertices[index]).get()[0], position[0]);
+        return between(get<"position">(vertices[index - 1]).get(),
+            get<"position">(vertices[index]).get(), position);
     }
 
     [[nodiscard]] bool LineLoop::onLine(
@@ -70,7 +70,7 @@ namespace mpgl {
                 return true;
         Vector2f begin = get<"position">(vertices.back()).get();
         Vector2f end = get<"position">(vertices.front()).get();
-        if (!between(begin[0], end[0], normalized[0]))
+        if (!between(begin, end, normalized))
             return false;
         return std::fabs(cross(normalized - begin, end - begin))
             < std::numeric_limits<float>::epsilon();
