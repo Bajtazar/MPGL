@@ -49,7 +49,8 @@ namespace mpgl {
 
     void WindowPlatform::setContextWindow(void) noexcept {
         glfwMakeContextCurrent(window);
-        setCommunicationThread(dimensions, options);
+        context.windowDimensions = dimensions;
+        context.windowOptions = options;
     }
 
     void WindowPlatform::setDimensions(Vector2u const& dim) noexcept {
