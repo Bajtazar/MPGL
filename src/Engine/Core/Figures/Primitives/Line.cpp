@@ -26,6 +26,9 @@
 #include "Line.hpp"
 
 #include "../../Context/Buffers/BindGuard.hpp"
+#include "../../../Mathematics/Systems.hpp"
+
+#include <limits>
 
 namespace mpgl {
 
@@ -47,6 +50,18 @@ namespace mpgl {
         shaderProgram->use();
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawArrays(VertexArray::DrawMode::Lines, 2);
+    }
+
+    [[nodiscard]] bool Line::contains(
+        Vector2f const& position) const noexcept
+    {
+        Vector2f normalized = Adapter<Vector2f>{position}.get();
+        Vector2f begin = get<"position">(vertices.front()).get();
+        Vector2f end = get<"position">(vertices.back()).get();
+        if (!between(begin, end, normalized))
+            return false;
+        return std::fabs(cross(normalized - begin, end - begin))
+            < std::numeric_limits<float>::epsilon();
     }
 
 }

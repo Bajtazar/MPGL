@@ -73,6 +73,15 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
+         * Checks whether a given point is located on the line
+         *
+         * @param position the point position [pixel position]
+         * @return if the given point is located on the line
+         */
+        [[nodiscard]] bool contains(
+            Vector2f const& position) const noexcept /*final*/;
+
+        /**
          *  Destroy the Line object
          */
         ~Line(void) noexcept = default;
