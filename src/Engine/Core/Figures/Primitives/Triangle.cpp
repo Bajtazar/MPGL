@@ -47,4 +47,17 @@ namespace mpgl {
         vertexArray.drawArrays(VertexArray::DrawMode::Triangles, 3);
     }
 
+    [[nodiscard]] bool Triangle::contains(
+        Vector2f const& position) const noexcept
+    {
+        Vector2d v = Adapter<Vector2f>{position}.get();
+        Vector2d v0 = get<"position">(vertices[0]).get();
+        Vector2d v1 = Vector2d{get<"position">(vertices[1]).get()} - v0;
+        Vector2d v2 = Vector2d{get<"position">(vertices[2]).get()} - v0;
+        double base = cross(v1, v2);
+        double a = (cross(v, v2) - cross(v0, v2)) / base;
+        double b = (cross(v0, v1) - cross(v, v1)) / base;
+        return (a >= 0) && (b >= 0) && (a + b <= 1);
+    }
+
 }
