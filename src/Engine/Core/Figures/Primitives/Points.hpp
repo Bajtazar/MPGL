@@ -74,6 +74,15 @@ namespace mpgl {
         Points& operator= (Points&& points) noexcept = default;
 
         /**
+         * Checks whether a given point is one of the points
+         *
+         * @param position the point position [pixel position]
+         * @return if the given point is one of the points
+         */
+        [[nodiscard]] bool contains(
+            Vector2f const& position) const noexcept /*final*/;
+
+        /**
          * Draws the polygon on the screen
          */
         void draw(void) const noexcept final;
@@ -86,12 +95,12 @@ namespace mpgl {
 
     template <class ColorTp, AllConvertible<Vector2f>... Vectors>
         requires std::constructible_from<Color, ColorTp>
-    Points::Points(ColorTp&& color, Vectors&&... args)
+    Points::Points(ColorTp&& color, Vectors&&... vertices)
         : ResizableAngular{std::forward<ColorTp>(color),
             std::forward<Vectors>(vertices)...} {}
 
     template <AllConvertible<Vector2f>... Vectors>
-    Points::Points(Vectors&&... args)
+    Points::Points(Vectors&&... vertices)
         : ResizableAngular{std::forward<Vectors>(vertices)...} {}
 
 }

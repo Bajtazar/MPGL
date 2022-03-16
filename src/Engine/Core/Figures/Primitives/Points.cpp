@@ -24,6 +24,7 @@
  *  distribution
  */
 #include "Points.hpp"
+
 #include "../Views.hpp"
 #include "../../../Utility/Ranges.hpp"
 #include "../../Context/Buffers/BindGuard.hpp"
@@ -39,6 +40,16 @@ namespace mpgl {
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawArrays(VertexArray::DrawMode::Points,
             vertices.size());
+    }
+
+    [[nodiscard]] bool Points::contains(
+        Vector2f const& position) const noexcept
+    {
+        Vector2f normalized = Adapter<Vector2f>{position}.get();
+        for (auto const& pointPos : vertices | views::position)
+            if (std::ranges::equal(pointPos.get(), normalized))
+                return true;
+        return false;
     }
 
 }
