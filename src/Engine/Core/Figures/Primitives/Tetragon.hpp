@@ -89,6 +89,15 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
+         * Checks whether a given point is located inside the tetragon
+         *
+         * @param position the point position [pixel position]
+         * @return if the given point is inside the tetragon
+         */
+        [[nodiscard]] bool contains(
+            Vector2f const& position) const noexcept /*final*/;
+
+        /**
          * Destroy the Tetragon object
          */
         ~Tetragon(void) noexcept = default;
@@ -102,6 +111,22 @@ namespace mpgl {
          * Initializes the element buffer object
          */
         void initElementBuffer(void) const noexcept;
+
+        /**
+         * Calculates whether a given point is inside subtriangle
+         *
+         * @param position the point position
+         * @param firstVertex the first vertex position
+         * @param secondVertex the second vertex position
+         * @param thirdVertex the third vertex position
+         * @return if the given point is inside subtriangle
+         */
+        [[nodiscard]] bool insideSubtriangle(
+            Vector2d const& position,
+            Vector2d const& firstVertex,
+            Vector2d const& secondVertex,
+            Vector2d const& thirdVertex) const noexcept;
+
 
         ElementArrayBuffer                          elementBuffer;
     };

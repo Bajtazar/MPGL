@@ -31,7 +31,7 @@ namespace mpgl {
                 Vertex{firstVertex, color},
                 Vertex{secondVertex, color},
                 Vertex{thirdVertex, color},
-                Vertex{secondVertex - firstVertex
+                Vertex{firstVertex - secondVertex
                     + thirdVertex, color}
             }}
     {
@@ -56,6 +56,35 @@ namespace mpgl {
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawElements(VertexArray::DrawMode::Triangles,
             6, DataType::UInt32);
+    }
+
+    [[nodiscard]] bool Tetragon::insideSubtriangle(
+        Vector2d const& position,
+        Vector2d const& firstVertex,
+        Vector2d const& secondVertex,
+        Vector2d const& thirdVertex) const noexcept
+    {
+        Vector2d v1 = secondVertex - firstVertex;
+        Vector2d v2 = thirdVertex - firstVertex;
+        double base = cross(v1, v2);
+        double a = (cross(position, v2) - cross(firstVertex, v2)) / base;
+        double b = (cross(firstVertex, v1) - cross(position, v1)) / base;
+        return (a >= 0) && (b >= 0) && (a + b <= 1);
+    }
+
+    [[nodiscard]] bool Tetragon::contains(
+        Vector2f const& position) const noexcept
+    {
+        Vector2d normalized = Adapter<Vector2f>{position}.get();
+        bool first = insideSubtriangle(
+            normalized, get<"position">(vertices[0]).get(),
+            get<"position">(vertices[1]).get(),
+            get<"position">(vertices[2]).get());
+        bool second = insideSubtriangle(
+            normalized, get<"position">(vertices[0]).get(),
+            get<"position">(vertices[2]).get(),
+            get<"position">(vertices[3]).get());
+        return first || second;
     }
 
 }
