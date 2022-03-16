@@ -286,4 +286,24 @@ namespace mpgl {
             6, DataType::UInt32);
     }
 
+    [[nodiscard]] bool Ring::insideSystem(
+            Vector2f const& position,
+            Vector2f const& shift,
+            Matrix2f const& transform) const noexcept
+    {
+        Vector2f local = transform * (position - shift);
+        float radius = (local - Vector2f{0.5f, 0.5f}).length();
+        return radius <= 0.5;
+    }
+
+    [[nodiscard]] bool Ring::contains(
+        Vector2f const& position) const noexcept
+    {
+        bool outring = insideSystem(position,
+            get<"position">(vertices.front()), this->outline);
+        bool inring = insideSystem(position,
+            innerEllipse.vertices.front(), innerEllipse.outline);
+        return outring && (!inring);
+    }
+
 }
