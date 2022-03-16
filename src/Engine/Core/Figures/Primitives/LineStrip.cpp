@@ -24,7 +24,11 @@
  *  distribution
  */
 #include "LineStrip.hpp"
+
 #include "../../Context/Buffers/BindGuard.hpp"
+#include "../../../Mathematics/Systems.hpp"
+
+#include <limits>
 
 namespace mpgl {
 
@@ -37,6 +41,34 @@ namespace mpgl {
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawArrays(VertexArray::DrawMode::LineStrip,
             vertices.size());
+    }
+
+    [[nodiscard]] bool LineStrip::insideInterval(
+        Vector2f const& position,
+        std::size_t index) const noexcept
+    {
+        return between(get<"position">(vertices[index - 1]).get()[0],
+            get<"position">(vertices[index]).get()[0], position[0]);
+    }
+
+    [[nodiscard]] bool LineStrip::onLine(
+        Vector2f const& position,
+        std::size_t index) const noexcept
+    {
+        Vector2f begin = get<"position">(vertices[index - 1]).get();
+        Vector2f end = get<"position">(vertices[index]).get();
+        return std::fabs(cross(position - begin, end - begin))
+            < std::numeric_limits<float>::epsilon();
+    }
+
+    [[nodiscard]] bool LineStrip::contains(
+        Vector2f const& position) const noexcept
+    {
+        Vector2f normalized = Adapter<Vector2f>{position}.get();
+        for (std::size_t i = 1; i < size(); ++i)
+            if (insideInterval(normalized, i) && onLine(normalized, i))
+                return true;
+        return false;
     }
 
 }
