@@ -134,6 +134,15 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
+         * Checks whether a given point is located inside the sprite
+         *
+         * @param position the point position [pixel position]
+         * @return if the given point is inside the sprite
+         */
+        [[nodiscard]] bool contains(
+            Vector2f const& position) const noexcept /*final*/;
+
+        /**
          * Returns the reference to vertex with the given index
          *
          * @param index the vertex's index
@@ -374,6 +383,21 @@ namespace mpgl {
          * @return the shader name used by sprite implementation
          */
         static std::string shaderName(void) noexcept;
+
+        /**
+         * Calculates whether a given point is inside subtriangle
+         *
+         * @param position the point position
+         * @param firstVertex the first vertex position
+         * @param secondVertex the second vertex position
+         * @param thirdVertex the third vertex position
+         * @return if the given point is inside subtriangle
+         */
+        [[nodiscard]] bool insideSubtriangle(
+            Vector2d const& position,
+            Vector2d const& firstVertex,
+            Vector2d const& secondVertex,
+            Vector2d const& thirdVertex) const noexcept;
 
         static const Executable                     shaderExec;
     };

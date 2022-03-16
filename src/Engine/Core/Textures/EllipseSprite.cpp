@@ -194,4 +194,13 @@ namespace mpgl {
             VertexArray::DrawMode::Triangles, 6, DataType::UInt32);
     }
 
+    template <bool IsColorable>
+    [[nodiscard]] bool EllipseSprite<IsColorable>::contains(
+        Vector2f const& position) const noexcept
+    {
+        Vector2f local = outline * (position -
+            Vector2f{get<"position">(this->vertices.front())});
+        return (local - 0.5f).length() <= 0.5f;
+    }
+
 }

@@ -393,4 +393,25 @@ namespace mpgl {
             VertexArray::DrawMode::Triangles, 6, DataType::UInt32);
     }
 
+    template <bool IsColorable>
+    [[nodiscard]] bool RingSprite<IsColorable>::insideSystem(
+            Vector2f const& position,
+            Vector2f const& shift,
+            Matrix2f const& transform) const noexcept
+    {
+        Vector2f local = transform * (position - shift);
+        return (local - 0.5f).length() <= 0.5;
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] bool RingSprite<IsColorable>::contains(
+        Vector2f const& position) const noexcept
+    {
+        bool outring = insideSystem(position,
+            get<"position">(this->vertices.front()), this->outline);
+        bool inring = insideSystem(position,
+            innerEllipse.vertices.front(), innerEllipse.outline);
+        return outring && (!inring);
+    }
+
 }

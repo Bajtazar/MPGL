@@ -330,6 +330,15 @@ namespace mpgl {
         RingSprite& operator=(RingSprite&& sprite) noexcept = default;
 
         /**
+         * Checks whether a given point is located inside the ring
+         *
+         * @param position the point position [pixel position]
+         * @return if the given point is inside the ring
+         */
+        [[nodiscard]] bool contains(
+            Vector2f const& position) const noexcept /*final*/;
+
+        /**
          * Draws the ring sprite on the screen
          */
         void draw(void) const noexcept final;
@@ -453,6 +462,20 @@ namespace mpgl {
          * Sets the shader program uniforms
          */
         void setUniforms(void) const noexcept;
+
+        /**
+         * Returns whether a given point is inside local system
+         * created by translation vector and transformation matrix
+         *
+         * @param position the point position
+         * @param shift the translation vector
+         * @param transform the transformation matrix
+         * @return if point is inside the local system
+         */
+        [[nodiscard]] bool insideSystem(
+            Vector2f const& position,
+            Vector2f const& shift,
+            Matrix2f const& transform) const noexcept;
 
         /**
          * Returns the shader name used by sprite implementation

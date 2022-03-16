@@ -193,6 +193,15 @@ namespace mpgl {
         void resetConvolution(void) final;
 
         /**
+         * Checks whether a given point is located inside the ellipse
+         *
+         * @param position the point position [pixel position]
+         * @return if the given point is inside the ellipse
+         */
+        [[nodiscard]] bool contains(
+            Vector2f const& position) const noexcept /*final*/;
+
+        /**
          * Destroy the Ellipse Sprite object
          */
         ~EllipseSprite(void) noexcept = default;
