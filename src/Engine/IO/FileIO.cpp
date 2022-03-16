@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 
 namespace mpgl {
 
@@ -12,9 +13,15 @@ namespace mpgl {
         return files;
     }
 
-    std::vector<std::string> FileIO::getRecursiveDirFiles(const std::string& dirName) noexcept {
+    std::vector<std::string> FileIO::getRecursiveDirFiles(
+        const std::string& dirName) noexcept
+    {
+        namespace fs = std::filesystem;
+
         std::vector<std::string> files;
-        std::ranges::transform(std::filesystem::recursive_directory_iterator(dirName), std::back_inserter(files), [](auto& path){ return path.path(); });
+        for (auto& entry : fs::recursive_directory_iterator(dirName))
+            if (!fs::is_directory(entry))
+                files.emplace_back(entry.path());
         return files;
     }
 
