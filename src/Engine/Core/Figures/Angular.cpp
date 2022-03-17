@@ -38,13 +38,13 @@ namespace mpgl {
     }
 
     Angular::Angular(size_t size, Color const& color)
-        : Figure{"2DDefault"}, vertices{size,
+        : Figure{"MPGL/2D/Default"}, vertices{size,
             Vertex{Vector2f{}, color}}
     {
         initializeBuffers();
     }
 
-    Angular::Angular(Vertices vertices) : Figure{"2DDefault"},
+    Angular::Angular(Vertices vertices) : Figure{"MPGL/2D/Default"},
         vertices{std::move(vertices)}
     {
         initializeBuffers();

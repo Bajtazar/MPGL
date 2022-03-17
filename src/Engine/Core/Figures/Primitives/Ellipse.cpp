@@ -40,16 +40,16 @@ namespace mpgl {
 
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
         Color const& color, float angle)
-            : Elliptic{ellipseVertices(center, semiAxis, angle), "2DEllipse",
-                shaderExec, color}
+            : Elliptic{ellipseVertices(center, semiAxis, angle),
+                "MPGL/2D/Ellipse", shaderExec, color}
     {
         actualizeMatrices();
     }
 
     Ellipse::Ellipse(Vector2f const& center, float radius,
         Color const& color)
-            : Elliptic{circleVertices(center, radius), "2DEllipse",
-                shaderExec, color}
+            : Elliptic{circleVertices(center, radius),
+                "MPGL/2D/Ellipse", shaderExec, color}
     {
         actualizeMatrices();
     }

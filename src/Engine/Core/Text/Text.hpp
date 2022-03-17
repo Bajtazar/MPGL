@@ -259,9 +259,9 @@ namespace mpgl {
     template <bool IsPolichromatic>
     constexpr std::string Text<IsPolichromatic>::shaderType(void) noexcept {
         if constexpr (IsPolichromatic)
-            return "2DPoliGlyph";
+            return "MPGL/2D/PoliGlyph";
         else
-            return "2DMonoGlyph";
+            return "MPGL/2D/MonoGlyph";
     }
 
     template class Text<true>;

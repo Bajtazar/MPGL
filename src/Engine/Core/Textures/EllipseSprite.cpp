@@ -33,9 +33,9 @@ namespace mpgl {
     template <bool IsColorable>
     std::string EllipseSprite<IsColorable>::shaderName(void) noexcept {
         if constexpr (IsColorable)
-            return "2DCTEllipse";
+            return "MPGL/2D/CTEllipse";
         else
-            return "2DTEllipse";
+            return "MPGL/2D/TEllipse";
     }
 
     template <bool IsColorable>
@@ -167,8 +167,8 @@ namespace mpgl {
     void EllipseSprite<IsColorable>::setConvolution(
         Matrix3f const& convolution)
     {
-        this->setShader(
-            IsColorable ? "2DCTEllipseConv" : "2DTEllipseConv");
+        this->setShader(IsColorable ?
+            "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
         this->shaderProgram->setUniform("convolution", convolution);
         this->shaderProgram->setUniform(
             "screen", this->texture.getTextureDimensions());

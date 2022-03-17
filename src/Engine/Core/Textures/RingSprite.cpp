@@ -33,9 +33,9 @@ namespace mpgl {
     template <bool IsColorable>
     std::string RingSprite<IsColorable>::shaderName(void) noexcept {
         if constexpr (IsColorable)
-            return "2DCTRing";
+            return "MPGL/2D/CTRing";
         else
-            return "2DTRing";
+            return "MPGL/2D/TRing";
     }
 
     template <bool IsColorable>
@@ -357,8 +357,8 @@ namespace mpgl {
     void RingSprite<IsColorable>::setConvolution(
         Matrix3f const& convolution)
     {
-        this->setShader(
-            IsColorable ? "2DCTRingConv" : "2DTRingConv");
+        this->setShader(IsColorable ?
+            "MPGL/2D/CTRingConv" : "MPGL/2D/TRingConv");
         this->shaderProgram->setUniform("convolution", convolution);
         this->shaderProgram->setUniform(
             "screen", this->texture.getTextureDimensions());

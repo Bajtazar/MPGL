@@ -161,7 +161,8 @@ namespace mpgl {
         Color const& color,
         float32 angle)
             : Elliptic{ellipseVertices(center, semiAxis, angle),
-            "2DRing", shaderExec, color}, innerEllipse{innerEllipse}
+                "MPGL/2D/Ring", shaderExec, color},
+            innerEllipse{innerEllipse}
     {
         actualizeMatrices();
     }
@@ -172,7 +173,8 @@ namespace mpgl {
         InnerEllipse const& innerEllipse,
         Color const& color)
             : Elliptic{circleVertices(center, radius),
-            "2DRing", shaderExec, color}, innerEllipse{innerEllipse}
+                "MPGL/2D/Ring", shaderExec, color},
+            innerEllipse{innerEllipse}
     {
         actualizeMatrices();
     }

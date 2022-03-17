@@ -32,9 +32,9 @@ namespace mpgl {
     template <bool IsColorable>
     std::string Sprite<IsColorable>::shaderName(void) noexcept {
         if constexpr (IsColorable)
-            return "2DCTexture";
+            return "MPGL/2D/CTexture";
         else
-            return "2DTexture";
+            return "MPGL/2D/Texture";
     }
 
     template <bool IsColorable>
@@ -137,8 +137,8 @@ namespace mpgl {
     void Sprite<IsColorable>::setConvolution(
         Matrix3f const& convolution)
     {
-        Shadeable::setShader(
-            IsColorable ? "2DCTextureConv" : "2DTextureConv");
+        Shadeable::setShader(IsColorable ?
+            "MPGL/2D/CTextureConv" : "MPGL/2D/TextureConv");
         this->shaderProgram->use();
         this->shaderProgram->setUniform("tex", 0);
         this->shaderProgram->setUniform("convolution", convolution);
