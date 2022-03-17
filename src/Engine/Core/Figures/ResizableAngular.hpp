@@ -106,7 +106,7 @@ namespace mpgl {
         virtual ~ResizableAngular(void) noexcept = default;
     protected:
         /**
-         * Construct a new Resizable Angular object with a given
+         * Construct a new Resizable Angular object with the given
          * size vertices array
          *
          * @param size the size of the vertices array
@@ -115,7 +115,7 @@ namespace mpgl {
         explicit ResizableAngular(size_t size, Color const& color);
 
         /**
-         * Construct a new Resizable Angular object with a given
+         * Construct a new Resizable Angular object with the given
          * vertices array
          *
          * @param vertices the vertices array
@@ -128,7 +128,7 @@ namespace mpgl {
             ResizableAngular&& shape) noexcept = default;
 
         /**
-         * Construct a new Resizable Angular object from a given
+         * Construct a new Resizable Angular object from the given
          * vertices positions and their common color
          *
          * @tparam ColorTp the type of the color vector
@@ -142,7 +142,7 @@ namespace mpgl {
             Args&&... positions);
 
         /**
-         * Construct a new Resizable Angular object from a given
+         * Construct a new Resizable Angular object from the given
          * vertices positions
          *
          * @tparam Args the parameter pack of 2D vectors
@@ -155,7 +155,7 @@ namespace mpgl {
             ResizableAngular&& shape) noexcept = default;
 
         /**
-         * Assigns a given resizable angular to this object
+         * Assigns the given resizable angular to this object
          *
          * @param shape the assigned resizable angular
          * @return the reference to this object

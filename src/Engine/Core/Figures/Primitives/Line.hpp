@@ -73,7 +73,7 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether a given point is located on the line
+         * Checks whether the given point is located on the line
          *
          * @param position the point position [pixel position]
          * @return if the given point is located on the line

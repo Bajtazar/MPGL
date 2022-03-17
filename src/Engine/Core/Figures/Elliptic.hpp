@@ -75,7 +75,7 @@ namespace mpgl {
         /**
          * Pure virtual function. Has to be overloaded.
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor
@@ -153,7 +153,7 @@ namespace mpgl {
             Color const& color);
 
         /**
-         * Construct a new Elliptic object from a given
+         * Construct a new Elliptic object from the given
          * constant reference
          *
          * @param shape the given elliptic constant reference

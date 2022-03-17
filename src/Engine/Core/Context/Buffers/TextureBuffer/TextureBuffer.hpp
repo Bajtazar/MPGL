@@ -66,7 +66,7 @@ namespace mpgl {
         TextureBuffer(TextureBuffer const&) = delete;
 
         /**
-         * Construct a new Texture Buffer object from a given rvalue
+         * Construct a new Texture Buffer object from the given rvalue
          * Texture Buffer object
          *
          * @param buffer the given rvalue to the texture buffer object

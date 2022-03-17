@@ -178,7 +178,7 @@ namespace mpgl {
             Options const& options = Options{});
 
         /**
-         * Construct a new Texture object from a given
+         * Construct a new Texture object from the given
          * image object with given options
          *
          * @param image the image object
@@ -188,7 +188,7 @@ namespace mpgl {
             Options const& options = Options{});
 
         /**
-         * Construct a new Texture object from a given
+         * Construct a new Texture object from the given
          * bitmap object with given options
          *
          * @param bitmap the bitmap object

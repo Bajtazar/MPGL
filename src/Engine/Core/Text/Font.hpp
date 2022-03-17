@@ -78,7 +78,7 @@ namespace mpgl {
             { return pointer->mask; }
 
         /**
-         * Returns the subfont of a given type. When the given
+         * Returns the subfont of the given type. When the given
          * subfont type is not available returns the reference
          * to the regular subfont
          *

@@ -74,7 +74,7 @@ namespace mpgl {
         Points& operator= (Points&& points) noexcept = default;
 
         /**
-         * Checks whether a given point is one of the points
+         * Checks whether the given point is one of the points
          *
          * @param position the point position [pixel position]
          * @return if the given point is one of the points

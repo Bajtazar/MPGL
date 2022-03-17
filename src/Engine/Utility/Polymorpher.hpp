@@ -51,7 +51,7 @@ namespace mpgl {
          *
          * @tparam Tp the given object type
          */
-        template <BelongTo<Types...> Tp>
+        template <Included<Types...> Tp>
         constexpr explicit Polymorpher(Tp&& base) noexcept(
             NothrowMoveConstructible<Tp>)
                 : variant{std::move(base)} {}

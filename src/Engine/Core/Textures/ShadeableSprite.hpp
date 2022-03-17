@@ -97,7 +97,7 @@ namespace mpgl {
 
         /**
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor
@@ -148,7 +148,7 @@ namespace mpgl {
         typedef Texturable::Positions           Positions;
 
         /**
-         * Construct a new Shadeable Sprite object from a given
+         * Construct a new Shadeable Sprite object from the given
          * texture and shader name
          *
          * @param texture the texture object
@@ -161,7 +161,7 @@ namespace mpgl {
             Executable shaderInit);
 
         /**
-         * Construct a new Shadeable Sprite object from a given
+         * Construct a new Shadeable Sprite object from the given
          * texture and shader name with given vertices color
          *
          * @param texture the texture object
@@ -176,8 +176,8 @@ namespace mpgl {
             Color const& color) requires IsColorable;
 
         /**
-         * Construct a new Shadeable Sprite object from a given
-         * vertices vector with a given texture. Sets the given
+         * Construct a new Shadeable Sprite object from the given
+         * vertices vector with the given texture. Sets the given
          * shader program
          *
          * @param positions the vertices positions
@@ -192,8 +192,8 @@ namespace mpgl {
             Executable shaderInit);
 
         /**
-         * Construct a new Shadeable Sprite object from a given
-         * vertices vector with a given texture using
+         * Construct a new Shadeable Sprite object from the given
+         * vertices vector with the given texture using
          * given color. Sets the given shader program
          *
          * @param positions the vertices positions
@@ -221,7 +221,7 @@ namespace mpgl {
         ShadeableSprite(ShadeableSprite&&) noexcept = default;
 
         /**
-         * Assigns a given shadeable sprite to this object
+         * Assigns the given shadeable sprite to this object
          *
          * @param sprite the constant reference to sprite object
          * @return the reference to this object
@@ -260,7 +260,7 @@ namespace mpgl {
 
         /**
          * Creates the four vertices vector with the correct
-         * texture positions and with a given color
+         * texture positions and with the given color
          *
          * @param color the color of the vertices
          * @param positions the vertices positions

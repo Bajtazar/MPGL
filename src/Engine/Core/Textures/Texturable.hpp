@@ -61,7 +61,7 @@ namespace mpgl {
         /**
          * Pure virtual function. Has to be overloaded.
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor
@@ -134,14 +134,14 @@ namespace mpgl {
         typedef std::array<Vector2f, 4>                 Positions;
 
         /**
-         * Construct a new Texturable object from a given texture
+         * Construct a new Texturable object from the given texture
          *
          * @param texture the texture object
          */
         Texturable(Texture const& texture);
 
         /**
-         * Construct a new Texturable object from a given
+         * Construct a new Texturable object from the given
          * texturable constant reference
          *
          * @param texturable the texturable constant reference

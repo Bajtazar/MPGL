@@ -79,7 +79,7 @@ namespace mpgl {
 
         /**
          * Construct a new parallelogram-like Glyph Sprite
-         * object from a given three vertices and sprite's
+         * object from the given three vertices and sprite's
          * texture
          *
          * @param texture the texture drawn by sprite
@@ -95,7 +95,7 @@ namespace mpgl {
 
         /**
          * Construct a new parallelogram-like Glyph Sprite
-         * object from a given three vertices, sprite's
+         * object from the given three vertices, sprite's
          * texture and its color
          *
          * @param texture the texture drawn by sprite
@@ -141,7 +141,7 @@ namespace mpgl {
             Color const& color) requires (IsColorable);
 
         /**
-         * Construct a new Glyph Sprite object from a given
+         * Construct a new Glyph Sprite object from the given
          * constant reference to the glyph sprite object
          *
          * @param sprite the constant reference to the glyph
@@ -152,7 +152,7 @@ namespace mpgl {
         GlyphSprite(GlyphSprite&& sprite) noexcept = default;
 
         /**
-         * Assigns a given glyph sprite to this object
+         * Assigns the given glyph sprite to this object
          *
          * @param sprite the constant reference to sprite object
          * @return the reference to this object
@@ -185,7 +185,7 @@ namespace mpgl {
 
         /**
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor
@@ -428,7 +428,7 @@ namespace mpgl {
 
         /**
          * Creates the four vertices vector with the correct
-         * texture positions and with a given color
+         * texture positions and with the given color
          *
          * @param color the color of the vertices
          * @param positions the vertices positions

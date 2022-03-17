@@ -67,7 +67,7 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether a given point is located inside the triangle
+         * Checks whether the given point is located inside the triangle
          *
          * @param position the point position [pixel position]
          * @return if the given point is inside the triangle

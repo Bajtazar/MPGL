@@ -42,7 +42,7 @@ namespace mpgl {
         typedef std::list<std::exception_ptr>       Exceptions;
     public:
         /**
-         * Constructs StackedException from a given iterators
+         * Constructs StackedException from the given iterators
          *
          * @tparam Iter iterator type for the given collection.
          * Its value type has to be an std::exception_ptr
@@ -57,7 +57,7 @@ namespace mpgl {
         explicit StackedExceptions(Iter iter, Sent const& sent);
 
         /**
-         * Constructs StackedException from a given range
+         * Constructs StackedException from the given range
          *
          * @tparam Range range type of given range. Its value
          * type has to be an std::exception_ptr

@@ -54,7 +54,7 @@ namespace mpgl {
         /**
          * Pure virtual function. Has to be overloaded.
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor

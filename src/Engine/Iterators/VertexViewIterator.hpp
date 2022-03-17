@@ -216,7 +216,7 @@ namespace mpgl {
     };
 
     /**
-     * Creates Vertex View Iterator type from a given
+     * Creates Vertex View Iterator type from the given
      * iterator type and template string holder type
      *
      * @tparam Iter the random access iterator
@@ -226,7 +226,7 @@ namespace mpgl {
     struct VertexViewIterFromHolder;
 
     /**
-     * Creates Vertex View Iterator type from a given
+     * Creates Vertex View Iterator type from the given
      * iterator type and template string holder type
      *
      * @tparam Iter the random access iterator
@@ -239,7 +239,7 @@ namespace mpgl {
     };
 
     /**
-     * Returns the Vertex View Iterator type from a given
+     * Returns the Vertex View Iterator type from the given
      * random access iterator type and template string
      * holder type
      *

@@ -68,7 +68,7 @@ namespace mpgl {
                 : queue{std::forward<Args>(args)...} {}
 
         /**
-         * Construct a new Queue Monitor object from a given
+         * Construct a new Queue Monitor object from the given
          * queue object
          *
          * @param queue the given queue object

@@ -65,7 +65,7 @@ namespace mpgl {
                 : base{std::forward<Args>(args)...} {}
 
         /**
-         * Construct a new Monitor object from a given
+         * Construct a new Monitor object from the given
          * base object
          *
          * @param base the given base object
@@ -74,7 +74,7 @@ namespace mpgl {
             NothrowMoveConstructible<Base>);
 
         /**
-         * Construct a new Monitor object from a given
+         * Construct a new Monitor object from the given
          * lvalue monitor object
          *
          * @param monitor the given lvalue monitor object
@@ -83,7 +83,7 @@ namespace mpgl {
             NothrowCopyConstructible<Base>);
 
         /**
-         * Construct a new Monitor object from a given
+         * Construct a new Monitor object from the given
          * rvalue monitor object
          *
          * @param monitor the given rvalue monitor object

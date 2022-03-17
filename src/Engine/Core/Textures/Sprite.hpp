@@ -43,7 +43,7 @@ namespace mpgl {
         typedef ShadeableSprite<IsColorable>::Vertices  Vertices;
 
         /**
-         * Construct a new Sprite object with a given
+         * Construct a new Sprite object with the given
          * texture
          *
          * @param texture the sprite's texture
@@ -51,7 +51,7 @@ namespace mpgl {
         Sprite(Texture const& texture = {});
 
         /**
-         * Construct a new Sprite object with a given
+         * Construct a new Sprite object with the given
          * texture and color
          *
          * @param texture the sprite's texture
@@ -96,7 +96,7 @@ namespace mpgl {
 
         /**
          * Construct a new Sprite object parallel to
-         * x and y axis with a given texture
+         * x and y axis with the given texture
          *
          * @param texture the sprite's texture
          * @param firstVertex the first vertex position
@@ -109,7 +109,7 @@ namespace mpgl {
 
         /**
          * Construct a new Sprite object parallel to
-         * x and y axis with a given texture and color
+         * x and y axis with the given texture and color
          *
          * @param texture the sprite's texture
          * @param firstVertex the first vertex position
@@ -134,7 +134,7 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether a given point is located inside the sprite
+         * Checks whether the given point is located inside the sprite
          *
          * @param position the point position [pixel position]
          * @return if the given point is inside the sprite
@@ -385,7 +385,7 @@ namespace mpgl {
         static std::string shaderName(void) noexcept;
 
         /**
-         * Calculates whether a given point is inside subtriangle
+         * Calculates whether the given point is inside subtriangle
          *
          * @param position the point position
          * @param firstVertex the first vertex position

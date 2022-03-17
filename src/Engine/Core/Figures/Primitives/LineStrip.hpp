@@ -79,7 +79,7 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether a given point is located on the line strip
+         * Checks whether the given point is located on the line strip
          *
          * @param position the point position [pixel position]
          * @return if the given point is on the line strip
@@ -93,7 +93,7 @@ namespace mpgl {
         ~LineStrip(void) noexcept = default;
     private:
         /**
-         * Returns whether a given point position is inside
+         * Returns whether the given point position is inside
          * an x-axis interval
          *
          * @param position the point position
@@ -105,7 +105,7 @@ namespace mpgl {
             std::size_t index) const noexcept;
 
         /**
-         * Checks whether a given point is located on the given line
+         * Checks whether the given point is located on the given line
          *
          * @param position the point position
          * @param index the second vertex index

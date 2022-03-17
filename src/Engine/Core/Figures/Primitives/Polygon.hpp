@@ -82,7 +82,7 @@ namespace mpgl {
         void draw(void) const noexcept;
 
         /**
-         * Checks whether a given point is located inside the polygon
+         * Checks whether the given point is located inside the polygon
          *
          * @param position the point position [pixel position]
          * @return if the given point is inside the polygon
@@ -96,7 +96,7 @@ namespace mpgl {
         ~Polygon(void) noexcept = default;
     private:
         /**
-         * Calculates whether a given point is inside subtriangle
+         * Calculates whether the given point is inside subtriangle
          *
          * @param position the point position
          * @param firstVertex the first vertex position

@@ -82,7 +82,7 @@ namespace mpgl {
 
         /**
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor
@@ -308,7 +308,7 @@ namespace mpgl {
     protected:
         /**
          * Construct a new Angular object. Creates the
-         * vertices vector of a given size with a given color
+         * vertices vector of the given size with the given color
          *
          * @param size the size of the vertices vector
          * @param color the color of the vertices
@@ -324,7 +324,7 @@ namespace mpgl {
         explicit Angular(Vertices vertices);
 
         /**
-         * Construct a new Angular object from a given
+         * Construct a new Angular object from the given
          * constant reference
          *
          * @param shape the given angular constant reference

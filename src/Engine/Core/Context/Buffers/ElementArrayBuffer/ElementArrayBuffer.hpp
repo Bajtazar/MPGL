@@ -57,7 +57,7 @@ namespace mpgl {
         ElementArrayBuffer(ElementArrayBuffer const&) = delete;
 
         /**
-         * Construct a new Element Array Buffer object from a given
+         * Construct a new Element Array Buffer object from the given
          * rvalue Element Array Buffer object
          *
          * @param buffer the given rvalue to the element

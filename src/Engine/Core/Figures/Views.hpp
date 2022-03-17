@@ -54,7 +54,7 @@ namespace mpgl {
 
         /**
          * Construct a new vertex component view object
-         * from a given range object
+         * from the given range object
          *
          * @param baseObj the given range object
          */
@@ -80,7 +80,7 @@ namespace mpgl {
             explicit iterator(void) noexcept = default;
 
             /**
-             * Construct a new iterator object from a given
+             * Construct a new iterator object from the given
              * inner iter object
              *
              * @param iter the inner iter object

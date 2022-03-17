@@ -57,7 +57,7 @@ namespace mpgl {
         VertexBuffer(VertexBuffer const&) = delete;
 
         /**
-         * Construct a new Vertex Buffer object from a given
+         * Construct a new Vertex Buffer object from the given
          * rvalue Vertex Buffer object
          *
          * @param buffer the given rvalue vertex buffer object

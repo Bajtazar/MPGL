@@ -138,7 +138,7 @@ namespace mpgl {
             { return programs.rend(); }
 
         /**
-         * Returns a constant reference to the program with a given
+         * Returns a constant reference to the program with the given
          * name
          *
          * @param name the name of the shader program

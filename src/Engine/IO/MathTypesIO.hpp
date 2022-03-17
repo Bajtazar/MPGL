@@ -33,7 +33,7 @@
 namespace mpgl {
 
     /**
-     * Writes a given vector to the output stream
+     * Writes the given vector to the output stream
      *
      * @tparam Tp the type of the vector elements
      * @tparam Size the size of the vector
@@ -52,7 +52,7 @@ namespace mpgl {
     }
 
     /**
-     * Writes a given matrix to the output stream
+     * Writes the given matrix to the output stream
      *
      * @tparam Tp the type of the matrix elements
      * @tparam Rows the number of matrix's rows

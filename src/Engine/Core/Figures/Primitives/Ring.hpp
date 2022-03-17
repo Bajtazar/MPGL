@@ -92,7 +92,7 @@ namespace mpgl {
 
             /**
              * Scales the figure around given center by
-             * a given factor
+             * the given factor
              *
              * @param center the scale center
              * @param factor the scale factor
@@ -272,7 +272,7 @@ namespace mpgl {
 
         /**
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor
@@ -342,7 +342,7 @@ namespace mpgl {
                 { return innerEllipse; }
 
         /**
-         * Checks whether a given point is located inside the ring
+         * Checks whether the given point is located inside the ring
          *
          * @param position the point position [pixel position]
          * @return if the given point is inside the ring
@@ -372,7 +372,7 @@ namespace mpgl {
         void setUniforms(void) const noexcept;
 
         /**
-         * Returns whether a given point is inside local system
+         * Returns whether the given point is inside local system
          * created by translation vector and transformation matrix
          *
          * @param position the point position

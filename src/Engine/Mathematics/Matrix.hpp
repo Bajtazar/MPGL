@@ -41,13 +41,13 @@ namespace mpgl {
             constexpr Column& operator/=(Column const& right);
 
             constexpr Column& operator%=(Column const& right)
-                requires ge_Operable(Tp, %);
+                requires mpgl_Operable(Tp, %);
             constexpr Column& operator^=(Column const& right)
-                requires ge_Operable(Tp, ^);
+                requires mpgl_Operable(Tp, ^);
             constexpr Column& operator&=(Column const& right)
-                requires ge_Operable(Tp, &);
+                requires mpgl_Operable(Tp, &);
             constexpr Column& operator|=(Column const& right)
-                requires ge_Operable(Tp, |);
+                requires mpgl_Operable(Tp, |);
 
             constexpr Column& operator+=(Tp const& right);
             constexpr Column& operator-=(Tp const& right);
@@ -55,13 +55,13 @@ namespace mpgl {
             constexpr Column& operator/=(Tp const& right);
 
             constexpr Column& operator%=(Tp const& right)
-                requires ge_Operable(Tp, %);
+                requires mpgl_Operable(Tp, %);
             constexpr Column& operator^=(Tp const& right)
-                requires ge_Operable(Tp, ^);
+                requires mpgl_Operable(Tp, ^);
             constexpr Column& operator&=(Tp const& right)
-                requires ge_Operable(Tp, &);
+                requires mpgl_Operable(Tp, &);
             constexpr Column& operator|=(Tp const& right)
-                requires ge_Operable(Tp, |);
+                requires mpgl_Operable(Tp, |);
 
             template <Arithmetic value_type>
             class Iterator : public std::iterator<
@@ -391,13 +391,13 @@ namespace mpgl {
         constexpr Matrix& operator/=(Matrix const& right);
 
         constexpr Matrix& operator%=(
-            Matrix const& right) requires ge_Operable(Tp, %);
+            Matrix const& right) requires mpgl_Operable(Tp, %);
         constexpr Matrix& operator^=(
-            Matrix const& right) requires ge_Operable(Tp, ^);
+            Matrix const& right) requires mpgl_Operable(Tp, ^);
         constexpr Matrix& operator&=(
-            Matrix const& right) requires ge_Operable(Tp, &);
+            Matrix const& right) requires mpgl_Operable(Tp, &);
         constexpr Matrix& operator|=(
-            Matrix const& right) requires ge_Operable(Tp, |);
+            Matrix const& right) requires mpgl_Operable(Tp, |);
 
         constexpr Matrix& operator+=(Tp const& right);
         constexpr Matrix& operator-=(Tp const& right);
@@ -405,13 +405,13 @@ namespace mpgl {
         constexpr Matrix& operator/=(Tp const& right);
 
         constexpr Matrix& operator%=(Tp const& right
-            ) requires ge_Operable(Tp, %);
+            ) requires mpgl_Operable(Tp, %);
         constexpr Matrix& operator^=(Tp const& right
-            ) requires ge_Operable(Tp, ^);
+            ) requires mpgl_Operable(Tp, ^);
         constexpr Matrix& operator&=(Tp const& right
-            ) requires ge_Operable(Tp, &);
+            ) requires mpgl_Operable(Tp, &);
         constexpr Matrix& operator|=(Tp const& right
-            ) requires ge_Operable(Tp, |);
+            ) requires mpgl_Operable(Tp, |);
 
 
     private:
@@ -567,7 +567,7 @@ namespace mpgl {
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Matrix<Tp, Rows, Cols>::Column& \
             Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
-                Column const& right) requires ge_Operable(Tp, Op) \
+                Column const& right) requires mpgl_Operable(Tp, Op) \
         { \
             std::ranges::transform(*this, right, begin(), \
                 [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
@@ -591,7 +591,7 @@ namespace mpgl {
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Matrix<Tp, Rows, Cols>::Column& \
             Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
-                Tp const& right) requires ge_Operable(Tp, Op) \
+                Tp const& right) requires mpgl_Operable(Tp, Op) \
         { \
             std::ranges::for_each(*this, [&right](Tp& value) -> void \
                 { value Op##= right; }); \
@@ -639,7 +639,7 @@ namespace mpgl {
         constexpr Vector<Tp, Rows> \
             operator Op (typename Matrix<Tp, Rows, Cols>::Column const& left, \
                 Vector<Tp, Rows> const& right) \
-                    requires ge_Operable(Tp, Op) \
+                    requires mpgl_Operable(Tp, Op) \
         { \
             Vector<Tp, Rows> result; \
             std::ranges::transform(left, right, result.begin(), \
@@ -668,7 +668,7 @@ namespace mpgl {
         constexpr Vector<Tp, Rows> \
             operator Op (Vector<Tp, Rows> const& left, \
                 typename Matrix<Tp, Rows, Cols>::Column const& right) \
-                    requires ge_Operable(Tp, Op) \
+                    requires mpgl_Operable(Tp, Op) \
         { \
             Vector<Tp, Rows> result; \
             std::ranges::transform(left, right, result.begin(), \
@@ -743,7 +743,7 @@ namespace mpgl {
         constexpr Matrix<Tp, Rows, Cols>& \
             Matrix<Tp, Rows, Cols>::operator Op##= ( \
                 Matrix<Tp, Rows, Cols> const& right) \
-                    requires ge_Operable(Tp, Op) \
+                    requires mpgl_Operable(Tp, Op) \
         { \
             std::ranges::transform(*this, right, begin(), \
                 [](auto const& left, auto const& right) \
@@ -768,7 +768,7 @@ namespace mpgl {
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Matrix<Tp, Rows, Cols>& \
             Matrix<Tp, Rows, Cols>::operator Op##= ( \
-                Tp const& right) requires ge_Operable(Tp, Op) \
+                Tp const& right) requires mpgl_Operable(Tp, Op) \
         { \
             std::ranges::for_each(*this, [&right](auto& value) -> void \
                 { value Op##= right; }); \
@@ -859,7 +859,7 @@ namespace mpgl {
         template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
         constexpr Matrix<Tp, Rows, Cols> \
             operator Op (Matrix<Tp, Rows, Cols> const& left, \
-                Tp const& right) requires ge_Operable(Tp, Op) \
+                Tp const& right) requires mpgl_Operable(Tp, Op) \
         { \
             Matrix<Tp, Rows, Cols> result{left}; \
             result Op##= right; \
@@ -884,7 +884,7 @@ namespace mpgl {
         constexpr Matrix<Tp, Rows, Cols> \
             operator Op (Tp const& left, \
                 Matrix<Tp, Rows, Cols> const& right) \
-                    requires ge_Operable(Tp, Op) \
+                    requires mpgl_Operable(Tp, Op) \
         { \
             Matrix<Tp, Rows, Cols> result{right}; \
             result Op##= left; \

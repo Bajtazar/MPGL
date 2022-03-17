@@ -30,7 +30,7 @@
 namespace mpgl {
 
     /**
-     * Creates window and renders a given content on the screen.
+     * Creates window and renders the given content on the screen.
      * Calls the objects inheireiting from specific event when this
      * event occurs
      */

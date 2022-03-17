@@ -73,7 +73,7 @@ namespace mpgl {
         RenderWindow(RenderWindow const&) = delete;
 
         /**
-         * Construct a new Render Window object from a given
+         * Construct a new Render Window object from the given
          * rvalue Render Window object
          *
          * @param window the moved framed window

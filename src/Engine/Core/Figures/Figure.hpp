@@ -68,7 +68,7 @@ namespace mpgl {
         /**
          * Pure virtual function. Has to be overloaded.
          * Scales the figure around given center by
-         * a given factor
+         * the given factor
          *
          * @param center the scale center
          * @param factor the scale factor
@@ -137,7 +137,7 @@ namespace mpgl {
         explicit Figure(void) noexcept = default;
 
         /**
-         * Construct a new Figure object from a given
+         * Construct a new Figure object from the given
          * constant reference
          *
          * @param shape the given shape constant reference

@@ -50,13 +50,13 @@ namespace mpgl {
         constexpr Vector& operator/=(Vector const& right);
 
         constexpr Vector& operator%=(Vector const& right)
-            requires ge_Operable(Tp, %);
+            requires mpgl_Operable(Tp, %);
         constexpr Vector& operator^=(Vector const& right)
-            requires ge_Operable(Tp, ^);
+            requires mpgl_Operable(Tp, ^);
         constexpr Vector& operator&=(Vector const& right)
-            requires ge_Operable(Tp, &);
+            requires mpgl_Operable(Tp, &);
         constexpr Vector& operator|=(Vector const& right)
-            requires ge_Operable(Tp, |);
+            requires mpgl_Operable(Tp, |);
 
         constexpr Vector& operator+=(Tp const& right);
         constexpr Vector& operator-=(Tp const& right);
@@ -64,13 +64,13 @@ namespace mpgl {
         constexpr Vector& operator/=(Tp const& right);
 
         constexpr Vector& operator%=(Tp const& right)
-            requires ge_Operable(Tp, %);
+            requires mpgl_Operable(Tp, %);
         constexpr Vector& operator^=(Tp const& right)
-            requires ge_Operable(Tp, ^);
+            requires mpgl_Operable(Tp, ^);
         constexpr Vector& operator&=(Tp const& right)
-            requires ge_Operable(Tp, &);
+            requires mpgl_Operable(Tp, &);
         constexpr Vector& operator|=(Tp const& right)
-            requires ge_Operable(Tp, |);
+            requires mpgl_Operable(Tp, |);
 
         template <Arithmetic Up>
         constexpr operator Vector<Up, Size>() const noexcept;
@@ -324,7 +324,7 @@ namespace mpgl {
     #define ge_vec_vec_c_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
-            Vector<Tp, Size> const& right) requires ge_Operable(Tp, Op) \
+            Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, Op) \
         { \
             std::ranges::transform(*this, right, begin(), \
                 [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
@@ -346,7 +346,7 @@ namespace mpgl {
     #define ge_vec_tp_c_inner_op_factory(Op) \
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator Op##=( \
-           Tp const& right) requires ge_Operable(Tp, Op) \
+           Tp const& right) requires mpgl_Operable(Tp, Op) \
         { \
             std::ranges::for_each(*this, [&right](Tp& value) -> void \
                 { value Op##= right; }); \
@@ -395,7 +395,7 @@ namespace mpgl {
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size> \
             operator Op (Vector<Tp, Size> const& left, \
-                Vector<Tp, Size> const& right) requires ge_Operable(Tp, Op) \
+                Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, Op) \
         { \
             Vector<Tp, Size> result; \
             std::ranges::transform(left, right, result.begin(), \
@@ -423,7 +423,7 @@ namespace mpgl {
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size> \
             operator Op (Vector<Tp, Size> const& left, \
-                Tp const& right) requires ge_Operable(Tp, Op) \
+                Tp const& right) requires mpgl_Operable(Tp, Op) \
         { \
             Vector<Tp, Size> result; \
             std::ranges::transform(left, result.begin(), \
@@ -450,7 +450,7 @@ namespace mpgl {
         template <Arithmetic Tp, std::size_t Size> \
         constexpr Vector<Tp, Size> operator Op ( \
             Tp const& left, Vector<Tp, Size> const& right) \
-                requires ge_Operable(Tp, Op) \
+                requires mpgl_Operable(Tp, Op) \
         { \
             Vector<Tp, Size> result; \
             std::ranges::transform(right, result.begin(), \

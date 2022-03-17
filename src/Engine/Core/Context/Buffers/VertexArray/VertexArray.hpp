@@ -79,7 +79,7 @@ namespace mpgl {
         VertexArray(VertexArray const&) = delete;
 
         /**
-         * Construct a new Vertex Array object from a given
+         * Construct a new Vertex Array object from the given
          * rvalue Vertex Array object
          *
          * @param array the given rvalue vertex array object

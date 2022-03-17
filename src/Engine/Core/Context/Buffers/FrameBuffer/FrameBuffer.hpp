@@ -50,7 +50,7 @@ namespace mpgl {
         FrameBuffer(FrameBuffer const&) = delete;
 
         /**
-         * Construct a new Frame Buffer object from a given
+         * Construct a new Frame Buffer object from the given
          * rvalue Frame Buffer object
          *
          * @param buffer the given rvalue frame buffer object

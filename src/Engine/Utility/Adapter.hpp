@@ -66,14 +66,14 @@ namespace mpgl {
         Adapter& operator=(Adapter&&) noexcept = default;
 
         /**
-         * Assigns a given value to the adapter object
+         * Assigns the given value to the adapter object
          *
          * @param value the given value contant reference
          */
         void operator= (Tp const& value) noexcept;
 
         /**
-         * Assigns a given value to the adapter object
+         * Assigns the given value to the adapter object
          *
          * @param value the given value rvalue
          */

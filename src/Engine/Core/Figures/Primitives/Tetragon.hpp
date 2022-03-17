@@ -70,7 +70,7 @@ namespace mpgl {
                 Color const& color = {});
 
         /**
-         * Construct a new Tetragon object from a given
+         * Construct a new Tetragon object from the given
          * constant reference to the other object
          *
          * @param tetragon the constant reference to the other
@@ -89,7 +89,7 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether a given point is located inside the tetragon
+         * Checks whether the given point is located inside the tetragon
          *
          * @param position the point position [pixel position]
          * @return if the given point is inside the tetragon
@@ -113,7 +113,7 @@ namespace mpgl {
         void initElementBuffer(void) const noexcept;
 
         /**
-         * Calculates whether a given point is inside subtriangle
+         * Calculates whether the given point is inside subtriangle
          *
          * @param position the point position
          * @param firstVertex the first vertex position
