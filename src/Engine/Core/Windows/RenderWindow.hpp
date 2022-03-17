@@ -173,10 +173,10 @@ namespace mpgl {
         /**
          * Calls the tick event on the contained objects
          *
-         * @param duration the time between last and current tick
+         * @param delta the time between last and current tick
          */
         void onTick(
-            std::chrono::milliseconds const& duration) noexcept final;
+            std::chrono::milliseconds const& delta) noexcept final;
 
         /**
          * Get the Texture object

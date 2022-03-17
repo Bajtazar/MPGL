@@ -174,11 +174,11 @@ namespace mpgl {
     }
 
     void RenderWindow::onTick(
-        std::chrono::milliseconds const& duration) noexcept
+        std::chrono::milliseconds const& delta) noexcept
     {
         std::ranges::for_each(get<TickRegister>(events),
-            [&duration](auto const& drawable)
-            { drawable->onTick(duration); });
+            [&delta](auto const& drawable)
+            { drawable->onTick(delta); });
     }
 
     RenderWindow::~RenderWindow(void) noexcept {

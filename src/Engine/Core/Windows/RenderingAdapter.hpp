@@ -151,10 +151,10 @@ namespace mpgl {
          * Calls the render and onTick methods on the Render Window
          * reference
          *
-         * @param duration the time between last and current tick
+         * @param delta the time between last and current tick
          */
         void onTick(
-            std::chrono::milliseconds const& duration) noexcept final;
+            std::chrono::milliseconds const& delta) noexcept final;
 
         /**
          * Get the Texture object
