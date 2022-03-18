@@ -41,10 +41,10 @@ public:
         rotationTime{rotationTime},
         name{font, 18, 100_x + 80_y, "Konwolucja: Brak"}
     {
-        get<"color">(square[0]) = Color::Red;
-        get<"color">(square[1]) = Color::Green;
-        get<"color">(square[2]) = Color::Blue;
-        get<"color">(square[3]) = Color::Yellow;
+        square[0] & cast::color = Color::Red;
+        square[1] & cast::color = Color::Green;
+        square[2] & cast::color = Color::Blue;
+        square[3] & cast::color = Color::Yellow;
     }
 
     void onTick(std::chrono::milliseconds const& duration) noexcept {

@@ -47,3 +47,4 @@
 #include "Core/Text/Text.hpp"
 #include "Mathematics/ConvolutionKernels.hpp"
 #include "IO/MathTypesIO.hpp"
+#include "Core/Context/Buffers/VertexCast.hpp"
