@@ -126,7 +126,7 @@ namespace mpgl {
                 TextureWrapper horizontalWrapping
                     = TextureWrapper::Repeat,
                 MinifyingTextureFilter minifyingFilter
-                    = MinifyingTextureFilter::Linear,
+                    = MinifyingTextureFilter::NearestMipmapLinear,
                 MagnifyingTextureFilter magnifyingFilter
                     = MagnifyingTextureFilter::Linear,
                 Color const& color = {},

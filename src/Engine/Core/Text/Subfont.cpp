@@ -69,7 +69,14 @@ namespace mpgl {
         if (!iter->second.glyph.exist())
             return {};
         FontRasterizer raster{fontData, iter->second, size};
-        return {Texture{raster()}};
+        return {Texture{raster(), {
+            Texture::Options::TextureWrapper::ClampToEdge,
+            Texture::Options::TextureWrapper::ClampToEdge,
+            Texture::Options::MinifyingTextureFilter::Linear,
+            Texture::Options::MagnifyingTextureFilter::Linear,
+            {},
+            false
+        }}};
     }
 
 }
