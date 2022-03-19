@@ -45,7 +45,8 @@ namespace mpgl::exp {
         enum class Modifiers : uint8 {
             None                                  = 0x00,
             Underline                             = 0x01,
-            Strikethrough                         = 0x02
+            Strikethrough                         = 0x02,
+            UnderlineAndStrikethrough             = 0x03
         };
 
         struct Options {
@@ -200,6 +201,21 @@ namespace mpgl::exp {
             float32 scale,
             Matrix2f const& rotation);
 
+        void extendModifiers(
+            Vector2f advance) noexcept;
+
+        void extendUnderline(
+            Vector2f advance) noexcept;
+
+        void extendStrikethrough(
+            Vector2f advance) noexcept;
+
+        void emplaceModifiers(void);
+
+        void emplaceUnderline(void);
+
+        void emplaceStrikethrough(void);
+
         uint8 getLevel(void) const noexcept;
 
         ArgTuple glyphCoefficients(void) const noexcept;
@@ -215,6 +231,22 @@ namespace mpgl::exp {
             Vector2f const& secondVersor) noexcept;
 
         static String const shaderType(void);
+
+        static uint8 maskTextMods(
+            Modifiers const& left,
+            Modifiers const& right) noexcept;
+
+        static Tetragon generateUnderline(
+            Vector2f position,
+            float32 angle,
+            SizeT textSize,
+            Color const& color) noexcept;
+
+        static Tetragon generateStrikethrough(
+            Vector2f position,
+            float32 angle,
+            SizeT textSize,
+            Color const& color) noexcept;
     };
 
     template class Text<true>;

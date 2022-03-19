@@ -49,12 +49,46 @@ namespace mpgl::exp {
         };
 
     template <bool IsColorable>
+    Tetragon Text<IsColorable>::generateUnderline(
+        Vector2f position,
+        float32 angle,
+        SizeT textSize,
+        Color const& color) noexcept
+    {
+        float span = 2 * std::ceil(0.05f * textSize);
+        Tetragon line{position - Vector2f{0.f,
+            span}, Vector2f{0.f, span}, color};
+        line.rotate(position, angle);
+        return line;
+    }
+
+    template <bool IsColorable>
+    Tetragon Text<IsColorable>::generateStrikethrough(
+        Vector2f position,
+        float32 angle,
+        SizeT textSize,
+        Color const& color) noexcept
+    {
+        float midspan = std::floor(textSize / 2.5);
+        float halfspan =  std::ceil(0.05f * textSize);
+        Tetragon line{position + Vector2f{0.f,
+            midspan - halfspan}, Vector2f{0.f, 2 * halfspan}, color};
+        line.rotate(position, angle);
+        return line;
+    }
+
+    template <bool IsColorable>
     Text<IsColorable>::Text(
         Font const& font,
         Vector2f const& position,
         String const& text,
         Options const& options) : Shadeable{shaderType(), shaderExec},
-            text{text}, font{font}, color{options.color},
+            text{text}, font{font}, underlines{
+                generateUnderline(position, options.angle, options.size,
+                options.color)}, color{options.color},
+            strikethroughs{
+                generateStrikethrough(position, options.angle,
+                options.size, options.color)},
             position{position}, textSize{options.size},
             angle{options.angle}, style{options.style},
             mods{options.mods}
@@ -74,6 +108,56 @@ namespace mpgl::exp {
             std::advance(iter, length);
         }
         return array;
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::extendModifiers(
+        Vector2f advance) noexcept
+    {
+        if (maskTextMods(mods, Modifiers::Underline))
+            extendUnderline(advance);
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            extendStrikethrough(advance);
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::extendUnderline(
+        Vector2f advance) noexcept
+    {
+        underlines.back()[2] & cast::position = advance
+            + Vector2f{underlines.back()[2] & cast::position};
+        underlines.back()[3] & cast::position = advance
+            + Vector2f{underlines.back()[3] & cast::position};
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::extendStrikethrough(
+        Vector2f advance) noexcept
+    {
+        strikethroughs.back()[2] & cast::position = advance
+            + Vector2f{strikethroughs.back()[2] & cast::position};
+        strikethroughs.back()[3] & cast::position = advance
+            + Vector2f{strikethroughs.back()[3] & cast::position};
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::emplaceUnderline(void) {
+        underlines.push_back(generateUnderline(
+            position, angle, textSize, color));
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::emplaceStrikethrough(void) {
+        strikethroughs.push_back(generateStrikethrough(
+            position, angle, textSize, color));
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::emplaceModifiers(void) {
+        if (maskTextMods(mods, Modifiers::Underline))
+            emplaceUnderline();
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            emplaceStrikethrough();
     }
 
     template <bool IsColorable>
@@ -115,8 +199,6 @@ namespace mpgl::exp {
                 return loadNewline(subfont, level, scale, rotation);
             case 9:
                 return loadTab(subfont, level, scale, rotation);
-            // case 8:
-            //     return; //remove last element if possible
             default:
                 return loadCharacter(
                     subfont, level, scale, index, rotation);
@@ -132,9 +214,10 @@ namespace mpgl::exp {
     {
         /// tab is 4 times longer than space
         if (auto glyph = subfont(32, level)) {
-            position += rotation * Vector2f{
+            Vector2f advance = rotation * Vector2f{
                 4 * float32(glyph->get().advance * scale), 0.f};
-            /// font modifiers
+            position += advance;
+            extendModifiers(advance);
         }
     }
 
@@ -151,7 +234,7 @@ namespace mpgl::exp {
         Vector2f intersec = intersectionOf(
             position, yVersor, this->position, rot * 1._x);
         this->position = position - 1.1f * textSize * yVersor;
-        /// font modifiers
+        emplaceModifiers();
     }
 
     template <bool IsColorable>
@@ -202,9 +285,10 @@ namespace mpgl::exp {
         if (auto glyph = subfont(index, level)) {
             if (auto texture = glyph->get().texture)
                 emplaceGlyph(*texture, *glyph, scale, rotation);
-            position += rotation * Vector2f{
+            Vector2f advance = rotation * Vector2f{
                 float32(glyph->get().advance * scale), 0.f};
-            /// font modifiers
+            position += advance;
+            extendModifiers(advance);
         }
     }
 
@@ -292,8 +376,10 @@ namespace mpgl::exp {
         position = getPosition();
         text.clear();
         glyphs.clear();
-        underlines.clear();
-        strikethroughs.clear();
+        if (maskTextMods(mods, Modifiers::Underline))
+            underlines.clear();
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            strikethroughs.clear();
     }
 
     template <bool IsColorable>
@@ -336,9 +422,14 @@ namespace mpgl::exp {
     void  Text<IsColorable>::setColor(Color const& color) {
         this->color = color;
         if constexpr(IsColorable)
-            for (auto& glyph : glyphs)
-                for (auto& vertexColor : glyph | views::color)
-                    vertexColor = color;
+            for (auto& vcolor : glyphs | std::views::join | views::color)
+                    vcolor = color;
+        if (maskTextMods(mods, Modifiers::Underline))
+            for (auto& vcolor : underlines | std::views::join | views::color)
+                    vcolor = color;
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            for (auto& vcolor : strikethroughs | std::views::join | views::color)
+                    vcolor = color;
     }
 
     template <bool IsColorable>
@@ -364,8 +455,10 @@ namespace mpgl::exp {
         Vector2f const& shift) noexcept
     {
         glyphs.translate(shift);
-        underlines.translate(shift);
-        strikethroughs.translate(shift);
+        if (maskTextMods(mods, Modifiers::Underline))
+            underlines.translate(shift);
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            strikethroughs.translate(shift);
         position += shift;
     }
 
@@ -383,8 +476,10 @@ namespace mpgl::exp {
         Matrix2f const& rotation) noexcept
     {
         glyphs.rotate(center, rotation);
-        underlines.rotate(center, rotation);
-        strikethroughs.rotate(center, rotation);
+        if (maskTextMods(mods, Modifiers::Underline))
+            underlines.rotate(center, rotation);
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            strikethroughs.rotate(center, rotation);
         position = rotation * (position - center) + center;
         auto twoPi = std::numbers::pi_v<float32> * 2;
         this->angle += twoPi - angle;
@@ -398,8 +493,10 @@ namespace mpgl::exp {
         float32 factor) noexcept
     {
         glyphs.scale(center, factor);
-        underlines.scale(center, factor);
-        strikethroughs.scale(center, factor);
+        if (maskTextMods(mods, Modifiers::Underline))
+            underlines.scale(center, factor);
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            strikethroughs.scale(center, factor);
         textSize *= factor;
         position = (position - center) * factor + center;
     }
@@ -409,8 +506,19 @@ namespace mpgl::exp {
         Vector2u const& oldDimensions) noexcept
     {
         glyphs.onScreenTransformation(oldDimensions);
-        underlines.onScreenTransformation(oldDimensions);
-        strikethroughs.onScreenTransformation(oldDimensions);
+        if (maskTextMods(mods, Modifiers::Underline))
+            underlines.onScreenTransformation(oldDimensions);
+        if (maskTextMods(mods, Modifiers::Strikethrough))
+            strikethroughs.onScreenTransformation(oldDimensions);
+    }
+
+    template <bool IsColorable>
+    uint8 Text<IsColorable>::maskTextMods(
+        Modifiers const& left,
+        Modifiers const& right) noexcept
+    {
+        // change to std::to_underlying in C++23
+        return static_cast<uint8>(left) & static_cast<uint8>(right);
     }
 
 }
