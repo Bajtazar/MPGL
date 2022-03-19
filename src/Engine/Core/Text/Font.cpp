@@ -93,6 +93,13 @@ namespace mpgl {
         return pointer->subfonts.at(Type::Regular);
     }
 
+    Subfont const& Font::operator() (Type const& type) const {
+        if (type & pointer->mask)
+            return pointer->subfonts.at(type);
+        Logger::logInvalidFont(pointer->fontName, typeVector.at(type));
+        return pointer->subfonts.at(Type::Regular);
+    }
+
     uint8 operator& (Font::Type const& left, uint8 right) noexcept {
         return static_cast<uint8>(left) & right;
     }

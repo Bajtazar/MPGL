@@ -78,14 +78,24 @@ namespace mpgl {
             { return pointer->mask; }
 
         /**
-         * Returns the subfont of the given type. When the given
-         * subfont type is not available returns the reference
-         * to the regular subfont
+         * Returns the reference to a subfont of the given type.
+         * When the given subfont type is not available returns
+         * the reference to the regular subfont
          *
          * @param type the type of the subfont
          * @return reference to the subfont
          */
         Subfont& operator() (Type const& type);
+
+        /**
+         * Returns the constant reference to a subfont of the
+         * given type. When the given subfont type is not available
+         * returns the constant reference to the regular subfont
+         *
+         * @param type the type of the subfont
+         * @return reference to the subfont
+         */
+        Subfont const& operator() (Type const& type) const;
 
         /**
          *  Destroy the Font object

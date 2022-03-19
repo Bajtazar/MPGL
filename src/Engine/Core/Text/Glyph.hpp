@@ -11,7 +11,7 @@ namespace mpgl {
         typedef std::optional<Texture>          TextureVar;
 
         TextureVar                              texture;
-        Vector2u                               dimensions;
+        Vector2u                                dimensions;
         Vector2i                                bearing;
         uint32                                  advance;
 

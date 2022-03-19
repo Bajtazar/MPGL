@@ -27,11 +27,30 @@ namespace mpgl {
         return {std::cref(iter->second)};
     }
 
+    Subfont::FontGlyph Subfont::operator() (
+        uint16 number, uint8 level) const
+    {
+        if (MapVar var = getMap(level)) {
+            auto iter = var->get().find(number);
+            if (iter == var->get().end())
+                return {};
+            return {std::cref(iter->second)};
+        }
+        return {};
+    }
+
     Subfont::RasterMap& Subfont::getMap(uint8 level) {
         auto iter = sizeMap.find(level);
         if (iter == sizeMap.end())
             iter = sizeMap.emplace(level, RasterMap{}).first;
         return iter->second;
+    }
+
+    Subfont::MapVar Subfont::getMap(uint8 level) const {
+        auto iter = sizeMap.find(level);
+        if (iter == sizeMap.end())
+            return {};
+        return {std::cref(iter->second)};
     }
 
     Vector2u Subfont::getDimensions(GlyphData const& glyph,

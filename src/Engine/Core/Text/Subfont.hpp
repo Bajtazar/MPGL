@@ -14,6 +14,8 @@ namespace mpgl {
 
         FontGlyph operator() (uint16 number, uint8 level);
 
+        FontGlyph operator() (uint16 number, uint8 level) const;
+
         Kern const& getKern(void) const noexcept
             { return kern; }
 
@@ -23,8 +25,12 @@ namespace mpgl {
         typedef std::map<uint8, RasterMap>          SizeMap;
         typedef Glyph::TextureVar                   TextureVar;
         typedef typename GlyphMap::const_iterator   Iter;
+        typedef std::reference_wrapper<
+            RasterMap const>                        RasterMapCref;
+        typedef std::optional<RasterMapCref>        MapVar;
 
         RasterMap& getMap(uint8 level);
+        MapVar getMap(uint8 level) const;
 
         Glyph createGlyph(Iter const& iter, uint8 level);
 
