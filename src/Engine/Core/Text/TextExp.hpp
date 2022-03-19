@@ -183,6 +183,12 @@ namespace mpgl::exp {
             float32 scale,
             Matrix2f const& rotation);
 
+        void loadNewline(
+            Subfont& subfont,
+            uint8 level,
+            float32 scale,
+            Matrix2f const& rotation);
+
         VectorTuple getGlyphDimensions(
             Subfont::GlyphRef glyph,
             float32 scale,

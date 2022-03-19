@@ -112,11 +112,11 @@ namespace mpgl::exp {
     {
         switch (index) {
             case 10:
-                return; // loadNewline(subfont, scale, rotation);
+                return loadNewline(subfont, level, scale, rotation);
             case 9:
                 return loadTab(subfont, level, scale, rotation);
-            case 8:
-                return; //remove last element if possible
+            // case 8:
+            //     return; //remove last element if possible
             default:
                 return loadCharacter(
                     subfont, level, scale, index, rotation);
@@ -136,6 +136,22 @@ namespace mpgl::exp {
                 4 * float32(glyph->get().advance * scale), 0.f};
             /// font modifiers
         }
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::loadNewline(
+        Subfont& subfont,
+        uint8 level,
+        float32 scale,
+        Matrix2f const& rotation)
+    {
+        Vector2f position = getPosition();
+        Matrix2f rot = rotationMatrix<float32>(angle);
+        Vector2f yVersor = rot * 1._y;
+        Vector2f intersec = intersectionOf(
+            position, yVersor, this->position, rot * 1._x);
+        this->position = position - 1.1f * textSize * yVersor;
+        /// font modifiers
     }
 
     template <bool IsColorable>
