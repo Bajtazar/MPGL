@@ -27,7 +27,6 @@
 
 #include "UTF-8.hpp"
 #include "../Figures/Views.hpp"
-#include "../Context/Buffers/VertexCast.hpp"
 
 namespace mpgl::exp {
 

@@ -27,11 +27,167 @@
 
 #include "Font.hpp"
 #include "GlyphSprite.hpp"
-#include "../DrawableCollection.hpp"
 #include "../Shaders/Shadeable.hpp"
+#include "../DrawableCollection.hpp"
+#include "../Context/Buffers/VertexCast.hpp"
 #include "../Figures/Primitives/Tetragon.hpp"
 
 namespace mpgl::exp {
+
+    template <bool IsConst>
+    class TextGlyphView {
+    public:
+        typedef std::conditional_t<IsConst,
+            GlyphSprite<true> const,
+            GlyphSprite<true>>                      GlyphType;
+        typedef std::reference_wrapper<GlyphType>   GlyphRef;
+        typedef std::size_t                         SizeT;
+        typedef std::conditional_t<IsConst,
+            Color const, Color>                     value_type;
+        typedef value_type&                         reference;
+        typedef Color const&                        const_reference;
+
+        explicit TextGlyphView(
+            GlyphRef const& ref) noexcept
+                : ref{ref} {}
+
+        [[nodiscard]] reference operator[] (
+            SizeT index) noexcept requires (!IsConst)
+                { return ref.get()[index] & cast::color; }
+
+        [[nodiscard]] const_reference operator[] (
+            SizeT index) const noexcept
+                { return ref.get()[index] & cast::color; }
+
+        template <class BaseTp, std::random_access_iterator Iter>
+        class Iterator : public std::iterator<
+            std::random_access_iterator_tag, BaseTp>
+        {
+        public:
+            typedef BaseTp                          value_type;
+            typedef value_type*                     pointer;
+            typedef value_type&                     reference;
+            typedef std::ptrdiff_t                  difference_type;
+            using compare =
+                std::compare_three_way_result_t<Iter, Iter>;
+
+            explicit Iterator(void) noexcept = default;
+            explicit Iterator(Iter const& iter) noexcept
+                : iter{iter} {}
+
+            Iterator& operator++(void) noexcept
+                { ++iter; return *this; }
+            [[nodiscard]] Iterator operator++(int) noexcept
+                { auto temp = *this; ++iter; return temp; }
+
+            Iterator& operator--(void) noexcept
+                { --iter; return *this; }
+            [[nodiscard]] Iterator operator--(int) noexcept
+                { auto temp = *this; --iter; return temp; }
+
+            [[nodiscard]] reference operator*(void) const noexcept
+                { return *iter & cast::color; }
+            [[nodiscard]] pointer operator->(void) const noexcept
+                { return &(*iter & cast::color); }
+
+            Iterator& operator+= (difference_type offset) noexcept
+                { iter += offset; return *this; };
+
+            Iterator& operator-= (difference_type offset) noexcept
+                { iter -= offset; return *this; };
+
+            reference operator[] (difference_type offset) noexcept
+                { return *(iter + offset); }
+
+            [[nodiscard]] friend Iterator operator+(
+                Iterator const& left,
+                difference_type right) noexcept
+            { auto temp = left; temp.iter += right; return temp; }
+
+            [[nodiscard]] friend Iterator operator+(
+                difference_type left,
+                Iterator const& right) noexcept
+            { auto temp = right; temp.iter += left; return temp; }
+
+            [[nodiscard]] friend Iterator operator-(
+                Iterator const& left,
+                difference_type right) noexcept
+            { auto temp = left; temp.iter -= right; return temp; }
+
+            [[nodiscard]] friend difference_type operator-(
+                Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter - right.iter; }
+
+            [[nodiscard]] friend bool operator==(
+                Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter == right.iter; }
+
+            [[nodiscard]] friend compare operator<=>(
+                Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter <=> right.iter; }
+        private:
+            Iter                                    iter;
+        };
+
+        using iterator = Iterator<Color, typename
+            GlyphSprite<true>::iterator>;
+        using const_iterator = Iterator<Color const, typename
+            GlyphSprite<true>::const_iterator>;
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<
+            const_iterator>;
+
+        [[nodiscard]] iterator begin(void) noexcept requires (!IsConst)
+            { return iterator{ ref.get().begin()}; }
+
+        [[nodiscard]] const_iterator
+            begin(void) const noexcept
+                { return const_iterator{ ref.get().begin()}; }
+
+        [[nodiscard]] iterator end(void) noexcept requires (!IsConst)
+            { return iterator{ ref.get().end()}; }
+
+        [[nodiscard]] const_iterator end(void) const noexcept
+            { return const_iterator{ ref.get().end()}; }
+
+        [[nodiscard]] const_iterator cbegin(void) const noexcept
+            { return const_iterator{ ref.get().cbegin()}; }
+
+        [[nodiscard]] const_iterator cend(void) const noexcept
+            { return const_iterator{ ref.get().cend()}; }
+
+        [[nodiscard]] reverse_iterator
+            rbegin(void) noexcept requires (!IsConst)
+                { return std::reverse_iterator{ end() - 1}; }
+
+        [[nodiscard]] reverse_iterator
+            rend(void) noexcept requires (!IsConst)
+                { return std::reverse_iterator{ begin() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator
+            rbegin(void) const noexcept
+                { return std::reverse_iterator{ end() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator
+            rend(void) const noexcept
+                { return std::reverse_iterator{ begin() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator
+            crbegin(void) const noexcept
+                { return std::reverse_iterator{ end() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator
+            crend(void) const noexcept
+                { return std::reverse_iterator{ begin() - 1}; }
+    private:
+        GlyphRef                                    ref;
+    };
+
+    template class TextGlyphView<false>;
+    template class TextGlyphView<true>;
 
     template <bool IsColorable = false>
     class Text : public Shadeable, public Transformable2D {
