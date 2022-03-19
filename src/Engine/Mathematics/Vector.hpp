@@ -79,6 +79,8 @@ namespace mpgl {
             requires (USize > Size)
         constexpr operator Vector<Tp, USize>() const noexcept;
 
+        constexpr Vector operator- (void) const noexcept;
+
         template <Arithmetic value_type>
         class Iterator : public std::iterator<std::contiguous_iterator_tag,
             value_type>
@@ -254,8 +256,20 @@ namespace mpgl {
         requires (USize > Size)
     constexpr Vector<Tp, Size>::operator Vector<Tp, USize>() const noexcept {
         Vector<Tp, USize> base;
-        std::ranges::copy(*this, base);
+        for (std::size_t i = 0 ;i < Size; ++i)
+            base[i] = (*this)[i];
         return base;
+    }
+
+    template <Arithmetic Tp, std::size_t Size>
+    constexpr Vector<Tp, Size> Vector<Tp, Size>::operator- (
+        void) const noexcept
+    {
+        return std::apply([]<typename... Args>(Args&&... args) {
+                return Vector{std::forward<Args>(-args)...};
+            }, std::apply([]<typename... Args>(Args&&... args) {
+                return tupleReverser(std::forward<Args>(args)...);
+            }, static_cast<Base const&>(*this)));
     }
 
     template <Arithmetic Tp, std::size_t Size>
