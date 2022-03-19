@@ -23,6 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include "Engine/Core/Text/TextExp.hpp"
 #include "Engine/2DGraphics.hpp"
 
 #include <math.h>
@@ -161,7 +162,8 @@ int main(void) noexcept {
 
     Font font{"Hack", "/usr/share/fonts/truetype/hack/"};
 
-    window.emplaceDrawable<Text<>>(font, 18, 20_x + 300_y, "Witaj świecie!");
+    window.emplaceDrawable<exp::Text<>>(font, 20_x + 300_y, "Witaj świecie!",
+        exp::Text<>::Options{.size=18, .angle=std::numbers::pi / 2.f});
 
     window.emplaceDrawable<DrawableCollection<LineLoop>>();
     auto& array = dynamic_cast<DrawableCollection<LineLoop>&>(*window[2]);
