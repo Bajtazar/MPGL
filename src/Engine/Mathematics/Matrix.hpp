@@ -209,6 +209,8 @@ namespace mpgl {
         constexpr Matrix& operator=(Matrix&& matrix) noexcept
             { normalBase = std::move(matrix.normalBase); return *this; }
 
+        constexpr Matrix operator-(void) const noexcept;
+
         static constexpr std::size_t size(void) noexcept
             { return Rows; }
 
@@ -454,6 +456,17 @@ namespace mpgl {
     }
 
     // methods
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>
+        Matrix<Tp, Rows, Cols>::operator-(void) const noexcept
+    {
+        Matrix<Tp, Cols, Rows> result;
+        for (std::size_t i = 0; i < Rows; ++i)
+            for (std::size_t j = 0; j < Cols; ++j)
+                result[i][j] = -(*this)[i][j];
+        return result;
+    }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
     constexpr Matrix<Tp, Rows, Cols>::Column&
