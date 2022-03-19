@@ -196,6 +196,12 @@ namespace mpgl::exp {
 
         static IDArray parseString(String const& string);
 
+        static Vector2f intersectionOf(
+            Vector2f const& firstPoint,
+            Vector2f const& firstVersor,
+            Vector2f const& secondPoint,
+            Vector2f const& secondVersor) noexcept;
+
         static String const shaderType(void);
     };
 

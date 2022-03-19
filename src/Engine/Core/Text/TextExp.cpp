@@ -219,12 +219,32 @@ namespace mpgl::exp {
     }
 
     template <bool IsColorable>
+    Vector2f Text<IsColorable>::intersectionOf(
+        Vector2f const& firstPoint,
+        Vector2f const& firstVersor,
+        Vector2f const& secondPoint,
+        Vector2f const& secondVersor) noexcept
+    {
+        Vector2f pos = *invert(Matrix2f{firstVersor,
+            -secondVersor}) * (secondPoint - firstPoint);
+        return firstPoint + firstVersor * pos[0];
+    }
+
+    template <bool IsColorable>
     [[nodiscard]] Vector2f
         Text<IsColorable>::getDimensions(void) const noexcept
     {
-        if (glyphs.size())
-            return {}; // math
-        return {0.f, 0.f};
+        if (!glyphs.size())
+            return {0.f, 0.f};
+        Matrix2f rot = rotationMatrix<float>(angle);
+        Vector2f intersec = intersectionOf(
+            glyphs.front()[1] & cast::position, rot * 1._y,
+            glyphs.back()[3] & cast::position, rot * 1._x);
+        float x = (Vector2f{glyphs.front()[0] & cast::position}
+            + rot * Vector2f{0.f, textSize} - intersec).length();
+        float y = (Vector2f{glyphs.back()[3] & cast::position}
+            - intersec).length();
+        return {y, x};
     }
 
     template <bool IsColorable>
