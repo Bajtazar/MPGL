@@ -114,12 +114,27 @@ namespace mpgl::exp {
             case 10:
                 return; // loadNewline(subfont, scale, rotation);
             case 9:
-                return; // loadTab(subfont, scale, rotation);
+                return loadTab(subfont, level, scale, rotation);
             case 8:
                 return; //remove last element if possible
             default:
                 return loadCharacter(
                     subfont, level, scale, index, rotation);
+        }
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::loadTab(
+        Subfont& subfont,
+        uint8 level,
+        float32 scale,
+        Matrix2f const& rotation)
+    {
+        /// tab is 4 times longer than space
+        if (auto glyph = subfont(32, level)) {
+            position += rotation * Vector2f{
+                4 * float32(glyph->get().advance * scale), 0.f};
+            /// font modifiers
         }
     }
 
@@ -225,8 +240,8 @@ namespace mpgl::exp {
         Vector2f const& secondPoint,
         Vector2f const& secondVersor) noexcept
     {
-        Vector2f pos = *invert(Matrix2f{firstVersor,
-            -secondVersor}) * (secondPoint - firstPoint);
+        Vector2f pos = *invert(transpose(Matrix2f{firstVersor,
+            -secondVersor})) * (secondPoint - firstPoint);
         return firstPoint + firstVersor * pos[0];
     }
 
