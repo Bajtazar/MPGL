@@ -82,7 +82,7 @@ namespace mpgl {
          *
          * @return the copied object
          */
-        VertexViewIterator operator++(int) noexcept
+        [[nodiscard]] VertexViewIterator operator++(int) noexcept
             { auto temp = *this; ++iter; return temp; }
 
         /**
@@ -99,7 +99,7 @@ namespace mpgl {
          *
          * @return the copied object
          */
-        VertexViewIterator operator--(int) noexcept
+        [[nodiscard]] VertexViewIterator operator--(int) noexcept
             { auto temp = *this; --iter; return temp; }
 
         /**
@@ -107,7 +107,7 @@ namespace mpgl {
          *
          * @return the view vertex
          */
-        value_type operator*(void) noexcept
+        [[nodiscard]] value_type operator*(void) noexcept
             { return value_type{std::ref(get<Fields>(*iter))...}; }
 
         /**
@@ -131,14 +131,14 @@ namespace mpgl {
                 { iter -= offset; return *this; }
 
         /**
-         * Returns the iterator shifted by the given offset
+         * Returns a view shifted by the given offset
          *
          * @param offset the incremented distance
-         * @return the iterator shifted by the given offse
+         * @return the view shifted by the given offse
          */
-        VertexViewIterator operator[](
+        [[nodiscard]] value_type operator[](
             difference_type offset) noexcept
-                { auto temp = *this; temp += offset; return temp; }
+                { return value_type{std::ref(get<Fields>(*(iter + offset)))...}; }
 
         /**
          * Adds given distance to an iterator
@@ -147,7 +147,7 @@ namespace mpgl {
          * @param right the distance
          * @return the shifted iterator
          */
-        friend VertexViewIterator
+        [[nodiscard]] friend VertexViewIterator
             operator+ (VertexViewIterator const& left,
                 difference_type right) noexcept
             { auto temp = left; temp += right; return temp; }
@@ -159,7 +159,7 @@ namespace mpgl {
          * @param right the iterator
          * @return the shifted iterator
          */
-        friend VertexViewIterator
+        [[nodiscard]] friend VertexViewIterator
             operator+ (difference_type left,
                 VertexViewIterator const& right) noexcept
             { auto temp = right; temp += left; return temp; }
@@ -171,7 +171,7 @@ namespace mpgl {
          * @param right the distance
          * @return the shifted operator
          */
-        friend VertexViewIterator
+        [[nodiscard]] friend VertexViewIterator
             operator- (VertexViewIterator const& left,
                 difference_type right) noexcept
             { return left.iter - right; }
@@ -183,7 +183,7 @@ namespace mpgl {
          * @param right the right iterator
          * @return difference_type
          */
-        friend difference_type
+        [[nodiscard]] friend difference_type
             operator- (VertexViewIterator const& left,
                 VertexViewIterator const& right) noexcept
             { return left.iter - right.iter; }
@@ -195,7 +195,7 @@ namespace mpgl {
          * @param right the right iterator
          * @return whether two iterators are equal
          */
-        friend bool
+        [[nodiscard]] friend bool
             operator== (VertexViewIterator const& left,
                 VertexViewIterator const& right) noexcept
             { return left.iter == right.iter; }
@@ -207,7 +207,7 @@ namespace mpgl {
          * @param right the right iterator
          * @return the result of compare
          */
-        friend compare
+        [[nodiscard]] friend compare
             operator<=> (VertexViewIterator const& left,
                 VertexViewIterator const& right) noexcept
             { return left.iter <=> right.iter; }
