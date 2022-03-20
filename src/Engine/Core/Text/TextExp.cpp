@@ -81,8 +81,8 @@ namespace mpgl::exp {
         Font const& font,
         Vector2f const& position,
         String const& text,
-        Options const& options) : Shadeable{shaderType(), shaderExec},
-            text{text}, font{font}, underlines{
+        TextOptions const& options) : Shadeable{shaderType(),
+            shaderExec}, text{text}, font{font}, underlines{
                 generateUnderline(position, options.angle, options.size,
                 options.color)}, color{options.color},
             strikethroughs{
@@ -113,9 +113,9 @@ namespace mpgl::exp {
     void Text<IsColorable>::extendModifiers(
         Vector2f advance) noexcept
     {
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             extendUnderline(advance);
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             extendStrikethrough(advance);
     }
 
@@ -153,9 +153,9 @@ namespace mpgl::exp {
 
     template <bool IsColorable>
     void Text<IsColorable>::emplaceModifiers(void) {
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             emplaceUnderline();
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             emplaceStrikethrough();
     }
 
@@ -375,9 +375,9 @@ namespace mpgl::exp {
         position = getPosition();
         text.clear();
         glyphs.clear();
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             underlines.clear();
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             strikethroughs.clear();
     }
 
@@ -423,10 +423,10 @@ namespace mpgl::exp {
         if constexpr(IsColorable)
             for (auto& vcolor : glyphs | std::views::join | views::color)
                     vcolor = color;
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             for (auto& vcolor : underlines | std::views::join | views::color)
                     vcolor = color;
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             for (auto& vcolor : strikethroughs | std::views::join | views::color)
                     vcolor = color;
     }
@@ -454,9 +454,9 @@ namespace mpgl::exp {
         Vector2f const& shift) noexcept
     {
         glyphs.translate(shift);
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             underlines.translate(shift);
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             strikethroughs.translate(shift);
         position += shift;
     }
@@ -475,9 +475,9 @@ namespace mpgl::exp {
         Matrix2f const& rotation) noexcept
     {
         glyphs.rotate(center, rotation);
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             underlines.rotate(center, rotation);
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             strikethroughs.rotate(center, rotation);
         position = rotation * (position - center) + center;
         auto twoPi = std::numbers::pi_v<float32> * 2;
@@ -492,9 +492,9 @@ namespace mpgl::exp {
         float32 factor) noexcept
     {
         glyphs.scale(center, factor);
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             underlines.scale(center, factor);
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             strikethroughs.scale(center, factor);
         textSize *= factor;
         position = (position - center) * factor + center;
@@ -505,19 +505,10 @@ namespace mpgl::exp {
         Vector2u const& oldDimensions) noexcept
     {
         glyphs.onScreenTransformation(oldDimensions);
-        if (maskTextMods(mods, Modifiers::Underline))
+        if (mods & Modifiers::Underline)
             underlines.onScreenTransformation(oldDimensions);
-        if (maskTextMods(mods, Modifiers::Strikethrough))
+        if (mods & Modifiers::Strikethrough)
             strikethroughs.onScreenTransformation(oldDimensions);
-    }
-
-    template <bool IsColorable>
-    uint8 Text<IsColorable>::maskTextMods(
-        Modifiers const& left,
-        Modifiers const& right) noexcept
-    {
-        // change to std::to_underlying in C++23
-        return static_cast<uint8>(left) & static_cast<uint8>(right);
     }
 
 }

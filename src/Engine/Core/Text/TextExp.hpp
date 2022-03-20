@@ -68,8 +68,12 @@ namespace mpgl::exp {
             typedef value_type*                     pointer;
             typedef value_type&                     reference;
             typedef std::ptrdiff_t                  difference_type;
+
             using compare =
                 std::compare_three_way_result_t<Iter, Iter>;
+
+            using iterator_category =
+                std::random_access_iterator_tag;
 
             explicit Iterator(void) noexcept = default;
             explicit Iterator(Iter const& iter) noexcept
@@ -96,8 +100,9 @@ namespace mpgl::exp {
             Iterator& operator-= (difference_type offset) noexcept
                 { iter -= offset; return *this; };
 
-            reference operator[] (difference_type offset) noexcept
-                { return *(iter + offset); }
+            [[nodiscard]] reference operator[] (
+                difference_type offset) noexcept
+                    { return *(iter + offset); }
 
             [[nodiscard]] friend Iterator operator+(
                 Iterator const& left,
@@ -189,14 +194,87 @@ namespace mpgl::exp {
     template class TextGlyphView<false>;
     template class TextGlyphView<true>;
 
-    template <bool IsColorable = false>
-    class Text : public Shadeable, public Transformable2D {
+    template <bool IsConst>
+    class ColorableTextIterator {
     public:
-        typedef GlyphSprite<IsColorable>            FontGlyph;
+        typedef GlyphSprite<true>                   FontGlyph;
         typedef DrawableCollection<FontGlyph>       GlyphsVector;
+        typedef std::conditional_t<IsConst,
+            typename GlyphsVector::const_iterator,
+            typename GlyphsVector::iterator>        GlyphIter;
+        typedef TextGlyphView<IsConst>              value_type;
+        typedef std::ptrdiff_t                      difference_type;
+
+        using compare =
+            std::compare_three_way_result_t<GlyphIter, GlyphIter>;
+
+        explicit ColorableTextIterator(
+            GlyphIter const& iter) noexcept
+                : iter{iter} {}
+
+        ColorableTextIterator& operator++(void) noexcept
+            { ++iter; return *this; }
+
+        [[nodiscard]] ColorableTextIterator operator++(int) noexcept
+            { auto temp = *this; ++iter; return temp; }
+
+        ColorableTextIterator& operator--(void) noexcept
+            { --iter; return *this; }
+
+        [[nodiscard]] ColorableTextIterator operator--(int) noexcept
+            { auto temp = *this; --iter; return temp; }
+
+        [[nodiscard]] value_type operator* (void) const noexcept
+            { return value_type{std::ref(*iter)}; }
+
+        ColorableTextIterator& operator+= (
+            difference_type offset) noexcept
+                { iter += offset; return *this; };
+
+        ColorableTextIterator& operator-= (
+            difference_type offset) noexcept
+                { iter -= offset; return *this; };
+
+        [[nodiscard]] value_type operator[] (
+            difference_type offset) noexcept
+                { return value_type{std::ref(*(iter + offset))}; }
+
+        [[nodiscard]] friend ColorableTextIterator operator+(
+            ColorableTextIterator const& left,
+            difference_type right) noexcept
+                { auto temp = left; temp.iter += right; return temp; }
+
+        [[nodiscard]] friend ColorableTextIterator operator+(
+            difference_type left,
+            ColorableTextIterator const& right) noexcept
+                { auto temp = right; temp.iter += left; return temp; }
+
+        [[nodiscard]] friend ColorableTextIterator operator-(
+            ColorableTextIterator const& left,
+            difference_type right) noexcept
+                { auto temp = left; temp.iter -= right; return temp; }
+
+        [[nodiscard]] friend difference_type operator-(
+            ColorableTextIterator const& left,
+            ColorableTextIterator const& right) noexcept
+                { return left.iter - right.iter; }
+
+        [[nodiscard]] friend bool operator==(
+            ColorableTextIterator const& left,
+            ColorableTextIterator const& right) noexcept
+                { return left.iter == right.iter; }
+
+        [[nodiscard]] friend compare operator<=>(
+            ColorableTextIterator const& left,
+            ColorableTextIterator const& right) noexcept
+                { return left.iter <=> right.iter; }
+    private:
+        GlyphIter                                   iter;
+    };
+
+    struct TextOptions {
         typedef Font::Type                          Style;
         typedef std::size_t                         SizeT;
-        typedef std::string                         String;
 
         enum class Modifiers : uint8 {
             None                                  = 0x00,
@@ -205,19 +283,28 @@ namespace mpgl::exp {
             UnderlineAndStrikethrough             = 0x03
         };
 
-        struct Options {
-            SizeT                                   size = 18;
-            Color                                   color = Color{};
-            Style                                   style = Style::Regular;
-            Modifiers                               mods = Modifiers::None;
-            float32                                 angle = 0.f;
-        };
+        SizeT                                   size = 18;
+        Color                                   color = Color{};
+        Style                                   style = Style::Regular;
+        Modifiers                               mods = Modifiers::None;
+        float32                                 angle = 0.f;
+    };
+
+    template <bool IsColorable = false>
+    class Text : public Shadeable, public Transformable2D {
+    public:
+        typedef GlyphSprite<IsColorable>            FontGlyph;
+        typedef DrawableCollection<FontGlyph>       GlyphsVector;
+        typedef Font::Type                          Style;
+        typedef std::size_t                         SizeT;
+        typedef std::string                         String;
+        typedef TextOptions::Modifiers              Modifiers;
 
         explicit Text(
             Font const& font = {},
             Vector2f const& position = {},
             String const& text = {},
-            Options const& options = {});
+            TextOptions const& options = {});
 
         Text(Text const& text) = default;
         Text(Text&& text) = default;
@@ -287,6 +374,60 @@ namespace mpgl::exp {
             { return glyphs.size(); }
 
         void draw(void) const noexcept final;
+
+        using iterator = ColorableTextIterator<false>;
+        using const_iterator = ColorableTextIterator<true>;
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<
+            const_iterator>;
+
+        [[nodiscard]] iterator begin(
+            void) noexcept requires IsColorable
+                { return iterator{glyphs.begin()}; }
+
+        [[nodiscard]] iterator end(
+            void) noexcept requires IsColorable
+                { return iterator{glyphs.end()}; }
+
+        [[nodiscard]] const_iterator begin(
+            void) const noexcept requires IsColorable
+                { return const_iterator{glyphs.begin()}; }
+
+        [[nodiscard]] const_iterator end(
+            void) const noexcept requires IsColorable
+                { return const_iterator{glyphs.end()}; }
+
+        [[nodiscard]] const_iterator cbegin(
+            void) const noexcept requires IsColorable
+                { return const_iterator{glyphs.begin()}; }
+
+        [[nodiscard]] const_iterator cend(
+            void) const noexcept requires IsColorable
+                { return const_iterator{glyphs.end()}; }
+
+        [[nodiscard]] reverse_iterator rbegin(
+            void) noexcept requires IsColorable
+                { return reverse_iterator{end() - 1}; }
+
+        [[nodiscard]] reverse_iterator rend(
+            void) noexcept requires IsColorable
+                { return reverse_iterator{begin() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator rbegin(
+            void) const noexcept requires IsColorable
+                { return const_reverse_iterator{end() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator rend(
+            void) const noexcept requires IsColorable
+                { return const_reverse_iterator{begin() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator crbegin(
+            void) const noexcept requires IsColorable
+                { return const_reverse_iterator{end() - 1}; }
+
+        [[nodiscard]] const_reverse_iterator crend(
+            void) const noexcept requires IsColorable
+                { return const_reverse_iterator{begin() - 1}; }
 
         ~Text(void) noexcept = default;
     private:
@@ -388,10 +529,6 @@ namespace mpgl::exp {
 
         static String const shaderType(void);
 
-        static uint8 maskTextMods(
-            Modifiers const& left,
-            Modifiers const& right) noexcept;
-
         static Tetragon generateUnderline(
             Vector2f position,
             float32 angle,
@@ -407,5 +544,13 @@ namespace mpgl::exp {
 
     template class Text<true>;
     template class Text<false>;
+
+    constexpr uint8 operator&(
+        TextOptions::Modifiers const& left,
+        TextOptions::Modifiers const& right) noexcept
+    {
+        /// change to std::to_underlying in C++23
+        return static_cast<uint8>(left) & static_cast<uint8>(right);
+    }
 
 }
