@@ -23,7 +23,6 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include "Engine/Core/Text/TextExp.hpp"
 #include "Engine/2DGraphics.hpp"
 
 #include <math.h>
@@ -40,7 +39,7 @@ public:
             Texture const& texture, Font& font)
         : square{texture, 150_x + 150_y, 50.f, 25.f},
         rotationTime{rotationTime},
-        name{font, 18, 100_x + 80_y, "Konwolucja: Brak"}
+        name{font, 100_x + 80_y, "Konwolucja: Brak", {.size=18}}
     {
         square[0] & cast::color = Color::Red;
         square[1] & cast::color = Color::Green;
@@ -56,7 +55,7 @@ public:
 
     void onScreenTransformation(Vector2u const& oldDim) noexcept {
         square.onScreenTransformation(oldDim);
-        name.draw();
+        name.onScreenTransformation(oldDim);
     }
 
     void draw(void) const noexcept {
@@ -162,8 +161,8 @@ int main(void) noexcept {
 
     Font font{"Hack", "/usr/share/fonts/truetype/hack/"};
 
-    window.emplaceDrawable<exp::Text<>>(font, 20_x + 300_y, "Witaj świecie!",
-        exp::Text<>::Options{.size=18, .angle=std::numbers::pi / 2.f});
+    window.emplaceDrawable<Text<>>(font, 20_x + 300_y, "Witaj\nświecie!",
+        TextOptions{.size=18, .angle=std::numbers::pi / 4.f});
 
     window.emplaceDrawable<DrawableCollection<LineLoop>>();
     auto& array = dynamic_cast<DrawableCollection<LineLoop>&>(*window[2]);
