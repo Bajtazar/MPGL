@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include "FontRasterizer.hpp"
 
 #include "../../Mathematics/FastFunctions.hpp"
@@ -6,14 +31,15 @@
 
 namespace mpgl {
 
-    FontRasterizer::FontRasterizer(FontData const& mainData,
-        GlyphData const& glyph, size_type size)
+    FontRasterizer::FontRasterizer(
+        FontData const& mainData,
+        GlyphData const& glyph,
+        size_type size)
             : mainData{mainData}, glyph{glyph}, lastPosition{0, 0},
             pixelSetter{&FontRasterizer::deducingPixelSetter},
             size{size}, ascending{false}, aaCoefficient{fast2Sqrt(
                 context.windowOptions.antiAliasingSamples)}
     {
-        size *= aaCoefficient;
         primitiveQueue.reserve(3);
         separateContours(glyph);
     }
@@ -32,15 +58,16 @@ namespace mpgl {
         }
     }
 
-    void FontRasterizer::addPoint(Contour& contour,
+    void FontRasterizer::addPoint(
+        Contour& contour,
        GlyphPoint const& point)
     {
         if (!point.onCurve)
             if (!contour.back().onCurve)
                 contour.emplace_back(
                         (contour.back().position + remapPoint(
-                            point.position, size)) / 2.f, true);
-        contour.emplace_back(remapPoint(point.position, size),
+                            point.position)) / 2.f, true);
+        contour.emplace_back(remapPoint(point.position),
             point.onCurve);
     }
 
@@ -49,15 +76,17 @@ namespace mpgl {
         for (auto const& contour : contours) {
             lastPosition = vectorCast<uint16>(
                 round(contour.front().position));
-            drawContourAndSetFlags(contour, canva, size);
+            drawContourAndSetFlags(contour, canva);
         }
         fillContour(canva);
         return performAntiAliasing(canva);
     }
 
     FontRasterizer::Pixel
-        FontRasterizer::antiAliasePixels(Bitmap const& canva,
-            size_type x, size_type y) const noexcept
+        FontRasterizer::antiAliasePixels(
+            Bitmap const& canva,
+            size_type x,
+            size_type y) const noexcept
     {
         x *= aaCoefficient;
         y *= aaCoefficient;
@@ -80,42 +109,41 @@ namespace mpgl {
         return antiAliased;
     }
 
-    Bitmap FontRasterizer::prepareCanva(void) const noexcept
-    {
-        auto dimensions = remapPoint(glyph.glyph.getMaxDimensions(),
-            size);
+    Bitmap FontRasterizer::prepareCanva(void) const noexcept {
+        auto dimensions = remapPoint(glyph.glyph.getMaxDimensions());
         return Bitmap{vectorCast<size_type>(ceil(dimensions + 1.f))};
     }
 
-    Vector2f FontRasterizer::remapPoint(Vector2si const& position
-        , size_type size) const noexcept
+    Vector2f FontRasterizer::remapPoint(
+        Vector2si const& position) const noexcept
     {
         auto translated = position - glyph.glyph.getMinDimensions();
         return float32(size) * vectorCast<float32>(translated)
             / float32(mainData.unitsPerEm);
     }
 
-    void FontRasterizer::drawContourAndSetFlags(Contour const& contour,
-            Bitmap& canva, size_type size) noexcept
+    void FontRasterizer::drawContourAndSetFlags(
+        Contour const& contour,
+        Bitmap& canva) noexcept
     {
-        //deducingPixelSetter;
         pixelSetter = &FontRasterizer::deducingPixelSetter;
         for (auto const& point : contour)
-            drawPrimitive(canva, point, size);
-        drawPrimitive(canva, contour.front(), size);
+            drawPrimitive(canva, point);
+        drawPrimitive(canva, contour.front());
         primitiveQueue.clear();
     }
 
-    void FontRasterizer::drawPrimitive(Bitmap& canva,
-        Point const& point, size_type size) noexcept
+    void FontRasterizer::drawPrimitive(
+        Bitmap& canva,
+        Point const& point) noexcept
     {
         primitiveQueue.push_back(point);
         if (primitiveQueue.size() == 2) {
             if (!primitiveQueue.back().onCurve)
                 return;
-            drawLine(canva, size);
+            drawLine(canva);
         } else if (primitiveQueue.size() == 3)
-            drawBezierCurve(canva, size);
+            drawBezierCurve(canva);
     }
 
     void FontRasterizer::clearQueue(void) noexcept {
@@ -123,8 +151,8 @@ namespace mpgl {
             primitiveQueue.end() - 1);
     }
 
-    void FontRasterizer::drawLine(Bitmap& canva,
-        size_type size) noexcept
+    void FontRasterizer::drawLine(
+        Bitmap& canva) noexcept
     {
         auto const& firstVertex = primitiveQueue[0].position;
         auto const& secondVertex = primitiveQueue[1].position;
@@ -136,8 +164,8 @@ namespace mpgl {
         clearQueue();
     }
 
-    void FontRasterizer::drawBezierCurve(Bitmap& canva,
-        size_type size) noexcept
+    void FontRasterizer::drawBezierCurve(
+        Bitmap& canva) noexcept
     {
         auto const& firstVertex = primitiveQueue[0].position;
         auto const& secondVertex = primitiveQueue[1].position;
@@ -153,7 +181,8 @@ namespace mpgl {
     }
 
     FontRasterizer::size_type
-        FontRasterizer::getBezierSamples(Vector2f const& firstVertex,
+        FontRasterizer::getBezierSamples(
+            Vector2f const& firstVertex,
             Vector2f const& secondVertex,
             Vector2f const& thirdVertex) const noexcept
     {
@@ -179,7 +208,8 @@ namespace mpgl {
         }
     }
 
-    void FontRasterizer::deducingPixelSetter(Bitmap& canva,
+    void FontRasterizer::deducingPixelSetter(
+        Bitmap& canva,
         Vector2<uint16> const& position) noexcept
     {
         if (position[1] == lastPosition[1]) {
@@ -206,7 +236,8 @@ namespace mpgl {
         }
     }
 
-    void FontRasterizer::tryRepairBrokenPixel(BitmapRow& row,
+    void FontRasterizer::tryRepairBrokenPixel(
+        BitmapRow& row,
         size_type index) const noexcept
     {
         Vector2<uint16> brokenPixel;
