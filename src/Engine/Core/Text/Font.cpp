@@ -59,7 +59,7 @@ namespace mpgl {
         std::ranges::for_each(typeVector, [&](const auto& pair) {
             findSubfont(files, signatures, pair.second, pair.first); });
         if (!pointer->subfonts.contains(Type::Regular))
-            throw FontNoRegualrException{fontName};
+            throw FontNoRegularException{fontName};
     }
 
     void Font::findSubfont(

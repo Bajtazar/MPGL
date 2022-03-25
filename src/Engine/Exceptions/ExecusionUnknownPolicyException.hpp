@@ -53,7 +53,8 @@ namespace mpgl {
         /**
          * Destroys the Execusion Unknown Policy Exception object
          */
-        constexpr ~ExecusionUnknownPolicyException(void) noexcept = default;
+        constexpr ~ExecusionUnknownPolicyException(
+            void) noexcept = default;
     };
 
 }
