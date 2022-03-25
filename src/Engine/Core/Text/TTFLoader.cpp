@@ -26,7 +26,7 @@
 #include "TTFLoader.hpp"
 
 #include "../../Exceptions/SecurityUnknownPolicyException.hpp"
-#include "../../Exceptions/TTFLoaderFileCorruption.hpp"
+#include "../../Exceptions/TTFLoaderFileCorruptionException.hpp"
 
 #include <fstream>
 #include <ranges>
@@ -46,11 +46,11 @@ namespace mpgl {
         if (auto stream = FileIO::readFile(fileName))
             buffer = stream->str();
         else
-            throw TTFLoaderFileCorruption{fileName};
+            throw TTFLoaderFileCorruptionException{fileName};
         try {
             parseFile(getIterator());
         } catch (std::out_of_range const&) {
-            throw TTFLoaderFileCorruption{fileName};
+            throw TTFLoaderFileCorruptionException{fileName};
         }
     }
 
@@ -146,7 +146,7 @@ namespace mpgl {
         auto iter = getIterator() + tables["head"].offset;
         std::advance(iter, 12);
         if (readType<uint32, true>(iter) != 0x5F0F3CF5)
-            throw TTFLoaderFileCorruption{fileName};
+            throw TTFLoaderFileCorruptionException{fileName};
         std::advance(iter, 2);
         fontData.unitsPerEm = readType<uint16, true>(iter);
         std::advance(iter, 16);
@@ -189,7 +189,7 @@ namespace mpgl {
         auto iter = getIterator() + tables["cmap"].offset;
         auto const begin = iter;
         if (readType<uint16, true>(iter))
-            throw TTFLoaderFileCorruption{fileName};
+            throw TTFLoaderFileCorruptionException{fileName};
         loadCmapSubtables(iter, begin);
     }
 
@@ -205,7 +205,7 @@ namespace mpgl {
                 if (readType<uint16, true>(subtableIter) == 4)
                     Format4Subtable{subtableIter, *this};
                 else
-                    throw TTFLoaderFileCorruption{fileName};
+                    throw TTFLoaderFileCorruptionException{fileName};
             }
         }
     }

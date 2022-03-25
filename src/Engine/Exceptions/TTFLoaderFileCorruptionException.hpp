@@ -34,15 +34,15 @@ namespace mpgl {
     /**
      * Exception indicating that the TTF file is corrupted
      */
-    class TTFLoaderFileCorruption : public MPGLException {
+    class TTFLoaderFileCorruptionException : public MPGLException {
     public:
         /**
-         * Constructs a new TTFLoaderFileCorruption object
+         * Constructs a new TTFLoaderFileCorruptionException object
          * with corrupted file name
          *
          * @param fileName the corrupted file name
          */
-        explicit TTFLoaderFileCorruption(
+        explicit TTFLoaderFileCorruptionException(
             std::string const& fileName) noexcept
                 : message{fileName + " - file is corrupted"} {}
 
