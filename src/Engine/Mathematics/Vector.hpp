@@ -534,6 +534,7 @@ namespace mpgl {
     using VectorC                     = Vector<
         std::complex<float64>, Size>;
 
+    typedef Vector<int16, 2>            Vector2si;
     typedef Vector<float32, 2>          Vector2f;
     typedef Vector<uint32, 2>           Vector2u;
     typedef Vector<int32, 2>            Vector2i;

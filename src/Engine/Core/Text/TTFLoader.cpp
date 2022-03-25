@@ -118,7 +118,7 @@ namespace mpgl {
         std::advance(iter, 2);
         auto size = readType<uint16, true>(iter);
         kernTable.reserve(size);
-        for (uint16_t i = 0; i < size; ++i)
+        for (uint16 i = 0; i < size; ++i)
             kernTable.emplace_back(iter);
     }
 
@@ -198,8 +198,8 @@ namespace mpgl {
         Iter& iter,
         Iter const& begin)
     {
-        uint16_t end = readType<uint16, true>(iter);
-        for (uint16_t i = 0;i < end; ++i) {
+        uint16 end = readType<uint16, true>(iter);
+        for (uint16 i = 0;i < end; ++i) {
             if (auto offset = readPlatform({iter})) {
                 auto subtableIter = begin + *offset;
                 if (readType<uint16, true>(subtableIter) == 4)

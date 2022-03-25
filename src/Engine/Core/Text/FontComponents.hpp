@@ -114,9 +114,9 @@ namespace mpgl {
         if (readType<uint16, true>(iter)) return;
         std::advance(iter, 2);
         setAxis(readType<uint16, true>(iter));
-        uint16_t end = readType<uint16, true>(iter);
+        uint16 end = readType<uint16, true>(iter);
         std::advance(iter, 6);
-        for (uint16_t i = 0; i < end; ++i) {
+        for (uint16 i = 0; i < end; ++i) {
             uint32 key = readType<uint16, true>(iter) << 0x0010;
             key += readType<uint16, true>(iter);
             distance[key] = readType<int16, true>(iter);
