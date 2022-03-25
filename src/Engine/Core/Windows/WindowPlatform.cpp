@@ -25,8 +25,8 @@
  */
 #include "WindowPlatform.hpp"
 
-#include "../../Exceptions/RenderWindowInvalidArgsException.hpp"
-#include "../../Exceptions/RenderWindowGladException.hpp"
+#include "../../Exceptions/WindowInvalidArgsException.hpp"
+#include "../../Exceptions/WindowGladException.hpp"
 #include "../Text/UTF-8.hpp"
 
 namespace mpgl {
@@ -41,9 +41,9 @@ namespace mpgl {
             title.c_str(), nullptr, nullptr);
         setContextWindow();
         if (!window)
-            throw RenderWindowInvalidArgsException{title};
+            throw WindowInvalidArgsException{title};
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-            throw RenderWindowGladException{title};
+            throw WindowGladException{title};
         setCallbacks();
     }
 
