@@ -38,7 +38,8 @@ namespace mpgl {
         /**
          * Constructs a new Huffman Tree Decoder Exception object
          */
-        explicit HuffmanTreeDecoderException(void) noexcept = default;
+        constexpr explicit HuffmanTreeDecoderException(
+            void) noexcept = default;
 
         /**
          * Returns the message informing that the given token cannot
@@ -46,13 +47,14 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        const char* what (void) const noexcept final
+        constexpr const char* what (void) const noexcept final
             { return "Token out of alphabet has been found."; }
 
         /**
          *  Destroys the Huffman Tree Decoder Exception object
          */
-        ~HuffmanTreeDecoderException(void) noexcept = default;
+        constexpr ~HuffmanTreeDecoderException(
+            void) noexcept = default;
     };
 
 }
