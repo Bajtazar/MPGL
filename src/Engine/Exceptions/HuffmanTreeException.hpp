@@ -40,7 +40,8 @@ namespace mpgl {
          *
          * @return message associated with an exception
          */
-        constexpr virtual const char* what(void) const noexcept = 0;
+        [[nodiscard]] constexpr virtual const char* what(
+            void) const noexcept = 0;
 
         /**
          * Vrtual destructor. Destroy the Huffman Tree Exception

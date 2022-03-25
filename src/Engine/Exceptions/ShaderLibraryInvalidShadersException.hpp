@@ -62,8 +62,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        const char* what (void) const noexcept
-            { return message.c_str(); }
+        [[nodiscard]] const char* what (
+            void) const noexcept
+                { return message.c_str(); }
 
         /**
          * Returns the message informing which shaders do not
@@ -71,8 +72,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        const std::string& getMessage(void) const noexcept
-            { return message; }
+        [[nodiscard]] const std::string& getMessage(
+            void) const noexcept
+                { return message; }
 
         /**
          * Destroy the Shader Library Invalid Shaders Exception

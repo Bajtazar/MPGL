@@ -57,7 +57,7 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        const char* what (void) const noexcept
+        [[nodiscard]] const char* what (void) const noexcept
             { return message.c_str(); }
 
         /**
@@ -66,8 +66,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        std::string const& getMessage(void) const noexcept
-            { return message; }
+        [[nodiscard]] std::string const& getMessage(
+            void) const noexcept
+                { return message; }
 
         /**
          * Destroys the Shader Program Linking Exception object

@@ -49,8 +49,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        constexpr virtual const char* what(void) const noexcept final
-            { return "Cannot remove element - list is already empty"; }
+        [[nodiscard]] constexpr const char* what(
+            void) const noexcept final
+                { return "Cannot remove element - list is already empty"; }
 
         /**
          * Destroys the circular list object

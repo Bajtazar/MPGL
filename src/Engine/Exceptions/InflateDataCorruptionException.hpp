@@ -46,8 +46,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        constexpr const char* what (void) const noexcept final
-            { return "Data corruption has been detected during stream parsing."; }
+        [[nodiscard]] constexpr const char* what (
+            void) const noexcept final
+                { return "Data corruption has been detected during stream parsing."; }
 
         /**
          * Destroys the Inflate Data Corruption Exception object

@@ -47,8 +47,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        constexpr const char* what (void) const noexcept final
-            { return "Token out of alphabet has been found."; }
+        [[nodiscard]] constexpr const char* what (
+            void) const noexcept final
+                { return "Token out of alphabet has been found."; }
 
         /**
          *  Destroys the Huffman Tree Decoder Exception object

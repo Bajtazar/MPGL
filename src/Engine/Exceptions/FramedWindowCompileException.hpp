@@ -47,8 +47,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        constexpr const char* what(void) const noexcept
-            { return "Framebuffer is incomplete\n"; }
+        [[nodiscard]] constexpr const char* what(
+            void) const noexcept final
+                { return "Framebuffer is incomplete\n"; }
 
         /**
          * Destroy the Framed Window Compile Exception object

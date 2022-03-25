@@ -53,7 +53,7 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        virtual const char* what (void) const noexcept final
+        [[nodiscard]] const char* what(void) const noexcept final
             { return message.c_str(); }
 
         /**
@@ -62,8 +62,8 @@ namespace mpgl {
          */
         virtual ~ImageLoadingException(void) noexcept = default;
     private:
-        std::string fileName;
-        std::string message;
+        std::string                                 fileName;
+        std::string                                 message;
     };
 
 }

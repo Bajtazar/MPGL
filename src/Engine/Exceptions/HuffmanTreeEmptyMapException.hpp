@@ -47,8 +47,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        constexpr const char* what (void) const noexcept final
-            { return "CharacterMap given to HuffmanTree is empty."; }
+        [[nodiscard]] constexpr const char* what (
+            void) const noexcept final
+                { return "CharacterMap given to HuffmanTree is empty."; }
 
         /**
          * Destroys the Huffman Tree Empty Map Exception object

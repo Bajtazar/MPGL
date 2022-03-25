@@ -53,12 +53,12 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        virtual const char* what (void) const noexcept final
+        [[nodiscard]] const char* what (void) const noexcept final
             { return message.c_str(); }
 
         ~FontNoRegularException(void) noexcept = default;
     private:
-        std::string message;
+        std::string                                 message;
     };
 
 }

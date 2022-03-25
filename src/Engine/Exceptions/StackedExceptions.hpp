@@ -82,7 +82,7 @@ namespace mpgl {
          *
          * @return message with number of exceptions
          */
-        const char* what(void) const noexcept
+        [[nodiscard]] const char* what(void) const noexcept
             { return message.c_str(); }
 
         /**
@@ -91,7 +91,7 @@ namespace mpgl {
          *
          * @return number of exceptions
          */
-        std::size_t size(void) const noexcept
+        [[nodiscard]] std::size_t size(void) const noexcept
             { return exceptions.size(); }
 
         typedef typename Exceptions::const_iterator const_iterator;
@@ -101,7 +101,7 @@ namespace mpgl {
          *
          * @return the begin iterator
          */
-        const_iterator begin(void) const noexcept
+        [[nodiscard]] const_iterator begin(void) const noexcept
             { return exceptions.begin(); }
 
         /**
@@ -109,7 +109,7 @@ namespace mpgl {
          *
          * @return the end iterator
          */
-        const_iterator end(void) const noexcept
+        [[nodiscard]] const_iterator end(void) const noexcept
             { return exceptions.end(); }
 
         /**
@@ -117,7 +117,7 @@ namespace mpgl {
          *
          * @return the begin iterator
          */
-        const_iterator cbegin(void) const noexcept
+        [[nodiscard]] const_iterator cbegin(void) const noexcept
             { return exceptions.cbegin(); }
 
         /**
@@ -125,7 +125,7 @@ namespace mpgl {
          *
          * @return the end iterator
          */
-        const_iterator cend(void) const noexcept
+        [[nodiscard]] const_iterator cend(void) const noexcept
             { return exceptions.cend(); }
 
         /**
@@ -136,6 +136,16 @@ namespace mpgl {
         Exceptions const                            exceptions;
         std::string const                           message;
 
+        /**
+         * Create a stacked message describing the inner
+         * exceptions
+         *
+         * @tparam Iter the iterator type
+         * @tparam Sent the sentinel type
+         * @param iter the iterator to the begining of exceptions
+         * @param sent the iterator to the end of exceptions
+         * @return the generated message
+         */
         template <std::input_iterator Iter,
             std::sentinel_for<Iter> Sent>
         static std::string createMessageFromExceptions(

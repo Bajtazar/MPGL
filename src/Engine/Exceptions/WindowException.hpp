@@ -54,7 +54,7 @@ namespace mpgl{
          *
          * @return the exception description
          */
-        virtual const char* what (void) const noexcept final
+        [[nodiscard]] const char* what (void) const noexcept final
             { return message.c_str(); }
 
         /**
@@ -63,16 +63,18 @@ namespace mpgl{
          *
          * @return the exception description
          */
-        std::string const& getMessage(void) const noexcept
-            { return message; }
+        [[nodiscard]] std::string const& getMessage(
+            void) const noexcept
+                { return message; }
 
         /**
          * Returns the name of the window
          *
          * @return the name of the window
          */
-        std::string const& getWindowName(void) const noexcept
-            { return windowName; }
+        [[nodiscard]] std::string const& getWindowName(
+            void) const noexcept
+                { return windowName; }
 
         /**
          * Virtual destructor. Destroys the Render Window Exception

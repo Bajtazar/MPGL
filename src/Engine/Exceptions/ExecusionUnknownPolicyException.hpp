@@ -46,8 +46,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        constexpr virtual const char* what (void) const noexcept final
-            { return "Unknown policy has been given"; }
+        [[nodiscard]] constexpr const char* what (
+            void) const noexcept final
+                { return "Unknown policy has been given"; }
 
         /**
          * Destroys the Execusion Unknown Policy Exception object

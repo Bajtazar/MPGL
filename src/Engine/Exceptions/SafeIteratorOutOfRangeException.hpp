@@ -46,8 +46,9 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        constexpr const char* what (void) const noexcept final
-            { return "SafeIterator out of range access attempt."; }
+        [[nodiscard]] constexpr const char* what (
+            void) const noexcept final
+                { return "SafeIterator out of range access attempt."; }
 
         /**
          * Destroys the Safe Iterator Out Of Range Exception object
