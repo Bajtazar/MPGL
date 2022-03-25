@@ -33,8 +33,7 @@ namespace mpgl {
      * Exception indicating that the given execution policy
      * is unknown
      */
-    class ExecusionUnknownPolicyException : public MPGLException {
-    public:
+    struct ExecusionUnknownPolicyException : public MPGLException {
         /**
          * Constructs a new Execusion Unknown Policy Exception object
          */
