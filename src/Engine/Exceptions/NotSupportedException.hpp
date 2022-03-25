@@ -71,7 +71,7 @@ namespace mpgl {
          */
         ~NotSupportedException(void) noexcept = default;
     protected:
-        std::string message;
+        std::string                             message;
     };
 
 }

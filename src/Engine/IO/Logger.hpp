@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Exceptions/MPGLException.hpp"
 #include "../Utility/Ranges.hpp"
 
 #include <concepts>
@@ -12,7 +13,7 @@ namespace mpgl {
 
     class Logger {
     public:
-        template <std::derived_from<std::exception> Exception>
+        template <std::derived_from<MPGLException> Exception>
         static void checkCompilationStatus(uint32 bufferID, uint32 operation, const std::string& title);
         static std::string loggingString(std::size_t size, char fill) noexcept;
         static void saveOpenGl(const std::string& data, const std::string& title) noexcept;
@@ -22,7 +23,7 @@ namespace mpgl {
         static std::string getCurrentDay(void) noexcept;
     };
 
-    template <std::derived_from<std::exception> Exception>
+    template <std::derived_from<MPGLException> Exception>
     void Logger::checkCompilationStatus(uint32 bufferID, uint32 operation, const std::string& title) {
         int32 status = 0;
         glGetProgramiv(bufferID, operation, &status);
