@@ -77,7 +77,7 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     Matrix8<int16> JPEGLoader<Policy>::readMatrix(Iter& iter, uint8 id, int16& coeff) {
-        uint8 code = huffmanTables.at(false).at(id)->decoder.decodeToken(iter);
+        uint8 code = huffmanTables.at(false).at(id)->decoder(iter);
         uint16 bits = readRNBits<uint16>(code, iter);
         coeff += decodeNumber(code, bits);
         std::array<int16, 64> data{};
@@ -91,7 +91,7 @@ namespace mpgl {
         QuantizationTablePtr const& quant, Iter& iter)
     {
         uint16 bits;
-        for (uint8 length = 1, code; code = table->decoder.decodeToken(iter); ++length) {
+        for (uint8 length = 1, code; code = table->decoder(iter); ++length) {
             if (code > 15) {
                 length += code >> 4;
                 code &= 0xF;

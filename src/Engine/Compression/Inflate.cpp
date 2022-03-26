@@ -103,8 +103,8 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     void Inflate<Policy>::decompressFixedBlock(BitIter& iterator) {
-        auto token = fixedCodeDecoder.decodeToken(iterator);
-        for (;token != BlockEnd; token = fixedCodeDecoder.decodeToken(iterator)) {
+        auto token = fixedCodeDecoder(iterator);
+        for (;token != BlockEnd; token = fixedCodeDecoder(iterator)) {
             if (token < BlockEnd)
                 outputStream.push_back(token);
             else
@@ -152,7 +152,7 @@ namespace mpgl {
         bitLengths.reserve(MaxAlphabetLength);
         std::size_t repeater = 0;
         while (bitLengths.size() < literals + distances) {
-            auto token = readCodeLengthAlphabet(repeater, iterator, bitLengths, decoder.decodeToken(iterator));
+            auto token = readCodeLengthAlphabet(repeater, iterator, bitLengths, decoder(iterator));
             while (repeater--)
                 bitLengths.push_back(token);
         }
@@ -174,8 +174,8 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     void Inflate<Policy>::dynamicBlockLoop(const Decoder& mainDecoder, const Decoder& distanceDecoder, BitIter& iterator) {
-        auto token = mainDecoder.decodeToken(iterator);
-        for (;token != BlockEnd; token = mainDecoder.decodeToken(iterator)) {
+        auto token = mainDecoder(iterator);
+        for (;token != BlockEnd; token = mainDecoder(iterator)) {
             if (token < BlockEnd)
                 outputStream.push_back(token);
             else
@@ -200,7 +200,7 @@ namespace mpgl {
     void Inflate<Policy>::decompressDynamicDistance(uint16 token, BitIter& iterator, const HuffmanTree<uint16>::Decoder& distanceDecoder) {
         auto [addbits, addLength] = extraLength.at(token);
         uint32 length = addLength + readNBits<uint32>(addbits, iterator);
-        uint32 distanceToken = distanceDecoder.decodeToken(iterator);
+        uint32 distanceToken = distanceDecoder(iterator);
         auto [distBits, distLength] = distances.at(distanceToken);
         uint32 distance = distLength + readNBits<uint32>(distBits, iterator);
         std::size_t offset = outputStream.size() - distance;
