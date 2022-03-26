@@ -88,7 +88,7 @@ namespace mpgl {
     Image Window::saveWindowScreen(void) const {
         Image image{getWindowDimensions()};
         glReadPixels(0, 0, image.getWidth(), image.getHeight(),
-            GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
+            GL_RGBA, GL_UNSIGNED_BYTE, image.data());
         return image;
     }
 

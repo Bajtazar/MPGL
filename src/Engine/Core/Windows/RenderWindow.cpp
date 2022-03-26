@@ -108,7 +108,7 @@ namespace mpgl {
         Image image{context.windowDimensions};
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glReadPixels(0, 0, image.getWidth(), image.getHeight(),
-            GL_RGBA, GL_UNSIGNED_BYTE, image.getMemoryPtr());
+            GL_RGBA, GL_UNSIGNED_BYTE, image.data());
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         return image;
     }

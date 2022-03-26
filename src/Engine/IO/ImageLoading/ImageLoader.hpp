@@ -17,7 +17,7 @@ namespace mpgl {
         explicit ImageLoader(Policy policy, const std::string& fileName);
 
         const Image& getImage(void) const noexcept { return opener->getImage(); }
-        const void* memoryPointer(void) const noexcept { return opener->getImage().getMemoryPtr(); }
+        const void* memoryPointer(void) const noexcept { return opener->getImage().data(); }
 
         std::size_t getWidth(void) const noexcept { return opener->getWidth(); }
         std::size_t getHeight(void) const noexcept { return opener->getHeight(); }

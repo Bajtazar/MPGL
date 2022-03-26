@@ -50,7 +50,7 @@ namespace mpgl {
         texturePtr->textureBuffer.loadImage(
             TextureBuffer::PixelFormat::RGBA,
             image.getWidth(), image.getHeight(),
-            image.getMemoryPtr());
+            image.data());
         texturePtr->textureSize = image.size();
         if (options.mipmaps)
             texturePtr->textureBuffer.generateMipmaps();
@@ -63,7 +63,7 @@ namespace mpgl {
         texturePtr->textureBuffer.loadImage(
             TextureBuffer::PixelFormat::R,
             bitmap.getWidth(), bitmap.getHeight(),
-            bitmap.getMemoryPtr());
+            bitmap.data());
         texturePtr->textureSize = bitmap.size();
         if (options.mipmaps)
             texturePtr->textureBuffer.generateMipmaps();

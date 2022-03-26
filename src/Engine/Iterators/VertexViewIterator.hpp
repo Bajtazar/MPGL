@@ -174,7 +174,7 @@ namespace mpgl {
         [[nodiscard]] friend VertexViewIterator
             operator- (VertexViewIterator const& left,
                 difference_type right) noexcept
-            { return left.iter - right; }
+            { auto temp = left; temp -= right; return temp; }
 
         /**
          * Returns distance between iterators

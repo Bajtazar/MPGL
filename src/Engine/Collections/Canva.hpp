@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include <iterator>
@@ -10,16 +35,24 @@
 #include "../Mathematics/Vector.hpp"
 #include "../Traits/Concepts.hpp"
 
-#ifndef friend_expr
-#define friend_expr friend constexpr
-#endif
-
 namespace mpgl {
 
+    /**
+     * Base type for the canva's row base
+     *
+     * @tparam Tp the type of the canva's pixels
+     */
     template <Absolute Tp>
     using CanvaRowBase = std::pair<Tp*, std::reference_wrapper<
         std::size_t>>;
 
+    /**
+     * Represents an image consisting of given pixels type
+     *
+     * @tparam Base the base pixel type
+     * @tparam Range the image holding vector
+     * @tparam RowRange the rows holding vector
+     */
     template <DefaultBaseType Base,
         UnderlyingRange<Base> Range = std::vector<Base>,
         UnderlyingRange<CanvaRowBase<Base>> RowRange
@@ -34,16 +67,63 @@ namespace mpgl {
         typedef typename RowRange::iterator         RowIter;
         typedef typename RowRange::const_iterator   RowConstIter;
     public:
+        /**
+         * Constructs a new canva object with the given width
+         * and height
+         *
+         * @param width the width of the canva
+         * @param height the height of the canva
+         */
         constexpr explicit Canva(size_type width, size_type height);
+
+        /**
+         * Constructs a new canva object with the given dimensions
+         * vector
+         *
+         * @param dimensions the dimensions of the canva
+         */
         constexpr explicit Canva(size_vector const& dimensions);
+
+        /**
+         * Constructs a new canva object
+         */
         constexpr Canva(void) = default;
 
+        /**
+         * Constructs a new canva object from the given
+         * constant reference to canva object
+         *
+         * @param canva the constant reference to canva object
+         */
         constexpr Canva(Canva const& canva);
+
+        /**
+         * Constructs a new canva object from the given
+         * rvalue reference to canva object
+         *
+         * @param canva the rvalue reference to canva object
+         */
         constexpr Canva(Canva&& canva) noexcept;
 
+        /**
+         * Assings the given canva object to this object
+         *
+         * @param canva the constant reference to canva object
+         * @return the reference to this object
+         */
         constexpr Canva& operator=(Canva const& canva);
+
+        /**
+         * Assings the given rvalue canva object to this object
+         *
+         * @param canva the rvalue reference to canva object
+         * @return the reference to this object
+         */
         constexpr Canva& operator=(Canva&& canva) noexcept;
 
+        /**
+         * Represents the row of the image
+         */
         class Row : private CanvaRowBase<Base> {
         public:
             using value_type =                      Base;
@@ -52,16 +132,45 @@ namespace mpgl {
             using const_reference =                 value_type const&;
             using const_pointer =                   value_type* const;
 
-            Row(void) noexcept = delete;
-
+            /**
+             * Constructs a new row object from the given constant
+             * reference to row object
+             *
+             * @param row the constant reference to row obejct
+             */
             constexpr Row(Row const& row) noexcept
                 : BaseTuple{static_cast<BaseTuple const&>(row)} {}
+
+            /**
+             * Constructs a new row object from the given rvalue
+             * reference to row object
+             *
+             * @param row the rvalue reference to row obejct
+             */
             constexpr Row(Row&& row) noexcept
                 : BaseTuple{static_cast<BaseTuple const&&>(row)} {}
 
+            /**
+             * Assings the given row object to this object
+             *
+             * @param row the constant reference to row object
+             * @return the reference to this object
+             */
             constexpr Row& operator= (Row const& row) noexcept;
+
+            /**
+             * Assings the given rvalue row object to this object
+             *
+             * @param row the rvalue reference to row object
+             * @return the reference to this object
+             */
             constexpr Row& operator= (Row&& row) noexcept;
 
+            /**
+             * Iterator that returns the pixels from the row
+             *
+             * @tparam value_type the pixels type
+             */
             template <typename value_type>
             class Iterator : public std::iterator<
                 std::random_access_iterator_tag, value_type>
@@ -74,50 +183,178 @@ namespace mpgl {
                 using compare =
                     std::compare_three_way_result_t<pointer, pointer>;
 
+                /**
+                 * Constructs a new iterator object from thhe given
+                 * pixel pointer
+                 *
+                 * @param iter the pointer to pixel
+                 */
                 constexpr explicit Iterator(pointer iter) noexcept
                     : iter{iter} {}
+
+                /**
+                 * Constructs a new iterator object
+                 */
                 constexpr explicit Iterator(void) noexcept = default;
 
+                /**
+                 * Increments iterator by one
+                 *
+                 * @return reference to this object
+                 */
                 constexpr Iterator& operator++(void) noexcept
                     { ++iter; return *this; }
-                constexpr Iterator  operator++(int) noexcept
-                    { auto temp = *this; ++iter; return *this; }
+
+                /**
+                 * Post-increments iterator by one and returns copy
+                 * of the object
+                 *
+                 * @return the copied object
+                 */
+                [[nodiscard]] constexpr Iterator operator++(
+                    int) noexcept
+                        { auto temp = *this; ++iter; return *this; }
+
+                /**
+                 * Decrements iterator by one
+                 *
+                 * @return reference to this object
+                 */
                 constexpr Iterator& operator--(void) noexcept
                     { --iter; return *this; }
-                constexpr Iterator  operator--(int) noexcept
-                    { auto temp = *this; --iter; return *this; }
 
-                constexpr reference operator*(void) const noexcept
-                    { return *iter; }
-                constexpr pointer operator->(void) noexcept
-                    { return iter; }
-                constexpr Iterator& operator+=(difference_type offset) noexcept
-                    { iter += offset; return *this; }
-                constexpr Iterator& operator-=(difference_type offset) noexcept
-                    { iter -= offset; return *this; }
-                constexpr reference operator[](difference_type offset) noexcept
-                    { return *(iter + offset); }
+                /**
+                 * Post-decrements iterator by one and returns copy
+                 * of the object
+                 *
+                 * @return the copied object
+                 */
+                [[nodiscard]] constexpr Iterator operator--(
+                    int) noexcept
+                        { auto temp = *this; --iter; return *this; }
 
-                friend_expr bool operator== (Iterator const& left,
+                /**
+                 * Returns a reference to the pixel
+                 *
+                 * @return the reference to the pixel
+                 */
+                [[nodiscard]] constexpr reference operator*(
+                    void) const noexcept
+                        { return *iter; }
+
+                /**
+                 * Returns a pointer to the pixel
+                 *
+                 * @return the pointer to the pixel
+                 */
+                [[nodiscard]] constexpr pointer operator->(
+                    void) noexcept
+                        { return iter; }
+
+                /**
+                 * Increments iterator by the given distance
+                 *
+                 * @param offset the incremented distance
+                 * @return reference to this object
+                 */
+                constexpr Iterator& operator+=(
+                    difference_type offset) noexcept
+                        { iter += offset; return *this; }
+
+                /**
+                 * Decrements iterator by the given distance
+                 *
+                 * @param offset the decremented distance
+                 * @return reference to this object
+                 */
+                constexpr Iterator& operator-=(
+                    difference_type offset) noexcept
+                        { iter -= offset; return *this; }
+
+                /**
+                 * Returns a reference to the pixel shifted by
+                 * the given offset
+                 *
+                 * @param offset the incremented distance
+                 * @return the reference to the pixel
+                 * shifted by the given offse
+                 */
+                [[nodiscard]] constexpr reference operator[](
+                    difference_type offset) noexcept
+                        { return *(iter + offset); }
+
+                /**
+                 * Checks whether two iterators are equal
+                 *
+                 * @param left the left iterator
+                 * @param right the right iterator
+                 * @return whether two iterators are equal
+                 */
+                [[nodiscard]] constexpr friend bool operator== (
+                    Iterator const& left,
                     Iterator const& right) noexcept
                         { return left.iter == right.iter; }
 
-                friend_expr compare operator<=> (
-                    Iterator const& left, Iterator const& right) noexcept
+                /**
+                 * Compares two iterators to each other
+                 *
+                 * @param left the left iterator
+                 * @param right the right iterator
+                 * @return the result of compare
+                 */
+                [[nodiscard]] constexpr friend compare operator<=> (
+                    Iterator const& left,
+                    Iterator const& right) noexcept
                         { return left.iter <=> right.iter; }
 
-                friend_expr Iterator operator+ (Iterator const& left,
+                /**
+                 * Adds given distance to an iterator
+                 *
+                 * @param left the iterator
+                 * @param right the distance
+                 * @return the shifted iterator
+                 */
+                [[nodiscard]] constexpr friend Iterator operator+ (
+                    Iterator left,
                     difference_type right) noexcept
-                        { return left[right]; }
-                friend_expr Iterator operator+ (difference_type left,
-                    Iterator const& right) noexcept
-                        { return right[left]; }
-                friend_expr Iterator operator- (Iterator const& left,
+                        { return left += right; }
+
+                /**
+                 * Adds given distance to an iterator
+                 *
+                 * @param left the distance
+                 * @param right the iterator
+                 * @return the shifted iterator
+                 */
+                [[nodiscard]] constexpr friend Iterator operator+ (
+                    difference_type left,
+                    Iterator right) noexcept
+                        { return right += left; }
+
+                /**
+                 * Subtracts given distance from iterator
+                 *
+                 * @param left the iterator
+                 * @param right the distance
+                 * @return the shifted operator
+                 */
+                [[nodiscard]] constexpr friend Iterator operator- (
+                    Iterator left,
                     difference_type right) noexcept
-                        { auto temp = left; temp -= right; return temp; }
-                friend_expr difference_type operator- (Iterator const& left,
-                    Iterator const& right) noexcept
-                        { return left.iter - right.iter; }
+                        { return left -= right; }
+
+                /**
+                 * Returns distance between iterators
+                 *
+                 * @param left the left iterator
+                 * @param right the right iterator
+                 * @return difference_type
+                 */
+                [[nodiscard]] constexpr friend difference_type
+                    operator- (
+                        Iterator const& left,
+                        Iterator const& right) noexcept
+                            { return left.iter - right.iter; }
             private:
                 pointer                             iter;
             };
@@ -127,73 +364,274 @@ namespace mpgl {
             using reverse_iterator =                std::reverse_iterator<iterator>;
             using const_reverse_iterator =          std::reverse_iterator<const_iterator>;
 
-            constexpr size_type size(void) const noexcept
-                { return this->second.get(); }
+            /**
+             * Returns a size of the row
+             *
+             * @return the size of the row
+             */
+            [[nodiscard]] constexpr size_type size(
+                void) const noexcept
+                    { return this->second.get(); }
 
-            constexpr iterator begin(void) noexcept
+            /**
+             * Returns an iterator to the begin of the row pixels
+             *
+             * @return the iterator to the begin of the row pixels
+             */
+            [[nodiscard]] constexpr iterator begin(void) noexcept
                 { return iterator{memory()}; }
-            constexpr iterator end(void) noexcept
+
+            /**
+             * Returns an iterator to the end of the row pixels
+             *
+             * @return the iterator to the end of the row pixels
+             */
+            [[nodiscard]] constexpr iterator end(void) noexcept
                 { return iterator{memory() + size()}; }
-            constexpr const_iterator begin(void) const noexcept
-                { return const_iterator{memory()}; }
-            constexpr const_iterator end(void) const noexcept
-                { return const_iterator{memory() + size()}; }
 
-            constexpr const_iterator cbegin(void) const noexcept
-                { return const_iterator{memory()}; }
-            constexpr const_iterator cend(void) const noexcept
-                { return const_iterator{memory() + size()}; }
+            /**
+             * Returns a constant iterator to the begin of
+             * the row pixels
+             *
+             * @return the constant iterator to the begin of
+             * the row pixels
+             */
+            [[nodiscard]] constexpr const_iterator begin(
+                void) const noexcept
+                    { return const_iterator{memory()}; }
 
-            constexpr reverse_iterator rbegin(void) noexcept
-                { return reverse_iterator{end() - 1u}; }
-            constexpr reverse_iterator rend(void) noexcept
-                { return reverse_iterator{begin() - 1u}; }
-            constexpr const_reverse_iterator rbegin(void) const noexcept
-                { return const_reverse_iterator{end() - 1u}; }
-            constexpr const_reverse_iterator rend(void) const noexcept
-                { return const_reverse_iterator{begin() - 1u}; }
+            /**
+             * Returns a constant iterator to the end of
+             * the row pixels
+             *
+             * @return the constant iterator to the end of
+             * the row pixels
+             */
+            [[nodiscard]] constexpr const_iterator end(
+                void) const noexcept
+                    { return const_iterator{memory() + size()}; }
 
-            constexpr const_reverse_iterator crbegin(void) const noexcept
-                { return const_reverse_iterator{end() - 1u}; }
-            constexpr const_reverse_iterator crend(void) const noexcept
-                { return const_reverse_iterator{begin() - 1u}; }
+            /**
+             * Returns a constant iterator to the begin of
+             * the row pixels
+             *
+             * @return the constant iterator to the begin of
+             * the row pixels
+             */
+            [[nodiscard]] constexpr const_iterator cbegin(
+                void) const noexcept
+                    { return const_iterator{memory()}; }
 
-            constexpr reference operator[] (size_type index) noexcept
-                { return *(memory() + index); }
-            constexpr const_reference operator[] (size_type index) const noexcept
-                { return *(memory() + index); }
+            /**
+             * Returns a constant iterator to the end of
+             * the row pixels
+             *
+             * @return the constant iterator to the end of
+             * the row pixels
+             */
+            [[nodiscard]] constexpr const_iterator cend(
+                void) const noexcept
+                    { return const_iterator{memory() + size()}; }
+
+            /**
+             * Returns a reverse iterator to the end of the
+             * row pixels
+             *
+             * @return the reverse iterator to the end of the
+             * row pixels
+             */
+            [[nodiscard]] constexpr reverse_iterator rbegin(
+                void) noexcept
+                    { return reverse_iterator{end() - 1u}; }
+
+            /**
+             * Returns a reverse iterator to the begining of the
+             * row pixels
+             *
+             * @return the reverse iterator to the begining of the
+             * row pixels
+             */
+            [[nodiscard]] constexpr reverse_iterator rend(
+                void) noexcept
+                    { return reverse_iterator{begin() - 1u}; }
+
+            /**
+             * Returns a constant reverse iterator to the end
+             * of the row pixels
+             *
+             * @return the constant reverse iterator to the end
+             * of the row pixels
+             */
+            [[nodiscard]] constexpr const_reverse_iterator rbegin(
+                void) const noexcept
+                    { return const_reverse_iterator{end() - 1u}; }
+
+            /**
+             * Returns a constant reverse iterator to the begining
+             * of the row pixels
+             *
+             * @return the constant reverse iterator to the begining
+             * of the row pixels
+             */
+            [[nodiscard]] constexpr const_reverse_iterator rend(
+                void) const noexcept
+                    { return const_reverse_iterator{begin() - 1u}; }
+
+            /**
+             * Returns a constant reverse iterator to the end
+             * of the row pixels
+             *
+             * @return the constant reverse iterator to the end
+             * of the row pixels
+             */
+            [[nodiscard]] constexpr const_reverse_iterator crbegin(
+                void) const noexcept
+                    { return const_reverse_iterator{end() - 1u}; }
+
+            /**
+             * Returns a constant reverse iterator to the begining
+             * of the row pixels
+             *
+             * @return the constant reverse iterator to the begining
+             * of the row pixels
+             */
+            [[nodiscard]] constexpr const_reverse_iterator crend(
+                void) const noexcept
+                    { return const_reverse_iterator{begin() - 1u}; }
+
+            /**
+             * Returns a reference to the pixel with given index
+             *
+             * @param index the pixel's index
+             * @return the reference to the pixel with given index
+             */
+            [[nodiscard]] constexpr reference operator[] (
+                size_type index) noexcept
+                    { return *(memory() + index); }
+
+            /**
+             * Returns a constant reference to the pixel with
+             * given index
+             *
+             * @param index the pixel's index
+             * @return the constant reference to the pixel
+             * with given index
+             */
+            [[nodiscard]] constexpr const_reference operator[] (
+                size_type index) const noexcept
+                    { return *(memory() + index); }
 
             friend class Canva;
 
+            /**
+             * Destroys the row object
+             */
             constexpr ~Row(void) = default;
         private:
-            constexpr const_pointer memory(void) const noexcept
-                { return this->first; }
+            /**
+             * Returns a constant pointer to the begining of the
+             * row's memory
+             *
+             * @return the constant pointer to the begining of the
+             * row's memory
+             */
+            [[nodiscard]] constexpr const_pointer memory(
+                void) const noexcept
+                    { return this->first; }
         };
 
+        /**
+         * Resizes the image to the new dimensions
+         *
+         * @param dimensions the image's new dimensions
+         */
         constexpr void resize(size_vector const& dimensions);
+
+        /**
+         * Resizes the image to the new dimensions
+         *
+         * @param width the image's new width
+         * @param height the image's new height
+         */
         constexpr void resize(size_type width, size_type height)
             { return resize({width, height}); }
 
-        constexpr size_vector size(void) const noexcept
+        /**
+         * Return a dimensions of the image
+         *
+         * @return the dimensions of the image
+         */
+        [[nodiscard]] constexpr size_vector size(void) const noexcept
             { return dimensions; }
-        constexpr size_type getWidth(void) const noexcept
+
+        /**
+         * Returns a width of the image
+         *
+         * @return the width of the image
+         */
+        [[nodiscard]] constexpr size_type getWidth(void) const noexcept
             { return dimensions[0]; }
-        constexpr size_type getHeight(void) const noexcept
-            { return dimensions[1]; }
 
+        /**
+         * Returns a height of the image
+         *
+         * @return the height of the image
+         */
+        [[nodiscard]] constexpr size_type getHeight(
+            void) const noexcept
+                { return dimensions[1]; }
+
+        /**
+         * Returns a reference to the pixel lying under
+         * given coordinates
+         *
+         * @tparam Tp the element type of the vector
+         * @param coords the pixel coordinates
+         * @return the reference to the pixel
+         */
+        template <std::integral Tp>
+        [[nodiscard]] constexpr Base& operator[](
+            Vector2<Tp> const& coords) noexcept;
+
+        /**
+         * Returns a constant reference to the pixel
+         * lying under given coordinates
+         *
+         * @tparam Tp the element type of the vector
+         * @param coords the pixel coordinates
+         * @return the constant reference to the pixel
+         */
         template <std::integral T>
-        constexpr Base& operator[](Vector2<T> const& coords) noexcept
-            { return memoryMap[dimensions[0] * coords[1] + coords[0]]; }
-        template <std::integral T>
-        constexpr Base const& operator[](Vector2<T> const& coords) const noexcept
-            { return memoryMap[dimensions[0] * coords[1] + coords[0]]; }
+        [[nodiscard]] constexpr Base const& operator[](
+            Vector2<T> const& coords) const noexcept;
 
-        constexpr Row& operator[] (size_type index) noexcept
-            { return static_cast<Row&>(rows[index]); }
-        constexpr Row const& operator[] (size_type index) const noexcept
-            { return static_cast<Row const&>(rows[index]); }
+        /**
+         * Returns a reference to the row with given index
+         *
+         * @param index the index of the row
+         * @return the reference to the row
+         */
+        [[nodiscard]] constexpr Row& operator[] (
+            size_type index) noexcept
+                { return static_cast<Row&>(rows[index]); }
 
+        /**
+         * Returns a constant reference to the row with given index
+         *
+         * @param index the index of the row
+         * @return the constant reference to the row
+         */
+        [[nodiscard]] constexpr Row const& operator[] (
+            size_type index) const noexcept
+                { return static_cast<Row const&>(rows[index]); }
+
+        /**
+         * Iterator that returns the references to the image
+         * rows
+         *
+         * @tparam value_type the type of the row
+         * @tparam InnerIter the type of the underlying iterator
+         */
         template <class value_type, class InnerIter>
         class Iterator : public std::iterator<
             std::random_access_iterator_tag, value_type>
@@ -206,50 +644,177 @@ namespace mpgl {
             using compare =
                 std::compare_three_way_result_t<pointer, pointer>;
 
-            constexpr explicit Iterator(InnerIter const& iter) noexcept
-                : iter{iter} {}
+            /**
+             * Constructs a new iterator object from the given
+             * constant reference to the underlying iterator
+             *
+             * @param iter the constant reference to the
+             * underlying iterator
+             */
+            constexpr explicit Iterator(
+                InnerIter const& iter) noexcept
+                    : iter{iter} {}
+
+            /**
+             * Constructs a new iterator object
+             */
             constexpr explicit Iterator(void) noexcept = default;
 
+            /**
+             * Increments iterator by one
+             *
+             * @return reference to this object
+             */
             constexpr Iterator& operator++(void) noexcept
                 { ++iter; return *this; }
-            constexpr Iterator  operator++(int) noexcept
+
+            /**
+             * Post-increments iterator by one and returns copy
+             * of the object
+             *
+             * @return the copied object
+             */
+            [[nodiscard]] constexpr Iterator operator++(int) noexcept
                 { auto temp = *this; ++iter; return *this; }
+
+            /**
+             * Decrements iterator by one
+             *
+             * @return reference to this object
+             */
             constexpr Iterator& operator--(void) noexcept
                 { --iter; return *this; }
-            constexpr Iterator  operator--(int) noexcept
+
+            /**
+             * Post-decrements iterator by one and returns copy
+             * of the object
+             *
+             * @return the copied object
+             */
+            [[nodiscard]] constexpr Iterator operator--(int) noexcept
                 { auto temp = *this; --iter; return *this; }
 
-            constexpr reference operator*(void) const noexcept
-                { return static_cast<reference>(*iter); }
-            constexpr pointer operator->(void) noexcept
-                { return static_cast<pointer>(*iter); }
-            constexpr Iterator& operator+=(difference_type offset) noexcept
-                { iter += offset; return *this; }
-            constexpr Iterator& operator-=(difference_type offset) noexcept
-                { iter -= offset; return *this; }
-            constexpr Iterator  operator[](difference_type offset) noexcept
-                { auto temp = *this; temp += offset; return temp; }
+            /**
+             * Returns a reference to the row
+             *
+             * @return the reference to the row
+             */
+            [[nodiscard]] constexpr reference operator*(
+                void) const noexcept
+                    { return static_cast<reference>(*iter); }
 
-            friend_expr bool operator== (Iterator const& left,
+            /**
+             * Returns a pointer to the row
+             *
+             * @return the pointer to the row
+             */
+            [[nodiscard]] constexpr pointer operator->(void) noexcept
+                { return static_cast<pointer>(*iter); }
+
+            /**
+             * Increments iterator by the given distance
+             *
+             * @param offset the incremented distance
+             * @return reference to this object
+             */
+            [[nodiscard]] constexpr Iterator& operator+=
+                (difference_type offset) noexcept
+                    { iter += offset; return *this; }
+
+            /**
+             * Decrements iterator by the given distance
+             *
+             * @param offset the decremented distance
+             * @return reference to this object
+             */
+            [[nodiscard]] constexpr Iterator& operator-=(
+                difference_type offset) noexcept
+                    { iter -= offset; return *this; }
+
+            /**
+             * Returns a reference to the row shifted by
+             * the given offset
+             *
+             * @param offset the incremented distance
+             * @return the reference to the row
+             * shifted by the given offse
+             */
+            [[nodiscard]] constexpr Iterator operator[](
+                difference_type offset) noexcept
+                    { auto temp = *this; temp += offset; return temp; }
+
+            /**
+             * Checks whether two iterators are equal
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return whether two iterators are equal
+             */
+            [[nodiscard]] friend constexpr bool operator== (
+                Iterator const& left,
                 Iterator const& right) noexcept
                     { return left.iter == right.iter; }
 
-            friend_expr compare operator<=> (
-                Iterator const& left, Iterator const& right) noexcept
+            /**
+             * Compares two iterators to each other
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return the result of compare
+             */
+            [[nodiscard]] friend constexpr compare operator<=> (
+                Iterator const& left,
+                Iterator const& right) noexcept
                     { return left.iter <=> right.iter; }
 
-            friend_expr Iterator operator+ (Iterator const& left,
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend constexpr Iterator operator+ (
+                Iterator left,
                 difference_type right) noexcept
-                    { return left[right]; }
-            friend_expr Iterator operator+ (difference_type left,
-                Iterator const& right) noexcept
-                    { return right[left]; }
-            friend_expr Iterator operator- (Iterator const& left,
+                    { return left += right; }
+
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the distance
+             * @param right the iterator
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend constexpr Iterator operator+ (
+                difference_type left,
+                Iterator right) noexcept
+                    { return right += left; }
+
+            /**
+             * Subtracts given distance from iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted operator
+             */
+            [[nodiscard]] friend constexpr Iterator operator- (
+                Iterator left,
                 difference_type right) noexcept
-                    { auto temp = left; temp -= right; return temp; }
-            friend_expr difference_type operator- (Iterator const& left,
-                Iterator const& right) noexcept
-                    { return left.iter - right.iter; }
+                    { return left -= right; }
+
+            /**
+             * Returns distance between iterators
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return difference_type
+             */
+            [[nodiscard]] friend constexpr difference_type
+                operator- (
+                    Iterator const& left,
+                    Iterator const& right) noexcept
+                        { return left.iter - right.iter; }
         private:
             InnerIter                           iter;
         };
@@ -259,62 +824,225 @@ namespace mpgl {
         using reverse_iterator =                    std::reverse_iterator<iterator>;
         using const_reverse_iterator =              std::reverse_iterator<const_iterator>;
 
-        constexpr iterator begin(void) noexcept
+        /**
+         * Returns an iterator to the begining of the image rows
+         *
+         * @return the iterator to the begining of the image rows
+         */
+        [[nodiscard]] constexpr iterator begin(void) noexcept
             { return iterator{rows.begin()}; }
-        constexpr iterator end(void) noexcept
+
+        /**
+         * Returns an iterator to the end of the image rows
+         *
+         * @return the iterator to the end of the image rows
+         */
+        [[nodiscard]] constexpr iterator end(void) noexcept
             { return iterator{rows.end()}; }
-        constexpr const_iterator begin(void) const noexcept
-            { return const_iterator{rows.begin()}; }
-        constexpr const_iterator end(void) const noexcept
-            { return const_iterator{rows.end()}; }
 
-        constexpr const_iterator cbegin(void) const noexcept
-            { return const_iterator{rows.cbegin()}; }
-        constexpr const_iterator cend(void) const noexcept
-            { return const_iterator{rows.cend()}; }
+        /**
+         * Returns a constant iterator to the begining of
+         * the image rows
+         *
+         * @return the constant iterator to the begining of
+         * the image rows
+         */
+        [[nodiscard]] constexpr const_iterator begin(
+            void) const noexcept
+                { return const_iterator{rows.begin()}; }
 
-        constexpr reverse_iterator rbegin(void) noexcept
+        /**
+         * Returns a constant iterator to the end of
+         * the image rows
+         *
+         * @return the constant iterator to the end of
+         * the image rows
+         */
+        [[nodiscard]] constexpr const_iterator end(
+            void) const noexcept
+                { return const_iterator{rows.end()}; }
+
+        /**
+         * Returns a constant iterator to the begining of
+         * the image rows
+         *
+         * @return the constant iterator to the begining of
+         * the image rows
+         */
+        [[nodiscard]] constexpr const_iterator cbegin(
+            void) const noexcept
+                { return const_iterator{rows.cbegin()}; }
+
+        /**
+         * Returns a constant iterator to the end of
+         * the image rows
+         *
+         * @return the constant iterator to the end of
+         * the image rows
+         */
+        [[nodiscard]] constexpr const_iterator cend(
+            void) const noexcept
+                { return const_iterator{rows.cend()}; }
+
+        /**
+         * Returns a reverse iterator to the end of
+         * the image rows
+         *
+         * @return the reverse iterator to the end of
+         * the image rows
+         */
+        [[nodiscard]] constexpr reverse_iterator rbegin(void) noexcept
             { return reverse_iterator{end() - 1u}; }
-        constexpr reverse_iterator rend(void) noexcept
+
+        /**
+         * Returns a reverse iterator to the beginig of
+         * the image rows
+         *
+         * @return the reverse iterator to the beginig of
+         * the image rows
+         */
+        [[nodiscard]] constexpr reverse_iterator rend(void) noexcept
             { return reverse_iterator{begin() - 1u}; }
-        constexpr const_reverse_iterator rbegin(void) const noexcept
-            { return const_reverse_iterator{end() - 1u}; }
-        constexpr const_reverse_iterator rend(void) const noexcept
-            { return const_reverse_iterator{begin() - 1u}; }
 
-        constexpr const_reverse_iterator crbegin(void) const noexcept
-            { return const_reverse_iterator{end() - 1u}; }
-        constexpr const_reverse_iterator crend(void) const noexcept
-            { return const_reverse_iterator{begin() - 1u}; }
+        /**
+         * Returns a constant reverse iterator to the end of
+         * the image rows
+         *
+         * @return the constant reverse iterator to the end of
+         * the image rows
+         */
+        [[nodiscard ]]constexpr const_reverse_iterator
+            rbegin(void) const noexcept
+                { return const_reverse_iterator{end() - 1u}; }
 
-        constexpr void const* getMemoryPtr(void) const noexcept
+        /**
+         * Returns a constant reverse iterator to the begining of
+         * the image rows
+         *
+         * @return the constant reverse iterator to the begining of
+         * the image rows
+         */
+        [[nodiscard]] constexpr const_reverse_iterator
+            rend(void) const noexcept
+                { return const_reverse_iterator{begin() - 1u}; }
+
+        /**
+         * Returns a constant reverse iterator to the end of
+         * the image rows
+         *
+         * @return the constant reverse iterator to the end of
+         * the image rows
+         */
+        [[nodiscard]] constexpr const_reverse_iterator
+            crbegin(void) const noexcept
+                { return const_reverse_iterator{end() - 1u}; }
+
+        /**
+         * Returns a constant reverse iterator to the begining of
+         * the image rows
+         *
+         * @return the constant reverse iterator to the begining of
+         * the image rows
+         */
+        [[nodiscard]] constexpr const_reverse_iterator
+            crend(void) const noexcept
+                { return const_reverse_iterator{begin() - 1u}; }
+
+        /**
+         * Returns a constant pointer to the image data
+         *
+         * @return the constant pointer to the image data
+         */
+        [[nodiscard]] constexpr Base const* data(void) const noexcept
             { return memoryMap.data(); }
 
-        constexpr void* getMemoryPtr(void) noexcept
+        /**
+         * Returns a pointer to the image data
+         *
+         * @return the pointer to the image data
+         */
+        [[nodiscard]] constexpr Base* data(void) noexcept
             { return memoryMap.data(); }
 
+        /**
+         * Extracts an area starting with given coordinates with
+         * given dimensions to the other canva
+         *
+         * @tparam URange the new canva base range
+         * @tparam URowRange the new canva row range
+         * @param x the start pixel x-coordinate
+         * @param y the start pixel y-coordinate
+         * @param width the width of the new canva
+         * @param height the height of the new canva
+         * @return the extracted canva
+         */
         template <UnderlyingRange<Base> URange = Range,
             UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        constexpr Canva<Base, URange, URowRange>
-            extract(size_type x, size_type y,
-                    size_type width, size_type height) const noexcept;
+        [[nodiscard]] constexpr Canva<Base, URange, URowRange>
+            extract(
+                size_type x,
+                size_type y,
+                size_type width,
+                size_type height) const noexcept;
 
+        /**
+         * Extracts an area starting with given coordinates with
+         * given dimensions to the other canva
+         *
+         * @tparam URange the new canva base range
+         * @tparam URowRange the new canva row range
+         * @param coords the start pixel coordinates
+         * @param dimensions the new canva dimensions
+         * @return the extracted canva
+         */
         template <UnderlyingRange<Base> URange = Range,
             UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        constexpr Canva<Base, URange, URowRange>
-            extract(size_vector coords, size_vector dimensions) const noexcept;
-
-        template <UnderlyingRange<Base> URange = Range,
-            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        constexpr std::optional<Canva<Base, URange, URowRange>>
-            safe_extract(size_type x, size_type y,
-                size_type width, size_type height) const noexcept;
-
-        template <UnderlyingRange<Base> URange = Range,
-            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
-        constexpr std::optional<Canva<Base, URange, URowRange>>
-            safe_extract(size_vector coords,
+        [[nodiscard]] constexpr Canva<Base, URange, URowRange>
+            extract(
+                size_vector coords,
                 size_vector dimensions) const noexcept;
+
+        /**
+         * Extracts an area starting with given coordinates with
+         * given dimensions to the other canva. If given coords
+         * or dimensions are wrong then returns an empty optional
+         *
+         * @tparam URange the new canva base range
+         * @tparam URowRange the new canva row range
+         * @param x the start pixel x-coordinate
+         * @param y the start pixel y-coordinate
+         * @param width the width of the new canva
+         * @param height the height of the new canva
+         * @return the extracted canva
+         */
+        template <UnderlyingRange<Base> URange = Range,
+            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
+        [[nodiscard]] constexpr std::optional<
+            Canva<Base, URange, URowRange>>
+                safe_extract(
+                    size_type x,
+                    size_type y,
+                    size_type width,
+                    size_type height) const noexcept;
+
+        /**
+         * Extracts an area starting with given coordinates with
+         * given dimensions to the other canva. If given coords
+         * or dimensions are wrong then returns an empty optional
+         *
+         * @tparam URange the new canva base range
+         * @tparam URowRange the new canva row range
+         * @param coords the start pixel coordinates
+         * @param dimensions the new canva dimensions
+         * @return the extracted canva
+         */
+        template <UnderlyingRange<Base> URange = Range,
+            UnderlyingRange<CanvaRowBase<Base>> URowRange = RowRange>
+        [[nodiscard]] constexpr std::optional<
+            Canva<Base, URange, URowRange>>
+                safe_extract(
+                    size_vector coords,
+                    size_vector dimensions) const noexcept;
 
         constexpr ~Canva(void) noexcept = default;
     private:
@@ -322,9 +1050,36 @@ namespace mpgl {
         RowRange                                    rows;
         size_vector                                 dimensions;
 
+        /**
+         * Creates a new rows inside an image
+         */
         constexpr void createRows(void);
+
+        /**
+         * Reassigns the image's rows
+         */
         constexpr void reassignRows(void) noexcept;
     };
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    template <std::integral Tp>
+    [[nodiscard]] constexpr Base&
+        Canva<Base, Range, RowRange>::operator[](
+            Vector2<Tp> const& coords) noexcept
+    {
+        return memoryMap[dimensions[0] * coords[1] + coords[0]];
+    }
+
+    template <DefaultBaseType Base, UnderlyingRange<Base> Range,
+        UnderlyingRange<CanvaRowBase<Base>> RowRange>
+    template <std::integral Tp>
+    [[nodiscard]] constexpr Base const&
+        Canva<Base, Range, RowRange>::operator[](
+            Vector2<Tp> const& coords) const noexcept
+    {
+        return memoryMap[dimensions[0] * coords[1] + coords[0]];
+    }
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
@@ -340,7 +1095,8 @@ namespace mpgl {
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     constexpr Canva<Base, Range, RowRange>::Row&
-        Canva<Base, Range, RowRange>::Row::operator= (Row&& row) noexcept
+        Canva<Base, Range, RowRange>::Row::operator= (
+            Row&& row) noexcept
     {
         static_cast<BaseTuple&>(*this) = static_cast<BaseTuple&&>(row);
         return *this;
@@ -413,8 +1169,11 @@ namespace mpgl {
         Canva<Base, Range, RowRange>::reassignRows(void) noexcept
     {
         auto width = std::ref(dimensions[0]);
-        for (auto& ref : rows | std::views::transform(&BaseTuple::second))
+        for (auto& ref : rows | std::views::transform(
+            &BaseTuple::second))
+        {
             ref = width;
+        }
     }
 
     template <DefaultBaseType Base, UnderlyingRange<Base> Range,
@@ -444,9 +1203,11 @@ namespace mpgl {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    constexpr Canva<Base, URange, URowRange>
-        Canva<Base, Range, RowRange>::extract(size_type x,
-            size_type y, size_type width,
+    [[nodiscard]] constexpr Canva<Base, URange, URowRange>
+        Canva<Base, Range, RowRange>::extract(
+            size_type x,
+            size_type y,
+            size_type width,
             size_type height) const noexcept
     {
         Canva<Base, Range, RowRange> image{width, height};
@@ -463,7 +1224,7 @@ namespace mpgl {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    constexpr Canva<Base, URange, URowRange>
+    [[nodiscard]] constexpr Canva<Base, URange, URowRange>
         Canva<Base, Range, RowRange>::extract(
             size_vector coords,
             size_vector dimensions) const noexcept
@@ -476,10 +1237,13 @@ namespace mpgl {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    constexpr std::optional<Canva<Base, URange, URowRange>>
-        Canva<Base, Range, RowRange>::safe_extract(
-            size_type x, size_type y,
-            size_type width, size_type height) const noexcept
+    [[nodiscard]] constexpr std::optional<
+        Canva<Base, URange, URowRange>>
+            Canva<Base, Range, RowRange>::safe_extract(
+                size_type x,
+                size_type y,
+                size_type width,
+                size_type height) const noexcept
     {
         if (x + width > dimensions[0] || y + height > dimensions[1])
             return {};
@@ -490,10 +1254,11 @@ namespace mpgl {
         UnderlyingRange<CanvaRowBase<Base>> RowRange>
     template <UnderlyingRange<Base> URange,
         UnderlyingRange<CanvaRowBase<Base>> URowRange>
-    constexpr std::optional<Canva<Base, URange, URowRange>>
-        Canva<Base, Range, RowRange>::safe_extract(
-            size_vector coords,
-            size_vector dimensions) const noexcept
+    [[nodiscard]] constexpr std::optional<
+        Canva<Base, URange, URowRange>>
+            Canva<Base, Range, RowRange>::safe_extract(
+                size_vector coords,
+                size_vector dimensions) const noexcept
     {
         // std::partial_ordering::unordered concidered as false
         if (!(totalCompare(coords + dimensions, this->dimensions) <= 0))
