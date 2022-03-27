@@ -301,6 +301,18 @@ namespace mpgl {
         };
 
     /**
+     * Checks whether the given range value type is a byte-like type
+     *
+     * @tparam Range the checked range
+     */
+    template <class Range>
+    concept ByteFlexibleRange = FlexibleRange<Range>
+        && requires { typename Range::iterator; }
+        && requires (typename Range::iterator iter)
+            { {*iter} -> SameSize<std::byte>; }
+        && std::default_initializable<Range>;
+
+    /**
      * Checks whether the given type is absolute and it has
      * default constructor
      *

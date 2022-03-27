@@ -60,8 +60,7 @@ namespace mpgl {
         }
         if (readType<uint64>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
-        Inflate decoder{policy, rawFileData};
-        filterPixels(decoder.decompress());
+        filterPixels(Inflate{std::move(rawFileData), policy}());
     }
 
     template <security::SecurityPolicy Policy>

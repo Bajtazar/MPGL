@@ -7,7 +7,6 @@
 
 #include <map>
 #include <array>
-#include <deque>
 #include <iterator>
 #include <functional>
 
@@ -67,7 +66,7 @@ namespace mpgl {
             ~IDATChunk(void) = default;
         };
 
-        std::deque<char> rawFileData;
+        std::vector<char> rawFileData;
         struct HeaderData {
             PixelsSetter setter;
         } headerData;

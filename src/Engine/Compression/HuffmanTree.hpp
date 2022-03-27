@@ -540,5 +540,4 @@ namespace mpgl {
         return node.get()->character;
     }
 
-
 }
