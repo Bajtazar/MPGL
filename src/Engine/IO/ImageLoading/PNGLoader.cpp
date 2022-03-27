@@ -6,7 +6,7 @@
 #include "../../Exceptions/ImageLoadingFileOpenException.hpp"
 #include "../../Exceptions/InflateException.hpp"
 #include "../../Exceptions/NotSupportedException.hpp"
-#include "../../Compression/Inflate.hpp"
+#include "../../Compression/ZlibDecoder.hpp"
 
 #include <numeric>
 #include <ranges>
@@ -60,7 +60,7 @@ namespace mpgl {
         }
         if (readType<uint64>(file) != 0x826042AE444E4549)
             throw ImageLoadingFileCorruptionException{fileName};
-        filterPixels(Inflate{std::move(rawFileData), policy}());
+        filterPixels(ZlibDecoder{std::move(rawFileData), policy}());
     }
 
     template <security::SecurityPolicy Policy>

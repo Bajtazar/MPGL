@@ -47,7 +47,7 @@ namespace mpgl {
          * @return the adler32 checksum
          */
         template <std::ranges::input_range Range>
-            requires ByteInputIterator<typename Range::iterator>
+            requires ByteInputIterator<std::ranges::iterator_t<Range>>
         [[nodiscard]] constexpr uint32 operator() (
             Range const& range) const noexcept;
     private:
@@ -57,7 +57,7 @@ namespace mpgl {
     inline constexpr Adler32                        adler32{};
 
     template <std::ranges::input_range Range>
-        requires ByteInputIterator<typename Range::iterator>
+        requires ByteInputIterator<std::ranges::iterator_t<Range>>
     [[nodiscard]] constexpr uint32 Adler32::operator() (
        Range const& range) const noexcept
     {

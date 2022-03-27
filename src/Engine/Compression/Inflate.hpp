@@ -27,15 +27,10 @@
 
 #include "../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../Exceptions/InflateDataCorruptionException.hpp"
-#include "../Exceptions/InflateInvalidHeaderException.hpp"
-#include "../Exceptions/NotSupportedException.hpp"
 #include "../Iterators/SafeIterator.hpp"
 #include "../Iterators/BitIterator.hpp"
 #include "../Utility/Security.hpp"
-#include "Checksums/Adler32.hpp"
 #include "HuffmanTree.hpp"
-
-#include <bitset>
 
 namespace mpgl {
 
@@ -50,43 +45,14 @@ namespace mpgl {
     class Inflate {
     public:
         /**
-         * Compression level of the given compressed file
-         */
-        enum class CompressionLevel : uint8 {
-            /// The fastest compression
-            Fastest,
-            /// Fast compression
-            Fast,
-            /// Default compression
-            Default,
-            /// Maximum [the most effective] compression
-            Maximum
-        };
-
-        /**
          * Constructs a new Inflate object from the given
-         * range universal reference and policy token. Parses
-         * inflation header
+         * range universal reference and policy token
          *
-         * @throw InflateInvalidHeaderException when header magic
-         * number is invalid
-         * @throw InflateDataCorruptionException when header
-         * checksum is invalid
-         * @throw NotSupportedException when the given DEFLATE
-         * block uses dictionaries
          * @param range the universal reference to the decompressed
          * object
          * @param policy the secure policy token
          */
         explicit Inflate(Range&& range, Policy policy = {});
-
-        /**
-         * Returns a compression level of the block
-         *
-         * @return the compression level of the block
-         */
-        [[nodiscard]] CompressionLevel
-            getCompressionLevel(void) const noexcept;
 
         /**
          * Decompresses the given range and returns the range
@@ -96,7 +62,7 @@ namespace mpgl {
          * are corrupted
          * @return the decompressed data
          */
-        [[nodiscard]] Range operator()(void) const;
+        [[nodiscard]] Range operator()(void);
     private:
         typedef std::conditional_t<
             security::isSecurePolicy<Policy>,
@@ -112,18 +78,6 @@ namespace mpgl {
          * @return the iterator to the compressed range
          */
         Iterator getIterator(void);
-
-        /**
-         * Parses DEFLATE block header
-         */
-        void parseHeader(void);
-
-        /**
-         * Returns a checksum saved at the end of the data
-         *
-         * @return the checksum
-         */
-        uint32 getChecksum(void) const;
 
         /**
          * Decompresses a block of compressed data
@@ -265,8 +219,6 @@ namespace mpgl {
             Range& decompressed) const;
 
         Range                                           range;
-        Iterator                                        rangeIterator;
-        uint8                                           compressionMethod;
 
         /// The fixed block decoder
         static Decoder                                  fixedCodeDecoder;
@@ -311,46 +263,7 @@ namespace mpgl {
     Inflate<Range, Policy>::Inflate(
         Range&& range,
         [[maybe_unused]] Policy policy)
-            : range{std::forward<Range>(range)}
-    {
-        if (this->range.size() < 6)
-            throw InflateDataCorruptionException{};
-        rangeIterator = getIterator();
-        parseHeader();
-    }
-
-    template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
-    [[nodiscard]] Inflate<Range, Policy>::CompressionLevel
-        Inflate<Range, Policy>::getCompressionLevel(
-            void) const noexcept
-    {
-        switch(compressionMethod) {
-            case 0:
-                return CompressionLevel::Fastest;
-            case 1:
-                return CompressionLevel::Fast;
-            case 2:
-                return CompressionLevel::Default;
-            case 3:
-                return CompressionLevel::Maximum;
-        }
-        return CompressionLevel::Default;
-    }
-
-    template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
-    void Inflate<Range, Policy>::parseHeader(void) {
-        uint8 cmf = *rangeIterator++;
-        uint8 flg = *rangeIterator++;
-        if (cmf != 0x78)
-            throw InflateInvalidHeaderException{};
-        if (((256u * cmf + flg) % 31))
-            throw InflateDataCorruptionException{};
-        std::bitset<8> bits{flg};
-        if (bits[5]) // isDict
-            throw NotSupportedException{
-                "No-default dicts are not supported."};
-        compressionMethod = bits[6] + 2 * bits[7];
-    }
+            : range{std::forward<Range>(range)} {}
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
     Inflate<Range, Policy>::Iterator
@@ -365,20 +278,12 @@ namespace mpgl {
     }
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
-    uint32 Inflate<Range, Policy>::getChecksum(void) const {
-        BigEndianBitIter iterator{range.end() - 4};
-        return readType<uint32, true>(iterator);
-    }
-
-    template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
     [[nodiscard]] Range Inflate<Range, Policy>::operator() (
-        void) const
+        void)
     {
-        BitIter iterator{rangeIterator};
+        BitIter iterator{getIterator()};
         Range decompressed;
         while (readBlock(iterator, decompressed));
-        if (adler32(decompressed) != getChecksum())
-            throw InflateDataCorruptionException{};
         return decompressed;
     }
 

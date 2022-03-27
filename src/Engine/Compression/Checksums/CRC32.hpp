@@ -47,7 +47,7 @@ namespace mpgl {
          * @return the crc32 checksum
          */
         template <std::ranges::input_range Range>
-            requires ByteInputIterator<typename Range::iterator>
+            requires ByteInputIterator<std::ranges::iterator_t<Range>>
         [[nodiscard]] constexpr uint32 operator() (
             Range const& range) const noexcept;
     private:
@@ -69,7 +69,7 @@ namespace mpgl {
     CRC32::LookupTable const CRC32::lookup = generateLookupTable();
 
     template <std::ranges::input_range Range>
-        requires ByteInputIterator<typename Range::iterator>
+        requires ByteInputIterator<std::ranges::iterator_t<Range>>
     [[nodiscard]] constexpr uint32 CRC32::operator() (
         Range const& range) const noexcept
     {
