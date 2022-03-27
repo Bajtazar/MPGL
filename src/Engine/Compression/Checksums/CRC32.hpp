@@ -76,7 +76,7 @@ namespace mpgl {
         uint32 crc = 0xFFFFFFFF;
         for (uint8 value : range)
             crc = (crc >> 8) ^ lookup[(value ^ crc) & 0xFF];
-        return crc;
+        return crc ^ 0xFFFFFFFF;
     }
 
     constexpr CRC32::LookupTable
