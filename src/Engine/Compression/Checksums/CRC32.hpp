@@ -30,33 +30,33 @@
 namespace mpgl {
 
     /**
-     * Calculates the CRC16 checksum of the given range
+     * Calculates the CRC32 checksum of the given range
      */
-    class CRC16 {
+    class CRC32 {
     public:
         /**
-         * Constructs a new CRC16 object
+         * Constructs a new CRC32 object
          */
-        constexpr explicit CRC16(void) noexcept = default;
+        constexpr explicit CRC32(void) noexcept = default;
 
         /**
          * Calculates the checksum of the given range
          *
          * @tparam Range the range type
          * @param range the constant reference to the checked range
-         * @return the crc16 checksum
+         * @return the crc32 checksum
          */
         template <std::ranges::input_range Range>
             requires ByteInputIterator<typename Range::iterator>
-        [[nodiscard]] constexpr uint16 operator() (
+        [[nodiscard]] constexpr uint32 operator() (
             Range const& range) const noexcept;
     private:
-        typedef std::array<uint16, 256>             LookupTable;
+        typedef std::array<uint32, 256>             LookupTable;
 
         /**
-         * Generates a lookup table for crc 16
+         * Generates a lookup table for crc 32
          *
-         * @return the lookup table for crc 16
+         * @return the lookup table for crc 32
          */
         static constexpr LookupTable generateLookupTable(
             void) noexcept;
@@ -64,32 +64,33 @@ namespace mpgl {
         static LookupTable const                    lookup;
     };
 
-    inline constexpr CRC16                          crc16{};
+    inline constexpr CRC32                          crc32{};
 
-    CRC16::LookupTable const CRC16::lookup = generateLookupTable();
+    CRC32::LookupTable const CRC32::lookup = generateLookupTable();
 
     template <std::ranges::input_range Range>
         requires ByteInputIterator<typename Range::iterator>
-    [[nodiscard]] constexpr uint16 CRC16::operator() (
+    [[nodiscard]] constexpr uint32 CRC32::operator() (
         Range const& range) const noexcept
     {
-        uint16 crc = 0xFFFF;
+        uint32 crc = 0xFFFFFFFF;
         for (uint8 value : range)
-            crc = (crc << 8) ^ lookup[value ^ (crc >> 8)];
+            crc = (crc >> 8) ^ lookup[(value ^ crc) & 0xFF];
         return crc;
     }
 
-    constexpr CRC16::LookupTable
-        CRC16::generateLookupTable(void) noexcept
+    constexpr CRC32::LookupTable
+        CRC32::generateLookupTable(void) noexcept
     {
         LookupTable table{};
-        for (uint16 i = 1, crc = 0x8000; i < 256; i <<= 1) {
-            if (crc & 0x8000)
-                crc = (crc << 1) ^ 0x1021;
-            else
-                crc <<= 1;
-            for (uint8 j = 0; j < i; ++j)
-                table[i + j] = crc ^ table[j];
+        for (uint32 i = 0, crc = 0; i < 256; crc = ++i) {
+            for (uint8 j = 0; j < 8; ++j) {
+                if (crc & 1)
+                    crc = 0xEDB88320 ^ (crc >> 1);
+                else
+                    crc >>= 1;
+            }
+            table[i] = crc;
         }
         return table;
     }
