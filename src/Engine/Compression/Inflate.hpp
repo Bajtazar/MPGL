@@ -32,10 +32,10 @@
 #include "../Iterators/SafeIterator.hpp"
 #include "../Iterators/BitIterator.hpp"
 #include "../Utility/Security.hpp"
+#include "Checksums/Adler32.hpp"
 #include "HuffmanTree.hpp"
 
 #include <bitset>
-#include <iostream>
 
 namespace mpgl {
 
@@ -117,6 +117,13 @@ namespace mpgl {
          * Parses DEFLATE block header
          */
         void parseHeader(void);
+
+        /**
+         * Returns a checksum saved at the end of the data
+         *
+         * @return the checksum
+         */
+        uint32 getChecksum(void) const;
 
         /**
          * Decompresses a block of compressed data
@@ -306,6 +313,8 @@ namespace mpgl {
         [[maybe_unused]] Policy policy)
             : range{std::forward<Range>(range)}
     {
+        if (this->range.size() < 6)
+            throw InflateDataCorruptionException{};
         rangeIterator = getIterator();
         parseHeader();
     }
@@ -356,13 +365,20 @@ namespace mpgl {
     }
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
+    uint32 Inflate<Range, Policy>::getChecksum(void) const {
+        BigEndianBitIter iterator{range.end() - 4};
+        return readType<uint32, true>(iterator);
+    }
+
+    template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
     [[nodiscard]] Range Inflate<Range, Policy>::operator() (
         void) const
     {
         BitIter iterator{rangeIterator};
         Range decompressed;
         while (readBlock(iterator, decompressed));
-        /// Adler32
+        if (adler32(decompressed) != getChecksum())
+            throw InflateDataCorruptionException{};
         return decompressed;
     }
 
