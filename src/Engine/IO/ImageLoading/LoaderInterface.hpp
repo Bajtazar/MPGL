@@ -3,7 +3,7 @@
 #include <fstream>
 
 #include "../../Collections/Image.hpp"
-#include "../Helper.hpp"
+#include "../Readers.hpp"
 
 namespace mpgl {
 

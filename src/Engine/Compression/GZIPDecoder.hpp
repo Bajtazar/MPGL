@@ -28,7 +28,7 @@
 #include "../Exceptions/InflateInvalidHeaderException.hpp"
 #include "../Exceptions/NotSupportedException.hpp"
 #include "Checksums/CRC32.hpp"
-#include "../IO/Helper.hpp"
+#include "../IO/Readers.hpp"
 #include "Inflate.hpp"
 
 namespace mpgl {
@@ -295,8 +295,7 @@ namespace mpgl {
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
     uint32 GZIPDecoder<Range, Policy>::getChecksum(void) {
-        LittleEndianBitIter iter{range.end() - 8};
-        return readType<uint32, false>(iter);
+        return peekType<uint32, false>(range.end() - 8);
     }
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>

@@ -43,12 +43,11 @@ namespace mpgl {
     void BMPLoader<Policy>::readHeader(FileIter& file) {
         if (readType<uint16>(file) != 0x4D42)
             throw ImageLoadingInvalidTypeException{fileName};
-        readType<uint64>(file);   // file size and two reserved fields
+        std::advance(file, 8); // file size and two reserved fields
         uint32 offset = readType<uint32>(file) - 6 * sizeof(uint32) - sizeof(uint16);
-        readType<uint32>(file);   // DIB header
+        std::advance(file, 4);   // DIB header
         pixels.resize(readType<uint32>(file), readType<uint32>(file));
-        for (uint32 i = 0;i < offset; ++i)
-            readType<std::byte>(file);
+        std::advance(file, offset);
     }
 
     template <security::SecurityPolicy Policy>

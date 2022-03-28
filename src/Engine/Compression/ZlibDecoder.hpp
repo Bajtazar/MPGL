@@ -182,8 +182,7 @@ namespace mpgl {
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
     uint32 ZlibDecoder<Range, Policy>::getChecksum(void) const {
-        BigEndianBitIter iterator{range.end() - 4};
-        return readType<uint32, true>(iterator);
+        return peekType<uint32, true>(range.end() - 4);
     }
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
