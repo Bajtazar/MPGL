@@ -30,15 +30,15 @@
 namespace mpgl {
 
     /**
-     * Exception indicating that a huffman tree decoder cannot
-     * decode the given symbol
+     * Exception indicating that a huffman tree cannot
+     * find the given symbol
      */
-    class HuffmanTreeDecoderException : public HuffmanTreeException {
+    class HuffmanTreeUnknownToken : public HuffmanTreeException {
     public:
         /**
          * Constructs a new Huffman Tree Decoder Exception object
          */
-        constexpr explicit HuffmanTreeDecoderException(
+        constexpr explicit HuffmanTreeUnknownToken(
             void) noexcept = default;
 
         /**
@@ -54,7 +54,7 @@ namespace mpgl {
         /**
          *  Destroys the Huffman Tree Decoder Exception object
          */
-        constexpr ~HuffmanTreeDecoderException(
+        constexpr ~HuffmanTreeUnknownToken(
             void) noexcept = default;
     };
 

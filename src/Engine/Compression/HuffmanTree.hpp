@@ -26,7 +26,7 @@
 #pragma once
 
 #include "../Exceptions/HuffmanTreeEmptyMapException.hpp"
-#include "../Exceptions/HuffmanTreeDecoderException.hpp"
+#include "../Exceptions/HuffmanTreeUnknownToken.hpp"
 #include "../Collections/MinHeap.hpp"
 #include "../Traits/Concepts.hpp"
 #include "../Utility/Ranges.hpp"
@@ -48,6 +48,12 @@ namespace mpgl {
     template <typename CharType = uint8,
         SizeType FrequencyType = std::size_t>
     class HuffmanTree {
+    private:
+        struct Node;
+
+        typedef typename std::unique_ptr<Node>      NodePtr;
+        typedef std::reference_wrapper<
+            NodePtr const>                          NodeCRef;
     public:
         typedef std::unordered_map<CharType,
             FrequencyType>                          DecodingMap;
@@ -138,9 +144,9 @@ namespace mpgl {
         [[nodiscard]] DecodingMap getDecoder(void) const noexcept;
 
         /**
-         * Returns a decoder used by the fixed DEFLATE coding
+         * Returns a tree used by the fixed DEFLATE coding
          */
-        [[nodiscard]] static HuffmanTree createDeflateDecoder(
+        [[nodiscard]] static HuffmanTree createDeflateTree(
             void) requires (sizeof(CharType) * CHAR_BIT > 8);
 
         /**
@@ -162,24 +168,85 @@ namespace mpgl {
              * fixed DEFLATE tree
              */
             Decoder(void)
-                : tree{createDeflateDecoder()} {}
+                : tree{createDeflateTree()} {}
 
             /**
              * Decodes the symbol under the given iterator
              * and returns decoded token
              *
-             * @throw HuffmanTreeDecoderException when given
+             * @throw HuffmanTreeUnknownToken when given
              * symbol is unknown
              * @tparam Iter the iterator type
              * @param iterator the reference to the iterator
              * @return the decoded token
              */
-            template <BitIterator Iter>
+            template <BitInputIterator Iter>
             [[nodiscard]] CharType operator()(Iter& iterator) const;
         private:
             HuffmanTree                             tree;
         };
 
+        /**
+         * Encodes a huffman coding using the given huffman tree
+         */
+        class Encoder {
+        public:
+            /**
+             * Construct a new Encoder object from the given
+             * huffman tree
+             *
+             * @param tree the constant reference to the huffman
+             * tree
+             */
+            Encoder(HuffmanTree const& tree);
+
+            /**
+             * Construct a new Encoder object with default
+             * fixed DEFLATE tree
+             */
+            Encoder(void);
+
+            /**
+             * Encodes the token and saves it in the given
+             * iterator
+             *
+             * @throw HuffmanTreeUnknownToken when given
+             * symbol is unknown
+             * @tparam Iter the iterator type
+             * @param iterator the reference to the iterator
+             * @param token the encoded token
+             */
+            template <BitOutputIterator Iter>
+            void operator()(
+                Iter& iter,
+                CharType token) const;
+        private:
+            typedef std::pair<
+                FrequencyType, CharType>            TokenData;
+            typedef std::unordered_map<
+                CharType, TokenData>                TokenMap;
+
+            TokenMap                                tokens;
+
+            /**
+             * Walks through the tree and saves the tokens codes
+             * and lengths
+             *
+             * @param node the constant reference wrapper to the node
+             * @param tokens the reference to the tokens map
+             * @param code the current code
+             * @param depth the current depth of the search
+             */
+            static void walkThrough(
+                NodeCRef node,
+                TokenMap& tokens,
+                FrequencyType code,
+                CharType depth);
+        };
+
+        /**
+         * Destroys the Huffman Tree object
+         */
         ~HuffmanTree(void) noexcept = default;
     private:
         typedef std::pair<CharType, FrequencyType>  FreqPair;
@@ -187,8 +254,6 @@ namespace mpgl {
          * Represents the node in the huffman tree
          */
         struct Node {
-            typedef std::unique_ptr<Node>           NodePtr;
-
             NodePtr                                 leftNode;
             NodePtr                                 rightNode;
             FrequencyType                           frequency;
@@ -261,10 +326,6 @@ namespace mpgl {
         template <typename Tp>
         static constexpr std::size_t bitsOf(void) noexcept
             { return sizeof(Tp) * CHAR_BIT; }
-
-        typedef typename Node::NodePtr              NodePtr;
-        typedef std::reference_wrapper<
-            NodePtr const>                          NodeCRef;
 
         typedef std::array<FrequencyType,
             bitsOf<CharType>()>                     CountedArray;
@@ -461,7 +522,7 @@ namespace mpgl {
 
     template <typename CharType, SizeType FrequencyType>
     [[nodiscard]] HuffmanTree<CharType, FrequencyType>
-        HuffmanTree<CharType, FrequencyType>::createDeflateDecoder(
+        HuffmanTree<CharType, FrequencyType>::createDeflateTree(
             void) requires (sizeof(CharType) * CHAR_BIT > 8)
     {
         FrequencyArray frequency;
@@ -526,7 +587,7 @@ namespace mpgl {
     }
 
     template <typename CharType, SizeType FrequencyType>
-    template <BitIterator Iter>
+    template <BitInputIterator Iter>
     [[nodiscard]] CharType
         HuffmanTree<CharType, FrequencyType>::Decoder::operator()(
             Iter& iterator) const
@@ -536,8 +597,55 @@ namespace mpgl {
             node = std::cref(*iterator++ ? node.get()->rightNode
                 : node.get()->leftNode);
         if (!node.get())
-            throw HuffmanTreeDecoderException{};
+            throw HuffmanTreeUnknownToken{};
         return node.get()->character;
+    }
+
+    template <typename CharType, SizeType FrequencyType>
+    HuffmanTree<CharType, FrequencyType>::Encoder::Encoder(
+        HuffmanTree const& tree)
+    {
+        walkThrough(std::cref(tree.root), tokens, 0, 0);
+    }
+
+    template <typename CharType, SizeType FrequencyType>
+    HuffmanTree<CharType, FrequencyType>::Encoder::Encoder(void) {
+        auto tree = createDeflateTree();
+        walkThrough(std::cref(tree.root), tokens, 0, 0);
+    }
+
+    template <typename CharType, SizeType FrequencyType>
+    void HuffmanTree<CharType, FrequencyType>::Encoder::walkThrough(
+        NodeCRef node,
+        TokenMap& tokens,
+        FrequencyType code,
+        CharType depth)
+    {
+        while (node.get() && node.get()->notLeaf) {
+            walkThrough(std::cref(node.get()->leftNode),
+                tokens, code << 1, depth + 1);
+            node = std::cref(node.get()->rightNode);
+            code = (code << 1) + 1;
+            depth += 1;
+        }
+        if (node.get())
+            tokens.emplace(node.get()->character,
+                TokenData{code, depth});
+    }
+
+    template <typename CharType, SizeType FrequencyType>
+    template <BitOutputIterator Iter>
+    void
+        HuffmanTree<CharType, FrequencyType>::Encoder::operator()(
+            Iter& iterator,
+            CharType token) const
+    {
+        auto iter = tokens.find(token);
+        if (iter == tokens.end())
+            throw HuffmanTreeUnknownToken{};
+        auto const& [code, length] = iter->second;
+        for (CharType i = 0; i < length; ++i, ++iterator)
+            *iterator = bool((code >> (length - 1 - i)) & 1);
     }
 
 }
