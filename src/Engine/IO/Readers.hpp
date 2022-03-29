@@ -180,8 +180,6 @@ namespace mpgl {
      * @return the readed type
      */
     template <std::integral Tp, bool BigEndian, BitIterator Iter>
-        requires requires (Iter iter)
-            { { iter.readByte() } -> std::same_as<std::byte>; }
     [[nodiscard]] constexpr Tp readType(Iter& iter) noexcept;
 
     /**
@@ -195,8 +193,6 @@ namespace mpgl {
      * @return the readed type
      */
     template <std::integral Tp, bool BigEndian, BitIterator Iter>
-        requires requires (Iter iter)
-            { { iter.readByte() } -> std::same_as<std::byte>; }
     [[nodiscard]] constexpr Tp peekType(Iter iter) noexcept;
 
     /**
@@ -362,8 +358,6 @@ namespace mpgl {
     }
 
     template <std::integral Tp, bool BigEndian, BitIterator Iter>
-        requires requires (Iter iter)
-            { { iter.readByte() } -> std::same_as<std::byte>; }
     [[nodiscard]] constexpr Tp readType(Iter& iter) noexcept {
         Tp data;
         if constexpr (BigEndian) {
@@ -380,8 +374,6 @@ namespace mpgl {
     }
 
     template <std::integral Tp, bool BigEndian, BitIterator Iter>
-        requires requires (Iter iter)
-            { { iter.readByte() } -> std::same_as<std::byte>; }
     [[nodiscard]] constexpr Tp peekType(Iter iter) noexcept {
         Tp data;
         if constexpr (BigEndian) {

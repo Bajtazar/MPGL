@@ -81,71 +81,183 @@ namespace mpgl {
             sentinel_type const& sent) noexcept
                 : iter{iter}, begin{iter}, sentinel{sent} {}
 
+        /**
+         * Constructs a new safe iterator object
+         */
         constexpr explicit SafeIterator(void) noexcept = default;
 
+        /**
+         * Increments iterator by one
+         *
+         * @return reference to this object
+         */
         constexpr SafeIterator& operator++(void) noexcept
             { ++iter; return *this; }
-        constexpr SafeIterator  operator++(int)  noexcept
+
+        /**
+         * Post-increments iterator by one and returns copy
+         * of the object
+         *
+         * @return the copied object
+         */
+        [[nodiscard]] constexpr SafeIterator operator++(int) noexcept
             { auto temp = *this; ++iter; return temp; }
 
+        /**
+         * Decrements iterator by one
+         *
+         * @return reference to this object
+         */
         constexpr SafeIterator& operator--(void) noexcept
             { --iter; return *this; }
-        constexpr SafeIterator  operator--(int)  noexcept
+
+        /**
+         * Post-decrements iterator by one and returns copy
+         * of the object
+         *
+         * @return the copied object
+         */
+        [[nodiscard]] constexpr SafeIterator operator--(int) noexcept
             { auto temp = *this; --iter; return temp; }
 
-        constexpr reference operator*(void) const;
-        constexpr pointer operator->(void) const;
+        /**
+         * Returns the value of the wrapped iterator
+         *
+         * @return the value of the wrapped iterator
+         */
+        [[nodiscard]] constexpr reference operator*(void) const;
 
+        /**
+         * Returns the pointer to the value of the wrapped iterator
+         *
+         * @return the pointer to the value of the wrapped iterator
+         */
+        [[nodiscard]] constexpr pointer operator->(void) const;
+
+        /**
+         * Increments iterator by the given distance
+         *
+         * @param offset the incremented distance
+         * @return reference to this object
+         */
         constexpr SafeIterator& operator+=(
             difference_type offset) noexcept
                 { iter += offset; return *this; }
 
+        /**
+         * Decrements iterator by the given distance
+         *
+         * @param offset the decremented distance
+         * @return reference to this object
+         */
         constexpr SafeIterator& operator-=(
             difference_type offset) noexcept
                 { iter -= offset; return *this; }
 
-        constexpr SafeIterator operator[](
-            difference_type offset) noexcept
-                { auto temp = *this; temp += offset; return temp; }
+        /**
+         * Returns an element shifted by the given offset
+         *
+         * @param offset the incremented distance
+         * @return the element shifted by the given offse
+         */
+        [[nodiscard]] constexpr value_type operator[](
+            difference_type offset)
+                { auto tmp = *this + offset; return *tmp; }
 
-        constexpr bool isSafe(void) const noexcept
+        /**
+         * Returns whether the iterator is in the safe range
+         *
+         * @return if the iterator is in the safe range
+         */
+        [[nodiscard]] constexpr bool isSafe(void) const noexcept
             { return iter > sentinel && iter <= begin; }
 
-        friend constexpr SafeIterator
-            operator+ (SafeIterator const& right,
-                difference_type left) noexcept
-            { auto temp = right; temp += left; return temp; }
-
-        friend constexpr SafeIterator
-            operator+ (difference_type right,
-                SafeIterator const& left) noexcept
+        /**
+         * Adds given distance to an iterator
+         *
+         * @param left the iterator
+         * @param right the distance
+         * @return the shifted iterator
+         */
+        [[nodiscard]] friend constexpr SafeIterator
+            operator+ (
+                SafeIterator const& left,
+                difference_type right) noexcept
             { auto temp = left; temp += right; return temp; }
 
-        friend constexpr SafeIterator
-            operator- (SafeIterator const& right,
-                difference_type left) noexcept
-            { return right.iter - left; }
+        /**
+         * Adds given distance to an iterator
+         *
+         * @param left the distance
+         * @param right the iterator
+         * @return the shifted iterator
+         */
+        [[nodiscard]] friend constexpr SafeIterator
+            operator+ (
+                difference_type left,
+                SafeIterator const& right) noexcept
+            { auto temp = right; temp += left; return temp; }
 
-        friend constexpr difference_type
-            operator- (SafeIterator const& right,
-                SafeIterator const& left) noexcept
-            { return right.iter - left.iter; }
+        /**
+         * Subtracts given distance from iterator
+         *
+         * @param left the iterator
+         * @param right the distance
+         * @return the shifted operator
+         */
+        [[nodiscard]] friend constexpr SafeIterator
+            operator- (
+                SafeIterator const& left,
+                difference_type right) noexcept
+            { return left.iter - right; }
 
-        friend constexpr bool
-            operator== (SafeIterator const& left,
+        /**
+         * Returns distance between iterators
+         *
+         * @param left the left iterator
+         * @param right the right iterator
+         * @return difference_type
+         */
+        [[nodiscard]] friend constexpr difference_type
+            operator- (
+                SafeIterator const& left,
+                SafeIterator const& right) noexcept
+            { return left.iter - right.iter; }
+
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param left the left iterator
+         * @param right the right iterator
+         * @return whether two iterators are equal
+         */
+        [[nodiscard]] friend constexpr bool
+            operator== (
+                SafeIterator const& left,
                 SafeIterator const& right) noexcept
             { return left.iter == right.iter; }
 
-        friend constexpr compare
+        /**
+         * Compares two iterators to each other
+         *
+         * @param left the left iterator
+         * @param right the right iterator
+         * @return the result of compare
+         */
+        [[nodiscard]] friend constexpr compare
             operator<=> (SafeIterator const& left,
                 SafeIterator const& right) noexcept
             { return left.iter <=> right.iter; }
     private:
-        iterator_type iter;
-        iterator_type begin;
-        sentinel_type sentinel;
+        iterator_type                               iter;
+        iterator_type                               begin;
+        sentinel_type                               sentinel;
     };
 
+    /**
+     * Declaration of the char istreambuf iterator version
+     * of the safe iterator
+     */
     template <>
     class SafeIterator<std::istreambuf_iterator<char>,
         std::istreambuf_iterator<char>>
@@ -157,33 +269,73 @@ namespace mpgl {
         typedef char                                value_type;
         typedef std::input_iterator_tag             iterator_category;
 
+        /**
+         * Constructs a new safe iterator object from the given
+         * iterator and its sentinel
+         *
+         * @param iter the constant reference to the iterator
+         * @param sent the constant reference to the sentinel
+         */
         constexpr explicit SafeIterator(
             iterator_type const& iter,
             sentinel_type const& sent) noexcept
                 : iter{iter}, sentinel{sent} {}
+
+        /**
+         * Constructs a new safe iterator object
+         */
         constexpr explicit SafeIterator(void) noexcept = default;
 
+        /**
+         * Increments iterator by one
+         *
+         * @return reference to this object
+         */
         SafeIterator& operator++(void) noexcept
             { ++iter; return *this; }
-        SafeIterator  operator++(int)  noexcept
+
+        /**
+         * Post-increments iterator by one and returns copy
+         * of the object
+         *
+         * @return the copied object
+         */
+        [[nodiscard]] SafeIterator operator++(int) noexcept
             { auto temp = *this; temp.iter = iter++; return temp; }
 
-        value_type operator*(void) const;
+        /**
+         * Returns the value of the wrapped iterator
+         *
+         * @return the value of the wrapped iterator
+         */
+        [[nodiscard]] value_type operator*(void) const;
 
-        friend bool operator== (SafeIterator const& left,
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param left the left iterator
+         * @param right the right iterator
+         * @return whether two iterators are equal
+         */
+        [[nodiscard]] friend bool operator== (SafeIterator const& left,
             SafeIterator const& right) noexcept
                 { return left.iter == right.iter; }
 
-        bool isSafe(void) const noexcept
+        /**
+         * Returns whether the iterator is in the safe range
+         *
+         * @return if the iterator is in the safe range
+         */
+        [[nodiscard]] bool isSafe(void) const noexcept
             { return iter != sentinel; }
     private:
-        iterator_type iter;
-        sentinel_type sentinel;
+        iterator_type                               iter;
+        sentinel_type                               sentinel;
     };
 
     template <std::random_access_iterator Iter,
         std::sentinel_for<Iter> Sent>
-    constexpr SafeIterator<Iter, Sent>::reference
+    [[nodiscard]] constexpr SafeIterator<Iter, Sent>::reference
         SafeIterator<Iter, Sent>::operator*(void) const
     {
         if (iter >= sentinel || iter < begin)
@@ -193,7 +345,7 @@ namespace mpgl {
 
     template <std::random_access_iterator Iter,
         std::sentinel_for<Iter> Sent>
-    constexpr SafeIterator<Iter, Sent>::pointer
+    [[nodiscard]] constexpr SafeIterator<Iter, Sent>::pointer
         SafeIterator<Iter, Sent>::operator->(void) const
     {
         if (iter >= sentinel || iter < begin)
