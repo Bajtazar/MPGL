@@ -28,8 +28,8 @@
 #include "../Exceptions/SecurityUnknownPolicyException.hpp"
 #include "../Exceptions/InflateDataCorruptionException.hpp"
 #include "../Iterators/SafeIterator.hpp"
-#include "../Iterators/BitIterator.hpp"
 #include "../Utility/Security.hpp"
+#include "../IO/Readers.hpp"
 #include "HuffmanTree.hpp"
 
 namespace mpgl {

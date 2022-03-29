@@ -2,7 +2,6 @@
 
 #include "../../Compression/HuffmanTree.hpp"
 #include "../../Iterators/SafeIterator.hpp"
-#include "../../Iterators/BitIterator.hpp"
 #include "../../Mathematics/Matrix.hpp"
 #include "../../Mathematics/IDCT.hpp"
 #include "../../Utility/Security.hpp"

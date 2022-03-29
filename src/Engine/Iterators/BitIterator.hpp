@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include <iterator>
@@ -7,6 +32,9 @@
 
 namespace mpgl {
 
+    /**
+     * Defines the category of the bit iterators
+     */
     struct BitIteratorTag : public std::input_iterator_tag {};
 
     template <class Iter>
@@ -15,21 +43,23 @@ namespace mpgl {
         std::derived_from< typename Iter::iterator_category,
             BitIteratorTag>;
 
+    /**
+     * Checks whether the given range uses a bit iterator
+     *
+     * @tparam Range the checked range
+     */
     template <class Range>
     concept BitRange = std::ranges::input_range<Range> &&
         BitIterator<std::ranges::iterator_t<Range>>;
 
-    template <std::integral T, bool BigEndian, BitIterator Iter>
-        requires requires (Iter iter)
-            { { iter.readByte() } -> std::same_as<std::byte>; }
-    constexpr T readType(Iter& iter) noexcept;
-
-    template <std::integral T, BitIterator Iter>
-    constexpr T readNBits(std::size_t length, Iter& iter) noexcept;
-
-    template <std::integral T, BitIterator Iter>
-    constexpr T readRNBits(std::size_t length, Iter& iter) noexcept;
-
+    /**
+     * Iterator returning the values of the individual bits in the
+     * little endian manner. Allows to override the bit value
+     * with the special method
+     *
+     * @tparam Iter the iterator type that iterates through
+     * an individual bytes
+     */
     template <ByteInputIterator Iter>
     class LittleEndianBitIter : public std::iterator<
         BitIteratorTag, bool>
@@ -39,38 +69,111 @@ namespace mpgl {
         using value_type =              bit;
         using iterator_category =       BitIteratorTag;
 
+        /**
+         * Constructs a new little endian bit iterator from
+         * the given iterator
+         *
+         * @param iter the constant reference to the iterator
+         */
         explicit constexpr LittleEndianBitIter(
             Iter const& iter) noexcept
                 : iter{iter}, bitIter{0} {}
+
+        /**
+         * Constructs a new little endian bit iterator from
+         * the given iterator
+         *
+         * @param iter the rvalue reference to the iterator
+         */
         explicit constexpr LittleEndianBitIter(
             Iter&& iter) noexcept
                 : iter{std::move(iter)}, bitIter{0} {}
+
+        /**
+         * Constructs a new little endian bit iterator
+         */
         explicit constexpr LittleEndianBitIter(
             void) noexcept = default;
 
-        constexpr bit operator* (void) const noexcept
+        /**
+         * Returns a value of the currently examined bit
+         *
+         * @return the value of the currently examined bit
+         */
+        [[nodiscard]] constexpr bit operator* (void) const noexcept
             { return ((1 << bitIter) & (*iter)) >> bitIter; }
 
-        constexpr LittleEndianBitIter& operator++ (void) noexcept;
-        constexpr LittleEndianBitIter  operator++  (int) noexcept
-            { auto temp = *this; ++(*this); return temp; }
+        /**
+         * Sets a value of the currently examined bit
+         *
+         * @param value the new value of the bit
+         */
+        constexpr void setBit(bit value) noexcept;
 
-        friend constexpr bool operator== (
+        /**
+         * Increments iterator by one
+         *
+         * @return reference to this object
+         */
+        constexpr LittleEndianBitIter& operator++(
+            void) noexcept;
+
+        /**
+         * Post-increments iterator by one and returns copy
+         * of the object
+         *
+         * @return the copied object
+         */
+        [[nodiscard]] constexpr LittleEndianBitIter operator++(
+            int) noexcept
+                { auto temp = *this; ++(*this); return temp; }
+
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param left the left iterator
+         * @param right the right iterator
+         * @return whether two iterators are equal
+         */
+        [[nodiscard]] friend constexpr bool operator== (
             LittleEndianBitIter const& left,
             LittleEndianBitIter const& right) noexcept
                 { return left.iter == right.iter; }
 
-        static inline consteval uint8 byteLength(void) noexcept
-            { return CHAR_BIT; }
+        /**
+         * Returns a number of bits in byte
+         *
+         * @return the number of bits in byte
+         */
+        [[nodiscard]] static inline consteval uint8 byteLength(
+            void) noexcept
+                { return CHAR_BIT; }
 
+        /**
+         * Jums to the begining of the next byte
+         */
         constexpr void skipToNextByte(void) noexcept
             { ++iter; bitIter = 0; }
-        constexpr std::byte readByte(void) noexcept;
+
+        /**
+         * Reads the entire byte
+         *
+         * @return the readed byte
+         */
+        [[nodiscard]] constexpr std::byte readByte(void) noexcept;
     private:
         Iter                            iter;
         uint8                           bitIter;
     };
 
+    /**
+     * Iterator returning the values of the individual bits in the
+     * big endian manner. Allows to override the bit value
+     * with the special method
+     *
+     * @tparam Iter the iterator type that iterates through
+     * an individual bytes
+     */
     template <ByteInputIterator Iter>
     class BigEndianBitIter : public std::iterator<
         BitIteratorTag, bool>
@@ -80,37 +183,109 @@ namespace mpgl {
         using value_type =              bit;
         using iterator_category =       BitIteratorTag;
 
-        explicit constexpr BigEndianBitIter(
-            Iter&& iter) noexcept
-                : iter{std::move(iter)}, bitIter{7} {}
+        /**
+         * Constructs a new big endian bit iterator from
+         * the given iterator
+         *
+         * @param iter the constant reference to the iterator
+         */
         explicit constexpr BigEndianBitIter(
             Iter const& iter) noexcept
                 : iter{iter}, bitIter{7} {}
+
+        /**
+         * Constructs a new big endian bit iterator from
+         * the given iterator
+         *
+         * @param iter the rvalue reference to the iterator
+         */
+        explicit constexpr BigEndianBitIter(
+            Iter&& iter) noexcept
+                : iter{std::move(iter)}, bitIter{7} {}
+
+        /**
+         * Constructs a new big endian bit iterator
+         */
         explicit constexpr BigEndianBitIter(
                 void) noexcept = default;
 
-        constexpr bit operator* (void) const noexcept
+        /**
+         * Returns a value of the currently examined bit
+         *
+         * @return the value of the currently examined bit
+         */
+        [[nodiscard]] constexpr bit operator* (void) const noexcept
             { return ((1 << bitIter) & (*iter)) >> bitIter; }
 
-        constexpr BigEndianBitIter& operator++ (void) noexcept;
-        constexpr BigEndianBitIter  operator++  (int) noexcept
-            { auto temp = *this; ++(*this); return temp; }
+        /**
+         * Sets a value of the currently examined bit
+         *
+         * @param value the new value of the bit
+         */
+        constexpr void setBit(bit value) noexcept;
 
-        friend constexpr bool operator== (
+        /**
+         * Increments iterator by one
+         *
+         * @return reference to this object
+         */
+        constexpr BigEndianBitIter& operator++ (void) noexcept;
+
+        /**
+         * Post-increments iterator by one and returns copy
+         * of the object
+         *
+         * @return the copied object
+         */
+        [[nodiscard]] constexpr BigEndianBitIter  operator++(
+            int) noexcept
+                { auto temp = *this; ++(*this); return temp; }
+
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param left the left iterator
+         * @param right the right iterator
+         * @return whether two iterators are equal
+         */
+        [[nodiscard]] friend constexpr bool operator== (
             BigEndianBitIter const& left,
             BigEndianBitIter const& right) noexcept
                 { return left.iter == right.iter; }
 
-        static inline consteval uint8 byteLength(void) noexcept
-            { return CHAR_BIT; }
+        /**
+         * Returns a number of bits in byte
+         *
+         * @return the number of bits in byte
+         */
+        [[nodiscard]] static inline consteval uint8 byteLength(
+            void) noexcept
+                { return CHAR_BIT; }
 
+        /**
+         * Jums to the begining of the next byte
+         */
         constexpr void skipToNextByte(void) noexcept
             { ++iter; bitIter = 7; }
-        constexpr std::byte readByte(void) noexcept;
+
+        /**
+         * Reads the entire byte
+         *
+         * @return the readed byte
+         */
+        [[nodiscard]] constexpr std::byte readByte(void) noexcept;
     private:
         Iter                            iter;
         uint8                           bitIter;
     };
+
+    template <ByteInputIterator Iter>
+    constexpr void LittleEndianBitIter<Iter>::setBit(
+        bit value) noexcept
+    {
+        uint8 mask = 1 << bitIter;
+        *iter = (~mask & *iter) | (value << bitIter);
+    }
 
     template <ByteInputIterator Iter>
     constexpr LittleEndianBitIter<Iter>&
@@ -125,11 +300,19 @@ namespace mpgl {
     }
 
     template <ByteInputIterator Iter>
-    constexpr std::byte
+    [[nodiscard]] constexpr std::byte
         LittleEndianBitIter<Iter>::readByte(void) noexcept
     {
         bitIter = 0;
         return static_cast<std::byte>(*iter++);
+    }
+
+    template <ByteInputIterator Iter>
+    constexpr void BigEndianBitIter<Iter>::setBit(
+        bit value) noexcept
+    {
+        uint8 mask = 1 << bitIter;
+        *iter = (~mask & *iter) | (value << bitIter);
     }
 
     template <ByteInputIterator Iter>
@@ -144,49 +327,11 @@ namespace mpgl {
     }
 
     template <ByteInputIterator Iter>
-    constexpr std::byte
+    [[nodiscard]] constexpr std::byte
         BigEndianBitIter<Iter>::readByte(void) noexcept
     {
         bitIter = 7;
         return static_cast<std::byte>(*iter++);
-    }
-
-    template <std::integral T, bool BigEndian, BitIterator Iter>
-        requires requires (Iter iter)
-            { { iter.readByte() } -> std::same_as<std::byte>; }
-    constexpr T readType(Iter& iter) noexcept {
-        T data;
-        if constexpr (BigEndian) {
-            std::byte* raw = reinterpret_cast<std::byte*>(&data) +
-                sizeof(T) - 1;
-            for (uint8 i = sizeof(T); i != 0; --i, --raw)
-                *raw = iter.readByte();
-        } else {
-            std::byte* raw = reinterpret_cast<std::byte*>(&data);
-            for (uint8 i = 0; i != sizeof(T); ++i, ++raw)
-                *raw = iter.readByte();
-        }
-        return data;
-    }
-
-    template <std::integral T, BitIterator Iter>
-    constexpr T
-        readNBits(std::size_t length, Iter& iter) noexcept
-    {
-        T answer = 0;
-        for (std::size_t i = 0; i < length; ++i)
-            answer += (*iter++) << i;
-        return answer;
-    }
-
-    template <std::integral T, BitIterator Iter>
-    constexpr T
-        readRNBits(std::size_t length, Iter& iter) noexcept
-    {
-        T answer = 0;
-        for (std::size_t i = 1; i <= length; ++i)
-            answer += (*iter++) << (length - i);
-        return answer;
     }
 
 }

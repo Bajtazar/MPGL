@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include "../Iterators/BitIterator.hpp"
 #include "../Traits/Concepts.hpp"
 
 #include <algorithm>
@@ -167,6 +168,97 @@ namespace mpgl {
         std::size_t length,
         Iter iter) noexcept(NothrowReadable<Iter>);
 
+    /**
+     * Reads the given type from the given bit iterator.
+     * Advances iterator by the size of the given type
+     *
+     * @tparam Tp the given type
+     * @tparam BigEndian indicates if the type is saved
+     * in the big-endian manner
+     * @tparam Iter the iterator type
+     * @param iterator the reference to the iterator
+     * @return the readed type
+     */
+    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+        requires requires (Iter iter)
+            { { iter.readByte() } -> std::same_as<std::byte>; }
+    [[nodiscard]] constexpr Tp readType(Iter& iter) noexcept;
+
+    /**
+     * Peeks the given type from the given bit iterator
+     *
+     * @tparam Tp the given type
+     * @tparam BigEndian indicates if the type is saved
+     * in the big-endian manner
+     * @tparam Iter the iterator type
+     * @param iterator the iterator object
+     * @return the readed type
+     */
+    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+        requires requires (Iter iter)
+            { { iter.readByte() } -> std::same_as<std::byte>; }
+    [[nodiscard]] constexpr Tp peekType(Iter iter) noexcept;
+
+    /**
+     * Reads n-chars from the given bit iterator to the given
+     * type. Advances iterator by n
+     *
+     * @tparam Tp the target type
+     * @tparam Iter the iterator type
+     * @param length the length of the sequence
+     * @param iter the reference to the iterator object
+     * @return the readed data
+     */
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp readNBits(
+        std::size_t length,
+        Iter& iter) noexcept;
+
+    /**
+     * Peeks n-chars from the given bit iterator to the given
+     * type
+     *
+     * @tparam Tp the target type
+     * @tparam Iter the iterator type
+     * @param length the length of the sequence
+     * @param iter the iterator object
+     * @return the readed data
+     */
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp peekNBits(
+        std::size_t length,
+        Iter iter) noexcept;
+
+    /**
+     * Reads n-chars from the given bit iterator to the given
+     * type in reverse order. Advances iterator by n
+     *
+     * @tparam Tp the target type
+     * @tparam Iter the iterator type
+     * @param length the length of the sequence
+     * @param iter the reference to the iterator object
+     * @return the readed data
+     */
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp readRNBits(
+        std::size_t length,
+        Iter& iter) noexcept;
+
+    /**
+     * Peeks n-chars from the given bit iterator to the given
+     * type in reverse order
+     *
+     * @tparam Tp the target type
+     * @tparam Iter the iterator type
+     * @param length the length of the sequence
+     * @param iter the iterator object
+     * @return the readed data
+     */
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp peekRNBits(
+        std::size_t length,
+        Iter iter) noexcept;
+
     template <NotSameSize<std::byte> Tp, bool BigEndian,
         std::input_iterator Iter>
             requires (std::is_trivially_constructible_v<Tp>
@@ -267,6 +359,82 @@ namespace mpgl {
         std::string data(length, ' ');
         std::ranges::for_each(data, [&iter](auto& c){ c = *iter++; });
         return data;
+    }
+
+    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+        requires requires (Iter iter)
+            { { iter.readByte() } -> std::same_as<std::byte>; }
+    [[nodiscard]] constexpr Tp readType(Iter& iter) noexcept {
+        Tp data;
+        if constexpr (BigEndian) {
+            std::byte* raw = reinterpret_cast<std::byte*>(&data) +
+                sizeof(Tp) - 1;
+            for (uint8 i = sizeof(Tp); i != 0; --i, --raw)
+                *raw = iter.readByte();
+        } else {
+            std::byte* raw = reinterpret_cast<std::byte*>(&data);
+            for (uint8 i = 0; i != sizeof(Tp); ++i, ++raw)
+                *raw = iter.readByte();
+        }
+        return data;
+    }
+
+    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+        requires requires (Iter iter)
+            { { iter.readByte() } -> std::same_as<std::byte>; }
+    [[nodiscard]] constexpr Tp peekType(Iter iter) noexcept {
+        Tp data;
+        if constexpr (BigEndian) {
+            std::byte* raw = reinterpret_cast<std::byte*>(&data) +
+                sizeof(Tp) - 1;
+            for (uint8 i = sizeof(Tp); i != 0; --i, --raw)
+                *raw = iter.readByte();
+        } else {
+            std::byte* raw = reinterpret_cast<std::byte*>(&data);
+            for (uint8 i = 0; i != sizeof(Tp); ++i, ++raw)
+                *raw = iter.readByte();
+        }
+        return data;
+    }
+
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp
+        readNBits(std::size_t length, Iter& iter) noexcept
+    {
+        Tp answer = 0;
+        for (std::size_t i = 0; i < length; ++i)
+            answer += (*iter++) << i;
+        return answer;
+    }
+
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp
+        peekNBits(std::size_t length, Iter iter) noexcept
+    {
+        Tp answer = 0;
+        for (std::size_t i = 0; i < length; ++i)
+            answer += (*iter++) << i;
+        return answer;
+    }
+
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp
+        readRNBits(std::size_t length, Iter& iter) noexcept
+    {
+        Tp answer = 0;
+        for (std::size_t i = 1; i <= length; ++i)
+            answer += (*iter++) << (length - i);
+        return answer;
+    }
+
+    template <std::integral Tp, BitIterator Iter>
+    [[nodiscard]] constexpr Tp
+        peekRNBits(std::size_t length, Iter iter) noexcept
+    {
+        Tp answer = 0;
+        for (std::size_t i = 1; i <= length; ++i)
+            answer += (*iter++) << (length - i);
+        return answer;
     }
 
 }

@@ -27,10 +27,10 @@
 
 #include "../Exceptions/HuffmanTreeEmptyMapException.hpp"
 #include "../Exceptions/HuffmanTreeDecoderException.hpp"
-#include "../Iterators/BitIterator.hpp"
 #include "../Collections/MinHeap.hpp"
 #include "../Traits/Concepts.hpp"
 #include "../Utility/Ranges.hpp"
+#include "../IO/Readers.hpp"
 
 #include <unordered_map>
 #include <climits>
