@@ -100,7 +100,7 @@ namespace mpgl {
         typedef std::map<uint8, QuantizationTablePtr>                       QuantizationArray;
         typedef std::map<uint8, Matrix8<int16>>                             MatricesMap;
         typedef std::reference_wrapper<ChunkParser>                         ChunkParserRef;
-        typedef BigEndianBitInputIter<SafeIter>                             Iter;
+        typedef BigEndianInputBitIter<SafeIter>                             Iter;
 
         template <typename T>
         using PixelMatrix = std::tuple<Matrix8<T>, Matrix8<T>, Matrix8<T>>;
