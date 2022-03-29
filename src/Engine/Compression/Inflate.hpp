@@ -68,7 +68,7 @@ namespace mpgl {
             security::isSecurePolicy<Policy>,
             SafeIterator<typename Range::iterator>,
             typename Range::iterator>                   Iterator;
-        typedef LittleEndianBitIter<Iterator>           BitIter;
+        typedef LittleEndianBitInputIter<Iterator>      BitIter;
         typedef HuffmanTree<uint16>::Decoder            Decoder;
         typedef std::vector<uint16>                     VectorU16;
 

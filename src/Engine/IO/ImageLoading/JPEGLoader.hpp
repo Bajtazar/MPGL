@@ -95,12 +95,12 @@ namespace mpgl {
         typedef std::unique_ptr<HuffmanTable>   HuffmanTablePtr;
 
         typedef std::function<std::unique_ptr<ChunkInterface>(JPEGLoader&)> ChunkParser;
-        typedef std::map<bool, std::map<uint8, HuffmanTablePtr>>          HuffmanArray;
-        typedef std::map<uint8, std::unique_ptr<Component>>               ComponentArray;
-        typedef std::map<uint8, QuantizationTablePtr>                     QuantizationArray;
-        typedef std::map<uint8, Matrix8<int16>>                         MatricesMap;
+        typedef std::map<bool, std::map<uint8, HuffmanTablePtr>>            HuffmanArray;
+        typedef std::map<uint8, std::unique_ptr<Component>>                 ComponentArray;
+        typedef std::map<uint8, QuantizationTablePtr>                       QuantizationArray;
+        typedef std::map<uint8, Matrix8<int16>>                             MatricesMap;
         typedef std::reference_wrapper<ChunkParser>                         ChunkParserRef;
-        typedef BigEndianBitIter<SafeIter>                                  Iter;
+        typedef BigEndianBitInputIter<SafeIter>                             Iter;
 
         template <typename T>
         using PixelMatrix = std::tuple<Matrix8<T>, Matrix8<T>, Matrix8<T>>;

@@ -179,7 +179,7 @@ namespace mpgl {
      * @param iterator the reference to the iterator
      * @return the readed type
      */
-    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+    template <std::integral Tp, bool BigEndian, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp readType(Iter& iter) noexcept;
 
     /**
@@ -192,7 +192,7 @@ namespace mpgl {
      * @param iterator the iterator object
      * @return the readed type
      */
-    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+    template <std::integral Tp, bool BigEndian, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp peekType(Iter iter) noexcept;
 
     /**
@@ -205,7 +205,7 @@ namespace mpgl {
      * @param iter the reference to the iterator object
      * @return the readed data
      */
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp readNBits(
         std::size_t length,
         Iter& iter) noexcept;
@@ -220,7 +220,7 @@ namespace mpgl {
      * @param iter the iterator object
      * @return the readed data
      */
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp peekNBits(
         std::size_t length,
         Iter iter) noexcept;
@@ -235,7 +235,7 @@ namespace mpgl {
      * @param iter the reference to the iterator object
      * @return the readed data
      */
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp readRNBits(
         std::size_t length,
         Iter& iter) noexcept;
@@ -250,7 +250,7 @@ namespace mpgl {
      * @param iter the iterator object
      * @return the readed data
      */
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp peekRNBits(
         std::size_t length,
         Iter iter) noexcept;
@@ -357,7 +357,7 @@ namespace mpgl {
         return data;
     }
 
-    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+    template <std::integral Tp, bool BigEndian, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp readType(Iter& iter) noexcept {
         Tp data;
         if constexpr (BigEndian) {
@@ -373,7 +373,7 @@ namespace mpgl {
         return data;
     }
 
-    template <std::integral Tp, bool BigEndian, BitIterator Iter>
+    template <std::integral Tp, bool BigEndian, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp peekType(Iter iter) noexcept {
         Tp data;
         if constexpr (BigEndian) {
@@ -389,7 +389,7 @@ namespace mpgl {
         return data;
     }
 
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp
         readNBits(std::size_t length, Iter& iter) noexcept
     {
@@ -399,7 +399,7 @@ namespace mpgl {
         return answer;
     }
 
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp
         peekNBits(std::size_t length, Iter iter) noexcept
     {
@@ -409,7 +409,7 @@ namespace mpgl {
         return answer;
     }
 
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp
         readRNBits(std::size_t length, Iter& iter) noexcept
     {
@@ -419,7 +419,7 @@ namespace mpgl {
         return answer;
     }
 
-    template <std::integral Tp, BitIterator Iter>
+    template <std::integral Tp, BitInputIterator Iter>
     [[nodiscard]] constexpr Tp
         peekRNBits(std::size_t length, Iter iter) noexcept
     {

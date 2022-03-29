@@ -220,6 +220,10 @@ namespace mpgl {
     concept ByteInputIterator = std::input_iterator<Iter>
         && requires (Iter iter) { {*iter} -> SameSize<std::byte>; };
 
+    template <class Iter>
+    concept ByteOutputIterator = std::output_iterator<Iter, char>
+        && requires (Iter iter, char c) { *iter = c; };
+
     /**
      * Checks whether the given iterator can be read without
      * throwing an exception
