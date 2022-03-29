@@ -40,8 +40,12 @@ namespace mpgl {
     template <class Iter>
     concept BitIterator = std::input_iterator<Iter> &&
         requires {typename Iter::iterator_category;} &&
-        std::derived_from< typename Iter::iterator_category,
-            BitIteratorTag>;
+        std::derived_from<typename Iter::iterator_category,
+            BitIteratorTag>
+        && requires (Iter iter, bool bit) {
+            { iter.readByte() } -> std::same_as<std::byte>;
+            { iter.setBit(bit) } -> std::same_as<void>;
+        };
 
     /**
      * Checks whether the given range uses a bit iterator
