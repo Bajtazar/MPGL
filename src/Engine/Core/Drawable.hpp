@@ -26,18 +26,27 @@
 #pragma once
 
 #include "Context/Context.hpp"
+#include "Dimensions.hpp"
 
 namespace mpgl {
 
     /**
-     * Base class for all drawable types
+     * Definision of the drawable class. Base class for
+     * all drawable objects. Separates the shapes of
+     * different dimensions
      */
-    class Drawable : virtual protected GraphicalObject {
-    public:
+    template <Dimension Dim>
+    struct Drawable : virtual protected GraphicalObject {
         /**
-         * Construct a new Drawable object
+         * Constructs a new Drawable object
          */
         explicit Drawable(void) noexcept = default;
+
+        Drawable(Drawable const&) = delete;
+        Drawable(Drawable&&) = delete;
+
+        Drawable& operator=(Drawable const&) = delete;
+        Drawable& operator=(Drawable&&) = delete;
 
         /**
          * Pure virtual function. Has to be overloaded.
@@ -46,9 +55,15 @@ namespace mpgl {
         virtual void draw(void) const noexcept = 0;
 
         /**
-         * Destroy the Drawable object
+         * Destroys the Drawable object
          */
         virtual ~Drawable(void) noexcept = default;
     };
+
+    typedef Drawable<dim::Dim2>                     StackedDrawable;
+    typedef Drawable<dim::Dim3>                     VolumetricDrawable;
+
+    typedef Drawable<dim::Dim2>                     Drawable2D;
+    typedef Drawable<dim::Dim3>                     Drawable3D;
 
 }

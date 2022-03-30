@@ -5,7 +5,7 @@
 
 namespace mpgl {
 
-    class Shadeable : virtual public Drawable {
+    class Shadeable : virtual public StackedDrawable {
     public:
         typedef std::shared_ptr<ShaderProgram>      ProgramPtr;
 

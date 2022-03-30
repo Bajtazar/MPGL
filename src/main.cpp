@@ -30,7 +30,7 @@
 
 using namespace mpgl;
 
-class RotatingSprite : public Drawable,
+class RotatingSprite : public StackedDrawable,
     public TickEvent, public ScreenTransformationEvent,
     public KeyPressEvent, public MouseMotionEvent
 {
@@ -104,7 +104,7 @@ private:
     uint32                                      sign = 1;
 };
 
-class RotatingRing : public Drawable,
+class RotatingRing : public StackedDrawable,
     public TickEvent, public ScreenTransformationEvent,
     public MouseMotionEvent
 {
