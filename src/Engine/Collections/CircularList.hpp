@@ -561,7 +561,9 @@ namespace mpgl {
     template <std::input_iterator Iter,
         std::sentinel_for<Iter> Sent>
     constexpr CircularList<Tp, Alloc>::CircularList(
-        Iter iter, Sent const& end, Alloc const& alloc)
+        Iter iter,
+        Sent const& end,
+        Alloc const& alloc)
             : alloc{alloc}
     {
         if (iter == end)
@@ -588,7 +590,8 @@ namespace mpgl {
     template <PureType Tp, Allocator<Tp> Alloc>
     template <std::ranges::input_range Range>
     constexpr CircularList<Tp, Alloc>::CircularList(
-        Range&& range, Alloc const& alloc)
+        Range&& range,
+        Alloc const& alloc)
             : CircularList{std::ranges::begin(range),
             std::ranges::end(range), alloc} {}
 
