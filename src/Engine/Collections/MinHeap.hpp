@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include <algorithm>
@@ -7,71 +32,169 @@
 
 namespace mpgl {
 
-    template <typename T>
-    concept IsSmartPtr = std::is_object_v<T> && (
-        std::is_same_v<T, std::shared_ptr<typename T::element_type>> ||
-        std::is_same_v<T, std::unique_ptr<typename T::element_type>>);
+    /**
+     * Checks whether the given type is the smart pointer
+     *
+     * @tparam Tp the checked type
+     */
+    template <typename Tp>
+    concept SmartPtr = std::is_object_v<Tp> && (
+        std::same_as<Tp, std::shared_ptr<typename Tp::element_type>> ||
+        std::same_as<Tp, std::unique_ptr<typename Tp::element_type>>);
 
-    template <typename T>
+    /**
+     * Compares two smart pointers with each other
+     *
+     * @tparam Tp the checked type
+     */
+    template <SmartPtr Tp>
     struct ComparePtr {
-        using value_type = std::remove_cvref_t<T>;
-        using const_reference = const value_type&;
+        using value_type =          std::remove_cvref_t<Tp>;
+        using const_reference =     value_type const&;
 
-        bool operator() (const_reference left, const_reference right) const noexcept { return (*left) > (*right); }
+        /**
+         * Compares two smart pointers payload with each other
+         *
+         * @param left the constant reference to the left pointer
+         * @param right the constant reference to the right pointer
+         * @return if the payloads are equal
+         */
+        [[nodiscard]] constexpr bool operator() (
+            const_reference left,
+            const_reference right) const noexcept
+                { return (*left) > (*right); }
     };
 
-    template <typename T, class Comparator = std::greater<T>>
-    using PtrComparable = std::conditional_t<IsSmartPtr<T>, ComparePtr<T>, Comparator>;
+    /**
+     * Returns the comparing method based on type
+     *
+     * @tparam Tp the type
+     * @tparam Comparator the default comparator
+     */
+    template <typename Tp, class Comparator = std::greater<Tp>>
+    using PtrComparator = std::conditional_t<SmartPtr<Tp>,
+        ComparePtr<Tp>, Comparator>;
 
-    template <typename T, std::predicate<T, T> Compare = PtrComparable<T>,
-        std::ranges::forward_range Sequence = std::vector<T>>
+    /**
+     * Represents the min heap. Allows to move the popped values
+     *
+     * @tparam Tp the element type
+     * @tparam Compare the comparation method
+     * @tparam Sequence the underlying sequence
+     */
+    template <typename Tp,
+        std::predicate<Tp, Tp> Compare = PtrComparator<Tp>,
+        std::ranges::forward_range Sequence = std::vector<Tp>>
     class MinHeap {
     public:
         typedef Sequence             container_type;
         typedef Compare              value_compare;
         typedef std::size_t          size_type;
-        typedef T                    value_type;
+        typedef Tp                   value_type;
         typedef value_type&          reference;
-        typedef const value_type&    const_reference;
+        typedef value_type const&    const_reference;
 
-        explicit MinHeap(const Compare& compare = Compare{}) noexcept : compare{compare} {}
+        /**
+         * Constructs a new Min Heap object from the given
+         * comparing object
+         *
+         * @param compare the constant reference to the comparing
+         * object
+         */
+        explicit MinHeap(
+            Compare const& compare = Compare{})
+                : compare{compare} {}
 
-        void push(const_reference element) requires std::copyable<value_type>;
-        void push(value_type&& element) requires std::movable<value_type>;
+        /**
+         * Pushes the element into the heap
+         *
+         * @param element the constant reference to the element
+         */
+        void push(const_reference element) requires (
+            std::copyable<value_type>);
+
+        /**
+         * Pushes the element into the heap
+         *
+         * @param element the rvalue reference to the element
+         */
+        void push(value_type&& element) requires (
+            std::movable<value_type>);
+
+        /**
+         * Emplaces the element in the heap
+         *
+         * @tparam Args the arguments types
+         * @param args the value's constructor arguments
+         */
         template <typename... Args>
-        void emplace(Args&&... args) requires std::constructible_from<value_type, Args...>;
+        void emplace(Args&&... args) requires (
+            std::constructible_from<value_type, Args...>);
 
-        value_type popBack(void) requires std::movable<value_type>;
+        /**
+         * Pops the element from the heap
+         *
+         * @return the popped element
+         */
+        [[nodiscard]] value_type popBack(
+            void) requires std::movable<value_type>;
 
-        std::size_t size(void) const noexcept requires std::ranges::sized_range<Sequence> { return sequence.size(); }
+        /**
+         * Returns the size of the heap
+         *
+         * @return the size of the heap
+         */
+        [[nodiscard]] std::size_t size(void) const noexcept requires (
+            std::ranges::sized_range<Sequence>)
+                { return sequence.size(); }
 
-        bool empty(void) const noexcept { return sequence.empty(); }
+        /**
+         * Returns whether the heap is empty
+         *
+         * @return if the cheap is empty
+         */
+        [[nodiscard]] bool empty(void) const noexcept
+            { return sequence.empty(); }
     private:
-        Sequence sequence;
-        Compare compare;
+        Sequence                    sequence;
+        Compare                     compare;
     };
 
-    template <typename T, std::predicate<T, T> Compare, std::ranges::forward_range Sequence>
-    void MinHeap<T, Compare, Sequence>::push(const_reference element) requires std::copyable<value_type> {
+    template <typename Tp, std::predicate<Tp, Tp> Compare,
+        std::ranges::forward_range Sequence>
+    void MinHeap<Tp, Compare, Sequence>::push(
+        const_reference element) requires std::copyable<value_type>
+    {
         sequence.push_back(element);
         std::ranges::push_heap(sequence, compare);
     }
 
-    template <typename T, std::predicate<T, T> Compare, std::ranges::forward_range Sequence>
-    void MinHeap<T, Compare, Sequence>::push(value_type&& element) requires std::movable<value_type> {
+    template <typename Tp, std::predicate<Tp, Tp> Compare,
+        std::ranges::forward_range Sequence>
+    void MinHeap<Tp, Compare, Sequence>::push(
+        value_type&& element) requires std::movable<value_type>
+    {
         sequence.push_back(std::move(element));
         std::ranges::push_heap(sequence, compare);
     }
 
-    template <typename T, std::predicate<T, T> Compare, std::ranges::forward_range Sequence>
+    template <typename Tp, std::predicate<Tp, Tp> Compare,
+        std::ranges::forward_range Sequence>
     template <typename... Args>
-    void MinHeap<T, Compare, Sequence>::emplace(Args&&... args) requires std::constructible_from<value_type, Args...> {
+    void MinHeap<Tp, Compare, Sequence>::emplace(
+        Args&&... args) requires (
+            std::constructible_from<value_type, Args...>)
+    {
         sequence.emplace_back(std::forward<Args>(args)...);
         std::ranges::push_heap(sequence, compare);
     }
 
-    template <typename T, std::predicate<T, T> Compare, std::ranges::forward_range Sequence>
-    T MinHeap<T, Compare, Sequence>::popBack(void) requires std::movable<value_type> {
+    template <typename Tp, std::predicate<Tp, Tp> Compare,
+        std::ranges::forward_range Sequence>
+    [[nodiscard]] MinHeap<Tp, Compare, Sequence>::value_type
+        MinHeap<Tp, Compare, Sequence>::popBack(
+            void) requires std::movable<value_type>
+    {
         std::ranges::pop_heap(sequence, compare);
         auto result = std::move(sequence.back());
         sequence.pop_back();
@@ -80,7 +203,8 @@ namespace mpgl {
 
 }
 
-template<class T, std::predicate<T, T> Compare,
+template<class Tp, std::predicate<Tp, Tp> Compare,
     std::ranges::forward_range Container, class Alloc>
-struct std::uses_allocator<mpgl::MinHeap<T, Compare, Container>,Alloc> :
-    std::uses_allocator<Container, Alloc>::type { };
+struct std::uses_allocator<
+    mpgl::MinHeap<Tp, Compare, Container>, Alloc> :
+        std::uses_allocator<Container, Alloc>::type { };
