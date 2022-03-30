@@ -42,11 +42,13 @@ namespace mpgl {
          */
         explicit Drawable(void) noexcept = default;
 
-        Drawable(Drawable const&) = delete;
-        Drawable(Drawable&&) = delete;
+        /// Disabled due to bug in the DrawableCollection
 
-        Drawable& operator=(Drawable const&) = delete;
-        Drawable& operator=(Drawable&&) = delete;
+        // Drawable(Drawable const&) = delete;
+        // Drawable(Drawable&&) = delete;
+
+        // Drawable& operator=(Drawable const&) = delete;
+        // Drawable& operator=(Drawable&&) = delete;
 
         /**
          * Pure virtual function. Has to be overloaded.

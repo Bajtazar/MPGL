@@ -109,7 +109,7 @@ class RotatingRing : public StackedDrawable,
     public MouseMotionEvent
 {
 public:
-    RotatingRing(void) : ring{200_x + 400_y, 50.f, 25.f, Color::Red},
+    RotatingRing(void) : ring{200_x + 400_y, 50.f, 25.f, Color::MPGLBlue},
         time{0} {}
 
     void onTick(std::chrono::milliseconds const& duration) noexcept {
