@@ -290,6 +290,16 @@ namespace mpgl {
         IsConstexprConstructibleV<Tp, Args...>;
 
     /**
+     * Checks whether the given type is an instance of the given
+     * template
+     *
+     * @param Tp the checked type
+     * @param Template the template type
+     */
+    template <typename Tp, template <typename...> class Template>
+    concept InstanceOf = IsInstanceV<Template, Tp>;
+
+    /**
      * Checks whether the given range is a random acces range
      * and whether it can be resized and it can reserve space
      *

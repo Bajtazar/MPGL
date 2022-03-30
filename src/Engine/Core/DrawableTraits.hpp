@@ -23,29 +23,41 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#pragma once
+#include "Drawable.hpp"
 
-#include "Core/Figures/Angular.hpp"
-#include "Core/Figures/Primitives/Triangle.hpp"
-#include "Core/Figures/Primitives/Tetragon.hpp"
-#include "Core/Figures/Primitives/Polygon.hpp"
-#include "Core/Figures/Primitives/Line.hpp"
-#include "Core/Figures/Primitives/Ellipse.hpp"
-#include "Core/Figures/Primitives/LineStrip.hpp"
-#include "Core/Figures/Primitives/LineLoop.hpp"
-#include "Core/Figures/Primitives/Points.hpp"
-#include "Core/Figures/Primitives/Ring.hpp"
-#include "Core/Windows/Window.hpp"
-#include "Core/Windows/RenderingAdapter.hpp"
-#include "Core/Textures/Sprite.hpp"
-#include "Core/Textures/EllipseSprite.hpp"
-#include "Core/Textures/RingSprite.hpp"
-#include "Core/DrawableCollection.hpp"
-#include "Core/Figures/Views.hpp"
-#include "Core/Textures/TextureLoader.hpp"
-#include "Core/Text/UTF-8.hpp"
-#include "Core/Text/Text.hpp"
-#include "Core/DrawableTraits.hpp"
-#include "Mathematics/ConvolutionKernels.hpp"
-#include "IO/MathTypesIO.hpp"
-#include "Core/Context/Buffers/VertexCast.hpp"
+namespace mpgl {
+
+    /**
+     * Helper metastruct. Provides information about the
+     * dimension of the drawable
+     *
+     * @tparam Tp the type of the drawable instance
+     */
+    template <InstanceOf<Drawable> Tp>
+    class DrawableDimension {
+        /**
+         * Gets the dimension tag from the drawable instance
+         *
+         * @tparam Dim the instance's dimension
+         * @return the dimension tag
+         */
+        template <Dimension Dim>
+        static auto helper(Drawable<Dim> const&) noexcept
+            -> Dim;
+    public:
+        /**
+         * The drawable instance's dimension tag
+         */
+        using dimension = decltype(helper(std::declval<Tp>()));
+    };
+
+    /**
+     * The convinient shortcut for the DrawableDimension dimension
+     *
+     * @tparam Tp the instance of the drawable template
+     */
+    template <InstanceOf<Drawable> Tp>
+    using DrawableDimensionT
+        = typename DrawableDimension<Tp>::dimension;
+
+}

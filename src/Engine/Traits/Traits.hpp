@@ -149,14 +149,12 @@ namespace mpgl {
          * Method choosen by the compiler when the given type is
          * an instance of the given template
          *
-         * @tparam Invocable the lambda expression containing
-         * object construction
-         * @tparam int32 the sentence forcing lambda call
+         * @tparam Args the template instance arguments types
          * @return std::true_type
          */
         template <typename... Args>
         static constexpr auto helper(
-            Template<Args...>) -> std::true_type;
+            Template<Args...> const&) -> std::true_type;
 
         /**
          * Method choosen by the compiler when the given type
