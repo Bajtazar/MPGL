@@ -1,152 +1,419 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include <vector>
-#include <concepts>
 #include <algorithm>
 
 #include "Transformations/Transformable2D.hpp"
 #include "../Mathematics/Systems.hpp"
-#include "Drawable.hpp"
+#include "DrawableTraits.hpp"
 
 namespace mpgl {
 
-    template <class Tp>
-    concept DrawableType = std::derived_from<Tp, Drawable2D>
-        && std::derived_from<Tp, ScreenTransformationEvent>;
+    namespace details {
 
-    template <class Tp>
-    concept TransformableDrawable = DrawableType<Tp>
-        && std::derived_from<Tp, Transformable2D>;
+        /**
+         * Checks whether the screen transformation event extension
+         * can be applied to the given type drawable collection
+         *
+         * @tparam Base the checked type
+         */
+        template <typename Base>
+        concept ScreenExtDrawable = InstanceOf<Base, Drawable> &&
+            std::derived_from<Base, ScreenTransformationEvent>;
 
-    template <DrawableType Base,
-        std::ranges::input_range Sequence = std::vector<Base>>
-    class DrawableCollectionBase : public Sequence,
-        public Drawable2D,
+        /**
+         * Checks whether the transformation 2D event extension
+         * can be applied to the given type drawable collection
+         *
+         * @tparam Base the checked type
+         */
+        template <typename Base>
+        concept Trans2DDrawable = ScreenExtDrawable<Base> &&
+            std::derived_from<Base, Transformable2D>;
+    }
+
+    /**
+     * The container that simplifies the common operations
+     * on the drawable type. Allows to use the desired
+     * collection underneath
+     *
+     * @tparam Base the drawable type
+     * @tparam Range the collection type
+     */
+    template <InstanceOf<Drawable> Base,
+        std::ranges::input_range Range = std::vector<Base>>
+    struct DrawableCollection :
+        public Drawable<DrawableDimensionT<Base>>,
+        public Range
+    {
+        using Range::Range;
+
+        DrawableCollection(
+            DrawableCollection const& base) noexcept = default;
+        DrawableCollection(
+            DrawableCollection&& base) noexcept = default;
+
+        DrawableCollection& operator=(
+            DrawableCollection const& base) noexcept = default;
+        DrawableCollection& operator=(
+            DrawableCollection&& base) noexcept = default;
+
+        using iterator
+            = typename Range::iterator;
+        using const_iterator
+            = typename Range::const_iterator;
+        using reverse_iterator
+            = typename Range::reverse_iterator;
+        using const_reverse_iterator
+            = typename Range::const_reverse_iterator;
+
+        using value_type = typename Range::value_type;
+        using size_type = typename Range::size_type;
+
+        /**
+         * Draws all of the contained drawables on the screen
+         */
+        void draw(void) const noexcept final;
+
+        /**
+         * Draws all of the contained drawables on the screen
+         * with the indexes between the given range
+         *
+         * @param begin the first index
+         * @param end the last index
+         */
+        void draw(
+            std::size_t begin,
+            std::size_t end) const noexcept
+                requires std::ranges::random_access_range<Range>;
+
+        /**
+         * Destroys the Drawable Collection object
+         */
+        ~DrawableCollection(void) noexcept = default;
+    };
+
+    /**
+     * The container that simplifies the common operations
+     * on the drawable type. Allows to use the desired
+     * collection underneath. Extends the default usage by
+     * providing an aditional Screen Transformation Event
+     * support
+     *
+     * @tparam Base the drawable type
+     * @tparam Range the collection type
+     */
+    template <details::ScreenExtDrawable Base,
+        std::ranges::input_range Range>
+    struct DrawableCollection<Base, Range> :
+        public Drawable<DrawableDimensionT<Base>>,
+        public Range,
         public virtual ScreenTransformationEvent
     {
-    public:
-        using Sequence::Sequence;
+        using Range::Range;
 
-        DrawableCollectionBase(DrawableCollectionBase const& base
-            ) noexcept = default;
-        DrawableCollectionBase(DrawableCollectionBase&& base
-            ) noexcept = default;
+        DrawableCollection(
+            DrawableCollection const& base) noexcept = default;
+        DrawableCollection(
+            DrawableCollection&& base) noexcept = default;
 
-        DrawableCollectionBase& operator=(DrawableCollectionBase const& base
-            ) noexcept = default;
-        DrawableCollectionBase& operator=(DrawableCollectionBase&& base
-            ) noexcept = default;
+        DrawableCollection& operator=(
+            DrawableCollection const& base) noexcept = default;
+        DrawableCollection& operator=(
+            DrawableCollection&& base) noexcept = default;
 
-        using iterator = typename Sequence::iterator;
-        using const_iterator = typename Sequence::const_iterator;
-        using reverse_iterator = typename Sequence::reverse_iterator;
-        using const_reverse_iterator = typename Sequence::const_reverse_iterator;
+        using iterator
+            = typename Range::iterator;
+        using const_iterator
+            = typename Range::const_iterator;
+        using reverse_iterator
+            = typename Range::reverse_iterator;
+        using const_reverse_iterator
+            = typename Range::const_reverse_iterator;
 
-        using value_type = Base;
-        using size_type = typename Sequence::size_type;
+        using value_type = typename Range::value_type;
+        using size_type = typename Range::size_type;
 
-        template <typename Signature, typename... Args>
-            requires std::invocable<Signature, Base, Args...>
-        void call(Signature signature, Args&&... args) noexcept(
-            std::is_nothrow_invocable_v<Signature, Base, Args...>);
-
+        /**
+         * Draws all of the contained drawables on the screen
+         */
         void draw(void) const noexcept final;
-        void draw(size_type begin, size_type end) const noexcept
-            requires std::ranges::random_access_range<Sequence>;
 
-        void onScreenTransformation(Vector2u const& oldDimensions
-            ) noexcept final;
+        /**
+         * Draws all of the contained drawables on the screen
+         * with the indexes between the given range
+         *
+         * @param begin the first index
+         * @param end the last index
+         */
+        void draw(
+            std::size_t begin,
+            std::size_t end) const noexcept
+                requires std::ranges::random_access_range<Range>;
 
-        ~DrawableCollectionBase(void) noexcept = default;
-    };
+        /**
+         * Transforms the contained drawables during the screen
+         * transformation event
+         *
+         * @param oldDimensions the old screen dimensions
+         */
+        void onScreenTransformation(
+            Vector2u const& oldDimensions) noexcept final;
 
-    template <DrawableType Base,
-        std::ranges::input_range Sequence = std::vector<Base>>
-    class DrawableCollection : public DrawableCollectionBase<Base, Sequence> {
-    public:
-        using DrawableCollectionBase<Base, Sequence>::DrawableCollectionBase;
-
+        /**
+         * Destroys the Drawable Collection object
+         */
         ~DrawableCollection(void) noexcept = default;
     };
 
-    template <TransformableDrawable Base, std::ranges::input_range Sequence>
-    class DrawableCollection<Base, Sequence>
-        : public DrawableCollectionBase<Base, Sequence>, public Transformable2D
+    /**
+     * The container that simplifies the common operations
+     * on the drawable type. Allows to use the desired
+     * collection underneath. Extends the default usage by
+     * providing an aditional Transformable 2D support
+     *
+     * @tparam Base the drawable type
+     * @tparam Range the collection type
+     */
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    struct DrawableCollection<Base, Range> :
+        public Drawable<DrawableDimensionT<Base>>,
+        public Range,
+        public Transformable2D
     {
-    public:
-        using DrawableCollectionBase<Base, Sequence>::DrawableCollectionBase;
+        using Range::Range;
 
+        DrawableCollection(
+            DrawableCollection const& base) noexcept = default;
+        DrawableCollection(
+            DrawableCollection&& base) noexcept = default;
+
+        DrawableCollection& operator=(
+            DrawableCollection const& base) noexcept = default;
+        DrawableCollection& operator=(
+            DrawableCollection&& base) noexcept = default;
+
+        using iterator
+            = typename Range::iterator;
+        using const_iterator
+            = typename Range::const_iterator;
+        using reverse_iterator
+            = typename Range::reverse_iterator;
+        using const_reverse_iterator
+            = typename Range::const_reverse_iterator;
+
+        using value_type = typename Range::value_type;
+        using size_type = typename Range::size_type;
+
+        /**
+         * Draws all of the contained drawables on the screen
+         */
+        void draw(void) const noexcept final;
+
+        /**
+         * Draws all of the contained drawables on the screen
+         * with the indexes between the given range
+         *
+         * @param begin the first index
+         * @param end the last index
+         */
+        void draw(
+            std::size_t begin,
+            std::size_t end) const noexcept
+                requires std::ranges::random_access_range<Range>;
+
+        /**
+         * Transforms the contained drawables during the screen
+         * transformation event
+         *
+         * @param oldDimensions the old screen dimensions
+         */
+        void onScreenTransformation(
+            Vector2u const& oldDimensions) noexcept final;
+
+        /**
+         * Translates the contained drawables by the given
+         * shift vector
+         *
+         * @param shift the shift vector
+         */
         void translate(Vector2f const& shift) noexcept final;
-        void scale(Vector2f const& center, float32 factor) noexcept final;
-        void rotate(Vector2f const& center, float32 angle) noexcept final;
-        void rotate(Vector2f const& center, Matrix2f const& rotation) noexcept final;
 
+        /**
+         * Scales the contained drawables around given center
+         * by the given factor
+         *
+         * @param center the scale center
+         * @param factor the scale factor
+         */
+        void scale(
+            Vector2f const& center,
+            float32 factor) noexcept final;
+
+        /**
+         * Rotates the contained drawables around given point
+         * by the given angle counter clockwise
+         *
+         * @param center the rotation point
+         * @param angle the rotation angle [in rads]
+         */
+        void rotate(
+            Vector2f const& center,
+            float32 angle) noexcept final;
+
+        /**
+         * Rotates the contained drawables around given point
+         * using given matrix
+         *
+         * @param center the rotation point
+         * @param rotation the rotation matrix
+         */
+        void rotate(
+            Vector2f const& center,
+            Matrix2f const& rotation) noexcept final;
+
+        /**
+         * Destroys the Drawable Collection object
+         */
         ~DrawableCollection(void) noexcept = default;
     };
 
-    // templates
-
-    template <DrawableType Base, std::ranges::input_range Sequence>
-    template <typename Signature, typename... Args>
-            requires std::invocable<Signature, Base, Args...>
-    void DrawableCollectionBase<Base, Sequence>::call(Signature signature,
-        Args&&... args) noexcept(std::is_nothrow_invocable_v<Signature, Base, Args...>)
-    {
-        std::ranges::for_each(*this, [&](auto& drawable)
-            { (drawable->signature)(std::forward<Args>(args)...); });
+    template <InstanceOf<Drawable> Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::draw(void) const noexcept {
+        std::ranges::for_each(*this,
+            [](auto const& drawable){ drawable.draw(); });
     }
 
-    template <DrawableType Base, std::ranges::input_range Sequence>
-    void DrawableCollectionBase<Base, Sequence>::draw(void) const noexcept {
-        std::ranges::for_each(*this, [](auto const& drawable)
-            { drawable.draw(); });
-    }
-
-    template <DrawableType Base, std::ranges::input_range Sequence>
-    void DrawableCollectionBase<Base, Sequence>::draw(
-        size_type begin, size_type end) const noexcept
-            requires std::ranges::random_access_range<Sequence>
+    template <InstanceOf<Drawable> Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::draw(
+        std::size_t begin,
+        std::size_t end) const noexcept
+            requires std::ranges::random_access_range<Range>
     {
-        for (size_type i = begin; i != end; ++i)
+        for (std::size_t i = begin; i < end; ++i)
             (*this)[i].draw();
     }
 
-    template <DrawableType Base, std::ranges::input_range Sequence>
-    void DrawableCollectionBase<Base, Sequence>::onScreenTransformation(
+    template <details::ScreenExtDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::draw(void) const noexcept {
+        std::ranges::for_each(*this,
+            [](auto const& drawable){ drawable.draw(); });
+    }
+
+    template <details::ScreenExtDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::draw(
+        std::size_t begin,
+        std::size_t end) const noexcept
+            requires std::ranges::random_access_range<Range>
+    {
+        for (std::size_t i = begin; i < end; ++i)
+            (*this)[i].draw();
+    }
+
+    template <details::ScreenExtDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::onScreenTransformation(
         Vector2u const& oldDimensions) noexcept
     {
         std::ranges::for_each(*this, [&oldDimensions](auto& drawable)
             { drawable.onScreenTransformation(oldDimensions); });
     }
 
-    template <TransformableDrawable Base, std::ranges::input_range Sequence>
-    void DrawableCollection<Base, Sequence>::translate(Vector2f const& shift) noexcept {
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::draw(void) const noexcept {
+        std::ranges::for_each(*this,
+            [](auto const& drawable){ drawable.draw(); });
+    }
+
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::draw(
+        std::size_t begin,
+        std::size_t end) const noexcept
+            requires std::ranges::random_access_range<Range>
+    {
+        for (std::size_t i = begin; i < end; ++i)
+            (*this)[i].draw();
+    }
+
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::onScreenTransformation(
+        Vector2u const& oldDimensions) noexcept
+    {
+        std::ranges::for_each(*this, [&oldDimensions](auto& drawable)
+            { drawable.onScreenTransformation(oldDimensions); });
+    }
+
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::translate(
+        Vector2f const& shift) noexcept
+    {
         std::ranges::for_each(*this, [&shift](auto& drawable)
             { drawable.translate(shift); });
     }
 
-    template <TransformableDrawable Base, std::ranges::input_range Sequence>
-    void DrawableCollection<Base, Sequence>::scale(
-        Vector2f const& center, float32 factor) noexcept
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::scale(
+        Vector2f const& center,
+        float32 factor) noexcept
     {
         std::ranges::for_each(*this, [&center, &factor](auto& drawable)
             { drawable.scale(center, factor); });
     }
 
-    template <TransformableDrawable Base, std::ranges::input_range Sequence>
-    void DrawableCollection<Base, Sequence>::rotate(
-        Vector2f const& center, float32 angle) noexcept
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::rotate(
+        Vector2f const& center,
+        float32 angle) noexcept
     {
-        std::ranges::for_each(*this, [&center, &angle](auto& drawable)
-            { drawable.rotate(center, angle); });
+        auto rot = rotationMatrix<float32>(angle);
+        std::ranges::for_each(*this, [&center, &rot](auto& drawable)
+            { drawable.rotate(center, rot); });
     }
 
-    template <TransformableDrawable Base, std::ranges::input_range Sequence>
-    void DrawableCollection<Base, Sequence>::rotate(
-        Vector2f const& center, Matrix2f const& rotation) noexcept
+    template <details::Trans2DDrawable Base,
+        std::ranges::input_range Range>
+    void DrawableCollection<Base, Range>::rotate(
+        Vector2f const& center,
+        Matrix2f const& rotation) noexcept
     {
-        std::ranges::for_each(*this, [&center, &rotation](auto& drawable)
-            { drawable.rotate(center, rotation); });
+        std::ranges::for_each(*this, [&center, &rotation]
+            (auto& drawable){ drawable.rotate(center, rotation); });
     }
 
 }
