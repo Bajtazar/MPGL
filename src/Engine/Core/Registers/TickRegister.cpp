@@ -38,7 +38,7 @@ namespace mpgl {
             std::chrono::milliseconds>(now - lastTime);
         if (difference < period)
             return;
-        std::ranges::for_each(storage,
+        std::ranges::for_each(this->storage,
             [&difference](auto& event){ event->onTick(difference); });
         lastTime = now;
     }

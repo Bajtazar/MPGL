@@ -25,13 +25,9 @@
  */
 #pragma once
 
-#include <vector>
-#include <memory>
 #include <algorithm>
-#include <type_traits>
 
 #include "RegisterInterface.hpp"
-
 #include "../../Events/Event.hpp"
 
 namespace mpgl {
@@ -53,6 +49,10 @@ namespace mpgl {
          */
         explicit UniversalRegister(void) noexcept = default;
 
+        UniversalRegister(UniversalRegister&&) = default;
+
+        UniversalRegister& operator=(UniversalRegister&&) = default;
+
         /**
          * Calls the event on the underlying objects with
          * the given arguments
@@ -72,7 +72,7 @@ namespace mpgl {
     void UniversalRegister<Tp, void(Tp::*)(Args...),
         EventMethod>::onEvent(Args&&... args) noexcept
     {
-        std::ranges::for_each(storage, [...args
+        std::ranges::for_each(this->storage, [...args
             = std::forward<Args>(args)]
                 (auto& event){ (event.get()->*EventMethod)(args...); });
     }

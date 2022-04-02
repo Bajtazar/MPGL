@@ -140,7 +140,7 @@ namespace mpgl {
      * @tparam Args the checked types
      */
     template <class Tp, class... Args>
-    concept AllDerives = std::conjunction_v<
+    concept AllDerivedFrom = std::conjunction_v<
         std::is_base_of<Tp, Args>...>;
 
     /**
@@ -540,5 +540,15 @@ namespace mpgl {
     {
         { type.bind() } -> std::same_as<void>;
     };
+
+    /**
+     * Checks whether all of the given types are instances
+     * of the given template
+     *
+     * @tparam Template the given template
+     * @tparam Args the checked types
+     */
+    template <template <typename...> class Template, class... Args>
+    concept AllInstancesOf = (InstanceOf<Args, Template> && ...);
 
 }

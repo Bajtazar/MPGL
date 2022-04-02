@@ -25,6 +25,10 @@
  */
 #pragma once
 
+#include <memory>
+#include <vector>
+#include <concepts>
+
 namespace mpgl {
 
     /**
@@ -35,7 +39,7 @@ namespace mpgl {
     class RegisterInterface {
     public:
         typedef std::shared_ptr<Tp>                 pointer;
-        typedef Tp                                  value_type;
+        typedef Tp                                  event;
         typedef std::vector<pointer>                Storage;
 
         RegisterInterface(RegisterInterface const&) = delete;
@@ -84,7 +88,7 @@ namespace mpgl {
          *
          * @return the constant reference to the storage vector
          */
-        [[nodiscard]] Storage const& getStorage(void) noexcept const
+        [[nodiscard]] Storage const& getStorage(void) const noexcept
             { return storage; }
 
         using iterator

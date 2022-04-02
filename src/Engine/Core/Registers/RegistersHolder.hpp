@@ -1,90 +1,200 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include "../../Traits/Concepts.hpp"
 #include "RegisterInterface.hpp"
 
-#include <memory>
 #include <tuple>
 
 namespace mpgl {
 
-    template <class T>
-    concept PushableRegister = requires (
-        std::shared_ptr<typename T::value_type> const& t, T reg)
-        { { reg.pushBack(t) } -> std::same_as<void>; };
-
-    template <typename... Args>
-    concept AllPushableRegisters = AllDerives<RegisterInterface, Args...>
-        && (PushableRegister<Args> && ...);
-
-    template <AllPushableRegisters... Registers>
-    class RegistersHolder : public std::tuple<Registers...> {
+    /**
+     * Holds multiple registers and allows to perform a few
+     * operations on all of them
+     */
+    template <class... Registers>
+        requires AllInstancesOf<RegisterInterface, Registers...>
+    class RegistersHolder {
     public:
-        explicit RegistersHolder(void) noexcept : std::tuple<Registers...>{} {}
+        /**
+         * Constructs a new Registers Holder object
+         */
+        explicit RegistersHolder(void) noexcept = default;
 
+        RegistersHolder(RegistersHolder&&) = default;
+
+        RegistersHolder& operator=(RegistersHolder&&) = default;
+
+        /**
+         * Returns the register with the given index
+         *
+         * @tparam Index the register's index
+         * @return the register with the given index
+         */
         template <std::size_t Index>
             requires (sizeof...(Registers) > Index)
-        inline constexpr decltype(auto) get(void) noexcept
-            { return *std::get<Index>(static_cast<std::tuple<Registers...>&>(*this)); }
+        [[nodiscard]] inline auto&& get(void) noexcept
+            { return std::get<Index>(registers); }
 
+        /**
+         * Returns the register with the given index
+         *
+         * @tparam Index the register's index
+         * @return the register with the given index
+         */
         template <std::size_t Index>
             requires (sizeof...(Registers) > Index)
-        inline constexpr decltype(auto) get(void) const noexcept
-            { return *std::get<Index>(static_cast<std::tuple<Registers...> const&>(*this)); }
+        [[nodiscard]] inline auto&& get(void) const noexcept
+            { return std::get<Index>(registers); }
 
-        template <Included<Registers...> T>
-        inline constexpr decltype(auto) get(void) noexcept
-            { return *std::get<T>(static_cast<std::tuple<Registers...>&>(*this)); }
+        /**
+         * Returns the register of the given type
+         *
+         * @tparam Tp the register's type
+         * @return the register of the given type
+         */
+        template <class Tp>
+            requires Included<Tp, Registers...>
+        [[nodiscard]] inline auto&& get(void) noexcept
+            { return std::get<Tp>(registers); }
 
-        template <Included<Registers...> T>
-        inline constexpr decltype(auto) get(void) const noexcept
-            { return *std::get<T>(static_cast<std::tuple<Registers...> const&>(*this)); }
+        /**
+         * Returns the register of the given type
+         *
+         * @tparam Tp the register's type
+         * @return the register of the given type
+         */
+        template <class Tp>
+            requires Included<Tp, Registers...>
+        [[nodiscard]] inline auto&& get(void) const noexcept
+            { return std::get<Tp>(registers); }
 
-        template <class T>
-        void addIfDerived(std::shared_ptr<T> const& pointer);
+        /**
+         * Returns the register with the given index
+         *
+         * @tparam Index the register's index
+         * @param holder the reference to the holder
+         * @return the register with the given index
+         */
+        template <std::size_t Index>
+            requires (sizeof...(Registers) > Index)
+        [[nodiscard]] friend inline auto&& get(
+            RegistersHolder& holder) noexcept
+                { return std::get<Index>(holder.registers); }
+
+        /**
+         * Returns the register with the given index
+         *
+         * @tparam Index the register's index
+         * @param holder the constant reference to the holder
+         * @return the register with the given index
+         */
+        template <std::size_t Index>
+            requires (sizeof...(Registers) > Index)
+        [[nodiscard]] friend inline auto&& get(
+            RegistersHolder const& holder) noexcept
+                { return std::get<Index>(holder.registers); }
+
+        /**
+         * Returns the register of the given type
+         *
+         * @tparam Tp the register's type
+         * @param holder the reference to the holder
+         * @return the register of the given type
+         */
+        template <class Tp>
+            requires Included<Tp, Registers...>
+        [[nodiscard]] friend inline auto&& get(
+            RegistersHolder& holder) noexcept
+                { return std::get<Tp>(holder.registers); }
+
+        /**
+         * Returns the register of the given type
+         *
+         * @tparam Tp the register's type
+         * @param holder the constant reference to the holder
+         * @return the register of the given type
+         */
+        template <class Tp>
+            requires Included<Tp, Registers...>
+        [[nodiscard]] friend inline auto&& get(
+            RegistersHolder const& holder) noexcept
+                { return std::get<Tp>(holder.registers); }
+
+        /**
+         * Pushes the given pointer to the registers which
+         * holds type from which pointer's type derives
+         *
+         * @tparam Tp the type of the pointer
+         * @param pointer the constant reference to the pointer
+         * object
+         */
+        template <class Tp>
+        void addIfDerived(std::shared_ptr<Tp> const& pointer);
     private:
-        template <class T, class Register>
-        static void pushIfDerived(Register& reg, std::shared_ptr<T> const& pointer);
+        /**
+         * Pushes pointer to register if its derives from the
+         * register's type
+         *
+         * @tparam Tp the type of the pointer
+         * @tparam Register the type of the register
+         * @param register the reference to the register object
+         * @param pointer the constant reference to the pointer
+         * object
+         */
+        template <class Tp, InstanceOf<RegisterInterface> Register>
+        static void pushIfDerived(
+            Register& reg,
+            std::shared_ptr<Tp> const& pointer);
+
+        std::tuple<Registers...>                        registers;
     };
 
-    template <std::size_t Index, AllDerives<RegisterInterface>... Registers>
-        requires (sizeof...(Registers) > Index)
-    inline constexpr decltype(auto) get(RegistersHolder<Registers...>& holder) noexcept {
-        return *std::get<Index>(static_cast<std::tuple<Registers...>&>(holder));
-    }
-
-    template <std::size_t Index, AllDerives<RegisterInterface>... Registers>
-        requires (sizeof...(Registers) > Index)
-    inline constexpr decltype(auto) get(const RegistersHolder<Registers...>& holder) noexcept {
-        return *std::get<Index>(static_cast<const std::tuple<Registers...>&>(holder));
-    }
-
-    template <class T, AllDerives<RegisterInterface>... Registers>
-        requires Included<T, Registers...>
-    inline constexpr decltype(auto) get(RegistersHolder<Registers...>& holder) noexcept {
-        return *std::get<T>(static_cast<std::tuple<Registers...>&>(holder));
-    }
-
-    template <class T, AllDerives<RegisterInterface>... Registers>
-        requires Included<T, Registers...>
-    inline constexpr decltype(auto) get(const RegistersHolder<Registers...>& holder) noexcept {
-        return *std::get<T>(static_cast<const std::tuple<Registers...>&>(holder));
-    }
-
-    template <AllPushableRegisters... Registers>
-    template <class T>
-    void RegistersHolder<Registers...>::addIfDerived(std::shared_ptr<T> const& pointer) {
-        std::apply([&]<typename... Args>(Args&... args)
-            { (pushIfDerived(args, pointer), ...); },
-            static_cast<std::tuple<Registers...>&>(*this));
-    }
-
-    template <AllPushableRegisters... Registers>
-    template <class T, class Register>
-    void RegistersHolder<Registers...>::pushIfDerived(Register& reg, std::shared_ptr<T> const& pointer)
+    template <class... Registers>
+        requires AllInstancesOf<RegisterInterface, Registers...>
+    template <class Tp>
+    void RegistersHolder<Registers...>::addIfDerived(
+        std::shared_ptr<Tp> const& pointer)
     {
-        if constexpr (std::derived_from<T, typename Register::value_type>)
-            reg.pushBack(std::static_pointer_cast<typename Register::value_type>(pointer));
+        std::apply([&]<typename... Args>(Args&... args)
+            { (pushIfDerived(args, pointer), ...); }, registers);
+    }
+
+    template <class... Registers>
+        requires AllInstancesOf<RegisterInterface, Registers...>
+    template <class Tp, InstanceOf<RegisterInterface> Register>
+    void RegistersHolder<Registers...>::pushIfDerived(
+        Register& reg,
+        std::shared_ptr<Tp> const& pointer)
+    {
+        using Event = typename Register::event;
+
+        if constexpr (std::derived_from<Tp, Event>)
+            reg.pushBack(std::static_pointer_cast<Event>(pointer));
     }
 
 }
