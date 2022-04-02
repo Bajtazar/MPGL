@@ -551,4 +551,16 @@ namespace mpgl {
     template <template <typename...> class Template, class... Args>
     concept AllInstancesOf = (InstanceOf<Args, Template> && ...);
 
+    /**
+     * Checks whether the range is random acces range and if
+     * its size can be readen at compilation time
+     *
+     * @tparam Range the checked range
+     */
+    template <typename Range>
+    concept FixedSizeRange = std::ranges::random_access_range<Range>
+        && IsConstexprEvaluableV<
+            std::size_t(*)(void) noexcept,
+            &std::remove_cvref_t<Range>::size>;
+
 }

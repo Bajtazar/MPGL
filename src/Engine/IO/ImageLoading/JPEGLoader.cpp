@@ -83,7 +83,7 @@ namespace mpgl {
         std::array<int16, 64> data{};
         data.front() = coeff * quantizationTables.at(id)->information.at(0);
         decodeMatrix(data, huffmanTables.at(true).at(id), quantizationTables.at(id), iter);
-        return inverseCosineTransform(ZigZacRange<8>::returnZigZac(data));
+        return inverseCosineTransform(ZigZacRange<8>::fromZigZac(data));
     }
 
     template <security::SecurityPolicy Policy>
