@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include "Shadeable.hpp"
 
 namespace mpgl {
@@ -11,21 +36,46 @@ namespace mpgl {
     Shadeable::Shadeable(ProgramPtr&& program) noexcept
         : shaderProgram{std::move(program)} {}
 
-    Shadeable::Shadeable(std::string const& name) : Shadeable{} {
+    Shadeable::Shadeable(std::string const& name)
+        : Shadeable{}
+    {
         setShader(name);
     }
 
     void Shadeable::setShader(std::string const& name,
         Executable exec)
     {
-        context.shaders.setOrQueue(shaderProgram, name, std::move(exec));
+        context.shaders.setOrQueue(shaderProgram, name,
+            std::move(exec));
     }
 
-    Shadeable::Shadeable(std::string const& name,
-        ShadersContext::Executable exec) : Shadeable{}
+    Shadeable::Shadeable(
+        std::string const& name,
+        ShadersContext::Executable exec)
+            : Shadeable{}
     {
         context.shaders.setOrQueue(shaderProgram,
             name, std::move(exec));
+    }
+
+    Shadeable::Shadeable(Shadeable const& shadeable)
+        : shaderProgram{shadeable.shaderProgram} {}
+
+    Shadeable::Shadeable(Shadeable&& shadeable) noexcept
+        : shaderProgram{std::move(shadeable.shaderProgram)} {}
+
+    Shadeable& Shadeable::operator=(
+        Shadeable const& shadeable)
+    {
+        shaderProgram = shadeable.shaderProgram;
+        return *this;
+    }
+
+    Shadeable& Shadeable::operator=(
+        Shadeable&& shadeable) noexcept
+    {
+        shaderProgram = std::move(shadeable.shaderProgram);
+        return *this;
     }
 
 }
