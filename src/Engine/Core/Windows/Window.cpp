@@ -38,14 +38,12 @@ namespace mpgl {
         glEnable(GL_MULTISAMPLE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        context.shaders.setLibrary(shaders,
-            reinterpret_cast<void*>(this));
+        context.shaders.setLibrary(shaders);
     }
 
     void Window::setContextWindow(void) noexcept {
         WindowPlatform::setContextWindow();
-        context.shaders.setLibrary(shaders,
-            reinterpret_cast<void*>(this));
+        context.shaders.setLibrary(shaders);
     }
 
     void Window::drawDrawables(void) const noexcept {
@@ -93,8 +91,7 @@ namespace mpgl {
     }
 
     Window::~Window(void) noexcept {
-        context.shaders.removeLibrary(
-            reinterpret_cast<void*>(this));
+        context.shaders.removeLibrary();
     }
 
 }
