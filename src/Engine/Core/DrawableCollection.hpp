@@ -11,7 +11,7 @@
 namespace mpgl {
 
     template <class Tp>
-    concept DrawableType = std::derived_from<Tp, StackedDrawable>
+    concept DrawableType = std::derived_from<Tp, Drawable2D>
         && std::derived_from<Tp, ScreenTransformationEvent>;
 
     template <class Tp>
@@ -21,7 +21,7 @@ namespace mpgl {
     template <DrawableType Base,
         std::ranges::input_range Sequence = std::vector<Base>>
     class DrawableCollectionBase : public Sequence,
-        public StackedDrawable,
+        public Drawable2D,
         public virtual ScreenTransformationEvent
     {
     public:

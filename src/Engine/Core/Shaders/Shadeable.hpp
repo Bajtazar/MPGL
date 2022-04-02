@@ -34,7 +34,7 @@ namespace mpgl {
      * Base class for all classes that contains shader program.
      * Simplifies the shader initialization process
      */
-    class Shadeable : virtual public StackedDrawable {
+    class Shadeable : virtual public Drawable2D {
     public:
         typedef std::shared_ptr<ShaderProgram>      ProgramPtr;
 

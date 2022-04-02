@@ -39,7 +39,7 @@ namespace mpgl {
      */
     class WindowBase : protected GraphicalObject {
     public:
-        typedef std::shared_ptr<StackedDrawable>    DrawablePtr;
+        typedef std::shared_ptr<Drawable2D>    DrawablePtr;
         typedef std::vector<DrawablePtr>            Drawables;
         typedef std::size_t                         size_type;
 
@@ -77,7 +77,7 @@ namespace mpgl {
          * @tparam Tp the type of the drawable
          * @param drawable the drawable shared pointer object
          */
-        template <std::derived_from<StackedDrawable> Tp>
+        template <std::derived_from<Drawable2D> Tp>
         void pushDrawable(std::shared_ptr<Tp> const& drawable);
 
         /**
@@ -87,7 +87,7 @@ namespace mpgl {
          * @tparam Tp the type of the drawable
          * @param drawable the drawable shared pointer object
          */
-        template <std::derived_from<StackedDrawable> Tp>
+        template <std::derived_from<Drawable2D> Tp>
         void pushDrawable(std::shared_ptr<Tp>&& drawable);
 
         /**
@@ -100,7 +100,7 @@ namespace mpgl {
          * @param args the arguments passed into the drawable
          * constructor
          */
-        template <std::derived_from<StackedDrawable> Tp,
+        template <std::derived_from<Drawable2D> Tp,
             typename... Args>
                 requires std::constructible_from<Tp, Args...>
         void emplaceDrawable(Args&&... args);
@@ -297,7 +297,7 @@ namespace mpgl {
             std::forward<Args>(args)...));
     }
 
-    template <std::derived_from<StackedDrawable> Tp, typename... Args>
+    template <std::derived_from<Drawable2D> Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
     void WindowBase::emplaceDrawable(Args&&... args) {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
@@ -305,21 +305,21 @@ namespace mpgl {
         drawables.push_back(std::move(ptr));
     }
 
-    template <std::derived_from<StackedDrawable> Tp>
+    template <std::derived_from<Drawable2D> Tp>
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp> const& drawable)
     {
         events.addIfDerived(drawable);
-        drawables.push_back(std::static_pointer_cast<StackedDrawable>(
+        drawables.push_back(std::static_pointer_cast<Drawable2D>(
             drawable));
     }
 
-    template <std::derived_from<StackedDrawable> T>
+    template <std::derived_from<Drawable2D> T>
     void WindowBase::pushDrawable(
         std::shared_ptr<T>&& drawable)
     {
         events.addIfDerived(drawable);
-        drawables.push_back(std::static_pointer_cast<StackedDrawable>(
+        drawables.push_back(std::static_pointer_cast<Drawable2D>(
             std::move(drawable)));
     }
 

@@ -35,7 +35,7 @@ namespace mpgl {
      * Represents every entity that has to utilize the vertex
      * buffer object and vertex array object
      */
-    class Shape : virtual public StackedDrawable {
+    class Shape : virtual public Drawable2D {
     public:
         Shape(Shape const& shape) = delete;
 
