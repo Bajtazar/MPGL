@@ -36,19 +36,12 @@ namespace mpgl {
      * different dimensions
      */
     template <Dimension Dim>
-    struct Drawable : virtual protected GraphicalObject {
+    class Drawable : virtual protected GraphicalObject {
+    public:
         /**
          * Constructs a new Drawable object
          */
         explicit Drawable(void) noexcept = default;
-
-        /// Disabled due to bug in the DrawableCollection
-
-        // Drawable(Drawable const&) = delete;
-        // Drawable(Drawable&&) = delete;
-
-        // Drawable& operator=(Drawable const&) = delete;
-        // Drawable& operator=(Drawable&&) = delete;
 
         /**
          * Pure virtual function. Has to be overloaded.
@@ -60,6 +53,12 @@ namespace mpgl {
          * Destroys the Drawable object
          */
         virtual ~Drawable(void) noexcept = default;
+    protected:
+        Drawable(Drawable const&) = default;
+        Drawable(Drawable&&) = default;
+
+        Drawable& operator=(Drawable const&) = default;
+        Drawable& operator=(Drawable&&) = default;
     };
 
     typedef Drawable<dim::Dim2>                     StackedDrawable;
