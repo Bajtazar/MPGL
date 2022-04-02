@@ -25,7 +25,7 @@
  */
 #include "ShaderProgram.hpp"
 
-#include "../../IO/Logger.hpp"
+#include "../../Utility/Ranges.hpp"
 #include "../../Exceptions/ShaderProgramLinkingException.hpp"
 
 namespace mpgl {
@@ -53,11 +53,26 @@ namespace mpgl {
         delete ptr;
     }
 
+    void ShaderProgram::verifyLinkingStatus(
+        std::string const& programName) const
+    {
+        int32 status = 0;
+        glGetProgramiv(*shaderProgramID, GL_LINK_STATUS, &status);
+        if (!status) {
+            std::string info;
+            info.resize(512);
+            glGetProgramInfoLog(*shaderProgramID, 512, nullptr,
+                info.data());
+            if (!accumulate(info, 0u))
+                return;
+            throw ShaderProgramLinkingException{
+                "[" + programName + "]\t" + info};
+        }
+    }
+
     void ShaderProgram::link(std::string const& programName) const {
         glLinkProgram(*shaderProgramID);
-        Logger::checkCompilationStatus<ShaderProgramLinkingException>(
-            *shaderProgramID, GL_LINK_STATUS, "Shader Program]["
-            + programName);
+        verifyLinkingStatus(programName);
     }
 
 }

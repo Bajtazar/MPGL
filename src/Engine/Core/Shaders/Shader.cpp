@@ -26,7 +26,7 @@
 #include "Shader.hpp"
 
 #include "../../IO/FileIO.hpp"
-#include "../../IO/Logger.hpp"
+#include "../../Utility/Ranges.hpp"
 #include "../../Exceptions/ShaderCompilationException.hpp"
 
 #include <algorithm>
@@ -46,6 +46,23 @@ namespace mpgl {
     }
 
     template <bool ShaderType>
+    void Shader<ShaderType>::verifyCompilationStatus(
+        std::string const& filePath) const
+    {
+        int32 status = 0;
+        glGetProgramiv(shaderID, GL_COMPILE_STATUS, &status);
+        if (!status) {
+            std::string info;
+            info.resize(512);
+            glGetProgramInfoLog(shaderID, 512, nullptr, info.data());
+            if (!accumulate(info, 0u))
+                return;
+            throw ShaderCompilationException{
+                "[" + filePath + "]\t" + info};
+        }
+    }
+
+    template <bool ShaderType>
     Shader<ShaderType>::Shader(std::string shaderPath)
         : shaderID{glCreateShader(shaderType())}
     {
@@ -54,8 +71,7 @@ namespace mpgl {
             const char* codePointer = stream.c_str();
             glShaderSource(shaderID, 1, &codePointer, nullptr);
             glCompileShader(shaderID);
-            Logger::checkCompilationStatus<ShaderCompilationException>(
-                shaderID, GL_COMPILE_STATUS, "Shader compiler][" + shaderPath);
+            verifyCompilationStatus(shaderPath);
         } else
             throw ShaderCompilationException{
                 "Shader cannot be loaded from a file"};

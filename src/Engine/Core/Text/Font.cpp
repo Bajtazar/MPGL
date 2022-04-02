@@ -26,7 +26,6 @@
 #include "Font.hpp"
 
 #include "../../IO/FileIO.hpp"
-#include "../../IO/Logger.hpp"
 #include "../../Utility/StringAlgorithm.hpp"
 #include "../../Exceptions/FontNoRegularException.hpp"
 
@@ -89,14 +88,12 @@ namespace mpgl {
     Subfont& Font::operator() (Type const& type) {
         if (type & pointer->mask)
             return pointer->subfonts.at(type);
-        Logger::logInvalidFont(pointer->fontName, typeVector.at(type));
         return pointer->subfonts.at(Type::Regular);
     }
 
     Subfont const& Font::operator() (Type const& type) const {
         if (type & pointer->mask)
             return pointer->subfonts.at(type);
-        Logger::logInvalidFont(pointer->fontName, typeVector.at(type));
         return pointer->subfonts.at(Type::Regular);
     }
 

@@ -204,6 +204,15 @@ namespace mpgl {
         inline uint32 location(
             std::string const& uniform) const noexcept;
 
+        /**
+         * Verifies the shader program linking status
+         *
+         * @throw ShaderProgramLinkingException when linking
+         * failed
+         * @param filePath the path to the shader file
+         */
+        void verifyLinkingStatus(std::string const& filePath) const;
+
         std::shared_ptr<uint32>             shaderProgramID;
 
         static uint32                       lastProgramID;

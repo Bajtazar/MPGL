@@ -26,7 +26,6 @@
 #include "ShaderLibrary.hpp"
 
 #include "../../IO/FileIO.hpp"
-#include "../../IO/Logger.hpp"
 #include "../../Exceptions/ShaderLibraryInvalidShadersException.hpp"
 #include "../../Exceptions/ShaderProgramLinkingException.hpp"
 

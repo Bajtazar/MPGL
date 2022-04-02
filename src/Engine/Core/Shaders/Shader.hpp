@@ -94,6 +94,16 @@ namespace mpgl {
          * @return the shader type
          */
         constexpr auto shaderType(void) const noexcept;
+
+        /**
+         * Verifies the shader compilation status
+         *
+         * @throw ShaderCompilationException when compilation
+         * failed
+         * @param programName the shader program name
+         */
+        void verifyCompilationStatus(
+            std::string const& programName) const;
     };
 
     template class Shader<true>;
