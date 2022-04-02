@@ -53,7 +53,7 @@ namespace mpgl {
         Window(Window const& window) noexcept = delete;
         Window(Window&& window) noexcept = delete;
 
-        Window& operator= (const Window& window) noexcept = delete;
+        Window& operator= (Window const& window) noexcept = delete;
         Window& operator= (Window&& window) noexcept = delete;
 
         /**
