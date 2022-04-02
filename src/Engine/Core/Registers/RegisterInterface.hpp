@@ -39,12 +39,9 @@ namespace mpgl {
         typedef std::vector<pointer>                Storage;
 
         RegisterInterface(RegisterInterface const&) = delete;
-        RegisterInterface(RegisterInterface&&) = delete;
 
         RegisterInterface& operator=(
             RegisterInterface const&) = delete;
-        RegisterInterface& operator=(
-            RegisterInterface&&) = delete;
 
         /**
          * Pushes the new pointer to the underlying collection
@@ -268,6 +265,11 @@ namespace mpgl {
          * Constructs a new Register Interface object
          */
         explicit RegisterInterface(void) noexcept = default;
+
+        RegisterInterface(RegisterInterface&&) = default;
+
+        RegisterInterface& operator=(
+            RegisterInterface&&) = default;
 
         Storage                                     storage;
     };

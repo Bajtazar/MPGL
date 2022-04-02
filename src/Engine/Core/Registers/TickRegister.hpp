@@ -49,6 +49,11 @@ namespace mpgl {
          */
         explicit TickRegister(Duration const& period = {}) noexcept;
 
+        TickRegister(TickRegister&&) = default;
+
+        TickRegister& operator=(
+            TickRegister&&) = default;
+
         /**
          * Sets a new tick period
          *
