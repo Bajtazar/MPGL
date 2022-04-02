@@ -27,7 +27,8 @@
 
 namespace mpgl {
 
-    std::ostream& Pixel::Manip::RGB(std::ostream& os,
+    std::ostream& Pixel::Manip::RGB(
+        std::ostream& os,
         Pixel const& pixel) noexcept
     {
         os.put(reinterpret_cast<char const&>(pixel.blue));
@@ -36,7 +37,8 @@ namespace mpgl {
         return os;
     }
 
-    std::istream& Pixel::Manip::RGB(std::istream& is,
+    std::istream& Pixel::Manip::RGB(
+        std::istream& is,
         Pixel& pixel) noexcept
     {
         is.get(reinterpret_cast<char&>(pixel.blue));
