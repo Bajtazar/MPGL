@@ -55,8 +55,7 @@ namespace mpgl {
          * @tparam Tp the checked type
          */
         template <class Tp>
-        concept ExecutionPolicy = std::derived_from<Tp,
-            Execution>;
+        concept ExecutionPolicy = std::derived_from<Tp, Execution>;
 
         /**
          * Checks whether the given type is the parallel
