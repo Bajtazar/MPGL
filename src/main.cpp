@@ -169,7 +169,7 @@ int main(void) noexcept {
     array.emplace_back(Color::White, 400_x + 400_y, 300_x + 300_y, 400_x + 300_y);
     array.emplace_back(Color::Green, 200_x + 200_y, 200_x + 300_y, 300_x + 200_y);
 
-    window.emplaceDrawable<RotatingSprite>(4, pack["pad.jpeg"], font);
+    window.emplaceDrawable<RotatingSprite>(4, pack["test.png"], font);
     window.emplaceDrawable<RotatingRing>();
 
     window.windowLoop(Color{0.2f, 0.3f, 0.3f, 1.f});
