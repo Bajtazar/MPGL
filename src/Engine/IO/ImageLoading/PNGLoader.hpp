@@ -111,9 +111,9 @@ namespace mpgl {
             /**
              * Filter pixels from the given buffer
              *
-             * @param data the constant reference to the data buffer
+             * @param iter the iterator to the data buffer
              */
-            void operator()(DataBuffer const& data) noexcept;
+            void operator()(FileIter& iter) noexcept;
 
             /**
              * Sets the RGBA pixels
@@ -127,7 +127,7 @@ namespace mpgl {
                 size_type row,
                 size_type column,
                 uint8 filter,
-                CharIter& iter) noexcept;
+                FileIter& iter) noexcept;
 
             /**
              * Sets the RGB pixels
@@ -141,7 +141,7 @@ namespace mpgl {
                 size_type row,
                 size_type column,
                 uint8 filter,
-                CharIter& iter) noexcept;
+                FileIter& iter) noexcept;
 
             /**
              * Sets the gray pixels
@@ -155,7 +155,7 @@ namespace mpgl {
                 size_type row,
                 size_type column,
                 uint8 filter,
-                CharIter& iter) noexcept;
+                FileIter& iter) noexcept;
 
             /**
              * Sets the gray-alpha pixels
@@ -169,7 +169,7 @@ namespace mpgl {
                 size_type row,
                 size_type column,
                 uint8 filter,
-            CharIter& iter) noexcept;
+                FileIter& iter) noexcept;
 
             /**
              * Destroys the Filters object
@@ -244,7 +244,7 @@ namespace mpgl {
                 size_type column,
                 uint8 filter,
                 uint8 subpixelID,
-                CharIter& iter) noexcept;
+                FileIter& iter) noexcept;
 
             /**
              * The first subpixel filter
@@ -311,7 +311,7 @@ namespace mpgl {
         };
 
         typedef void(PNGLoader::Filters::*PixelsSetter)
-            (std::size_t, std::size_t, uint8, CharIter&);
+            (std::size_t, std::size_t, uint8, FileIter&);
 
         typedef std::map<uint8, PixelsSetter>       ColorSetters;
 
@@ -468,6 +468,50 @@ namespace mpgl {
          */
         void parseChunk(FileIter& file, size_type length);
 
+        /**
+         * Returns an iterator to the decompressed data in the
+         * given security manner
+         *
+         * @param buffer the constant reference to the buffer with
+         * decompressed data
+         * @return the iterator to the buffer
+         */
+        FileIter decompresedIter(
+            DataBuffer const& buffer) const noexcept;
+
+        /**
+         * Chooses the interlancing method
+         *
+         * @param policy the security policy tag
+         */
+        void chooseInterlance(Policy policy);
+
+        /**
+         * Performs Adam7 interlance on the decompressed data
+         *
+         * @param policy the security policy tag
+         * @param iter the reference to the decompressed data
+         * iterator
+         */
+        void interlance(Policy policy, FileIter& iter);
+
+        /**
+         * Returns the dimensions of the interlanced subimage
+         *
+         * @param startX the x-axis start position of
+         * the interlance
+         * @param startY the y-axis start position of
+         * the interlance
+         * @param incrementX the x-axis step of interlance
+         * @param incrementY the y-axis step of interlance
+         * @return the dimensions vector
+         */
+        Vector2<size_type> subimageDimensions(
+            uint32 startX,
+            uint32 startY,
+            uint32 incrementX,
+            uint32 incrementY) const noexcept;
+
         DataBuffer                                  rawFileData;
 
         /**
@@ -475,11 +519,13 @@ namespace mpgl {
          */
         struct HeaderData {
             PixelsSetter                            setter;
+            bool                                    interlance;
         }                                           headerData;
 
         typedef std::unique_ptr<ChunkInterface>     ChunkPtr;
         typedef std::function<ChunkPtr(PNGLoader&)> ChunkFun;
         typedef std::map<std::string, ChunkFun>     ChunkMap;
+        typedef std::array<Vector4u, 7>             InteranceArray;
 
         static ChunkMap const                       chunkParsers;
 
@@ -487,6 +533,15 @@ namespace mpgl {
             = 0x0A1A0A0D474E5089;
         static constexpr uint64 const               IENDNumber
             = 0x826042AE444E4549;
+        static constexpr InteranceArray const       InterlanceCoeff {
+            Vector4u{0, 0, 8, 8},
+            Vector4u{4, 0, 8, 8},
+            Vector4u{0, 4, 4, 8},
+            Vector4u{2, 0, 4, 4},
+            Vector4u{0, 2, 2, 4},
+            Vector4u{1, 0, 2, 2},
+            Vector4u{0, 1, 1, 2}
+        };
     };
 
     template class PNGLoader<Secured>;

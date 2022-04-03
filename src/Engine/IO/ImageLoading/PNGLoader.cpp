@@ -101,7 +101,59 @@ namespace mpgl {
             parseChunk(file, length);
         if (readType<uint64>(file) != IENDNumber)
             throw ImageLoadingFileCorruptionException{filePath};
-        Filters{pixels, *this}(ZlibDecoder{std::move(rawFileData), policy}());
+        chooseInterlance(policy);
+    }
+
+    template <security::SecurityPolicy Policy>
+    PNGLoader<Policy>::FileIter PNGLoader<Policy>::decompresedIter(
+        DataBuffer const& buffer) const noexcept
+    {
+        if constexpr (security::isSecurePolicy<Policy>)
+            return FileIter{buffer.begin(), buffer.end()};
+        else
+            return FileIter{buffer.begin()};
+    }
+
+    template <security::SecurityPolicy Policy>
+    void PNGLoader<Policy>::chooseInterlance(Policy policy) {
+        auto decoded = ZlibDecoder{std::move(rawFileData), policy}();
+        auto iter = decompresedIter(decoded);
+        if (headerData.interlance)
+            return interlance(policy, iter);
+        Filters{pixels, *this}(iter);
+    }
+
+    template <security::SecurityPolicy Policy>
+    Vector2<typename PNGLoader<Policy>::size_type>
+        PNGLoader<Policy>::subimageDimensions(
+            uint32 startX,
+            uint32 startY,
+            uint32 incrementX,
+            uint32 incrementY) const noexcept
+    {
+        size_type width = std::ceil(
+            (float64) (pixels.getWidth() - startX) / incrementX);
+        size_type height = std::ceil(
+            (float64) (pixels.getWidth() - startY) / incrementY);
+        return { width, height };
+    }
+
+    template <security::SecurityPolicy Policy>
+    void PNGLoader<Policy>::interlance(
+        Policy policy,
+        FileIter& iter)
+    {
+        for (auto const& [inY, inX, startY, startX] : InterlanceCoeff) {
+            Image image{subimageDimensions(startX, startY, inX, inY)};
+            Filters{image, *this}(iter);
+            for (size_type y = startY, i = 0; y < pixels.getHeight();
+                y += inY, ++i)
+            {
+                for (size_type x = startX, j = 0;
+                    x < pixels.getWidth(); x += inX, ++j)
+                        pixels[y][x] = image[i][j];
+            }
+        }
     }
 
     template <security::SecurityPolicy Policy>
@@ -153,9 +205,7 @@ namespace mpgl {
     void PNGLoader<Policy>::IHDRChunk::parseInterlance(
         uint8 interlance)
     {
-        if (interlance)
-            throw NotSupportedException{
-                "Adam7 interlance in PNG files is not supported"};
+        this->loader.headerData.interlance = interlance > 0;
     }
 
     template <security::SecurityPolicy Policy>
@@ -265,7 +315,7 @@ namespace mpgl {
         size_type column,
         uint8 filter,
         uint8 subpixelID,
-        CharIter& iter) noexcept
+        FileIter& iter) noexcept
     {
         switch (filter) {
             case 1:
@@ -285,7 +335,7 @@ namespace mpgl {
         size_type row,
         size_type column,
         uint8 filter,
-        CharIter& iter) noexcept
+        FileIter& iter) noexcept
     {
         for (uint8 sub = 0; sub < 4; ++sub)
             image[row][column][sub]
@@ -297,7 +347,7 @@ namespace mpgl {
         size_type row,
         size_type column,
         uint8 filter,
-        CharIter& iter) noexcept
+        FileIter& iter) noexcept
     {
         for (uint8 sub = 0; sub < 3; ++sub)
             image[row][column][sub]
@@ -309,7 +359,7 @@ namespace mpgl {
         size_type row,
         size_type column,
         uint8 filter,
-        CharIter& iter) noexcept
+        FileIter& iter) noexcept
     {
         uint8 subpixel = filterSubpixel(row, column, filter, 0, iter);
         for (uint8 sub = 0; sub < 3; ++sub)
@@ -321,7 +371,7 @@ namespace mpgl {
         size_type row,
         size_type column,
         uint8 filter,
-        CharIter& iter) noexcept
+        FileIter& iter) noexcept
     {
         setGrayPixels(row, column, filter, iter);
         image[row][column].alpha
@@ -330,9 +380,8 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     void PNGLoader<Policy>::Filters::operator()(
-        DataBuffer const& data) noexcept
+        FileIter& iter) noexcept
     {
-        auto iter = data.begin();
         for (std::size_t i = image.getHeight() - 1;
             i < image.getHeight(); --i)
         {
