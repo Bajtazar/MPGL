@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include "ImageLoader.hpp"
 
 #include "../../Exceptions/ImageLoadingUnsuportedFileType.hpp"
@@ -10,32 +35,40 @@
 namespace mpgl {
 
     template <security::SecurityPolicy Policy>
-    ImageLoader<Policy>::ImageLoader(Policy policy, const std::string& fileName)
-        : opener{std::move(getLoader(policy, fileName))} {}
+    ImageLoader<Policy>::ImageLoader(
+        Policy policy,
+        Path const& filePath)
+            : opener{getLoader(policy, filePath)} {}
 
     template <security::SecurityPolicy Policy>
-    ImageLoader<Policy>::ImageLoader(const std::string& fileName)
-        : ImageLoader{Policy{}, fileName} {}
+    ImageLoader<Policy>::ImageLoader(Path const& filePath)
+        : ImageLoader{Policy{}, filePath} {}
 
     template <security::SecurityPolicy Policy>
-    std::string ImageLoader<Policy>::extractTag(const std::string& fileName) noexcept {
-        std::size_t dot = fileName.find_last_of('.');
-        std::string tag;
-        std::transform(fileName.begin() + dot + 1, fileName.end(), std::back_inserter(tag), [](const char& x) { return std::tolower(x); });
+    std::string ImageLoader<Policy>::extractTag(
+        Path const& filePath) noexcept
+    {
+        size_type dot = filePath.find_last_of('.');
+        Path tag;
+        std::transform(filePath.begin() + dot + 1, filePath.end(),
+            std::back_inserter(tag), [](const char& x)
+                { return std::tolower(x); });
         return tag;
     }
 
     template <security::SecurityPolicy Policy>
-    std::unique_ptr<LoaderInterface> ImageLoader<Policy>::getLoader(Policy policy, const std::string& fileName) {
-        auto iter = loaders.find(extractTag(fileName));
+    ImageLoader<Policy>::LoaderPtr ImageLoader<Policy>::getLoader(
+        Policy policy,
+        Path const& filePath)
+    {
+        auto iter = loaders.find(extractTag(filePath));
         if (iter == loaders.end())
-            throw ImageLoadingUnsuportedFileType{fileName};
-        return std::invoke(iter->second, policy, fileName);
+            throw ImageLoadingUnsuportedFileType{filePath};
+        return std::invoke(iter->second, policy, filePath);
     }
 
     template <security::SecurityPolicy Policy>
-    std::map<std::string, std::function<std::unique_ptr<LoaderInterface> (Policy, const std::string&)>>
-    ImageLoader<Policy>::loaders {
+    ImageLoader<Policy>::Loaders ImageLoader<Policy>::loaders {
         {"bmp", {FunctionalWrapper<BMPLoader<Policy>, LoaderInterface>{}}},
         {"png", {FunctionalWrapper<PNGLoader<Policy>, LoaderInterface>{}}},
         {"jpg", {FunctionalWrapper<JPEGLoader<Policy>, LoaderInterface>{}}},
