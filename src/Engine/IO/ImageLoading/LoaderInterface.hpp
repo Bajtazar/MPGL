@@ -69,16 +69,16 @@ namespace mpgl {
         virtual ~LoaderInterface(void) noexcept = default;
     protected:
         Image                                       pixels;
-        std::string                                 fileName;
+        std::string                                 filePath;
 
         /**
          * Constructs a new Loader Interface object from the given
-         * file name
+         * file path
          *
-         * @param fileName the file name
+         * @param filePath the file path
          */
-        explicit LoaderInterface(std::string const& fileName)
-            : fileName{fileName} {}
+        explicit LoaderInterface(std::string const& filePath)
+            : filePath{filePath} {}
     };
 
 }
