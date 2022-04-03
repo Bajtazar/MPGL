@@ -27,6 +27,8 @@
 
 #include "../../Traits/Concepts.hpp"
 
+#include <array>
+
 namespace mpgl {
 
     /**
@@ -64,8 +66,6 @@ namespace mpgl {
         static LookupTable const                    lookup;
     };
 
-    inline constexpr CRC32                          crc32{};
-
     CRC32::LookupTable const CRC32::lookup = generateLookupTable();
 
     template <std::ranges::input_range Range>
@@ -94,5 +94,7 @@ namespace mpgl {
         }
         return table;
     }
+
+    inline constexpr CRC32                          crc32{};
 
 }

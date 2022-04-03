@@ -450,7 +450,7 @@ namespace mpgl {
         Proj proj) const noexcept
     {
         for (; iter != sent; ++iter, ++target)
-            *target = std::move(std::invoke(proj, *iter));
+            *target = std::invoke(proj, *iter);
     }
 
     template <std::ranges::input_range Range,

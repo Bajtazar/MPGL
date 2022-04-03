@@ -310,7 +310,7 @@ namespace mpgl {
         && requires(Range range, std::size_t size,
             typename Range::value_type value)
         {
-            range.reserve(size),
+            range.reserve(size);
             range.resize(size, value);
         };
 

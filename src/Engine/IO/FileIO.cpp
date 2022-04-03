@@ -68,6 +68,31 @@ namespace mpgl {
         return {};
     }
 
+    [[nodiscard]] std::size_t FileIO::fileSize(
+        std::istream& is) noexcept
+    {
+        std::streampos fileSize;
+        is.seekg(0, std::ios::end);
+        fileSize = is.tellg();
+        is.seekg(0, std::ios::beg);
+        return fileSize;
+    }
+
+    [[nodiscard]] std::optional<FileIO::Buffer>
+        FileIO::readFileToVec(Path const& filePath)
+    {
+        std::ifstream file{filePath.c_str(), std::ios::binary};
+        file.unsetf(std::ios::skipws);
+        if (file.is_open() && file.good()) {
+            Buffer dataStream;
+            dataStream.reserve(fileSize(file));
+            dataStream.insert(dataStream.begin(),
+                std::istream_iterator<char>(file), {});
+            return { dataStream };
+        }
+        return {};
+    }
+
     bool FileIO::saveFile(
         Path const& filePath,
         Stream&& dataStream,

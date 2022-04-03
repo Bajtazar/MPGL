@@ -37,6 +37,7 @@ namespace mpgl {
      */
     struct FileIO {
         typedef std::stringstream                   Stream;
+        typedef std::vector<char>                   Buffer;
         typedef std::ios_base                       Ios;
         typedef std::string                         Path;
 
@@ -58,13 +59,32 @@ namespace mpgl {
         [[nodiscard]] static std::vector<Path> getRecursiveDirFiles(
             Path const& dirPath);
         /**
-         * Reads the file concent into an optional string stream.
+         * Reads the file content into an optional string stream.
          * If file cannot be open then returns an empty optional
          *
          * @param filePath the path to the file
          * @return the optional with the string stream
          */
         [[nodiscard]] static std::optional<Stream> readFile(
+            Path const& filePath);
+
+        /**
+         * Returns the size of the given input stream
+         *
+         * @param is the reference to the input stream
+         * @return the size of the given input stream
+         */
+        [[nodiscard]] static std::size_t fileSize(
+            std::istream& is) noexcept;
+
+        /**
+         * Reads the file content into an optional vector of chars.
+         * If file cannot be open then returns an empty optional
+         *
+         * @param filePath the path to the file
+         * @return the optional with the vector of chars
+         */
+        [[nodiscard]] static std::optional<Buffer> readFileToVec(
             Path const& filePath);
 
         /**
