@@ -87,12 +87,231 @@ namespace mpgl {
         typedef std::vector<char>                   DataBuffer;
         typedef DataBuffer::const_iterator          CharIter;
 
-        typedef void(PNGLoader::*PixelsSetter)
-            (std::size_t, std::size_t, uint8, CharIter&);
-
         typedef std::conditional_t<
         security::isSecurePolicy<Policy>,
             SafeIterator<CharIter>, CharIter>       FileIter;
+
+        /**
+         * Filters the given image
+         */
+        class Filters {
+        public:
+            /**
+             * Constructs a new Filters object from the given
+             * image reference
+             *
+             * @param image the reference to the image object
+             * @param loader the reference to the loader object
+             */
+            explicit Filters(
+                Image& image,
+                PNGLoader& loader) noexcept
+                    : image{image}, loader{loader} {}
+
+            /**
+             * Filter pixels from the given buffer
+             *
+             * @param data the constant reference to the data buffer
+             */
+            void operator()(DataBuffer const& data) noexcept;
+
+            /**
+             * Sets the RGBA pixels
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param filter the filter type
+             * @param iter the reference to the iterator
+             */
+            void setRGBAPixels(
+                size_type row,
+                size_type column,
+                uint8 filter,
+                CharIter& iter) noexcept;
+
+            /**
+             * Sets the RGB pixels
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param filter the filter type
+             * @param iter the reference to the iterator
+             */
+            void setRGBPixels(
+                size_type row,
+                size_type column,
+                uint8 filter,
+                CharIter& iter) noexcept;
+
+            /**
+             * Sets the gray pixels
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param filter the filter type
+             * @param iter the reference to the iterator
+             */
+            void setGrayPixels(
+                size_type row,
+                size_type column,
+                uint8 filter,
+                CharIter& iter) noexcept;
+
+            /**
+             * Sets the gray-alpha pixels
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param filter the filter type
+             * @param iter the reference to the iterator
+             */
+            void setGrayAlphaPixels(
+                size_type row,
+                size_type column,
+                uint8 filter,
+            CharIter& iter) noexcept;
+
+            /**
+             * Destroys the Filters object
+             */
+            ~Filters(void) noexcept = default;
+        private:
+
+            /**
+             * The paeth predictor
+             *
+             * @param a the a pixel
+             * @param b the b pixel
+             * @param c the c pixel
+             * @return the predicted pixel
+             */
+            uint8 paethPredictor(
+                uint8 a,
+                uint8 b,
+                uint8 c) const noexcept;
+
+            /**
+             * The type-A reconstructor
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param pixel the subpixel value
+             * @return the reconstructed pixel
+             */
+            uint8 reconstructA(
+                size_type row,
+                size_type column,
+                uint8 pixel) const noexcept;
+
+            /**
+             * The type-B reconstructor
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param pixel the subpixel value
+             * @return the reconstructed pixel
+             */
+            uint8 reconstructB(
+                size_type row,
+                size_type column,
+                uint8 pixel) const noexcept;
+
+            /**
+             * The type-C reconstructor
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param pixel the subpixel value
+             * @return the reconstructed pixel
+             */
+            uint8 reconstructC(
+                size_type row,
+                size_type column,
+                uint8 pixel) const noexcept;
+
+            /**
+             * Filter the subpixel
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param filter the filter type
+             * @param subpixelID the subpixel id
+             * @param iter the reference to the iterator
+             * @return the filtered subpixel
+             */
+            uint8 filterSubpixel(
+                size_type row,
+                size_type column,
+                uint8 filter,
+                uint8 subpixelID,
+                CharIter& iter) noexcept;
+
+            /**
+             * The first subpixel filter
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param subpixelID the subpixel id
+             * @param subpixel the subpixel value
+             * @return the filtered subpixel
+             */
+            uint8 subpixelFilterA(
+                size_type row,
+                size_type column,
+                uint8 subpixelID,
+                uint8 subpixel) const noexcept;
+
+            /**
+             * The second subpixel filter
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param subpixelID the subpixel id
+             * @param subpixel the subpixel value
+             * @return the filtered subpixel
+             */
+            uint8 subpixelFilterB(
+                size_type row,
+                size_type column,
+                uint8 subpixelID,
+                uint8 subpixel) const noexcept;
+
+            /**
+             * The third subpixel filter
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param subpixelID the subpixel id
+             * @param subpixel the subpixel value
+             * @return the filtered subpixel
+             */
+            uint8 subpixelFilterC(
+                size_type row,
+                size_type column,
+                uint8 subpixelID,
+                uint8 subpixel) const noexcept;
+
+            /**
+             * The fourth subpixel filter
+             *
+             * @param row the row size
+             * @param column the column size
+             * @param subpixelID the subpixel id
+             * @param subpixel the subpixel value
+             * @return the filtered subpixel
+             */
+            uint8 subpixelFilterD(
+                size_type row,
+                size_type column,
+                uint8 subpixelID,
+                uint8 subpixel) const noexcept;
+
+            Image&                                  image;
+            PNGLoader&                              loader;
+        };
+
+        typedef void(PNGLoader::Filters::*PixelsSetter)
+            (std::size_t, std::size_t, uint8, CharIter&);
 
         typedef std::map<uint8, PixelsSetter>       ColorSetters;
 
@@ -212,15 +431,6 @@ namespace mpgl {
             ~IDATChunk(void) = default;
         };
 
-        DataBuffer                                  rawFileData;
-
-        /**
-         * Contains data obtained from the header
-         */
-        struct HeaderData {
-            PixelsSetter                            setter;
-        }                                           headerData;
-
         /**
          * Sets the secure policy
          *
@@ -258,197 +468,14 @@ namespace mpgl {
          */
         void parseChunk(FileIter& file, size_type length);
 
-        /**
-         * The paeth predictor
-         *
-         * @param a the a pixel
-         * @param b the b pixel
-         * @param c the c pixel
-         * @return the predicted pixel
-         */
-        uint8 paethPredictor(
-            uint8 a,
-            uint8 b,
-            uint8 c) const noexcept;
+        DataBuffer                                  rawFileData;
 
         /**
-         * The type-A reconstructor
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param pixel the subpixel value
-         * @return the reconstructed pixel
+         * Contains data obtained from the header
          */
-        uint8 reconstructA(
-            size_type row,
-            size_type column,
-            uint8 pixel) const noexcept;
-
-        /**
-         * The type-B reconstructor
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param pixel the subpixel value
-         * @return the reconstructed pixel
-         */
-        uint8 reconstructB(
-            size_type row,
-            size_type column,
-            uint8 pixel) const noexcept;
-
-        /**
-         * The type-C reconstructor
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param pixel the subpixel value
-         * @return the reconstructed pixel
-         */
-        uint8 reconstructC(
-            size_type row,
-            size_type column,
-            uint8 pixel) const noexcept;
-
-        /**
-         * Filter the subpixel
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param filter the filter type
-         * @param subpixelID the subpixel id
-         * @param iter the reference to the iterator
-         * @return the filtered subpixel
-         */
-        uint8 filterSubpixel(
-            size_type row,
-            size_type column,
-            uint8 filter,
-            uint8 subpixelID,
-            CharIter& iter) noexcept;
-
-        /**
-         * The first subpixel filter
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param subpixelID the subpixel id
-         * @param subpixel the subpixel value
-         * @return the filtered subpixel
-         */
-        uint8 subpixelFilterA(
-            size_type row,
-            size_type column,
-            uint8 subpixelID,
-            uint8 subpixel) const noexcept;
-
-        /**
-         * The second subpixel filter
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param subpixelID the subpixel id
-         * @param subpixel the subpixel value
-         * @return the filtered subpixel
-         */
-        uint8 subpixelFilterB(
-            size_type row,
-            size_type column,
-            uint8 subpixelID,
-            uint8 subpixel) const noexcept;
-
-        /**
-         * The third subpixel filter
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param subpixelID the subpixel id
-         * @param subpixel the subpixel value
-         * @return the filtered subpixel
-         */
-        uint8 subpixelFilterC(
-            size_type row,
-            size_type column,
-            uint8 subpixelID,
-            uint8 subpixel) const noexcept;
-
-        /**
-         * The fourth subpixel filter
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param subpixelID the subpixel id
-         * @param subpixel the subpixel value
-         * @return the filtered subpixel
-         */
-        uint8 subpixelFilterD(
-            size_type row,
-            size_type column,
-            uint8 subpixelID,
-            uint8 subpixel) const noexcept;
-
-        /**
-         * Filter pixels from the given buffer
-         *
-         * @param data the constant reference to the data buffer
-         */
-        void filterPixels(DataBuffer const& data) noexcept;
-
-        /**
-         * Sets the RGBA pixels
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param filter the filter type
-         * @param iter the reference to the iterator
-         */
-        void setRGBAPixels(
-            size_type row,
-            size_type column,
-            uint8 filter,
-            CharIter& iter) noexcept;
-
-        /**
-         * Sets the RGB pixels
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param filter the filter type
-         * @param iter the reference to the iterator
-         */
-        void setRGBPixels(
-            size_type row,
-            size_type column,
-            uint8 filter,
-            CharIter& iter) noexcept;
-
-        /**
-         * Sets the gray pixels
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param filter the filter type
-         * @param iter the reference to the iterator
-         */
-        void setGrayPixels(
-            size_type row,
-            size_type column,
-            uint8 filter,
-            CharIter& iter) noexcept;
-
-        /**
-         * Sets the gray-alpha pixels
-         *
-         * @param row the row size
-         * @param column the column size
-         * @param filter the filter type
-         * @param iter the reference to the iterator
-         */
-        void setGrayAlphaPixels(
-            size_type row,
-            size_type column,
-            uint8 filter,
-            CharIter& iter) noexcept;
+        struct HeaderData {
+            PixelsSetter                            setter;
+        }                                           headerData;
 
         typedef std::unique_ptr<ChunkInterface>     ChunkPtr;
         typedef std::function<ChunkPtr(PNGLoader&)> ChunkFun;

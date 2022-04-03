@@ -101,7 +101,7 @@ namespace mpgl {
             parseChunk(file, length);
         if (readType<uint64>(file) != IENDNumber)
             throw ImageLoadingFileCorruptionException{filePath};
-        filterPixels(ZlibDecoder{std::move(rawFileData), policy}());
+        Filters{pixels, *this}(ZlibDecoder{std::move(rawFileData), policy}());
     }
 
     template <security::SecurityPolicy Policy>
@@ -171,7 +171,7 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::paethPredictor(
+    uint8 PNGLoader<Policy>::Filters::paethPredictor(
         uint8 a,
         uint8 b,
         uint8 c) const noexcept
@@ -186,36 +186,36 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::reconstructA(
+    uint8 PNGLoader<Policy>::Filters::reconstructA(
         size_type row,
         size_type column,
         uint8 pixel) const noexcept
     {
-        return column ? pixels[row][column - 1][pixel] : 0;
+        return column ? image[row][column - 1][pixel] : 0;
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::reconstructB(
+    uint8 PNGLoader<Policy>::Filters::reconstructB(
         size_type row,
         size_type column,
         uint8 pixel) const noexcept
     {
-        return (row < pixels.getHeight() - 1) ?
-            pixels[row + 1][column][pixel] : 0;
+        return (row < image.getHeight() - 1) ?
+            image[row + 1][column][pixel] : 0;
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::reconstructC(
+    uint8 PNGLoader<Policy>::Filters::reconstructC(
         size_type row,
         size_type column,
         uint8 pixel) const noexcept
     {
-        return (row < pixels.getHeight() - 1) && column ?
-            pixels[row + 1][column - 1][pixel] : 0;
+        return (row < image.getHeight() - 1) && column ?
+            image[row + 1][column - 1][pixel] : 0;
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::subpixelFilterA(
+    uint8 PNGLoader<Policy>::Filters::subpixelFilterA(
         size_type row,
         size_type column,
         uint8 subpixelID,
@@ -225,7 +225,7 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::subpixelFilterB(
+    uint8 PNGLoader<Policy>::Filters::subpixelFilterB(
         size_type row,
         size_type column,
         uint8 subpixelID,
@@ -235,7 +235,7 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::subpixelFilterC(
+    uint8 PNGLoader<Policy>::Filters::subpixelFilterC(
         size_type row,
         size_type column,
         uint8 subpixelID,
@@ -247,7 +247,7 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::subpixelFilterD(
+    uint8 PNGLoader<Policy>::Filters::subpixelFilterD(
         size_type row,
         size_type column,
         uint8 subpixelID,
@@ -260,7 +260,7 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    uint8 PNGLoader<Policy>::filterSubpixel(
+    uint8 PNGLoader<Policy>::Filters::filterSubpixel(
         size_type row,
         size_type column,
         uint8 filter,
@@ -281,31 +281,31 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setRGBAPixels(
+    void PNGLoader<Policy>::Filters::setRGBAPixels(
         size_type row,
         size_type column,
         uint8 filter,
         CharIter& iter) noexcept
     {
         for (uint8 sub = 0; sub < 4; ++sub)
-            pixels[row][column][sub]
+            image[row][column][sub]
                 = filterSubpixel(row, column, filter, sub, iter);
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setRGBPixels(
+    void PNGLoader<Policy>::Filters::setRGBPixels(
         size_type row,
         size_type column,
         uint8 filter,
         CharIter& iter) noexcept
     {
         for (uint8 sub = 0; sub < 3; ++sub)
-            pixels[row][column][sub]
+            image[row][column][sub]
                 = filterSubpixel(row, column, filter, sub, iter);
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setGrayPixels(
+    void PNGLoader<Policy>::Filters::setGrayPixels(
         size_type row,
         size_type column,
         uint8 filter,
@@ -313,32 +313,32 @@ namespace mpgl {
     {
         uint8 subpixel = filterSubpixel(row, column, filter, 0, iter);
         for (uint8 sub = 0; sub < 3; ++sub)
-            pixels[row][column][sub] = subpixel;
+            image[row][column][sub] = subpixel;
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setGrayAlphaPixels(
+    void PNGLoader<Policy>::Filters::setGrayAlphaPixels(
         size_type row,
         size_type column,
         uint8 filter,
         CharIter& iter) noexcept
     {
         setGrayPixels(row, column, filter, iter);
-        pixels[row][column].alpha
+        image[row][column].alpha
             = filterSubpixel(row, column, filter, 3, iter);
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::filterPixels(
+    void PNGLoader<Policy>::Filters::operator()(
         DataBuffer const& data) noexcept
     {
         auto iter = data.begin();
-        for (std::size_t i = pixels.getHeight() - 1;
-            i < pixels.getHeight(); --i)
+        for (std::size_t i = image.getHeight() - 1;
+            i < image.getHeight(); --i)
         {
             uint8 filter = *iter++;
-            for (std::size_t j = 0;j < pixels.getWidth(); ++j)
-                (this->*headerData.setter)(i, j, filter, iter);
+            for (std::size_t j = 0;j < image.getWidth(); ++j)
+                (this->*loader.headerData.setter)(i, j, filter, iter);
         }
     }
 
@@ -346,10 +346,10 @@ namespace mpgl {
     PNGLoader<Policy>::ColorSetters const
         PNGLoader<Policy>::IHDRChunk::colorSetters
     {
-        {0, &PNGLoader::setGrayPixels},
-        {2, &PNGLoader::setRGBPixels},
-        {4, &PNGLoader::setGrayAlphaPixels},
-        {6, &PNGLoader::setRGBAPixels}
+        {0, &PNGLoader::Filters::setGrayPixels},
+        {2, &PNGLoader::Filters::setRGBPixels},
+        {4, &PNGLoader::Filters::setGrayAlphaPixels},
+        {6, &PNGLoader::Filters::setRGBAPixels}
     };
 
     template <security::SecurityPolicy Policy>
