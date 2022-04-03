@@ -316,7 +316,7 @@ namespace mpgl {
         typedef std::map<uint8, PixelsSetter>       ColorSetters;
 
         /**
-         * Interface for all types of PNG data chunks
+         * Interface for all types of the PNG data chunks
          */
         class ChunkInterface {
         public:

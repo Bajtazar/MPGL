@@ -39,8 +39,6 @@
 #include <numeric>
 #include <ranges>
 
-#include <iostream>
-
 namespace mpgl {
 
     template <security::SecurityPolicy Policy>
