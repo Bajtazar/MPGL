@@ -25,8 +25,6 @@
  */
 #pragma once
 
-#include <fstream>
-
 #include "../../Collections/Image.hpp"
 #include "../Readers.hpp"
 

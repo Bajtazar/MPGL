@@ -33,6 +33,7 @@
 #include "../../Utility/FunctionalWrapper.hpp"
 #include "../../Utility/ZigZacRange.hpp"
 #include "../../Utility/Ranges.hpp"
+#include "../FileIO.hpp"
 
 #include <algorithm>
 #include <bitset>
@@ -52,17 +53,17 @@ namespace mpgl {
         Path const& filePath)
             : LoaderInterface{filePath}, endOfImage{false}
     {
-        std::ifstream file{this->filePath.c_str(), std::ios::binary};
-        if ((!file.good()) || (!file.is_open()))
+        if (auto file = FileIO::readFileToVec(this->filePath)) {
+            try {
+                setPolicy(*file);
+                decodeImage();
+            } catch (std::out_of_range const&) {
+                throw ImageLoadingFileCorruptionException{this->filePath};
+            } catch (HuffmanTreeException const&) {
+                throw ImageLoadingFileCorruptionException{this->filePath};
+            }
+        } else
             throw ImageLoadingFileOpenException{this->filePath};
-        try {
-            setPolicy(file);
-            decodeImage();
-        } catch (std::out_of_range const&) {
-            throw ImageLoadingFileCorruptionException{this->filePath};
-        } catch (HuffmanTreeException const&) {
-            throw ImageLoadingFileCorruptionException{this->filePath};
-        }
     }
 
     template <security::SecurityPolicy Policy>
@@ -70,11 +71,11 @@ namespace mpgl {
         : JPEGLoader{Policy{}, filePath} {}
 
     template <security::SecurityPolicy Policy>
-    void JPEGLoader<Policy>::setPolicy(std::istream& file) {
+    void JPEGLoader<Policy>::setPolicy(FileBuffer const& file) {
         if constexpr (security::isSecurePolicy<Policy>)
-            return parseChunks(FileIter{StreamBuf{file}, StreamBuf{}});
+            return parseChunks(FileIter{file.begin(), file.end()});
         else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return parseChunks(FileIter{file});
+            return parseChunks(FileIter{file.begin()});
         else
             throw SecurityUnknownPolicyException{};
     }

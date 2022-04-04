@@ -86,15 +86,17 @@ namespace mpgl {
     private:
         typedef std::vector<uint8>                  DataBuffer;
         typedef typename DataBuffer::const_iterator DataIter;
+        typedef std::vector<char>                   FileBuffer;
+        typedef FileBuffer::const_iterator          StreamIter;
 
         typedef std::conditional_t<
             security::isSecurePolicy<Policy>,
             SafeIterator<DataIter>,
             DataIter>                               SafeIter;
-        typedef std::istreambuf_iterator<char>      StreamBuf;
+
         typedef std::conditional_t<
             security::isSecurePolicy<Policy>,
-            SafeIterator<StreamBuf>, StreamBuf>     FileIter;
+            SafeIterator<StreamIter>, StreamIter>   FileIter;
 
         /**
          * Interface for all types of the JPEG data chunks
@@ -160,8 +162,8 @@ namespace mpgl {
              */
             uint8 readChunk(FileIter& data);
 
-            std::array<uint8, 17>                   symbolsLengths;
-            DataBuffer                              characters;
+            std::array<uint8, 17>                   symbolsLengths{};
+            DataBuffer                              characters{};
         };
 
         /**
@@ -414,9 +416,9 @@ namespace mpgl {
          *
          * @throw SecurityUnknownPolicyException when the security
          * policy token is unknown
-         * @param file the reference to the string object
+         * @param file the constant reference to the file data object
          */
-        void setPolicy(std::istream& file);
+        void setPolicy(FileBuffer const& file);
 
         /**
          * Determines which chunk is parsed now and parses it
