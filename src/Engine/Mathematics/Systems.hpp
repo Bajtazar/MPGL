@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include "Ranges.hpp"
@@ -7,13 +32,116 @@
 
 namespace mpgl {
 
+    /**
+     * Returns the value of the signum function on the given
+     * number
+     *
+     * @tparam Tp the integer type
+     * @param value the number
+     * @return the value of the signum function
+     */
     template <std::signed_integral Tp>
-    inline constexpr Tp signum(Tp const& value) noexcept {
+    [[nodiscard]] inline constexpr Tp signum(
+        Tp const& value) noexcept;
+
+    /**
+     * Returns whether the given value is inside the given
+     * boundries. The edge cases are classified as being inside
+     * too
+     *
+     * @tparam Tp the value type
+     * @param first the first boundry
+     * @param second the second bondry
+     * @param checked the checked value
+     * @return if the value is inside the boundries
+     */
+    template <std::totally_ordered Tp>
+    [[nodiscard]] inline constexpr bool between(
+        Tp const& first,
+        Tp const& second,
+        Tp const& checked) noexcept;
+
+
+    /**
+     * Returns whether the given vector is inside the given
+     * boundries. Checks if all dimensions are between their
+     * boundries
+     *
+     * @tparam Tp the vector's value type
+     * @tparam Size the vector's size
+     * @param first the first boundry
+     * @param second the second bondry
+     * @param checked the checked vector
+     * @return if the vector is inside the boundries
+     */
+    template <std::totally_ordered Tp, std::size_t Size>
+    [[nodiscard]] inline constexpr bool between(
+        Vector<Tp, Size> const& first,
+        Vector<Tp, Size> const& second,
+        Vector<Tp, Size> const& checked) noexcept;
+
+    /**
+     * Transform the given vector from the cartesian coordinate
+     * system to the polar coordinate system. The x-axis represents
+     * the radius and the y-axis represents the angle in the
+     * output vector
+     *
+     * @tparam Tp the vector's type
+     * @param vector the vector in cartesian coordinate system
+     * @return the vector in polar coordinate system
+     */
+    template <Mathematical Tp>
+    [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
+        Vector2<Tp> const& vector) noexcept;
+
+    /**
+     * Transforms the given vector from the polar coordinate
+     * system to the cartesian coordinate system
+     *
+     * @tparam Tp the vector's type
+     * @param vector the vector in polar coordinate system
+     * @return the vector in cartesian coordinate system
+     */
+    template <Mathematical Tp>
+    [[nodiscard]] inline constexpr Vector2<Tp> polarToCartesian(
+        Vector2<Tp> const& vector) noexcept;
+
+    /**
+     * Calculates the rotation matrix for the given angle.
+     * This matrix rotates the two dimensional vector
+     * counter-clock-wise
+     *
+     * @tparam Tp the matrix's element type
+     * @param angle the rotation angle [rads]
+     * @return the rotation matrix
+     */
+    template <Mathematical Tp>
+    [[nodiscard]] inline constexpr Matrix2<Tp> rotationMatrix(
+        float32 angle) noexcept;
+
+    /**
+     * Calculates the hermitian transpose of the given matrix
+     *
+     * @tparam Rows the number of matrix's rows
+     * @tparam Cols the number of matrix's colums
+     * @param matrix the matrix to be hermitian transposed
+     * @return the hermitian transposed matrix
+     */
+    template <std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<std::complex<float64>, Cols, Rows>
+        hermitianTranspose(
+            Matrix<std::complex<float64>, Rows, Cols> const& matrix
+            ) noexcept;
+
+    template <std::signed_integral Tp>
+    [[nodiscard]] inline constexpr Tp signum(
+        Tp const& value) noexcept
+    {
         return value < Tp{0} ? Tp{-1} : !value ? Tp{0} : Tp{1};
     }
 
     template <std::totally_ordered Tp>
-    inline constexpr bool between(
+    [[nodiscard]] inline constexpr bool between(
         Tp const& first,
         Tp const& second,
         Tp const& checked) noexcept
@@ -24,7 +152,7 @@ namespace mpgl {
     }
 
     template <std::totally_ordered Tp, std::size_t Size>
-    inline constexpr bool between(
+    [[nodiscard]] inline constexpr bool between(
         Vector<Tp, Size> const& first,
         Vector<Tp, Size> const& second,
         Vector<Tp, Size> const& checked) noexcept
@@ -36,30 +164,33 @@ namespace mpgl {
     }
 
     template <Mathematical Tp>
-    inline constexpr Vector2<Tp> cartesianToPolar(
+    [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
     {
         return { norm(vector), std::atan2(vector[1], vector[0]) };
     }
 
-    template <Mathematical T>
-    inline constexpr Vector2<T> polarToCartesian(
-        Vector2<T> const& vector) noexcept
+    template <Mathematical Tp>
+    [[nodiscard]] inline constexpr Vector2<Tp> polarToCartesian(
+        Vector2<Tp> const& vector) noexcept
     {
         return { vector[0] * std::cos(vector[1]),
             vector[0] * std::sin(vector[1]) };
     }
 
     template <Mathematical Tp>
-    inline constexpr Matrix2<Tp> rotationMatrix(float32 angle) noexcept {
+    [[nodiscard]] inline constexpr Matrix2<Tp> rotationMatrix(
+        float32 angle) noexcept
+    {
         return {Vector2<Tp>{std::cos(angle), -std::sin(angle)},
             Vector2<Tp>{std::sin(angle), std::cos(angle)}};
     }
 
     template <std::size_t Rows, std::size_t Cols>
-    inline constexpr Matrix<std::complex<float64>, Cols, Rows>
+    [[nodiscard]] constexpr Matrix<std::complex<float64>, Cols, Rows>
         hermitianTranspose(
-            Matrix<std::complex<float64>, Rows, Cols> const& matrix) noexcept
+            Matrix<std::complex<float64>, Rows, Cols> const& matrix
+            ) noexcept
     {
         Matrix<std::complex<float64>, Cols, Rows> output;
         for (std::size_t i = 0;i < Rows; ++i)
