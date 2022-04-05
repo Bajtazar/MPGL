@@ -1490,30 +1490,33 @@ namespace mpgl {
         };
     };
 
+    /**
+     * Returns the identity matrix of the given size
+     *
+     * @tparam Tp the type of the matrix element
+     * @tparam Rows the number of matrix rows
+     * @tparam Cols the number of matrix columns
+     * @param diagonal the diagonal values
+     * @return the identity matrix
+     */
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows == Cols && Rows > 1)
-    constexpr Matrix<Tp, Rows, Cols> identityMatrix(
-        Tp diagonal = {1}) noexcept
-    {
-        Matrix<Tp, Rows, Cols> identity;
-        for (std::size_t i = 0; i < Rows; ++i)
-            identity[i][i] = diagonal;
-        return identity;
-    }
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols> identityMatrix(
+        Tp diagonal = {1}) noexcept;
 
+    /**
+     * Returns the trasposed matrix
+     *
+     * @tparam Tp the type of the matrix element
+     * @tparam Rows the number of matrix rows
+     * @tparam Cols the number of matrix columns
+     * @param matrix the matrix to be transposed
+     * @return the transposed matrix
+     */
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
-    constexpr Matrix<Tp, Cols, Rows>
-        transpose(Matrix<Tp, Rows, Cols> const& matrix) noexcept
-    {
-        Matrix<Tp, Cols, Rows> transposed;
-        for (std::size_t i = 0; i < Rows; ++i)
-            for (std::size_t j = 0; j < Cols; ++j)
-                transposed[j][i] = matrix[i][j];
-        return transposed;
-    }
-
-    // methods
+    [[nodiscard]] constexpr Matrix<Tp, Cols, Rows>
+        transpose(Matrix<Tp, Rows, Cols> const& matrix) noexcept;
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
     [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
@@ -1621,377 +1624,988 @@ namespace mpgl {
             [](auto const& value){ return value * value; });
     }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator+=(
+            Column const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left + right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator +=(
-                Column const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left + right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator-=(
+            Column const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left - right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator -=(
-                Column const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left - right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator*=(
+            Column const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left * right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator *=(
-                Column const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left * right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator/=(
+            Column const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left / right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator /=(
-                Column const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left / right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator%=(
+            Column const& right) requires mpgl_Operable(Tp, %)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left % right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator^=(
+            Column const& right) requires mpgl_Operable(Tp, ^)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left ^ right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+         Matrix<Tp, Rows, Cols>::Column::operator&=(
+            Column const& right) requires mpgl_Operable(Tp, &)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left & right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator|=(
+            Column const& right) requires mpgl_Operable(Tp, |)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](Tp const& left, Tp const& right) -> Tp
+                { return left | right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator+=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value += right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator-=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value -= right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator*=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value *= right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator/=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value /= right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator%=(
+            Tp const& right) requires mpgl_Operable(Tp, %)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value %= right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator^=(
+            Tp const& right) requires mpgl_Operable(Tp, ^)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value ^= right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator&=(
+            Tp const& right) requires mpgl_Operable(Tp, &)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value &= right; });
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>::Column&
+        Matrix<Tp, Rows, Cols>::Column::operator|=(
+            Tp const& right) requires mpgl_Operable(Tp, |)
+    {
+        std::ranges::for_each(*this, [&right](Tp& value) -> void
+            { value |= right; });
+        return *this;
+    }
+
+    /**
+     * Adds the column to the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator+(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right);
+
+    /**
+     * Subtract the column from the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator-(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right);
+
+    /**
+     * Multiplies the column with the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator*(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right);
+
+    /**
+     * Divides the column by the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator/(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right);
+
+    /**
+     * Calculates the modulo of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator%(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, %);
+
+    /**
+     * Calculates the bitwise-xor of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator^(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, ^);
+
+    /**
+     * Calculates the bitwise-and of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator&(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, &);
+
+    /**
+     * Calculates the bitwise-xor of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the column
+     * @param right the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator|(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, |);
+
+    /**
+     * Adds the column to the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator+(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right);
+
+    /**
+     * Subtract the column from the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator-(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right);
+
+    /**
+     * Multiplies the column with the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator*(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right);
+
+    /**
+     * Divides the column by the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator/(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right);
+
+    /**
+     * Calculates the modulo of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator%(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, %);
+
+    /**
+     * Calculates the bitwise-xor of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator^(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, ^);
+
+    /**
+     * Calculates the bitwise-and of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator&(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, &);
+
+    /**
+     * Calculates the bitwise-xor of the column and the vector
+     *
+     * @tparam Tp the value type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the vector
+     * @param right the constant reference to the column
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator|(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, |);
+
+    /**
+     * Multiplies two matrices together
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam LRows the left matrix's rows
+     * @tparam LCols the left matrix's columns
+     * @tparam RCols the right matrix's columns
+     * @param left the constant reference to the left matrix
+     * @param right the constant reference to the right matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t LRows,
+        std::size_t LCols, std::size_t RCols>
+            requires (LRows > 1 && LCols > 1 && RCols > 1)
+    [[nodiscard]] Matrix<Tp, LRows, RCols> operator*(
+        Matrix<Tp, LRows, LCols> const& left,
+        Matrix<Tp, LCols, RCols> const& right);
+
+    /**
+     * Adds two matrices together
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam LRows the left matrix's rows
+     * @tparam LCols the left matrix's columns
+     * @tparam RCols the right matrix's columns
+     * @param left the constant reference to the left matrix
+     * @param right the constant reference to the right matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] Matrix<Tp, Rows, Cols> operator+(
+        Matrix<Tp, Rows, Cols> const& left,
+        Matrix<Tp, Rows, Cols> const& right);
+
+    /**
+     * Subtracts two matrices from themselves
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam LRows the left matrix's rows
+     * @tparam LCols the left matrix's columns
+     * @tparam RCols the right matrix's columns
+     * @param left the constant reference to the left matrix
+     * @param right the constant reference to the right matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] Matrix<Tp, Rows, Cols> operator-(
+        Matrix<Tp, Rows, Cols> const& left,
+        Matrix<Tp, Rows, Cols> const& right);
+
+    /**
+     * Multiplies the matrix with the vector
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param matrix the constant reference to the matrix
+     * @param vector the constant reference to the vector
+     * @return the result vector
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] Vector<Tp, Rows> operator*(
+        Matrix<Tp, Rows, Cols> const& matrix,
+        Vector<Tp, Cols> const& vector);
+
+    /**
+     * Adds the scalar value to the matrix
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator+(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right);
+
+    /**
+     * Subtracts the scalar value from the matrix
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator-(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right);
+
+    /**
+     * Multiplies the matrix with the scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator*(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right);
+
+    /**
+     * Divides the matrix by the scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator/(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right);
+
+    /**
+     * Calculates the modulo of matrix's elements and the
+     * scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator%(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, %);
+
+    /**
+     * Calculates the bitwise-xor of matrix's elements and the
+     * scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator^(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, ^);
+
+    /**
+     * Calculates the bitwise-and of matrix's elements and the
+     * scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator&(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, &);
+
+    /**
+     * Calculates the bitwise-or of matrix's elements and the
+     * scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the matrix
+     * @param right the constant reference to the scalar
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator|(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, |);
+
+    /**
+     * Adds the scalar value to the matrix
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator+(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right);
+
+    /**
+     * Subtracts the scalar value from the matrix
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator-(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right);
+
+    /**
+     * Multiplies the matrix with the scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator*(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right);
+
+    /**
+     * Divides the matrix consisting of scalar value fields
+     * by the matrix elements
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator/(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right);
+
+    /**
+     * Calculates the modulo of the matrix consisting of scalar
+     * value fields with the matrix elements
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator%(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, %);
+
+    /**
+     * Calculates the bitwise-xor of the matrix elements and
+     * the scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator^(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, ^);
+
+    /**
+     * Calculates the bitwise-and of the matrix elements and
+     * the scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+         operator&(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, &);
+
+    /**
+     * Calculates the bitwise-or of the matrix elements and
+     * the scalar value
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the matrix's rows
+     * @tparam Cols the matrix's columns
+     * @param left the constant reference to the scalar
+     * @param right the constant reference to the matrix
+     * @return the result matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator|(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, |);
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator+(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp
+                { return left + right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator-(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left - right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator*(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left * right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator/(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left / right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator%(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, %)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left % right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator^(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, ^)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left ^ right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator&(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, &)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left & right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator|(
+            typename Matrix<Tp, Rows, Cols>::Column const& left,
+            Vector<Tp, Rows> const& right)
+                requires mpgl_Operable(Tp, |)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left | right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator+(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                 return left + right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator-(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left - right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator*(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left * right; });
+        return result;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator/(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left / right; });
+        return result;
+    }
 
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator %=(
-                Column const& right) requires mpgl_Operable(Tp, %)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left % right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator%(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, %)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left % right; });
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator ^=(
-                Column const& right) requires mpgl_Operable(Tp, ^)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left ^ right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator^(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, ^)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left ^ right; });
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator &=(
-                Column const& right) requires mpgl_Operable(Tp, &)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left & right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator&(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, &)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left & right; });
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator |=(
-                Column const& right) requires mpgl_Operable(Tp, |)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](Tp const& left, Tp const& right)->Tp{ return left | right; });
-            return *this;
-        }
-
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator +=(
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value += right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator -=(
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value -= right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator *=(
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value *= right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator /=(
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value /= right; });
-            return *this;
-        }
-
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator %=(
-                Tp const& right) requires mpgl_Operable(Tp, %)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value %= right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator ^=(
-                Tp const& right) requires mpgl_Operable(Tp, ^)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value ^= right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator &=(
-                Tp const& right) requires mpgl_Operable(Tp, &)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value &= right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>::Column&
-            Matrix<Tp, Rows, Cols>::Column::operator |=(
-                Tp const& right) requires mpgl_Operable(Tp, |)
-        {
-            std::ranges::for_each(*this, [&right](Tp& value) -> void
-                { value |= right; });
-            return *this;
-        }
-
-
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator + (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left + right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator - (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left - right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator * (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left * right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator / (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left / right; });
-            return result;
-        }
-
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator % (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-                    requires mpgl_Operable(Tp, %)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left % right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator ^ (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-                    requires mpgl_Operable(Tp, ^)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left ^ right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator & (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-                    requires mpgl_Operable(Tp, &)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left & right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator | (typename Matrix<Tp, Rows, Cols>::Column const& left,
-                Vector<Tp, Rows> const& right)
-                    requires mpgl_Operable(Tp, |)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left | right; });
-            return result;
-        }
-
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator + (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left + right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator - (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left - right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator * (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left * right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator / (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left / right; });
-            return result;
-        }
-
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator % (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-                    requires mpgl_Operable(Tp, %)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left % right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator ^ (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-                    requires mpgl_Operable(Tp, ^)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left ^ right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator & (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-                    requires mpgl_Operable(Tp, &)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left & right; });
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Vector<Tp, Rows>
-            operator | (Vector<Tp, Rows> const& left,
-                typename Matrix<Tp, Rows, Cols>::Column const& right)
-                    requires mpgl_Operable(Tp, |)
-        {
-            Vector<Tp, Rows> result;
-            std::ranges::transform(left, right, result.begin(),
-                [](Tp const& left, Tp const& right)-> Tp {
-                    return left | right; });
-            return result;
-        }
-
-
-    // matrix methods
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        operator|(
+            Vector<Tp, Rows> const& left,
+            typename Matrix<Tp, Rows, Cols>::Column const& right)
+                requires mpgl_Operable(Tp, |)
+    {
+        Vector<Tp, Rows> result;
+        std::ranges::transform(left, right, result.begin(),
+            [](Tp const& left, Tp const& right)-> Tp {
+                return left | right; });
+        return result;
+    }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
     template <Arithmetic Up>
@@ -2015,187 +2629,182 @@ namespace mpgl {
         return result;
     }
 
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator += (
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator+=(
+            Matrix<Tp, Rows, Cols> const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left + right; });
-            return *this;
-        }
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator -= (
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator-=(
+            Matrix<Tp, Rows, Cols> const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left - right; });
-            return *this;
-        }
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator *= (
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator*=(
+            Matrix<Tp, Rows, Cols> const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left * right; });
-            return *this;
-        }
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator /= (
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator/=(
+             Matrix<Tp, Rows, Cols> const& right)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left / right; });
-            return *this;
-        }
+        return *this;
+    }
 
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator %= (
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, %)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator%=(
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, %)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left % right; });
-            return *this;
-        }
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator ^= (
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, ^)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator^=(
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, ^)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left ^ right; });
-            return *this;
-        }
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator &= (
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, &)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator&=(
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, &)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left & right; });
-            return *this;
-        }
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator |= (
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, |)
-        {
-            std::ranges::transform(*this, right, begin(),
-                [](auto const& left, auto const& right)
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator|=(
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, |)
+    {
+        std::ranges::transform(*this, right, begin(),
+            [](auto const& left, auto const& right)
                 { return left | right; });
-            return *this;
-        }
+        return *this;
+    }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator+=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value += right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator += (
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value += right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator-=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value -= right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator -= (
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value -= right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator*=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value *= right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator *= (
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value *= right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator/=(
+            Tp const& right)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value /= right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator /= (
-                Tp const& right)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value /= right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator%=(
+            Tp const& right) requires mpgl_Operable(Tp, %)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value %= right; });
+        return *this;
+    }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator^=(
+            Tp const& right) requires mpgl_Operable(Tp, ^)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value ^= right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator %= (
-                Tp const& right) requires mpgl_Operable(Tp, %)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value %= right; });
-            return *this;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator&=(
+            Tp const& right) requires mpgl_Operable(Tp, &)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value &= right; });
+        return *this;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator ^= (
-                Tp const& right) requires mpgl_Operable(Tp, ^)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value ^= right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator &= (
-                Tp const& right) requires mpgl_Operable(Tp, &)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value &= right; });
-            return *this;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>&
-            Matrix<Tp, Rows, Cols>::operator |= (
-                Tp const& right) requires mpgl_Operable(Tp, |)
-        {
-            std::ranges::for_each(*this, [&right](auto& value) -> void
-                { value |= right; });
-            return *this;
-        }
-
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator|=(
+            Tp const& right) requires mpgl_Operable(Tp, |)
+    {
+        std::ranges::for_each(*this, [&right](auto& value) -> void
+            { value |= right; });
+        return *this;
+    }
 
     template <Arithmetic Tp, std::size_t LRows,
         std::size_t LCols, std::size_t RCols>
             requires (LRows > 1 && LCols > 1 && RCols > 1)
-    Matrix<Tp, LRows, RCols> operator*(
+    [[nodiscard]] Matrix<Tp, LRows, RCols> operator*(
         Matrix<Tp, LRows, LCols> const& left,
         Matrix<Tp, LCols, RCols> const& right)
     {
@@ -2208,7 +2817,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    Matrix<Tp, Rows, Cols> operator+(
+    [[nodiscard]] Matrix<Tp, Rows, Cols> operator+(
         Matrix<Tp, Rows, Cols> const& left,
         Matrix<Tp, Rows, Cols> const& right)
     {
@@ -2218,7 +2827,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    Matrix<Tp, Rows, Cols> operator-(
+    [[nodiscard]] Matrix<Tp, Rows, Cols> operator-(
         Matrix<Tp, Rows, Cols> const& left,
         Matrix<Tp, Rows, Cols> const& right)
     {
@@ -2228,7 +2837,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    Vector<Tp, Rows> operator*(
+    [[nodiscard]] Vector<Tp, Rows> operator*(
         Matrix<Tp, Rows, Cols> const& matrix,
         Vector<Tp, Cols> const& vector)
     {
@@ -2238,173 +2847,185 @@ namespace mpgl {
         return result;
     }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator+(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result += right;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator + (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result += right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator-(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result -= right;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator - (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result -= right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator*(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result *= right;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator * (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result *= right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator/(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result /= right;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator / (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result /= right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator%(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, %)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result %= right;
+        return result;
+    }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator^(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, ^)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result ^= right;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator % (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right) requires mpgl_Operable(Tp, %)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result %= right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator&(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, &)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result &= right;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator ^ (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right) requires mpgl_Operable(Tp, ^)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result ^= right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator|(
+            Matrix<Tp, Rows, Cols> const& left,
+            Tp const& right) requires mpgl_Operable(Tp, |)
+    {
+        Matrix<Tp, Rows, Cols> result{left};
+        result |= right;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator & (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right) requires mpgl_Operable(Tp, &)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result &= right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator+(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result += left;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator | (Matrix<Tp, Rows, Cols> const& left,
-                Tp const& right) requires mpgl_Operable(Tp, |)
-        {
-            Matrix<Tp, Rows, Cols> result{left};
-            result |= right;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator-(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result -= left;
+        return result;
+    }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator*(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result *= left;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator + (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result += left;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator/(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result /= left;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator - (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result -= left;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator%(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, %)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result %= left;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator * (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result *= left;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator^(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, ^)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result ^= left;
+        return result;
+    }
 
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator / (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result /= left;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+         operator&(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, &)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result &= left;
+        return result;
+    }
 
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator % (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, %)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result %= left;
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator ^ (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, ^)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result ^= left;
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator & (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, &)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result &= left;
-            return result;
-        }
-
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        constexpr Matrix<Tp, Rows, Cols>
-            operator | (Tp const& left,
-                Matrix<Tp, Rows, Cols> const& right)
-                    requires mpgl_Operable(Tp, |)
-        {
-            Matrix<Tp, Rows, Cols> result{right};
-            result |= left;
-            return result;
-        }
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
+        operator|(
+            Tp const& left,
+            Matrix<Tp, Rows, Cols> const& right)
+                requires mpgl_Operable(Tp, |)
+    {
+        Matrix<Tp, Rows, Cols> result{right};
+        result |= left;
+        return result;
+    }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
@@ -2440,87 +3061,251 @@ namespace mpgl {
         return std::ranges::subrange(columnBegin(), columnEnd());
     }
 
-    // common operations
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows == Cols && Rows > 1)
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols> identityMatrix(
+        Tp diagonal) noexcept
+    {
+        Matrix<Tp, Rows, Cols> identity;
+        for (std::size_t i = 0; i < Rows; ++i)
+            identity[i][i] = diagonal;
+        return identity;
+    }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    [[nodiscard]] constexpr Matrix<Tp, Cols, Rows>
+        transpose(Matrix<Tp, Rows, Cols> const& matrix) noexcept
+    {
+        Matrix<Tp, Cols, Rows> transposed;
+        for (std::size_t i = 0; i < Rows; ++i)
+            for (std::size_t j = 0; j < Cols; ++j)
+                transposed[j][i] = matrix[i][j];
+        return transposed;
+    }
+
+    /**
+     * Calculates the LUP decompostion of the given matrix
+     */
     class LUPDecompositionFn {
     public:
+        /**
+         * The tag used to determine if the is-even flag
+         * should be retured. This flag is used do determine
+         * the matrix determinent sign
+         */
         static constexpr struct CTag {}         CounterTag{};
 
+        /**
+         * Performs the in-place LUP decomposition of the
+         * given matrix. Returns an optional with the
+         * permutation vector. If the matrix is singular
+         * then returns an empty optional
+         *
+         * @tparam Tp the matrix's type
+         * @tparam Rows the matrix's rows and columns size
+         * @param matrix the reference to the matrix
+         * @return the optional with permutation vector
+         */
         template <Arithmetic Tp, std::size_t Rows>
             requires (Rows > 1)
-        constexpr std::optional<Vector<Tp, Rows>>
+        [[nodiscard]] constexpr std::optional<Vector<Tp, Rows>>
             operator() (
-                Matrix<Tp, Rows, Rows>& matrix) const noexcept
-        {
-            Vector<Tp, Rows> perms;
-            std::iota(perms.begin(), perms.end(), Tp{0});
-            for (std::size_t k = 0, u; k < Rows; ++k) {
-                if (!findP(u, k, matrix))
-                    return {};
-                if (u != k) {
-                    std::swap(perms[k], perms[u]);
-                    std::swap(matrix[k], matrix[u]);
-                }
-                permute(k, matrix);
-            }
-            return { perms };
-        }
+                Matrix<Tp, Rows, Rows>& matrix) const noexcept;
 
+        /**
+         * Performs the in-place LUP decomposition of the
+         * given matrix. Returns an optional with the
+         * is-even flag. If the matrix is singular
+         * then returns an empty optional
+         *
+         * @tparam Tp the matrix's type
+         * @tparam Rows the matrix's rows and columns size
+         * @param matrix the reference to the matrix
+         * @return the optional with is-even flag
+         */
         template <Arithmetic Tp, std::size_t Rows>
             requires (Rows > 1)
-        constexpr std::optional<bool>
+        [[nodiscard]] constexpr std::optional<bool>
             operator() (
-                Matrix<Tp, Rows, Rows>& matrix, CTag) const noexcept
-        {
-            std::size_t counter = 0;
-            for (std::size_t k = 0, u = 0; k < Rows; ++k, u = k) {
-                if (!findP(u, k, matrix))
-                    return {};
-                if (u != k) {
-                    ++counter;
-                    std::swap(matrix[k], matrix[u]);
-                }
-                permute(k, matrix);
-            }
-            return { counter % 2 };
-        }
+                Matrix<Tp, Rows, Rows>& matrix, CTag) const noexcept;
     private:
+        /**
+         * Finds the pivot
+         *
+         * @tparam Tp the matrix's type
+         * @tparam Rows the matrix's rows and columns size
+         * @param u the reference to the u parameter
+         * @param k the reference to the k parameter
+         * @param matrix the constant reference to the matrix
+         * @return the pivot
+         */
         template <Arithmetic Tp, std::size_t Rows>
             requires (Rows > 1)
-        constexpr bool findP(std::size_t& u, std::size_t& k,
-            Matrix<Tp, Rows, Rows> const& matrix) const noexcept
-        {
-            Tp p{0};
-            for (std::size_t i = k; i < Rows; ++i) {
-                if (Tp v = std::abs(matrix[i][k]); v > p) {
-                    p = v;
-                    u = i;
-                }
-            }
-            return p != 0;
-        }
+        constexpr bool findPivot(
+            std::size_t& u,
+            std::size_t& k,
+            Matrix<Tp, Rows, Rows> const& matrix) const noexcept;
 
+        /**
+         * Permutes the matrix
+         *
+         * @tparam Tp the matrix's type
+         * @tparam Rows the matrix's rows and columns size
+         * @param k the reference to the k parameter
+         * @param matrix the reference to the matrix
+         */
         template <Arithmetic Tp, std::size_t Rows>
             requires (Rows > 1)
-        constexpr void permute(std::size_t& k,
-            Matrix<Tp, Rows, Rows>& matrix) const noexcept
-        {
-            for (std::size_t i = k + 1; i < Rows; ++i) {
-                matrix[i][k] /= matrix[k][k];
-                for (std::size_t j = k + 1; j < Rows; ++j)
-                    matrix[i][j] -= matrix[i][k] * matrix[k][j];
-            }
-        }
+        constexpr void permute(
+            std::size_t& k,
+            Matrix<Tp, Rows, Rows>& matrix) const noexcept;
     };
 
     inline constexpr LUPDecompositionFn         lupDecomposition;
+
+    /**
+     * Solves the linear equation system using the LUP method
+     *
+     * @tparam Tp the matrix's type
+     * @tparam Rows the matrix's rows and columns size
+     * @tparam Permutations the permutation vector type
+     * @tparam Results the result vector type
+     * @param luMatrix the constant reference to the LU matrix
+     * @param permutations the contant reference to the permutations
+     * vector
+     * @param results the constant reference to the results vector
+     * @return the equations solution
+     */
+    template <Arithmetic Tp, std::size_t Rows,
+        SizedRange<Tp, Rows> Permutations,
+        SizedRange<Tp, Rows> Results>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        lupSolve(
+            Matrix<Tp, Rows, Rows> const& luMatrix,
+            Permutations const& permutations,
+            Results const& results) noexcept;
+
+    /**
+     * Returns an optional with the inverted matrix. Returns
+     * an empty optional if the matrix is singular
+     *
+     * @tparam Tp the matrix's type
+     * @tparam Rows the matrix's rows and columns size
+     * @tparam Up the invertex matrix's type
+     * @param matrix the constant reference to the matrix
+     * @return the invertex matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows,
+        Arithmetic Up = Tp>
+            requires (Rows > 1)
+    [[nodiscard]] constexpr std::optional<Matrix<Up, Rows, Rows>>
+        invert(Matrix<Tp, Rows, Rows> const& matrix) noexcept;
+
+    /**
+     * Returns the matrix's determinent
+     *
+     * @tparam Tp the matrix's type
+     * @tparam Rows the matrix's rows and columns size
+     * @tparam Up the determinent type
+     * @param matrix the constant reference to the matrix
+     * @return the matrix's determinent
+     */
+    template <Arithmetic Tp, std::size_t Rows, Arithmetic Up = Tp>
+            requires (Rows > 1)
+    [[nodiscard]] constexpr Up det(
+        Matrix<Tp, Rows, Rows> const& matrix) noexcept;
+
+    /**
+     * Returns the matrix's trace
+     *
+     * @tparam Tp the matrix's type
+     * @tparam Rows the matrix's rows and columns size
+     * @param matrix the constant reference to the matrix
+     * @return the matrix's trace
+     */
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr Tp trace(
+        Matrix<Tp, Rows, Rows> const& matrix) noexcept;
+
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr std::optional<Vector<Tp, Rows>>
+        LUPDecompositionFn::operator() (
+            Matrix<Tp, Rows, Rows>& matrix) const noexcept
+    {
+        Vector<Tp, Rows> perms;
+        std::iota(perms.begin(), perms.end(), Tp{0});
+        for (std::size_t k = 0, u; k < Rows; ++k) {
+            if (!findPivot(u, k, matrix))
+                return {};
+            if (u != k) {
+                std::swap(perms[k], perms[u]);
+                std::swap(matrix[k], matrix[u]);
+            }
+            permute(k, matrix);
+        }
+        return { perms };
+    }
+
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr std::optional<bool>
+        LUPDecompositionFn::operator() (
+            Matrix<Tp, Rows, Rows>& matrix, CTag) const noexcept
+    {
+        std::size_t counter = 0;
+        for (std::size_t k = 0, u = 0; k < Rows; ++k, u = k) {
+            if (!findPivot(u, k, matrix))
+                return {};
+            if (u != k) {
+                ++counter;
+                std::swap(matrix[k], matrix[u]);
+            }
+            permute(k, matrix);
+        }
+        return { counter % 2 };
+    }
+
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    constexpr bool LUPDecompositionFn::findPivot(
+        std::size_t& u,
+        std::size_t& k,
+        Matrix<Tp, Rows, Rows> const& matrix) const noexcept
+    {
+        Tp p{0};
+        for (std::size_t i = k; i < Rows; ++i) {
+            if (Tp v = std::abs(matrix[i][k]); v > p) {
+                p = v;
+                u = i;
+            }
+        }
+        return p != 0;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    constexpr void LUPDecompositionFn::permute(
+        std::size_t& k,
+        Matrix<Tp, Rows, Rows>& matrix) const noexcept
+    {
+        for (std::size_t i = k + 1; i < Rows; ++i) {
+            matrix[i][k] /= matrix[k][k];
+            for (std::size_t j = k + 1; j < Rows; ++j)
+                 matrix[i][j] -= matrix[i][k] * matrix[k][j];
+        }
+    }
 
     template <Arithmetic Tp, std::size_t Rows,
         SizedRange<Tp, Rows> Permutations,
         SizedRange<Tp, Rows> Results>
         requires (Rows > 1)
-    constexpr Vector<Tp, Rows>
-        lupSolve(Matrix<Tp, Rows, Rows>& luMatrix,
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        lupSolve(
+            Matrix<Tp, Rows, Rows> const& luMatrix,
             Permutations const& permutations,
             Results const& results) noexcept
     {
@@ -2539,9 +3324,9 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows,
-            Arithmetic Up = Tp>
-        requires (Rows > 1)
-    constexpr std::optional<Matrix<Up, Rows, Rows>>
+        Arithmetic Up = Tp>
+            requires (Rows > 1)
+    [[nodiscard]] constexpr std::optional<Matrix<Up, Rows, Rows>>
         invert(Matrix<Tp, Rows, Rows> const& matrix) noexcept
     {
         Matrix<Up, Rows, Rows> luMatrix = matrix;
@@ -2554,11 +3339,10 @@ namespace mpgl {
         return {};
     }
 
-    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols,
-        Arithmetic Up = Tp>
-            requires (Rows == Cols && Cols > 1)
-    constexpr Up det(
-        Matrix<Tp, Rows, Cols> const& matrix) noexcept
+    template <Arithmetic Tp, std::size_t Rows, Arithmetic Up = Tp>
+            requires (Rows > 1)
+    [[nodiscard]] constexpr Up det(
+        Matrix<Tp, Rows, Rows> const& matrix) noexcept
     {
         Matrix<Up, Rows, Rows> luMatrix = matrix;
         if (auto parity = lupDecomposition(luMatrix,
@@ -2572,10 +3356,10 @@ namespace mpgl {
         return Up{0};
     }
 
-    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        requires (Rows == Cols && Cols > 1)
-    constexpr Tp trace(
-        Matrix<Tp, Rows, Cols> const& matrix) noexcept
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr Tp trace(
+        Matrix<Tp, Rows, Rows> const& matrix) noexcept
     {
         Tp sum{0};
         for (std::size_t i = 0;i < Rows; ++i)
