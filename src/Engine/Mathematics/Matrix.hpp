@@ -47,7 +47,7 @@ namespace mpgl {
         /**
          * Represents the column of the matrix. Allows to perfrom
          * vector-like operations on entire columns even if
-         * they are not represented continiously in the memory.
+         * they are not represented continuosly in the memory.
          *
          * Does not behave like the covariant vector
          */
@@ -89,6 +89,14 @@ namespace mpgl {
              */
             constexpr Column& operator=(
                 Vector<Tp, Rows> const& vector) noexcept;
+
+            /**
+             * Inverses the sign of the columns's elements
+             *
+             * @return the vector with reversed elements
+             */
+            [[nodiscard]] constexpr Vector<Tp, Rows>
+                operator-(void) const noexcept;
 
             /**
              * Casts this column object to the vector
@@ -351,7 +359,7 @@ namespace mpgl {
                         { return *ptr; }
 
                 /**
-                 * @Returns the pointer to the column's element
+                 * Returns the pointer to the column's element
                  *
                  * @return the pointer to the column's element
                  */
@@ -635,37 +643,100 @@ namespace mpgl {
         typedef Vector<Tp, Cols>                value_type;
         typedef Column                          column_value_type;
 
+        /**
+         * Constructs a new matrix object from the given
+         * vectors
+         *
+         * @tparam Rws the types of vectors
+         */
         template <AllAbsolutelySame<value_type>... Rws>
             requires (sizeof...(Rws) == Rows)
         constexpr Matrix(Rws&&... rows) noexcept;
 
+        /**
+         * Constructs a new matrix object from the given
+         * base tuple
+         *
+         * @param base the constant reference to the base
+         * object
+         */
         constexpr Matrix(NormalBase const& base) noexcept
             : normalBase{base} {}
 
+        /**
+         * Constructs a new matrix object from the given
+         * base tuple
+         *
+         * @param base the rvalue reference to the base
+         * object
+         */
         constexpr Matrix(NormalBase&& base) noexcept
             : normalBase{std::move(base)} {}
 
+        /**
+         * Constructs a new matrix object from the given
+         * matrix object
+         *
+         * @param matrix the constant reference to the matrix
+         * object
+         */
         constexpr Matrix(Matrix const& matrix) noexcept
             : normalBase{matrix.normalBase} {}
 
+        /**
+         * Constructs a new matrix object from the given
+         * matrix object
+         *
+         * @param matrix the rvalue reference to the matrix
+         * object
+         */
         constexpr Matrix(Matrix&& matrix) noexcept
             : normalBase{std::move(matrix.normalBase)} {}
 
+        /**
+         * Constructs a new matrix object
+         */
         constexpr Matrix(void) noexcept
             : normalBase{} {}
 
-        constexpr Matrix& operator=(Matrix const&
-            matrix) noexcept
+        /**
+         * Assigns the given matrix object to this object
+         *
+         * @param matrix the constant reference to matrix object
+         * @return the reference to this object
+         */
+        constexpr Matrix& operator=(
+            Matrix const& matrix) noexcept
                 { normalBase = matrix.normalBase; return *this; }
 
-        constexpr Matrix& operator=(Matrix&& matrix) noexcept
-            { normalBase = std::move(matrix.normalBase); return *this; }
+        /**
+         * Assigns the given matrix object to this object
+         *
+         * @param matrix the constant reference to matrix object
+         * @return the reference to this object
+         */
+        constexpr Matrix& operator=(Matrix&& matrix) noexcept;
 
-        constexpr Matrix operator-(void) const noexcept;
+        /**
+         * Inverses the sign of the matrix's elements
+         *
+         * @return the matrix with reversed elements
+         */
+        [[nodiscard]] constexpr Matrix operator-(void) const noexcept;
 
-        static constexpr std::size_t size(void) noexcept
+        /**
+         * Returns the size of the matrix [the number of its rows]
+         *
+         * @return the size of the matrix
+         */
+        [[nodiscard]] static constexpr std::size_t size(void) noexcept
             { return Rows; }
 
+        /**
+         * Iterates through the matrix's rows
+         *
+         * @tparam value_type the iterator's value type
+         */
         template <class value_type>
         class Iterator : public std::iterator<
             std::contiguous_iterator_tag, value_type>
@@ -681,52 +752,171 @@ namespace mpgl {
             using compare
                 = std::compare_three_way_result_t<pointer, pointer>;
 
+            /**
+             * Constructs a new iterator object from the
+             * given pointer
+             *
+             * @param ptr the pointer to the data
+             */
             constexpr explicit Iterator(pointer ptr) noexcept
                 : ptr{ptr} {}
 
+            /**
+             * Constructs a new iterator object
+             */
             constexpr explicit Iterator(void) noexcept = default;
 
+            /**
+             * Increments iterator by one
+             *
+             * @return reference to this object
+             */
             constexpr iter_ref operator++(void) noexcept
                 { ++ptr; return *this; }
-            constexpr iter operator++(int) noexcept
+
+            /**
+             * Post-increments iterator by one and returns copy
+             * of the object
+             *
+             * @return the copied object
+             */
+            [[nodiscard]] constexpr iter operator++(int) noexcept
                 { auto temp = *this; ++ptr; return temp; }
 
+            /**
+             * Decrements iterator by one
+             *
+             * @return reference to this object
+             */
             constexpr iter_ref operator--(void) noexcept
                 { --ptr; return *this; }
-            constexpr iter operator--(int) noexcept
+
+            /**
+             * Post-decrements iterator by one and returns copy
+             * of the object
+             *
+             * @return the copied object
+             */
+            [[nodiscard]] constexpr iter operator--(int) noexcept
                 { auto temp = *this; --ptr; return temp; }
 
-            constexpr reference operator*(void) const noexcept
-                { return *ptr; }
-            constexpr pointer operator->(void) const noexcept
-                { return ptr; }
+            /**
+             * Returns the reference to the matrix's row
+             *
+             * @return the reference to the matrix's row
+             */
+            [[nodiscard]] constexpr reference operator*(
+                void) const noexcept
+                    { return *ptr; }
 
-            constexpr iter_ref operator+=(difference_type offset) noexcept
-                { ptr += offset; return *this; }
-            constexpr iter_ref operator-=(difference_type offset) noexcept
-                { ptr -= offset; return *this; }
+            /**
+             * Returns the pointer to the column's element
+             *
+             * @return the pointer to the column's element
+             */
+            [[nodiscard]] constexpr pointer operator->(
+                void) const noexcept
+                    { return ptr; }
 
-            constexpr reference operator[] (difference_type offset) const noexcept
-                { return *(ptr + offset); }
+            /**
+             * Increments iterator by the given distance
+             *
+             * @param offset the incremented distance
+             * @return reference to this object
+             */
+            constexpr iter_ref operator+=(
+                difference_type offset) noexcept
+                    { ptr += offset; return *this; }
 
-            friend_expr iter operator+(iter_cref left,
+            /**
+             * Decrements iterator by the given distance
+             *
+             * @param offset the decremented distance
+             * @return reference to this object
+             */
+            constexpr iter_ref operator-=(
+                difference_type offset) noexcept
+                    { ptr -= offset; return *this; }
+
+            /**
+             * Returns a view shifted by the given offset
+             *
+             * @param offset the incremented distance
+             * @return the view shifted by the given offse
+             */
+            [[nodiscard]] constexpr reference operator[] (
+                difference_type offset) const noexcept
+                    { return *(ptr + offset); }
+
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend constexpr iter operator+(
+                iter_cref left,
                 difference_type right) noexcept
-                    { auto temp = left; temp.ptr += right; return temp; }
-            friend_expr iter operator+(difference_type left,
+            { auto temp = left; temp.ptr += right; return temp; }
+
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the distance
+             * @param right the iterator
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend constexpr iter operator+(
+                difference_type left,
                 iter_cref right) noexcept
-                    { auto temp = right; temp.ptr += left; return temp; }
-            friend_expr iter operator-(iter_cref left,
+            { auto temp = right; temp.ptr += left; return temp; }
+
+            /**
+             * Subtracts given distance from iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted operator
+             */
+            [[nodiscard]] friend constexpr iter operator-(
+                iter_cref left,
                 difference_type right) noexcept
-                    { auto temp = left; temp.ptr -= right; return temp; }
-            friend_expr difference_type operator-(iter_cref left,
+            { auto temp = left; temp.ptr -= right; return temp; }
+
+            /**
+             * Returns distance between iterators
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return difference_type
+             */
+            [[nodiscard]] friend constexpr difference_type operator-(
+                iter_cref left,
                 iter_cref right) noexcept
                     { return left.ptr - right.ptr; }
 
-            friend_expr bool operator==(iter_cref left,
+            /**
+             * Checks whether two iterators are equal
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return whether two iterators are equal
+             */
+            [[nodiscard]] friend constexpr bool operator==(
+                iter_cref left,
                 iter_cref right) noexcept
                     { return left.ptr == right.ptr; }
 
-            friend_expr compare operator<=>(iter_cref left,
+            /**
+             * Compares two iterators to each other
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return the result of compare
+             */
+            [[nodiscard]] friend constexpr compare operator<=>(
+                iter_cref left,
                 iter_cref right) noexcept
                     { return left.ptr <=> right.ptr; }
         private:
@@ -740,40 +930,151 @@ namespace mpgl {
         typedef std::reverse_iterator<
             const_iterator>                 const_reverse_iterator;
 
-        constexpr iterator begin(void) noexcept
+        /**
+         * Returns the iterator to the begining of the rows
+         *
+         * @return the iterator to the begining of the rows
+         */
+        [[nodiscard]] constexpr iterator begin(void) noexcept
             { return iterator{ &first() }; }
-        constexpr iterator end(void) noexcept
+
+        /**
+         * Returns the iterator to the end of the rows
+         *
+         * @return the iterator to the end of the rows
+         */
+        [[nodiscard]] constexpr iterator end(void) noexcept
             { return iterator{ &first() + Rows }; }
 
-        constexpr const_iterator begin(void) const noexcept
-            { return const_iterator{ &first() }; }
-        constexpr const_iterator end(void) const noexcept
-            { return const_iterator{ &first() + Rows }; }
+        /**
+         * Returns the constant iterator to the begining
+         * of the rows
+         *
+         * @return the constant iterator to the begining
+         * of the rows
+         */
+        [[nodiscard]] constexpr const_iterator begin(
+            void) const noexcept
+                { return const_iterator{ &first() }; }
 
-        constexpr const_iterator cbegin(void) const noexcept
-            { return const_iterator{ &first() }; }
-        constexpr const_iterator cend(void) const noexcept
-            { return const_iterator{ &first() + Rows }; }
+        /**
+         * Returns the constant iterator to the end
+         * of the rows
+         *
+         * @return the constant iterator to the end
+         * of the rows
+         */
+        [[nodiscard]] constexpr const_iterator end(
+            void) const noexcept
+                { return const_iterator{ &first() + Rows }; }
 
-        constexpr reverse_iterator rbegin(void) noexcept
+        /**
+         * Returns the constant iterator to the begining
+         * of the rows
+         *
+         * @return the constant iterator to the begining
+         * of the rows
+         */
+        [[nodiscard]] constexpr const_iterator cbegin(
+            void) const noexcept
+                { return const_iterator{ &first() }; }
+
+        /**
+         * Returns the constant iterator to the end
+         * of the rows
+         *
+         * @return the constant iterator to the end
+         * of the rows
+         */
+        [[nodiscard]] constexpr const_iterator cend(
+            void) const noexcept
+                { return const_iterator{ &first() + Rows }; }
+
+        /**
+         * Returns the reverse iterator to the end of
+         * the rows
+         *
+         * @return the reverse iterator to the end of
+         * the rows
+         */
+        [[nodiscard]] constexpr reverse_iterator rbegin(void) noexcept
             { return reverse_iterator{ end() - 1 }; }
-        constexpr reverse_iterator rend(void) noexcept
+
+        /**
+         * Returns the reverse iterator to the begining of
+         * the rows
+         *
+         * @return the reverse iterator to the begining of
+         * the rows
+         */
+        [[nodiscard]] constexpr reverse_iterator rend(void) noexcept
             { return reverse_iterator{ begin() - 1 }; }
 
-        constexpr const_reverse_iterator rbegin(void) const noexcept
-            { return const_reverse_iterator{ end() - 1 }; }
-        constexpr const_reverse_iterator rend(void) const noexcept
-            { return const_reverse_iterator{ begin() - 1 }; }
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the rows
+         *
+         * @return the constant reverse iterator to the end of
+         * the rows
+         */
+        [[nodiscard]] constexpr const_reverse_iterator rbegin(
+            void) const noexcept
+                { return const_reverse_iterator{ end() - 1 }; }
 
-        constexpr const_reverse_iterator crbegin(void) const noexcept
-            { return const_reverse_iterator{ end() - 1 }; }
-        constexpr const_reverse_iterator crend(void) const noexcept
-            { return const_reverse_iterator{ begin() - 1 }; }
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the rows
+         *
+         * @return the constant reverse iterator to the end of
+         * the rows
+         */
+        [[nodiscard]] constexpr const_reverse_iterator rend(
+            void) const noexcept
+                { return const_reverse_iterator{ begin() - 1 }; }
 
-        constexpr value_type& operator[](std::size_t index) noexcept
-            { return *(&first() + index); }
-        constexpr value_type const& operator[](std::size_t index) const noexcept
-            { return *(&first() + index); }
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the rows
+         *
+         * @return the constant reverse iterator to the end of
+         * the rows
+         */
+        [[nodiscard]] constexpr const_reverse_iterator crbegin(
+            void) const noexcept
+                { return const_reverse_iterator{ end() - 1 }; }
+
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the rows
+         *
+         * @return the constant reverse iterator to the end of
+         * the rows
+         */
+        [[nodiscard]] constexpr const_reverse_iterator crend(
+            void) const noexcept
+                { return const_reverse_iterator{ begin() - 1 }; }
+
+        /**
+         * Returns the reference to row with the given index
+         *
+         * @param index the row's index
+         * @return the reference to row with the given index
+         */
+        [[nodiscard]] constexpr value_type& operator[](
+            std::size_t index) noexcept
+                { return *(&first() + index); }
+
+        /**
+         * Returns the constant reference to row with
+         * the given index
+         *
+         * @param index the row's index
+         * @return the constant reference to row with
+         * the given index
+         */
+        [[nodiscard]] constexpr value_type const& operator[](
+            std::size_t index) const noexcept
+                { return *(&first() + index); }
 
         typedef Iterator<column_value_type> column_iterator;
         typedef Iterator<
@@ -783,100 +1084,405 @@ namespace mpgl {
         typedef std::reverse_iterator<
             const_column_iterator>          const_column_reverse_iterator;
 
-        constexpr column_iterator columnBegin(void) noexcept
-            { return column_iterator{ &firstCol() }; }
-        constexpr column_iterator columnEnd(void) noexcept
-            { return column_iterator{ &firstCol() + Cols }; }
+        /**
+         * Returns the iterator to the begining of the columns
+         *
+         * @return the iterator to the begining of the columns
+         */
+        [[nodiscard]] constexpr column_iterator columnBegin(
+            void) noexcept
+                { return column_iterator{ &firstCol() }; }
 
-        constexpr const_column_iterator columnBegin(void) const noexcept
-            { return const_column_iterator{ &firstCol() }; }
-        constexpr const_column_iterator columnEnd(void) const noexcept
-            { return const_column_iterator{ &firstCol() + Cols }; }
+        /**
+         * Returns the iterator to the end of the columns
+         *
+         * @return the iterator to the end of the columns
+         */
+        [[nodiscard]] constexpr column_iterator columnEnd(
+            void) noexcept
+                { return column_iterator{ &firstCol() + Cols }; }
 
-        constexpr const_column_iterator constCBegin(void) const noexcept
-            { return const_column_iterator{ &firstCol() }; }
-        constexpr const_column_iterator constCEnd(void) const noexcept
-            { return const_column_iterator{ &firstCol() + Cols }; }
+        /**
+         * Returns the constant iterator to the begining of
+         * the columns
+         *
+         * @return the constant iterator to the begining of
+         * the columns
+         */
+        [[nodiscard]] constexpr const_column_iterator columnBegin(
+            void) const noexcept
+                { return const_column_iterator{ &firstCol() }; }
 
-        constexpr column_reverse_iterator columnRBegin(void) noexcept
-            { return column_reverse_iterator{ columnEnd() - 1 }; }
-        constexpr column_reverse_iterator columnREnd(void) noexcept
-            { return column_reverse_iterator{ columnBegin() - 1 }; }
+        /**
+         * Returns the constant iterator to the end of the columns
+         *
+         * @return the constant iterator to the end of the columns
+         */
+        [[nodiscard]] constexpr const_column_iterator columnEnd(
+            void) const noexcept
+                { return const_column_iterator{ &firstCol() + Cols }; }
 
-        constexpr const_column_reverse_iterator columnRBegin(void) const noexcept
-            { return const_column_reverse_iterator{ columnEnd() - 1 }; }
-        constexpr const_column_reverse_iterator columnREnd(void) const noexcept
-            { return const_column_reverse_iterator{ columnBegin() - 1 }; }
+        /**
+         * Returns the constant iterator to the begining of
+         * the columns
+         *
+         * @return the constant iterator to the begining of
+         * the columns
+         */
+        [[nodiscard]] constexpr const_column_iterator constCBegin(
+            void) const noexcept
+                { return const_column_iterator{ &firstCol() }; }
 
-        constexpr const_column_reverse_iterator columnCRBegin(void) const noexcept
-            { return const_column_reverse_iterator{ columnEnd() - 1 }; }
-        constexpr const_column_reverse_iterator columnCREnd(void) const noexcept
-            { return const_column_reverse_iterator{ columnBegin() - 1 }; }
+        /**
+         * Returns the constant iterator to the end of the columns
+         *
+         * @return the constant iterator to the end of the columns
+         */
+        [[nodiscard]] constexpr const_column_iterator constCEnd(
+            void) const noexcept
+                { return const_column_iterator{ &firstCol() + Cols }; }
 
-        constexpr column_value_type& getColumn(std::size_t index) noexcept
-            { return *(&firstCol() + index); }
-        constexpr column_value_type const& getColumn(std::size_t index) const noexcept
-            { return *(&firstCol() + index); }
+        /**
+         * Returns the reverse iterator to the end of
+         * the columns
+         *
+         * @return the reverse iterator to the end of
+         * the columns
+         */
+        [[nodiscard]] constexpr column_reverse_iterator columnRBegin(
+            void) noexcept
+                { return column_reverse_iterator{ columnEnd() - 1 }; }
 
+        /**
+         * Returns the reverse iterator to the begining of
+         * the columns
+         *
+         * @return the reverse iterator to the begining of
+         * the columns
+         */
+        [[nodiscard]] constexpr column_reverse_iterator columnREnd(
+            void) noexcept
+                { return column_reverse_iterator{ columnBegin() - 1 }; }
+
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the columns
+         *
+         * @return the constant reverse iterator to the end of
+         * the columns
+         */
+        [[nodiscard]] constexpr const_column_reverse_iterator
+            columnRBegin(void) const noexcept
+        { return const_column_reverse_iterator{ columnEnd() - 1 }; }
+
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the columns
+         *
+         * @return the constant reverse iterator to the end of
+         * the columns
+         */
+        [[nodiscard]] constexpr const_column_reverse_iterator
+            columnREnd(void) const noexcept
+        { return const_column_reverse_iterator{ columnBegin() - 1 }; }
+
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the columns
+         *
+         * @return the constant reverse iterator to the end of
+         * the columns
+         */
+        [[nodiscard]] constexpr const_column_reverse_iterator
+            columnCRBegin(void) const noexcept
+        { return const_column_reverse_iterator{ columnEnd() - 1 }; }
+
+        /**
+         * Returns the constant reverse iterator to the end of
+         * the columns
+         *
+         * @return the constant reverse iterator to the end of
+         * the columns
+         */
+        [[nodiscard]] constexpr const_column_reverse_iterator
+            columnCREnd(void) const noexcept
+        { return const_column_reverse_iterator{ columnBegin() - 1 }; }
+
+        /**
+         * Returns the reference to column with the given index
+         *
+         * @param index the column's index
+         * @return the reference to column with the given index
+         */
+        [[nodiscard]] constexpr column_value_type& getColumn(
+            std::size_t index) noexcept
+                { return *(&firstCol() + index); }
+
+        /**
+         * Returns the constant reference to column with
+         * the given index
+         *
+         * @param index the column's index
+         * @return the constant reference to column with
+         * the given index
+         */
+        [[nodiscard]] constexpr column_value_type const& getColumn(
+            std::size_t index) const noexcept
+                { return *(&firstCol() + index); }
+
+        /**
+         * Returns the reference to element with the given index
+         *
+         * @param index the element's index
+         * @return the reference to element with the given index
+         */
         template <std::integral Ip>
-        constexpr value_type& operator[] (Vector2<Ip> const& index) noexcept
-            { return (*this)[index[0]][index[1]]; }
+        [[nodiscard]] constexpr value_type& operator[] (
+            Vector2<Ip> const& index) noexcept
+                { return (*this)[index[0]][index[1]]; }
+
+        /**
+         * Returns the constant reference to element with
+         * the given index
+         *
+         * @param index the element's index
+         * @return the constant reference to element with
+         * the given index
+         */
         template <std::integral Ip>
-        constexpr value_type const& operator[] (Vector2<Ip> const& index) const noexcept
-            { return (*this)[index[0]][index[1]]; }
+        [[nodiscard]] constexpr value_type const& operator[] (
+            Vector2<Ip> const& index) const noexcept
+                { return (*this)[index[0]][index[1]]; }
 
-        constexpr auto columnsRange(void) noexcept
-            { return std::ranges::subrange(columnBegin(), columnEnd()); }
+        /**
+         * Returns the range with the columns
+         *
+         * @return the range with the columns
+         */
+        [[nodiscard]] constexpr auto columnsRange(void) noexcept;
 
-        constexpr auto columnsRange(void) const noexcept
-            { return std::ranges::subrange(columnBegin(), columnEnd()); }
+        /**
+         * Returns the constant range with the columns
+         *
+         * @return the constant range with the columns
+         */
+        [[nodiscard]] constexpr auto columnsRange(
+            void) const noexcept;
 
-        template <Arithmetic U>
-        constexpr operator Matrix<U, Rows, Cols>() const noexcept;
+        /**
+         * Casts the matrix to the given type
+         *
+         * @tparam Up the new matrix's element type
+         * @return the casted matrix
+         */
+        template <Arithmetic Up>
+        [[nodiscard]] constexpr operator
+            Matrix<Up, Rows, Cols>() const noexcept;
 
+        /**
+         * Casts the matrix to the given size
+         *
+         * @tparam URows the new matrix's rows
+         * @tparam UCols the new matrix's columns
+         * @return the casted matrix
+         */
         template <std::size_t URows, std::size_t UCols>
             requires (URows >= Rows && UCols >= Cols &&
                 (URows != Rows || UCols != Cols))
-        constexpr operator Matrix<Tp, URows, UCols>() const noexcept;
+        [[nodiscard]] constexpr operator
+            Matrix<Tp, URows, UCols>() const noexcept;
 
+        /**
+         * Adds the elements of this matrix with
+         * the given matrix elements
+         *
+         * @param right the added matrix
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator+=(Matrix const& right);
+
+        /**
+         * Subtracts the elements of this matrix with
+         * the given matrix elements
+         *
+         * @param right the subtracted matrix
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator-=(Matrix const& right);
+
+        /**
+         * Multiplies the elements of this matrix with
+         * the given matrix elements
+         *
+         * @param right the multiplicand matrix
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator*=(Matrix const& right);
+
+        /**
+         * Divides the elements of this matrix by the
+         * given matrix elements
+         *
+         * @param right the divider matrix
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator/=(Matrix const& right);
 
+        /**
+         * Calculates the modulo of elements of this matrix
+         * and the given matrix elements
+         *
+         * @param right the matrix with modulos
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator%=(
             Matrix const& right) requires mpgl_Operable(Tp, %);
+
+        /**
+         * Calculates the bitwise-xor of elements of this
+         * matrix and the given matrix elements
+         *
+         * @param right the matrix with values
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator^=(
             Matrix const& right) requires mpgl_Operable(Tp, ^);
+
+        /**
+         * Calculates the bitwise-and of elements of this matrix
+         * and the given matrix elements
+         *
+         * @param right the matrix with values
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator&=(
             Matrix const& right) requires mpgl_Operable(Tp, &);
+
+        /**
+         * Calculates the bitwise-or of elements of this matrix
+         * and the given matrix elements
+         *
+         * @param right the matrix with values
+         * @return the reference to matrix matrix
+         */
         constexpr Matrix& operator|=(
             Matrix const& right) requires mpgl_Operable(Tp, |);
 
+        /**
+         * Adds the given scalar value to the elements of
+         * this matrix
+         *
+         * @param right the added scalar
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator+=(Tp const& right);
+
+        /**
+         * Subtracts the given scalar value to the elements of
+         * this matrix
+         *
+         * @param right the subtracted scalar
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator-=(Tp const& right);
+
+        /**
+         * Multiplies the given scalar value to the elements of
+         * this matrix
+         *
+         * @param right the multiplied scalar
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator*=(Tp const& right);
+
+        /**
+         * Divides the elements of this matrix by the given
+         * scalar value
+         *
+         * @param right the divisor scalar
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator/=(Tp const& right);
 
+        /**
+         * Calculates the modulo of elements of this matrix
+         * with the given scalar
+         *
+         * @param right the modulo scalar
+         * @return the reference to this matrix
+         */
         constexpr Matrix& operator%=(Tp const& right
             ) requires mpgl_Operable(Tp, %);
+
+        /**
+         * Calculates the bitwise-xor of elements of this
+         * this and the given scalar value
+         *
+         * @param right the scalar value
+         * @return the reference to this this
+         */
         constexpr Matrix& operator^=(Tp const& right
             ) requires mpgl_Operable(Tp, ^);
+
+        /**
+         * Calculates the bitwise-and of elements of this
+         * column and the given scalar value
+         *
+         * @param right the scalar value
+         * @return the reference to this column
+         */
         constexpr Matrix& operator&=(Tp const& right
             ) requires mpgl_Operable(Tp, &);
+
+        /**
+         * Calculates the bitwise-or of elements of this
+         * column and the given scalar value
+         *
+         * @param right the scalar value
+         * @return the reference to this column
+         */
         constexpr Matrix& operator|=(Tp const& right
             ) requires mpgl_Operable(Tp, |);
-
-
     private:
+        /**
+         * Builds the tuple used by the matrix
+         *
+         * @tparam Args the arguments types
+         * @param args the arguments
+         * @return the base tuple
+         */
         template <typename... Args>
-        constexpr NormalBase tupleBuilder(Args&&... args) const noexcept;
+        constexpr NormalBase tupleBuilder(
+            Args&&... args) const noexcept;
 
+        /**
+         * Returns the reference to the first element
+         *
+         * @return the reference to the first element
+         */
         constexpr value_type& first(void) noexcept;
+
+        /**
+         * Returns the constant reference to the first element
+         *
+         * @return the constant reference to the first element
+         */
         constexpr value_type const& first(void) const noexcept;
 
+        /**
+         * Returns the reference to the first element
+         *
+         * @return the reference to the first element
+         */
         constexpr column_value_type& firstCol(void) noexcept;
-        constexpr column_value_type const& firstCol(void) const noexcept;
+
+        /**
+         * Returns the constant reference to the first element
+         *
+         * @return the constant reference to the first element
+         */
+        constexpr column_value_type const& firstCol(
+            void) const noexcept;
 
         union {
             NormalBase                      normalBase;
@@ -910,7 +1516,7 @@ namespace mpgl {
     // methods
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    constexpr Matrix<Tp, Rows, Cols>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
         Matrix<Tp, Rows, Cols>::operator-(void) const noexcept
     {
         Matrix<Tp, Cols, Rows> result;
@@ -1388,13 +1994,11 @@ namespace mpgl {
     // matrix methods
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    template <Arithmetic U>
-    constexpr Matrix<Tp, Rows, Cols>::operator
-        Matrix<U, Rows, Cols>() const noexcept
+    template <Arithmetic Up>
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>::operator
+        Matrix<Up, Rows, Cols>() const noexcept
     {
-        using u_type = typename Matrix<U, Rows, Cols>::value_type;
-
-        Matrix<U, Rows, Cols> result;
+        Matrix<Up, Rows, Cols> result;
         std::ranges::copy(*this, result.begin());
         return result;
     }
@@ -1403,7 +2007,7 @@ namespace mpgl {
     template <std::size_t URows, std::size_t UCols>
         requires (URows >= Rows && UCols >= Cols &&
             (URows != Rows || UCols != Cols))
-    constexpr Matrix<Tp, Rows, Cols>::operator
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>::operator
         Matrix<Tp, URows, UCols>() const noexcept
     {
         Matrix<Tp, URows, UCols> result;
@@ -1802,6 +2406,39 @@ namespace mpgl {
             return result;
         }
 
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    constexpr Matrix<Tp, Rows, Cols>&
+        Matrix<Tp, Rows, Cols>::operator=(Matrix&& matrix) noexcept
+    {
+        normalBase = std::move(matrix.normalBase);
+        return *this;
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    [[nodiscard]] constexpr Vector<Tp, Rows>
+        Matrix<Tp, Rows, Cols>::Column::operator-(
+            void) const noexcept
+    {
+        return -static_cast<Vector<Tp, Rows>>(*this);
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    [[nodiscard]] constexpr auto
+        Matrix<Tp, Rows, Cols>::columnsRange(void) noexcept
+    {
+        return std::ranges::subrange(columnBegin(), columnEnd());
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    [[nodiscard]] constexpr auto
+        Matrix<Tp, Rows, Cols>::columnsRange(void) const noexcept
+    {
+        return std::ranges::subrange(columnBegin(), columnEnd());
+    }
 
     // common operations
 
