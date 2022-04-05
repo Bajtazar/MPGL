@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #pragma once
 
 #include "Vector.hpp"
@@ -7,62 +32,250 @@
 
 namespace mpgl {
 
+    /**
+     * Represents the mathematical matrix in the memory
+     *
+     * @tparam Tp the matrix's element type
+     * @tparam Rows the number of matrix's rows
+     * @tparam Cols the number of matrix's columns
+     */
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
     class Matrix {
     public:
         #pragma pack(push, 1)
+        /**
+         * Represents the column of the matrix. Allows to perfrom
+         * vector-like operations on entire columns even if
+         * they are not represented continiously in the memory.
+         *
+         * Does not behave like the covariant vector
+         */
         class Column {
         public:
             constexpr explicit Column(void) noexcept = delete;
             constexpr Column(Column const& column) noexcept = delete;
+
+            /**
+             * Constructs a new column object from the given
+             * rvalue reference to the column object
+             *
+             * @param column the rvalue reference to the
+             * column object
+             */
             constexpr Column(Column&& column) noexcept
                 : seed{std::move(column.seed)} {}
 
             constexpr Column& operator=(
                 Column const& column) noexcept = delete;
+
+            /**
+             * Assigns the given rvalue reference to the column
+             * object to this object
+             *
+             * @param column the rvalue reference to column
+             * object
+             * @return the reference to this object
+             */
             constexpr Column& operator=(Column&& column) noexcept
                     { seed = std::move(column.seed); return *this; }
 
+            /**
+             * Assigns the given vector to this object
+             *
+             * @param vector the constant reference to vector
+             * object
+             * @return the reference to this object
+             */
             constexpr Column& operator=(
-                Vector<Tp, Rows> const& vec) noexcept;
+                Vector<Tp, Rows> const& vector) noexcept;
 
-            constexpr operator Vector<Tp, Rows>() const noexcept;
+            /**
+             * Casts this column object to the vector
+             *
+             * @return the vector with column data
+             */
+            [[nodiscard]] constexpr operator Vector<Tp, Rows>(
+                ) const noexcept;
 
-            static constexpr std::size_t size(void) noexcept
-                { return Rows; }
+            /**
+             * Returns the size of the column
+             *
+             * @return the size of the column
+             */
+            [[nodiscard]] static constexpr std::size_t size(
+                void) noexcept
+                    { return Rows; }
 
+            /**
+             * Returns the length of the column [equivalent
+             * to the square norm in the euclidean space]
+             *
+             * @tparam Up the result type
+             * @param init the initial value
+             * @return the length of the column
+             */
             template <Arithmetic Up = Tp>
-            constexpr Up length(Up init = {0}) const noexcept;
+            [[nodiscard]] constexpr Up length(
+                Up init = {0}) const noexcept;
 
+            /**
+             * Adds the elements of this column with
+             * the given column elements
+             *
+             * @param right the added column
+             * @return the reference to this column
+             */
             constexpr Column& operator+=(Column const& right);
+
+            /**
+             * Subtracts the elements of this column with
+             * the given column elements
+             *
+             * @param right the subtracted column
+             * @return the reference to this column
+             */
             constexpr Column& operator-=(Column const& right);
+
+            /**
+             * Multiplies the elements of this column with
+             * the given column elements
+             *
+             * @param right the multiplicand column
+             * @return the reference to this column
+             */
             constexpr Column& operator*=(Column const& right);
+
+            /**
+             * Divides the elements of this column by the
+             * given column elements
+             *
+             * @param right the divider column
+             * @return the reference to this column
+             */
             constexpr Column& operator/=(Column const& right);
 
+            /**
+             * Calculates the modulo of elements of this column
+             * and the given column elements
+             *
+             * @param right the column with modulos
+             * @return the reference to this column
+             */
             constexpr Column& operator%=(Column const& right)
                 requires mpgl_Operable(Tp, %);
+
+            /**
+             * Calculates the bitwise-xor of elements of this
+             * column and the given column elements
+             *
+             * @param right the column with values
+             * @return the reference to this column
+             */
             constexpr Column& operator^=(Column const& right)
                 requires mpgl_Operable(Tp, ^);
+
+            /**
+             * Calculates the bitwise-and of elements of this column
+             * and the given column elements
+             *
+             * @param right the column with values
+             * @return the reference to this column
+             */
             constexpr Column& operator&=(Column const& right)
                 requires mpgl_Operable(Tp, &);
+
+            /**
+             * Calculates the bitwise-or of elements of this column
+             * and the given column elements
+             *
+             * @param right the column with values
+             * @return the reference to this column
+             */
             constexpr Column& operator|=(Column const& right)
                 requires mpgl_Operable(Tp, |);
 
+            /**
+             * Adds the given scalar value to the elements of
+             * this column
+             *
+             * @param right the added scalar
+             * @return the reference to this column
+             */
             constexpr Column& operator+=(Tp const& right);
+
+            /**
+             * Subtracts the given scalar value to the elements of
+             * this column
+             *
+             * @param right the subtracted scalar
+             * @return the reference to this column
+             */
             constexpr Column& operator-=(Tp const& right);
+
+            /**
+             * Multiplies the given scalar value to the elements of
+             * this column
+             *
+             * @param right the multiplied scalar
+             * @return the reference to this column
+             */
             constexpr Column& operator*=(Tp const& right);
+
+            /**
+             * Divides the elements of this column by the given
+             * scalar value
+             *
+             * @param right the divisor scalar
+             * @return the reference to this column
+             */
             constexpr Column& operator/=(Tp const& right);
 
+            /**
+             * Calculates the modulo of elements of this column
+             * with the given scalar
+             *
+             * @param right the modulo scalar
+             * @return the reference to this column
+             */
             constexpr Column& operator%=(Tp const& right)
                 requires mpgl_Operable(Tp, %);
+
+            /**
+             * Calculates the bitwise-xor of elements of this
+             * column and the given scalar value
+             *
+             * @param right the scalar value
+             * @return the reference to this column
+             */
             constexpr Column& operator^=(Tp const& right)
                 requires mpgl_Operable(Tp, ^);
+
+            /**
+             * Calculates the bitwise-and of elements of this
+             * column and the given scalar value
+             *
+             * @param right the scalar value
+             * @return the reference to this column
+             */
             constexpr Column& operator&=(Tp const& right)
                 requires mpgl_Operable(Tp, &);
+
+            /**
+             * Calculates the bitwise-or of elements of this
+             * column and the given scalar value
+             *
+             * @param right the scalar value
+             * @return the reference to this column
+             */
             constexpr Column& operator|=(Tp const& right)
                 requires mpgl_Operable(Tp, |);
 
+            /**
+             * Iterares over the elements of the column
+             *
+             * @tparam value_type the iterator's value type
+             */
             template <Arithmetic value_type>
             class Iterator : public std::iterator<
                 std::random_access_iterator_tag, value_type>
@@ -80,49 +293,172 @@ namespace mpgl {
                 using compare =
                     std::compare_three_way_result_t<pointer, pointer>;
 
+                /**
+                 * Constructs a new iterator object from the
+                 * given pointer
+                 *
+                 * @param ptr the pointer to the data
+                 */
                 constexpr explicit Iterator(pointer ptr) noexcept
                     : ptr{ptr} {}
+
+                /**
+                 * Constructs a new iterator object
+                 */
                 constexpr explicit Iterator(void) noexcept = default;
 
+                /**
+                 * Increments iterator by one
+                 *
+                 * @return reference to this object
+                 */
                 constexpr iter_ref operator++(void) noexcept
                     { ptr += Cols; return *this; }
-                constexpr iter operator++(int) noexcept
+
+                /**
+                 * Post-increments iterator by one and returns copy
+                 * of the object
+                 *
+                 * @return the copied object
+                 */
+                [[nodiscard]] constexpr iter operator++(int) noexcept
                     { auto temp = *this; ++(*this); return temp; }
+
+                /**
+                 * Decrements iterator by one
+                 *
+                 * @return reference to this object
+                 */
                 constexpr iter_ref operator--(void) noexcept
                     { ptr -= Cols; return *this; }
-                constexpr iter operator--(int) noexcept
+
+                /**
+                 * Post-decrements iterator by one and returns copy
+                 * of the object
+                 *
+                 * @return the copied object
+                 */
+                [[nodiscard]] constexpr iter operator--(int) noexcept
                     { auto temp = *this; --(*this); return temp; }
 
-                constexpr reference operator*(void) const noexcept
-                    { return *ptr; }
-                constexpr const_pointer operator->(void) const noexcept
-                    { return ptr; }
+                /**
+                 * Returns the reference to the column's element
+                 *
+                 * @return the reference to the column's element
+                 */
+                [[nodiscard]] constexpr reference operator*(
+                    void) const noexcept
+                        { return *ptr; }
 
-                constexpr iter_ref operator+=(difference_type offset) noexcept
-                    { ptr += offset * Cols; return *this; }
-                constexpr iter_ref operator-=(difference_type offset) noexcept
-                    { ptr -= offset * Cols; return *this; }
-                constexpr reference operator[](difference_type offset) const noexcept
-                    { return *(ptr + offset * Cols); }
+                /**
+                 * @Returns the pointer to the column's element
+                 *
+                 * @return the pointer to the column's element
+                 */
+                [[nodiscard]] constexpr const_pointer operator->(
+                    void) const noexcept
+                        { return ptr; }
 
-                friend_expr iter operator+(iter_cref left,
+                /**
+                 * Increments iterator by the given distance
+                 *
+                 * @param offset the incremented distance
+                 * @return reference to this object
+                 */
+                constexpr iter_ref operator+=(
+                    difference_type offset) noexcept
+                        { ptr += offset * Cols; return *this; }
+
+                /**
+                 * Decrements iterator by the given distance
+                 *
+                 * @param offset the decremented distance
+                 * @return reference to this object
+                 */
+                constexpr iter_ref operator-=(
+                    difference_type offset) noexcept
+                        { ptr -= offset * Cols; return *this; }
+
+                /**
+                 * Returns a view shifted by the given offset
+                 *
+                 * @param offset the incremented distance
+                 * @return the view shifted by the given offse
+                 */
+                [[nodiscard]] constexpr reference operator[](
+                    difference_type offset) const noexcept
+                        { return *(ptr + offset * Cols); }
+
+                /**
+                 * Adds given distance to an iterator
+                 *
+                 * @param left the iterator
+                 * @param right the distance
+                 * @return the shifted iterator
+                 */
+                [[nodiscard]] friend constexpr iter operator+(
+                    iter_cref left,
                     difference_type right) noexcept
-                        { auto temp = left; temp.ptr += right; return temp; }
-                friend_expr iter operator+(difference_type left,
-                    iter_cref right) noexcept
-                        { auto temp = right; temp.ptr += left; return temp; }
-                friend_expr iter operator-(iter_cref left,
-                    difference_type right) noexcept
-                        { auto temp = left; temp.ptr -= right; return temp; }
-                friend_expr difference_type operator-(iter_cref left,
-                    iter_cref right) noexcept
-                        { return left.ptr - right.ptr; }
+                { auto temp = left; temp.ptr += right; return temp; }
 
-                friend_expr bool operator==(iter_cref left,
+                /**
+                 * Adds given distance to an iterator
+                 *
+                 * @param left the distance
+                 * @param right the iterator
+                 * @return the shifted iterator
+                 */
+                [[nodiscard]] friend constexpr iter operator+(
+                    difference_type left,
+                    iter_cref right) noexcept
+                { auto temp = right; temp.ptr += left; return temp; }
+
+                /**
+                 * Subtracts given distance from iterator
+                 *
+                 * @param left the iterator
+                 * @param right the distance
+                 * @return the shifted operator
+                 */
+                [[nodiscard]] friend constexpr iter operator-(
+                    iter_cref left,
+                    difference_type right) noexcept
+                { auto temp = left; temp.ptr -= right; return temp; }
+
+                /**
+                 * Returns distance between iterators
+                 *
+                 * @param left the left iterator
+                 * @param right the right iterator
+                 * @return difference_type
+                 */
+                [[nodiscard]] friend constexpr difference_type
+                    operator-(
+                        iter_cref left,
+                        iter_cref right) noexcept
+                            { return left.ptr - right.ptr; }
+
+                /**
+                 * Checks whether two iterators are equal
+                 *
+                 * @param left the left iterator
+                 * @param right the right iterator
+                 * @return whether two iterators are equal
+                 */
+                [[nodiscard]] friend constexpr bool operator==(
+                    iter_cref left,
                     iter_cref right) noexcept
                         { return left.ptr == right.ptr; }
 
-                friend_expr compare operator<=>(iter_cref left,
+                /**
+                 * Compares two iterators to each other
+                 *
+                 * @param left the left iterator
+                 * @param right the right iterator
+                 * @return the result of compare
+                 */
+                [[nodiscard]] friend constexpr compare operator<=>(
+                    iter_cref left,
                     iter_cref right) noexcept
                         { return left.ptr <=> right.ptr; }
             private:
@@ -136,41 +472,157 @@ namespace mpgl {
             typedef std::reverse_iterator<
                 const_iterator>                 const_reverse_iterator;
 
-            constexpr iterator begin(void) noexcept
+            /**
+             * Returns the iterator to the begining of the column
+             *
+             * @return the iterator to the begining of the column
+             */
+            [[nodiscard]] constexpr iterator begin(void) noexcept
                 { return iterator{ &seed }; }
-            constexpr iterator end(void) noexcept
+
+            /**
+             * Returns the iterator to the end of the column
+             *
+             * @return the iterator to the end of the column
+             */
+            [[nodiscard]] constexpr iterator end(void) noexcept
                 { return iterator{ &seed + Rows * Cols }; }
 
-            constexpr const_iterator begin(void) const noexcept
-                { return const_iterator{ &seed }; }
-            constexpr const_iterator end(void) const noexcept
-                { return const_iterator{ &seed + Rows * Cols }; }
+            /**
+             * Returns the constant iterator to the begining
+             * of the column
+             *
+             * @return the constant iterator to the begining
+             * of the column
+             */
+            [[nodiscard]] constexpr const_iterator begin(
+                void) const noexcept
+                    { return const_iterator{ &seed }; }
 
-            constexpr const_iterator cbegin(void) const noexcept
-                { return const_iterator{ &seed }; }
-            constexpr const_iterator cend(void) const noexcept
-                { return const_iterator{ &seed + Rows * Cols }; }
+            /**
+             * Returns the constant iterator to the end
+             * of the column
+             *
+             * @return the constant iterator to the end
+             * of the column
+             */
+            [[nodiscard]] constexpr const_iterator end(
+                void) const noexcept
+                    { return const_iterator{ &seed + Rows * Cols }; }
 
-            constexpr reverse_iterator rbegin(void) noexcept
-                { return reverse_iterator{ end() - 1 }; }
-            constexpr reverse_iterator rend(void) noexcept
-                { return reverse_iterator{ begin() - 1}; }
+            /**
+             * Returns the constant iterator to the begining
+             * of the column
+             *
+             * @return the constant iterator to the begining
+             * of the column
+             */
+            [[nodiscard]] constexpr const_iterator cbegin(
+                void) const noexcept
+                    { return const_iterator{ &seed }; }
 
-            constexpr const_reverse_iterator rbegin(void) const noexcept
-                { return const_reverse_iterator{ end() - 1 }; }
-            constexpr const_reverse_iterator rend(void) const noexcept
-                { return const_reverse_iterator{ begin() - 1}; }
+            /**
+             * Returns the constant iterator to the end
+             * of the column
+             *
+             * @return the constant iterator to the end
+             * of the column
+             */
+            [[nodiscard]] constexpr const_iterator cend(
+                void) const noexcept
+                    { return const_iterator{ &seed + Rows * Cols }; }
 
-            constexpr const_reverse_iterator crbegin(void) const noexcept
-                { return const_reverse_iterator{ cend() - 1 }; }
-            constexpr const_reverse_iterator crend(void) const noexcept
-                { return const_reverse_iterator{ cbegin() - 1}; }
+            /**
+             * Returns the reverse iterator to the end of
+             * the column
+             *
+             * @return the reverse iterator to the end of
+             * the column
+             */
+            [[nodiscard]] constexpr reverse_iterator rbegin(
+                void) noexcept
+                    { return reverse_iterator{ end() - 1 }; }
 
-            constexpr Tp& operator[] (std::size_t index) noexcept
-                { return *(&seed + index * Cols); }
-            constexpr Tp const& operator[] (std::size_t index) const noexcept
-                { return *(&seed + index * Cols); }
+            /**
+             * Returns the reverse iterator to the begining of
+             * the column
+             *
+             * @return the reverse iterator to the begining of
+             * the column
+             */
+            [[nodiscard]] constexpr reverse_iterator rend(
+                void) noexcept
+                    { return reverse_iterator{ begin() - 1}; }
 
+            /**
+             * Returns the constant reverse iterator to the end of
+             * the column
+             *
+             * @return the constant reverse iterator to the end of
+             * the column
+             */
+            [[nodiscard]] constexpr const_reverse_iterator rbegin(
+                void) const noexcept
+                    { return const_reverse_iterator{ end() - 1 }; }
+
+            /**
+             * Returns the constant reverse iterator to the
+             * begining of the column
+             *
+             * @return the constant reverse iterator to the
+             * begining of the column
+             */
+            [[nodiscard]] constexpr const_reverse_iterator rend(
+                void) const noexcept
+                    { return const_reverse_iterator{ begin() - 1}; }
+
+            /**
+             * Returns the constant reverse iterator to the end of
+             * the column
+             *
+             * @return the constant reverse iterator to the end of
+             * the column
+             */
+            [[nodiscard]] constexpr const_reverse_iterator crbegin(
+                void) const noexcept
+                    { return const_reverse_iterator{ cend() - 1 }; }
+
+            /**
+             * Returns the constant reverse iterator to the
+             * begining of the column
+             *
+             * @return the constant reverse iterator to the
+             * begining of the column
+             */
+            [[nodiscard]] constexpr const_reverse_iterator crend(
+                void) const noexcept
+                    { return const_reverse_iterator{ cbegin() - 1}; }
+
+            /**
+             * Returns the reference to element with the given index
+             *
+             * @param index the element's index
+             * @return the reference to element with the given index
+             */
+            [[nodiscard]] constexpr Tp& operator[] (
+                std::size_t index) noexcept
+                    { return *(&seed + index * Cols); }
+
+            /**
+             * Returns the constant reference to element with
+             * the given index
+             *
+             * @param index the element's index
+             * @return the constant reference to element with
+             * the given index
+             */
+            [[nodiscard]] constexpr Tp const& operator[] (
+                std::size_t index) const noexcept
+                    { return *(&seed + index * Cols); }
+
+            /**
+             * Destroys the column object
+             */
             constexpr ~Column(void) noexcept = default;
         private:
             Tp                                      seed;
@@ -478,7 +930,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-    constexpr Matrix<Tp, Rows, Cols>::Column::operator
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>::Column::operator
         Vector<Tp, Rows>() const noexcept
     {
         Vector<Tp, Rows> vector;
@@ -556,160 +1008,382 @@ namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
     template <Arithmetic Up>
-    constexpr Up Matrix<Tp, Rows, Cols>::Column::length(
+    [[nodiscard]] constexpr Up Matrix<Tp, Rows, Cols>::Column::length(
         Up init) const noexcept
     {
         return accumulate(*this, std::move(init),
             [](auto const& value){ return value * value; });
     }
 
-    #ifndef ge_matcol_matcol_inner_op_factory
-    #define ge_matcol_matcol_inner_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>::Column& \
-            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
-                Column const& right) \
-        { \
-            std::ranges::transform(*this, right, begin(), \
-                [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
-            return *this; \
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator +=(
+                Column const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left + right; });
+            return *this;
         }
-    #endif
-    #ifndef ge_matcol_matcol_c_inner_op_factory
-    #define ge_matcol_matcol_c_inner_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>::Column& \
-            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
-                Column const& right) requires mpgl_Operable(Tp, Op) \
-        { \
-            std::ranges::transform(*this, right, begin(), \
-                [](Tp const& left, Tp const& right)->Tp{ return left Op right; }); \
-            return *this; \
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator -=(
+                Column const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left - right; });
+            return *this;
         }
-    #endif
-    #ifndef ge_matcol_tp_inner_op_factory
-    #define ge_matcol_tp_inner_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>::Column& \
-            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
-                Tp const& right) \
-        { \
-            std::ranges::for_each(*this, [&right](Tp& value) -> void \
-                { value Op##= right; }); \
-            return *this; \
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator *=(
+                Column const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left * right; });
+            return *this;
         }
-    #endif
-    #ifndef ge_matcol_tp_c_inner_op_factory
-    #define ge_matcol_tp_c_inner_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>::Column& \
-            Matrix<Tp, Rows, Cols>::Column::operator Op##=( \
-                Tp const& right) requires mpgl_Operable(Tp, Op) \
-        { \
-            std::ranges::for_each(*this, [&right](Tp& value) -> void \
-                { value Op##= right; }); \
-            return *this; \
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator /=(
+                Column const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left / right; });
+            return *this;
         }
-    #endif
 
-    ge_matcol_matcol_inner_op_factory(+)
-    ge_matcol_matcol_inner_op_factory(-)
-    ge_matcol_matcol_inner_op_factory(*)
-    ge_matcol_matcol_inner_op_factory(/)
 
-    ge_matcol_matcol_c_inner_op_factory(%)
-    ge_matcol_matcol_c_inner_op_factory(^)
-    ge_matcol_matcol_c_inner_op_factory(&)
-    ge_matcol_matcol_c_inner_op_factory(|)
-
-    ge_matcol_tp_inner_op_factory(+)
-    ge_matcol_tp_inner_op_factory(-)
-    ge_matcol_tp_inner_op_factory(*)
-    ge_matcol_tp_inner_op_factory(/)
-
-    ge_matcol_tp_c_inner_op_factory(%)
-    ge_matcol_tp_c_inner_op_factory(^)
-    ge_matcol_tp_c_inner_op_factory(&)
-    ge_matcol_tp_c_inner_op_factory(|)
-
-    #ifndef ge_matcol_vec_op_factory
-    #define ge_matcol_vec_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Vector<Tp, Rows> \
-            operator Op (typename Matrix<Tp, Rows, Cols>::Column const& left, \
-                Vector<Tp, Rows> const& right) \
-        { \
-            Vector<Tp, Rows> result; \
-            std::ranges::transform(left, right, result.begin(), \
-                [](Tp const& left, Tp const& right)-> Tp { \
-                    return left Op right; }); \
-            return result; \
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator %=(
+                Column const& right) requires mpgl_Operable(Tp, %)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left % right; });
+            return *this;
         }
-    #endif
-    #ifndef ge_matcol_vec_c_op_factory
-    #define ge_matcol_vec_c_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Vector<Tp, Rows> \
-            operator Op (typename Matrix<Tp, Rows, Cols>::Column const& left, \
-                Vector<Tp, Rows> const& right) \
-                    requires mpgl_Operable(Tp, Op) \
-        { \
-            Vector<Tp, Rows> result; \
-            std::ranges::transform(left, right, result.begin(), \
-                [](Tp const& left, Tp const& right)-> Tp { \
-                    return left Op right; }); \
-            return result; \
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator ^=(
+                Column const& right) requires mpgl_Operable(Tp, ^)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left ^ right; });
+            return *this;
         }
-    #endif
-    #ifndef ge_vec_matcol_op_factory
-    #define ge_vec_matcol_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Vector<Tp, Rows> \
-            operator Op (Vector<Tp, Rows> const& left, \
-                typename Matrix<Tp, Rows, Cols>::Column const& right) \
-        { \
-            Vector<Tp, Rows> result; \
-            std::ranges::transform(left, right, result.begin(), \
-                [](Tp const& left, Tp const& right)-> Tp { \
-                    return left Op right; }); \
-            return result; \
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator &=(
+                Column const& right) requires mpgl_Operable(Tp, &)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left & right; });
+            return *this;
         }
-    #endif
-    #ifndef ge_vec_matcol_c_op_factory
-    #define ge_vec_matcol_c_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Vector<Tp, Rows> \
-            operator Op (Vector<Tp, Rows> const& left, \
-                typename Matrix<Tp, Rows, Cols>::Column const& right) \
-                    requires mpgl_Operable(Tp, Op) \
-        { \
-            Vector<Tp, Rows> result; \
-            std::ranges::transform(left, right, result.begin(), \
-                [](Tp const& left, Tp const& right)-> Tp { \
-                    return left Op right; }); \
-            return result; \
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator |=(
+                Column const& right) requires mpgl_Operable(Tp, |)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](Tp const& left, Tp const& right)->Tp{ return left | right; });
+            return *this;
         }
-    #endif
 
-    ge_matcol_vec_op_factory(+)
-    ge_matcol_vec_op_factory(-)
-    ge_matcol_vec_op_factory(*)
-    ge_matcol_vec_op_factory(/)
 
-    ge_matcol_vec_c_op_factory(%)
-    ge_matcol_vec_c_op_factory(^)
-    ge_matcol_vec_c_op_factory(&)
-    ge_matcol_vec_c_op_factory(|)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator +=(
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value += right; });
+            return *this;
+        }
 
-    ge_vec_matcol_op_factory(+)
-    ge_vec_matcol_op_factory(-)
-    ge_vec_matcol_op_factory(*)
-    ge_vec_matcol_op_factory(/)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator -=(
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value -= right; });
+            return *this;
+        }
 
-    ge_vec_matcol_c_op_factory(%)
-    ge_vec_matcol_c_op_factory(^)
-    ge_vec_matcol_c_op_factory(&)
-    ge_vec_matcol_c_op_factory(|)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator *=(
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value *= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator /=(
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value /= right; });
+            return *this;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator %=(
+                Tp const& right) requires mpgl_Operable(Tp, %)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value %= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator ^=(
+                Tp const& right) requires mpgl_Operable(Tp, ^)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value ^= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator &=(
+                Tp const& right) requires mpgl_Operable(Tp, &)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value &= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>::Column&
+            Matrix<Tp, Rows, Cols>::Column::operator |=(
+                Tp const& right) requires mpgl_Operable(Tp, |)
+        {
+            std::ranges::for_each(*this, [&right](Tp& value) -> void
+                { value |= right; });
+            return *this;
+        }
+
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator + (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left + right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator - (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left - right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator * (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left * right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator / (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left / right; });
+            return result;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator % (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+                    requires mpgl_Operable(Tp, %)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left % right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator ^ (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+                    requires mpgl_Operable(Tp, ^)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left ^ right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator & (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+                    requires mpgl_Operable(Tp, &)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left & right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator | (typename Matrix<Tp, Rows, Cols>::Column const& left,
+                Vector<Tp, Rows> const& right)
+                    requires mpgl_Operable(Tp, |)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left | right; });
+            return result;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator + (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left + right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator - (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left - right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator * (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left * right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator / (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left / right; });
+            return result;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator % (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+                    requires mpgl_Operable(Tp, %)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left % right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator ^ (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+                    requires mpgl_Operable(Tp, ^)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left ^ right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator & (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+                    requires mpgl_Operable(Tp, &)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left & right; });
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Vector<Tp, Rows>
+            operator | (Vector<Tp, Rows> const& left,
+                typename Matrix<Tp, Rows, Cols>::Column const& right)
+                    requires mpgl_Operable(Tp, |)
+        {
+            Vector<Tp, Rows> result;
+            std::ranges::transform(left, right, result.begin(),
+                [](Tp const& left, Tp const& right)-> Tp {
+                    return left | right; });
+            return result;
+        }
+
 
     // matrix methods
 
@@ -737,77 +1411,182 @@ namespace mpgl {
         return result;
     }
 
-    #ifndef ge_mat_mat_inner_op_factory
-    #define ge_mat_mat_inner_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>& \
-            Matrix<Tp, Rows, Cols>::operator Op##= ( \
-                Matrix<Tp, Rows, Cols> const& right) \
-        { \
-            std::ranges::transform(*this, right, begin(), \
-                [](auto const& left, auto const& right) \
-                { return left Op right; }); \
-            return *this; \
-        }
-    #endif
-    #ifndef ge_mat_mat_inner_c_op_factory
-    #define ge_mat_mat_inner_c_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>& \
-            Matrix<Tp, Rows, Cols>::operator Op##= ( \
-                Matrix<Tp, Rows, Cols> const& right) \
-                    requires mpgl_Operable(Tp, Op) \
-        { \
-            std::ranges::transform(*this, right, begin(), \
-                [](auto const& left, auto const& right) \
-                { return left Op right; }); \
-            return *this; \
-        }
-    #endif
-    #ifndef ge_mat_tp_inner_op_factory
-    #define ge_mat_tp_inner_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>& \
-            Matrix<Tp, Rows, Cols>::operator Op##= ( \
-                Tp const& right) \
-        { \
-            std::ranges::for_each(*this, [&right](auto& value) -> void \
-                { value Op##= right; }); \
-            return *this; \
-        }
-    #endif
-    #ifndef ge_mat_tp_inner_c_op_factory
-    #define ge_mat_tp_inner_c_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols>& \
-            Matrix<Tp, Rows, Cols>::operator Op##= ( \
-                Tp const& right) requires mpgl_Operable(Tp, Op) \
-        { \
-            std::ranges::for_each(*this, [&right](auto& value) -> void \
-                { value Op##= right; }); \
-            return *this; \
-        }
-    #endif
 
-    ge_mat_mat_inner_op_factory(+)
-    ge_mat_mat_inner_op_factory(-)
-    ge_mat_mat_inner_op_factory(*)
-    ge_mat_mat_inner_op_factory(/)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator += (
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left + right; });
+            return *this;
+        }
 
-    ge_mat_mat_inner_c_op_factory(%)
-    ge_mat_mat_inner_c_op_factory(^)
-    ge_mat_mat_inner_c_op_factory(&)
-    ge_mat_mat_inner_c_op_factory(|)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator -= (
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left - right; });
+            return *this;
+        }
 
-    ge_mat_tp_inner_op_factory(+)
-    ge_mat_tp_inner_op_factory(-)
-    ge_mat_tp_inner_op_factory(*)
-    ge_mat_tp_inner_op_factory(/)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator *= (
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left * right; });
+            return *this;
+        }
 
-    ge_mat_tp_inner_c_op_factory(%)
-    ge_mat_tp_inner_c_op_factory(^)
-    ge_mat_tp_inner_c_op_factory(&)
-    ge_mat_tp_inner_c_op_factory(|)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator /= (
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left / right; });
+            return *this;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator %= (
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, %)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left % right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator ^= (
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, ^)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left ^ right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator &= (
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, &)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left & right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator |= (
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, |)
+        {
+            std::ranges::transform(*this, right, begin(),
+                [](auto const& left, auto const& right)
+                { return left | right; });
+            return *this;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator += (
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value += right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator -= (
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value -= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator *= (
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value *= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator /= (
+                Tp const& right)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value /= right; });
+            return *this;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator %= (
+                Tp const& right) requires mpgl_Operable(Tp, %)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value %= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator ^= (
+                Tp const& right) requires mpgl_Operable(Tp, ^)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value ^= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator &= (
+                Tp const& right) requires mpgl_Operable(Tp, &)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value &= right; });
+            return *this;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>&
+            Matrix<Tp, Rows, Cols>::operator |= (
+                Tp const& right) requires mpgl_Operable(Tp, |)
+        {
+            std::ranges::for_each(*this, [&right](auto& value) -> void
+                { value |= right; });
+            return *this;
+        }
+
 
     template <Arithmetic Tp, std::size_t LRows,
         std::size_t LCols, std::size_t RCols>
@@ -855,75 +1634,174 @@ namespace mpgl {
         return result;
     }
 
-    #ifndef ge_mat_tp_op_factory
-    #define ge_mat_tp_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols> \
-            operator Op (Matrix<Tp, Rows, Cols> const& left, \
-                Tp const& right) \
-        { \
-            Matrix<Tp, Rows, Cols> result{left}; \
-            result Op##= right; \
-            return result; \
-        }
-    #endif
-    #ifndef ge_mat_tp_c_op_factory
-    #define ge_mat_tp_c_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols> \
-            operator Op (Matrix<Tp, Rows, Cols> const& left, \
-                Tp const& right) requires mpgl_Operable(Tp, Op) \
-        { \
-            Matrix<Tp, Rows, Cols> result{left}; \
-            result Op##= right; \
-            return result; \
-        }
-    #endif
-    #ifndef ge_tp_mat_op_factory
-    #define ge_tp_mat_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols> \
-            operator Op (Tp const& left, \
-                Matrix<Tp, Rows, Cols> const& right) \
-        { \
-            Matrix<Tp, Rows, Cols> result{right}; \
-            result Op##= left; \
-            return result; \
-        }
-    #endif
-    #ifndef ge_tp_mat_c_op_factory
-    #define ge_tp_mat_c_op_factory(Op) \
-        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols> \
-        constexpr Matrix<Tp, Rows, Cols> \
-            operator Op (Tp const& left, \
-                Matrix<Tp, Rows, Cols> const& right) \
-                    requires mpgl_Operable(Tp, Op) \
-        { \
-            Matrix<Tp, Rows, Cols> result{right}; \
-            result Op##= left; \
-            return result; \
-        }
-    #endif
 
-    ge_mat_tp_op_factory(+)
-    ge_mat_tp_op_factory(-)
-    ge_mat_tp_op_factory(*)
-    ge_mat_tp_op_factory(/)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator + (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result += right;
+            return result;
+        }
 
-    ge_mat_tp_c_op_factory(%)
-    ge_mat_tp_c_op_factory(^)
-    ge_mat_tp_c_op_factory(&)
-    ge_mat_tp_c_op_factory(|)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator - (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result -= right;
+            return result;
+        }
 
-    ge_tp_mat_op_factory(+)
-    ge_tp_mat_op_factory(-)
-    ge_tp_mat_op_factory(*)
-    ge_tp_mat_op_factory(/)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator * (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result *= right;
+            return result;
+        }
 
-    ge_tp_mat_c_op_factory(%)
-    ge_tp_mat_c_op_factory(^)
-    ge_tp_mat_c_op_factory(&)
-    ge_tp_mat_c_op_factory(|)
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator / (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result /= right;
+            return result;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator % (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right) requires mpgl_Operable(Tp, %)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result %= right;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator ^ (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right) requires mpgl_Operable(Tp, ^)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result ^= right;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator & (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right) requires mpgl_Operable(Tp, &)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result &= right;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator | (Matrix<Tp, Rows, Cols> const& left,
+                Tp const& right) requires mpgl_Operable(Tp, |)
+        {
+            Matrix<Tp, Rows, Cols> result{left};
+            result |= right;
+            return result;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator + (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result += left;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator - (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result -= left;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator * (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result *= left;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator / (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result /= left;
+            return result;
+        }
+
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator % (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, %)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result %= left;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator ^ (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, ^)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result ^= left;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator & (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, &)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result &= left;
+            return result;
+        }
+
+        template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        constexpr Matrix<Tp, Rows, Cols>
+            operator | (Tp const& left,
+                Matrix<Tp, Rows, Cols> const& right)
+                    requires mpgl_Operable(Tp, |)
+        {
+            Matrix<Tp, Rows, Cols> result{right};
+            result |= left;
+            return result;
+        }
+
 
     // common operations
 
