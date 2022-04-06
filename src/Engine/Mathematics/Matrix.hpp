@@ -93,7 +93,7 @@ namespace mpgl {
             /**
              * Inverses the sign of the columns's elements
              *
-             * @return the vector with reversed elements
+             * @return the vector with sign-inversed elements
              */
             [[nodiscard]] constexpr Vector<Tp, Rows>
                 operator-(void) const noexcept;
@@ -648,6 +648,7 @@ namespace mpgl {
          * vectors
          *
          * @tparam Rws the types of vectors
+         * @param rows the universal references to vectors
          */
         template <AllAbsolutelySame<value_type>... Rws>
             requires (sizeof...(Rws) == Rows)
@@ -720,7 +721,7 @@ namespace mpgl {
         /**
          * Inverses the sign of the matrix's elements
          *
-         * @return the matrix with reversed elements
+         * @return the matrix with sign-inversed elements
          */
         [[nodiscard]] constexpr Matrix operator-(void) const noexcept;
 
@@ -2320,7 +2321,7 @@ namespace mpgl {
 
     /**
      * Calculates the modulo of the matrix consisting of scalar
-     * value fields with the matrix elements
+     * value fields with the scalar value
      *
      * @tparam Tp the matrix's element type
      * @tparam Rows the matrix's rows
