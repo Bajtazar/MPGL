@@ -90,7 +90,7 @@ namespace mpgl {
      * @param vector the vector in cartesian coordinate system
      * @return the vector in polar coordinate system
      */
-    template <Mathematical Tp>
+    template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept;
 
@@ -102,7 +102,7 @@ namespace mpgl {
      * @param vector the vector in polar coordinate system
      * @return the vector in cartesian coordinate system
      */
-    template <Mathematical Tp>
+    template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr Vector2<Tp> polarToCartesian(
         Vector2<Tp> const& vector) noexcept;
 
@@ -115,7 +115,7 @@ namespace mpgl {
      * @param angle the rotation angle [rads]
      * @return the rotation matrix
      */
-    template <Mathematical Tp>
+    template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr Matrix2<Tp> rotationMatrix(
         float32 angle) noexcept;
 
@@ -163,14 +163,14 @@ namespace mpgl {
         return true;
     }
 
-    template <Mathematical Tp>
+    template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
     {
         return { norm(vector), std::atan2(vector[1], vector[0]) };
     }
 
-    template <Mathematical Tp>
+    template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr Vector2<Tp> polarToCartesian(
         Vector2<Tp> const& vector) noexcept
     {
@@ -178,7 +178,7 @@ namespace mpgl {
             vector[0] * std::sin(vector[1]) };
     }
 
-    template <Mathematical Tp>
+    template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr Matrix2<Tp> rotationMatrix(
         float32 angle) noexcept
     {

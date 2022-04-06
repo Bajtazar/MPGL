@@ -563,4 +563,14 @@ namespace mpgl {
             std::size_t(*)(void) noexcept,
             &std::remove_cvref_t<Range>::size>;
 
+    /**
+     * Checks whether the type can be used to high-precision
+     * calculations
+     *
+     * @tparam Tp the checked type
+     */
+    template <typename Tp>
+    concept FloatConvertible = std::is_arithmetic_v<Tp>
+        && std::convertible_to<Tp, float64>;
+
 }
