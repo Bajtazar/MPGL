@@ -25,31 +25,16 @@
  */
 #include "FastFunctions.hpp"
 
-#ifdef _MSC_VER
-#include <intrin.h>
-#endif
+#include <bit>
 
 namespace mpgl {
 
-    #ifdef __GNUC__
     [[nodiscard]] uint8 fastLog2(uint32 number) noexcept {
-        return !number ? 0 : __builtin_ctz(number);
+        return std::countr_zero(number);
     }
-    #elif defined(_MSC_VER)
-    [[nodiscard]] uint8 fastLog2(uint32 number) noexcept {
-        DWORD trailing = 0;
-        return _BitScanForward(&trailing, number) ? trailing : 0;
-    }
-    #endif
 
-    #ifdef __GNUC__
     [[nodiscard]] bool isPowerOf2(uint32 number) noexcept {
-        return number ? true : __builtin_popcount(number) == 1;
+        return std::popcount(number) == 1;
     }
-    #elif defined(_MSC_VER)
-    [[nodiscard]] bool isPowerOf2(uint32 number) noexcept {
-        return number ? true : __popcnt(number) == 1;
-    }
-    #endif
 
 }
