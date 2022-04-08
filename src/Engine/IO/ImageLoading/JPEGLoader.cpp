@@ -32,6 +32,7 @@
 #include "../../Exceptions/NotSupportedException.hpp"
 #include "../../Utility/FunctionalWrapper.hpp"
 #include "../../Utility/ZigZacRange.hpp"
+#include "../../Mathematics/IFCT.hpp"
 #include "../../Utility/Ranges.hpp"
 #include "../FileIO.hpp"
 
@@ -43,9 +44,6 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     JPEGLoader<Policy>::Path const JPEGLoader<Policy>::Tag{"jpeg"};
-
-    template <security::SecurityPolicy Policy>
-    IDCT<> const JPEGLoader<Policy>::ifct{};
 
     template <security::SecurityPolicy Policy>
     JPEGLoader<Policy>::JPEGLoader(
@@ -122,7 +120,9 @@ namespace mpgl {
             * quantizationTables.at(id)->information.at(0);
         decodeMatrix(data, huffmanTables.at(true).at(id),
             quantizationTables.at(id), iter);
-        return ifct(ZigZacRange<8>::fromZigZac(data));
+        auto zigzaged = ZigZacRange<8>::fromZigZac(data);
+        ifct(zigzaged);
+        return zigzaged;
     }
 
     template <security::SecurityPolicy Policy>

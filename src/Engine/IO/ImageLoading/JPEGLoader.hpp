@@ -28,7 +28,6 @@
 #include "../../Compression/HuffmanTree.hpp"
 #include "../../Iterators/SafeIterator.hpp"
 #include "../../Mathematics/Matrix.hpp"
-#include "../../Mathematics/IDCT.hpp"
 #include "../../Utility/Security.hpp"
 #include "LoaderInterface.hpp"
 
@@ -526,8 +525,6 @@ namespace mpgl {
         HuffmanArray                                huffmanTables;
         bool                                        endOfImage;
 
-        /// The inverse fast cosie transformation
-        static IDCT<> const                         ifct;
         static ChunkParser const                    emptyChunk;
         static ParserMap const                      chunkParser;
     };

@@ -307,8 +307,10 @@ namespace mpgl {
      */
     template <class Range>
     concept FlexibleRange = std::ranges::random_access_range<Range>
-        && requires(Range range, std::size_t size,
-            typename Range::value_type value)
+        && requires(
+            std::remove_cvref_t<Range> range,
+            std::size_t size,
+            std::ranges::range_value_t<Range> value)
         {
             range.reserve(size);
             range.resize(size, value);
