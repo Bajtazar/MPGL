@@ -1,7 +1,6 @@
 bin/
 obj/
 Project Epsilon
-include/
 Epsilon*/
 logs/
 Makefile.save.*
@@ -11,3 +10,4 @@ Makefile.save.*
 *.jpeg
 glad.c
 ./textures/
+main.cpp

@@ -4,7 +4,7 @@ CXX_FLAGS	:= -std=c++20 -O3 -ggdb3 -lGL -lglfw -ldl -pthread -ltbb
 BIN	:= bin
 SRC	:= $(shell find src/ -name "*.cpp")
 T_SRC	:= $(shell find . -name "*.cpp" | awk '{ if (/main/ && !seen) { seen = 1 } else print }')
-INCLUDE	:= include
+INCLUDE	:= ./include
 
 EXECUTABLE	:= Epsilon
 TEST_EXEC	:= Test
