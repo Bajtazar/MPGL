@@ -71,6 +71,7 @@
         "future": "cpp",
         "list": "cpp",
         "execution": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "*.ipp": "cpp"
     }
 }
