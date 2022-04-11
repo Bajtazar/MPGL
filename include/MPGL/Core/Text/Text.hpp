@@ -1310,10 +1310,8 @@ namespace mpgl {
      */
     constexpr uint8 operator&(
         TextOptions::Modifiers const& left,
-        TextOptions::Modifiers const& right) noexcept
-    {
-        /// change to std::to_underlying in C++23
-        return static_cast<uint8>(left) & static_cast<uint8>(right);
-    }
+        TextOptions::Modifiers const& right) noexcept;
 
 }
+
+#include <MPGL/Core/Text/Text.ipp>
