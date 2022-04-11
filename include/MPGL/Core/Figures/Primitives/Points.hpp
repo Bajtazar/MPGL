@@ -93,14 +93,6 @@ namespace mpgl {
         ~Points(void) noexcept = default;
     };
 
-    template <class ColorTp, AllConvertible<Vector2f>... Vectors>
-        requires std::constructible_from<Color, ColorTp>
-    Points::Points(ColorTp&& color, Vectors&&... vertices)
-        : ResizableAngular{std::forward<ColorTp>(color),
-            std::forward<Vectors>(vertices)...} {}
-
-    template <AllConvertible<Vector2f>... Vectors>
-    Points::Points(Vectors&&... vertices)
-        : ResizableAngular{std::forward<Vectors>(vertices)...} {}
-
 }
+
+#include <MPGL/Core/Figures/Primitives/Points.tpp>
