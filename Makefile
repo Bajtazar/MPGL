@@ -1,5 +1,5 @@
 CXX	:= g++11.1
-CXX_FLAGS	:= -std=c++20 -O3 -ggdb3 -lGL -lglfw -ldl -pthread -ltbb
+CXX_FLAGS	:= -std=c++20 -O3 -ggdb3 -lGL -lglfw -ldl -pthread
 
 BIN	:= bin
 SRC	:= $(shell find src/ -name "*.cpp")
