@@ -260,46 +260,7 @@ namespace mpgl {
         BufferPtr                                   texturePtr;
     };
 
-    template <security::SecurityPolicy Policy>
-    Texture::Texture(
-        Policy policy,
-        std::string const& fileName,
-        Options const& options) : Texture{
-            ImageLoader{policy, fileName}.getImage(), options} {}
-
-    constexpr Texture::Options::Options(
-        TextureWrapper verticalWrapping,
-        TextureWrapper horizontalWrapping,
-        MinifyingTextureFilter minifyingFilter,
-        MagnifyingTextureFilter magnifyingFilter,
-        Color const& color,
-        bool mipmaps) noexcept
-            : verticalWrapping{verticalWrapping},
-            horizontalWrapping{horizontalWrapping},
-            minifyingFilter{minifyingFilter},
-            magnifyingFilter{magnifyingFilter},
-            borderColor{color},
-            mipmaps{mipmaps} {}
-
-    constexpr Texture::Options::Underlying
-        Texture::Options::getOptions(void) const noexcept
-    {
-        // change static_cast to std::to_underlying in C++23
-        return {
-            Filter{GL_TEXTURE_WRAP_S,
-                static_cast<GLint>(verticalWrapping)},
-            Filter{GL_TEXTURE_WRAP_T,
-                static_cast<GLint>(horizontalWrapping)},
-            Filter{GL_TEXTURE_MIN_FILTER,
-                static_cast<GLint>(minifyingFilter)},
-            Filter{GL_TEXTURE_MAG_FILTER,
-                static_cast<GLint>(magnifyingFilter)},
-        };
-    }
-
-    constexpr bool Texture::Options::isBorder(void) const noexcept {
-        return verticalWrapping == TextureWrapper::ClampToBorder ||
-            horizontalWrapping == TextureWrapper::ClampToBorder;
-    }
-
 }
+
+#include <MPGL/Core/Textures/Texture.tpp>
+#include <MPGL/Core/Textures/Texture.ipp>
