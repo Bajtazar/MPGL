@@ -101,7 +101,7 @@ namespace mpgl {
              *
              * @return the copy of the iterator
              */
-            iterator operator++(int) noexcept
+            [[nodiscard]] iterator operator++(int) noexcept
                 { auto tmp = *this; ++iter; return tmp; }
 
             /**
@@ -111,7 +111,8 @@ namespace mpgl {
              * @param right the right iterator object
              * @return if the iterators are equal
              */
-            friend bool operator== (iterator const& left,
+            [[nodiscard]] friend bool operator== (
+                iterator const& left,
                 iterator const& right) noexcept
                     { return left.iter == right.iter; }
 
@@ -120,7 +121,7 @@ namespace mpgl {
              *
              * @return the iterator value
              */
-            decltype(auto) operator*(void) const noexcept
+            [[nodiscard]] decltype(auto) operator*(void) const noexcept
                 { return get<Field>(*iter); }
         private:
             inner_iter                          iter;
@@ -132,7 +133,7 @@ namespace mpgl {
          *
          * @return the constant reference to the range
          */
-        constexpr Range const& base(void) const &
+        [[nodiscard]] constexpr Range const& base(void) const &
             { return baseObj; }
 
         /**
@@ -141,7 +142,7 @@ namespace mpgl {
          *
          * @return the rvalue to the range
          */
-        constexpr Range&& base(void) &&
+        [[nodiscard]] constexpr Range&& base(void) &&
             { return std::move(baseObj); }
 
         /**
@@ -149,7 +150,7 @@ namespace mpgl {
          *
          * @return the iterator to the begining of the range
          */
-        constexpr iterator begin(void) const
+        [[nodiscard]] constexpr iterator begin(void) const
             { return iterator{ std::ranges::begin(baseObj) }; }
 
         /**
@@ -157,7 +158,7 @@ namespace mpgl {
          *
          * @return the iterator to the end of the range
          */
-        constexpr iterator end(void) const
+        [[nodiscard]] constexpr iterator end(void) const
             { return iterator{ std::ranges::end(baseObj) }; }
 
         /**
@@ -165,7 +166,7 @@ namespace mpgl {
          *
          * @return the size of the range
          */
-        constexpr auto size(void) const noexcept
+        [[nodiscard]] constexpr auto size(void) const noexcept
             requires std::ranges::sized_range<Range>
                 { return std::ranges::size(baseObj); }
     private:
@@ -199,11 +200,9 @@ namespace mpgl {
              * @return the view of the range
              */
             template <std::ranges::viewable_range Range>
-            constexpr auto operator() (Range&& range) const noexcept {
-                return VertexComponentView<Field,
-                    std::views::all_t<Range>>{
-                        std::forward<Range>(range) };
-            }
+            [[nodiscard]] constexpr auto operator() (
+                Range&& range) const noexcept;
+
         };
 
         /**
@@ -221,20 +220,17 @@ namespace mpgl {
              * @return the view of the range
              */
             template <std::ranges::viewable_range Range>
-            constexpr auto operator() (Range&& range) const noexcept {
-                return VertexComponentView<Field,
-                    std::views::all_t<Range>>{
-                        std::forward<Range>(range) };
-            }
+            [[nodiscard]] constexpr auto operator() (
+                Range&& range) const noexcept;
 
             /**
              * Returns a closure for the given view
              *
              * @return the view closure
              */
-            constexpr auto operator() (void) const noexcept {
-                return VertexComponentViewAdaptorClosure<Field>{};
-            }
+            [[nodiscard]] constexpr auto operator() (
+                void) const noexcept;
+
         };
 
         /**
@@ -248,12 +244,10 @@ namespace mpgl {
          */
         template <std::ranges::viewable_range Range,
             TemplateString Field>
-        constexpr auto operator | (Range&& range,
+        [[nodiscard]] constexpr auto operator | (
+            Range&& range,
             VertexComponentViewAdaptorClosure<Field> const& closure
-            ) noexcept
-        {
-            return closure(std::forward<Range>(range));
-        }
+            ) noexcept;
 
         /**
          * Connects the adaptor with the range
@@ -266,11 +260,9 @@ namespace mpgl {
          */
         template <std::ranges::viewable_range Range,
             TemplateString Field>
-        constexpr auto operator | (Range&& range,
-            VertexComponentViewAdaptor<Field> const& adaptor) noexcept
-        {
-            return adaptor(std::forward<Range>(range));
-        }
+        [[nodiscard]] constexpr auto operator | (
+            Range&& range,
+            VertexComponentViewAdaptor<Field> const& adaptor) noexcept;
 
     }
 
@@ -289,3 +281,5 @@ namespace mpgl {
     }
 
 }
+
+#include <MPGL/Core/Figures/Views.tpp>
