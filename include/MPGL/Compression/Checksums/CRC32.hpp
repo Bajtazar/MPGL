@@ -66,35 +66,9 @@ namespace mpgl {
         static LookupTable const                    lookup;
     };
 
-    CRC32::LookupTable const CRC32::lookup = generateLookupTable();
-
-    template <std::ranges::input_range Range>
-        requires ByteInputIterator<std::ranges::iterator_t<Range>>
-    [[nodiscard]] constexpr uint32 CRC32::operator() (
-        Range const& range) const noexcept
-    {
-        uint32 crc = 0xFFFFFFFF;
-        for (uint8 value : range)
-            crc = (crc >> 8) ^ lookup[(value ^ crc) & 0xFF];
-        return crc ^ 0xFFFFFFFF;
-    }
-
-    constexpr CRC32::LookupTable
-        CRC32::generateLookupTable(void) noexcept
-    {
-        LookupTable table{};
-        for (uint32 i = 0, crc = 0; i < 256; crc = ++i) {
-            for (uint8 j = 0; j < 8; ++j) {
-                if (crc & 1)
-                    crc = 0xEDB88320 ^ (crc >> 1);
-                else
-                    crc >>= 1;
-            }
-            table[i] = crc;
-        }
-        return table;
-    }
-
     inline constexpr CRC32                          crc32{};
 
 }
+
+#include <MPGL/Compression/Checksums/CRC32.tpp>
+#include <MPGL/Compression/Checksums/CRC32.ipp>
