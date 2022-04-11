@@ -70,6 +70,7 @@
         "condition_variable": "cpp",
         "future": "cpp",
         "list": "cpp",
-        "execution": "cpp"
+        "execution": "cpp",
+        "*.tpp": "cpp"
     }
 }

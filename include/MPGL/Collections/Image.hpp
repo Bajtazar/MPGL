@@ -131,44 +131,7 @@ namespace mpgl {
     template class Canva<Pixel>;
 
     typedef Canva<Pixel>                        Image;
-
-    [[nodiscard]] constexpr Pixel::Subpixel&
-        Pixel::operator[] (std::size_t index) noexcept
-    {
-        switch (index) {
-            case 0:
-                return red;
-            case 1:
-                return green;
-            case 2:
-                return blue;
-            case 3:
-                return alpha;
-        }
-        return red;
-    }
-
-    [[nodiscard]] constexpr const Pixel::Subpixel&
-        Pixel::operator[] (std::size_t index) const noexcept
-    {
-        switch (index) {
-            case 0:
-                return red;
-            case 1:
-                return green;
-            case 2:
-                return blue;
-            case 3:
-                return alpha;
-        }
-        return red;
-    }
-
-    template <std::input_iterator Iter>
-    void Pixel::Manip::RGB(Iter& iter, Pixel& pixel) noexcept {
-        pixel.blue = *iter++;
-        pixel.green = *iter++;
-        pixel.red = *iter++;
-    }
-
 }
+
+#include <MPGL/Collections/Image.tpp>
+#include <MPGL/Collections/Image.ipp>
