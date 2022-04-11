@@ -27,16 +27,32 @@
 
 namespace mpgl {
 
-    template <std::size_t Index, class Base>
-    constexpr auto&& Glyph::helper(Base&& base) noexcept {
-        if constexpr (Index == 0)
-            return std::forward<Base>(base).texture;
-        else if constexpr (Index == 1)
-            return std::forward<Base>(base).dimensions;
-        else if constexpr (Index == 2)
-            return std::forward<Base>(base).bearing;
-        else
-            return std::forward<Base>(base).advance;
+    [[nodiscard]] constexpr inline uint8 operator& (
+        VectorizedGlyph::SimpleFlags const& left,
+        uint8 right) noexcept
+    {
+        return static_cast<uint8>(left) & right;
+    }
+
+    [[nodiscard]] constexpr inline uint8 operator& (
+        uint8 left,
+        VectorizedGlyph::SimpleFlags const& right) noexcept
+    {
+        return left & static_cast<uint8>(right);
+    }
+
+    [[nodiscard]] constexpr inline uint16 operator& (
+        VectorizedGlyph::CompositeFlags const& left,
+        uint16 right) noexcept
+    {
+        return static_cast<uint16>(left) & right;
+    }
+
+    [[nodiscard]] constexpr inline uint16 operator& (
+        uint16 left,
+        VectorizedGlyph::CompositeFlags const& right) noexcept
+    {
+        return left & static_cast<uint16>(right);
     }
 
 }
