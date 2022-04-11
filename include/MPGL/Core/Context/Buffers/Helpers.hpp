@@ -46,10 +46,7 @@ namespace mpgl {
          */
         void generateBuffers(
             uint32 size,
-            uint32* ptr) noexcept
-        {
-            glGenBuffers(size, ptr);
-        }
+            uint32* ptr) noexcept;
 
         /**
          * Generates the vertex arrays
@@ -59,10 +56,7 @@ namespace mpgl {
          */
         void generateArrays(
             uint32 size,
-            uint32* ptr) noexcept
-        {
-            glGenVertexArrays(size, ptr);
-        }
+            uint32* ptr) noexcept;
 
         /**
          * Destroys the texture buffers
@@ -72,10 +66,7 @@ namespace mpgl {
          */
         void generateTextures(
             uint32 size,
-            uint32* const ptr) noexcept
-        {
-            glGenTextures(size, ptr);
-        }
+            uint32* const ptr) noexcept;
 
         /**
          * Destroys the normal buffers
@@ -85,10 +76,7 @@ namespace mpgl {
          */
         void destroyBuffers(
             uint32 size,
-            uint32* const ptr) noexcept
-        {
-            glDeleteBuffers(size, ptr);
-        }
+            uint32* const ptr) noexcept;
 
         /**
          * Destroys the vertex arrays
@@ -98,10 +86,7 @@ namespace mpgl {
          */
         void destroyArrays(
             uint32 size,
-            uint32* const ptr) noexcept
-        {
-            glDeleteVertexArrays(size, ptr);
-        }
+            uint32* const ptr) noexcept;
 
         /**
          * Destroys the texture buffers
@@ -111,10 +96,7 @@ namespace mpgl {
          */
         void destroyTextures(
             uint32 size,
-            uint32* const ptr) noexcept
-        {
-            glDeleteTextures(size, ptr);
-        }
+            uint32* const ptr) noexcept;
 
     }
 
@@ -145,17 +127,7 @@ namespace mpgl {
              * @param size the number of the returned buffers
              * @return the range with created buffers
              */
-            [[nodiscard]] Range operator() (uint32 size) const {
-                std::vector<uint32> buffers;
-                buffers.resize(size);
-                generator(size, buffers.data());
-                Range handlers;
-                handlers.reserve(size);
-                std::ranges::transform(
-                    buffers, std::back_inserter(handlers),
-                    [](auto const& bufferID) { return BufferType(bufferID); });
-                return handlers;
-            }
+            [[nodiscard]] Range operator() (uint32 size) const;
 
         };
 
@@ -176,20 +148,7 @@ namespace mpgl {
              * @param size the number of the returned frame buffers
              * @return the range with created buffers
              */
-            [[nodiscard]] Range operator() (uint32 size) const {
-                std::vector<uint32> framebuffers;
-                std::vector<uint32> renderbuffers;
-                framebuffers.resize(size);
-                renderbuffers.resize(size);
-                glGenFramebuffers(size, framebuffers.data());
-                glGenRenderbuffers(size, renderbuffers.data());
-                Range handlers;
-                handlers.reserve(size);
-                for (uint32 i = 0;i < size; ++i)
-                    handlers.emplace_back(FrameBuffer{framebuffers[i],
-                        renderbuffers[i]});
-                return handlers;
-            }
+            [[nodiscard]] Range operator() (uint32 size) const;
 
         };
 
@@ -212,15 +171,7 @@ namespace mpgl {
              * @tparam Range the type of range with buffers
              * @param range the range with buffers
              */
-            void operator() (Range&& range) const {
-                auto view = range | std::views::transform(
-                    [](auto& element) -> uint32& {
-                        return element.getBuffer(); });
-                std::vector<uint32> bufferIDs{std::ranges::begin(view),
-                    std::ranges::end(view)};
-                destroyer(bufferIDs.size(), bufferIDs.data());
-                std::ranges::fill(view, 0);
-            }
+            void operator() (Range&& range) const;
 
         };
 
@@ -239,18 +190,7 @@ namespace mpgl {
              * @tparam Range the type of range with frame buffers
              * @param range the range with frame buffers
              */
-            void operator() (Range&& range) const {
-                auto frame = range | std::views::transform(
-                    &FrameBuffer::frameID);
-                auto render = range | std::views::transform(
-                    &FrameBuffer::renderID);
-                std::vector<uint32> frameIDs{frame.begin(), frame.end()};
-                std::vector<uint32> renderIDs{render.begin(), render.end()};
-                glDeleteFramebuffers(frameIDs.size(), frameIDs.data());
-                glDeleteRenderbuffers(renderIDs.size(), renderIDs.data());
-                std::ranges::fill(frame, 0);
-                std::ranges::fill(render, 0);
-            }
+            void operator() (Range&& range) const;
 
         };
 
@@ -264,10 +204,7 @@ namespace mpgl {
      * @return the range with created buffers
      */
     template <UnderlyingRange<VertexBuffer> Range>
-    Range initializeVertexBuffers(uint32 size) {
-        return BuffersManagement::BuffersInitializer<VertexBuffer,
-            details::generateBuffers, Range>{}(size);
-    }
+    [[nodiscard]] Range initializeVertexBuffers(uint32 size);
 
     /**
      * Initializes the vertex arrays
@@ -277,10 +214,7 @@ namespace mpgl {
      * @return the range with created arrays
      */
     template <UnderlyingRange<VertexArray> Range>
-    Range initializeVertexArrays(uint32 size) {
-        return BuffersManagement::BuffersInitializer<VertexArray,
-            details::generateArrays, Range>{}(size);
-    }
+    [[nodiscard]] Range initializeVertexArrays(uint32 size);
 
     /**
      * Initializes the element array buffers
@@ -290,10 +224,7 @@ namespace mpgl {
      * @return the range with created buffers
      */
     template <UnderlyingRange<ElementArrayBuffer> Range>
-    Range initializeElementArrayBuffers(uint32 size) {
-        return BuffersManagement::BuffersInitializer<ElementArrayBuffer,
-            details::generateBuffers, Range>{}(size);
-    }
+    [[nodiscard]] Range initializeElementArrayBuffers(uint32 size);
 
     /**
      * Initializes the frame buffers
@@ -303,10 +234,7 @@ namespace mpgl {
      * @return the range with created buffers
      */
     template <UnderlyingRange<FrameBuffer> Range>
-    Range initializeFrameBuffers(uint32 size) {
-        return BuffersManagement::BuffersInitializer<FrameBuffer,
-            nullptr, Range>{}(size);
-    }
+    [[nodiscard]] Range initializeFrameBuffers(uint32 size);
 
     /**
      * Initalizes the texture buffers
@@ -316,10 +244,7 @@ namespace mpgl {
      * @return the range with created buffers
      */
     template <UnderlyingRange<TextureBuffer> Range>
-    Range initializeTextureBuffers(uint32 size) {
-        return BuffersManagement::BuffersInitializer<TextureBuffer,
-            details::generateTextures, Range>{}(size);
-    }
+    [[nodiscard]] Range initializeTextureBuffers(uint32 size);
 
     /**
      * Destroys the vertex buffers
@@ -328,11 +253,7 @@ namespace mpgl {
      * @param range the range with buffers
      */
     template <UnderlyingRange<VertexBuffer> Range>
-    void destroyVertexBuffers(Range&& range) {
-        BuffersManagement::BuffersDestroyer<VertexBuffer,
-            details::destroyBuffers, Range>
-                {}(std::forward<Range>(range));
-    }
+    void destroyVertexBuffers(Range&& range);
 
     /**
      * Destroys the vertex arrays
@@ -341,11 +262,7 @@ namespace mpgl {
      * @param range the range with arrays
      */
     template <UnderlyingRange<VertexArray> Range>
-    void destroyVertexArrays(Range&& range) {
-        BuffersManagement::BuffersDestroyer<VertexArray,
-            details::destroyArrays, Range>
-                {}(std::forward<Range>(range));
-    }
+    void destroyVertexArrays(Range&& range);
 
     /**
      * Destroys the element array buffers
@@ -354,11 +271,7 @@ namespace mpgl {
      * @param range the range with buffers
      */
     template <UnderlyingRange<ElementArrayBuffer> Range>
-    void destroyElementArrayBuffers(Range&& range) {
-        BuffersManagement::BuffersDestroyer<ElementArrayBuffer,
-            details::destroyBuffers, Range>{}(
-                std::forward<Range>(range));
-    }
+    void destroyElementArrayBuffers(Range&& range);
 
     /**
      * Destroys the frame buffers
@@ -367,10 +280,7 @@ namespace mpgl {
      * @param range the range with buffers
      */
     template <UnderlyingRange<FrameBuffer> Range>
-    void destroyFrameBuffers(Range&& range) {
-        BuffersManagement::BuffersDestroyer<FrameBuffer, nullptr,
-            Range>{}(std::forward<Range>(range));
-    }
+    void destroyFrameBuffers(Range&& range);
 
     /**
      * Destroys the texture buffers
@@ -379,10 +289,8 @@ namespace mpgl {
      * @param range the range with buffers
      */
     template <UnderlyingRange<TextureBuffer> Range>
-    void destroyTextureBuffers(Range&& range) {
-        BuffersManagement::BuffersDestroyer<TextureBuffer,
-            details::destroyTextures, Range>{}(
-                std::forward<Range>(range));
-    }
+    void destroyTextureBuffers(Range&& range);
 
 }
+
+#include <MPGL/Core/Context/Buffers/Helpers.tpp>
