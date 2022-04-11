@@ -160,48 +160,9 @@ namespace mpgl {
         Compare                     compare;
     };
 
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
-        std::ranges::forward_range Sequence>
-    void MinHeap<Tp, Compare, Sequence>::push(
-        const_reference element) requires std::copyable<value_type>
-    {
-        sequence.push_back(element);
-        std::ranges::push_heap(sequence, compare);
-    }
-
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
-        std::ranges::forward_range Sequence>
-    void MinHeap<Tp, Compare, Sequence>::push(
-        value_type&& element) requires std::movable<value_type>
-    {
-        sequence.push_back(std::move(element));
-        std::ranges::push_heap(sequence, compare);
-    }
-
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
-        std::ranges::forward_range Sequence>
-    template <typename... Args>
-    void MinHeap<Tp, Compare, Sequence>::emplace(
-        Args&&... args) requires (
-            std::constructible_from<value_type, Args...>)
-    {
-        sequence.emplace_back(std::forward<Args>(args)...);
-        std::ranges::push_heap(sequence, compare);
-    }
-
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
-        std::ranges::forward_range Sequence>
-    [[nodiscard]] MinHeap<Tp, Compare, Sequence>::value_type
-        MinHeap<Tp, Compare, Sequence>::popBack(
-            void) requires std::movable<value_type>
-    {
-        std::ranges::pop_heap(sequence, compare);
-        auto result = std::move(sequence.back());
-        sequence.pop_back();
-        return result;
-    }
-
 }
+
+#include <MPGL/Collections/MinHeap.tpp>
 
 template<class Tp, std::predicate<Tp, Tp> Compare,
     std::ranges::forward_range Container, class Alloc>
