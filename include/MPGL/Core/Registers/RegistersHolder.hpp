@@ -174,27 +174,6 @@ namespace mpgl {
         std::tuple<Registers...>                        registers;
     };
 
-    template <class... Registers>
-        requires AllInstancesOf<RegisterInterface, Registers...>
-    template <class Tp>
-    void RegistersHolder<Registers...>::addIfDerived(
-        std::shared_ptr<Tp> const& pointer)
-    {
-        std::apply([&]<typename... Args>(Args&... args)
-            { (pushIfDerived(args, pointer), ...); }, registers);
-    }
-
-    template <class... Registers>
-        requires AllInstancesOf<RegisterInterface, Registers...>
-    template <class Tp, InstanceOf<RegisterInterface> Register>
-    void RegistersHolder<Registers...>::pushIfDerived(
-        Register& reg,
-        std::shared_ptr<Tp> const& pointer)
-    {
-        using Event = typename Register::event;
-
-        if constexpr (std::derived_from<Tp, Event>)
-            reg.pushBack(std::static_pointer_cast<Event>(pointer));
-    }
-
 }
+
+#include <MPGL/Core/Registers/RegistersHolder.hpp>
