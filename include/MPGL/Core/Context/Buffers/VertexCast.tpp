@@ -23,43 +23,26 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Context/Buffers/Helpers.hpp>
+#pragma once
 
-namespace mpgl::details {
+namespace mpgl::cast {
 
-    void generateArrays(
-        uint32 size,
-        uint32* ptr) noexcept
+    template <TemplateString Field, VertexComponents... Components>
+    [[nodiscard]] VertexElementT<Field, Vertex<Components...>>&
+        operator& (
+            Vertex<Components...>& vertex,
+            VertexCast<Field> const& cast) noexcept
     {
-        glGenVertexArrays(size, ptr);
+        return cast(vertex);
     }
 
-    void generateTextures(
-        uint32 size,
-        uint32* const ptr) noexcept
+    template <TemplateString Field, VertexComponents... Components>
+    [[nodiscard]] VertexElementT<Field, Vertex<Components...>> const&
+        operator& (
+            Vertex<Components...> const& vertex,
+            VertexCast<Field> const& cast) noexcept
     {
-        glGenTextures(size, ptr);
-    }
-
-    void destroyBuffers(
-        uint32 size,
-        uint32* const ptr) noexcept
-    {
-        glDeleteBuffers(size, ptr);
-    }
-
-    void destroyArrays(
-        uint32 size,
-        uint32* const ptr) noexcept
-    {
-        glDeleteVertexArrays(size, ptr);
-    }
-
-    void destroyTextures(
-        uint32 size,
-        uint32* const ptr) noexcept
-    {
-        glDeleteTextures(size, ptr);
+        return cast(vertex);
     }
 
 }

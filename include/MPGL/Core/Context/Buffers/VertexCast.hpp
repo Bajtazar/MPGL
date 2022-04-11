@@ -83,10 +83,7 @@ namespace mpgl::cast {
     [[nodiscard]] VertexElementT<Field, Vertex<Components...>>&
         operator& (
             Vertex<Components...>& vertex,
-            VertexCast<Field> const& cast) noexcept
-    {
-        return cast(vertex);
-    }
+            VertexCast<Field> const& cast) noexcept;
 
     /**
      * Simplifies casting process by using a bit-and operator
@@ -101,9 +98,8 @@ namespace mpgl::cast {
     [[nodiscard]] VertexElementT<Field, Vertex<Components...>> const&
         operator& (
             Vertex<Components...> const& vertex,
-            VertexCast<Field> const& cast) noexcept
-    {
-        return cast(vertex);
-    }
+            VertexCast<Field> const& cast) noexcept;
 
 }
+
+#include <MPGL/Core/Context/Buffers/VertexCast.tpp>
