@@ -111,14 +111,6 @@ namespace mpgl {
             Vector2d const& thirdVertex) const noexcept;
     };
 
-    template <class ColorTp, AllConvertible<Vector2f>... Vectors>
-        requires std::constructible_from<Color, ColorTp>
-    Polygon::Polygon(ColorTp&& color, Vectors&&... vertices)
-        : ResizableAngular{std::forward<ColorTp>(color),
-            std::forward<Vectors>(vertices)...} {}
-
-    template <AllConvertible<Vector2f>... Vectors>
-    Polygon::Polygon(Vectors&&... vertices)
-        : ResizableAngular{std::forward<Vectors>(vertices)...} {}
-
 }
+
+#include <MPGL/Core/Figures/Primitives/Polygon.tpp>
