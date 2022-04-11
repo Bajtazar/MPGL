@@ -285,42 +285,6 @@ namespace mpgl {
         Drawables                                   drawables;
     };
 
-    template <Event Tp>
-    void WindowBase::pushEvent(std::shared_ptr<Tp> const& event) {
-        events.addIfDerived(event);
-    }
-
-    template <Event Tp, typename... Args>
-        requires std::constructible_from<Tp, Args...>
-    void WindowBase::emplaceEvent(Args&&... args) {
-        events.addIfDerived(std::make_shared<Tp>(
-            std::forward<Args>(args)...));
-    }
-
-    template <std::derived_from<Drawable2D> Tp, typename... Args>
-        requires std::constructible_from<Tp, Args...>
-    void WindowBase::emplaceDrawable(Args&&... args) {
-        auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
-        events.addIfDerived(ptr);
-        drawables.push_back(std::move(ptr));
-    }
-
-    template <std::derived_from<Drawable2D> Tp>
-    void WindowBase::pushDrawable(
-        std::shared_ptr<Tp> const& drawable)
-    {
-        events.addIfDerived(drawable);
-        drawables.push_back(std::static_pointer_cast<Drawable2D>(
-            drawable));
-    }
-
-    template <std::derived_from<Drawable2D> T>
-    void WindowBase::pushDrawable(
-        std::shared_ptr<T>&& drawable)
-    {
-        events.addIfDerived(drawable);
-        drawables.push_back(std::static_pointer_cast<Drawable2D>(
-            std::move(drawable)));
-    }
-
 }
+
+#include <MPGL/Core/Windows/WindowBase.tpp>
