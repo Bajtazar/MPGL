@@ -190,20 +190,6 @@ namespace mpgl {
         uint32                                      arrayID;
     };
 
-    template <VertexComponents... Components>
-    void VertexArray::setArrayData(
-        Vertex<Components...>) const noexcept
-    {
-        std::size_t i = 0;
-        for (auto const& [size, offset, type]
-                : Vertex<Components...>::memoryLayout)
-        {
-            // Change static cast to std::to_underlying in C++23
-            glVertexAttribPointer(i, size, static_cast<uint16>(type),
-                GL_FALSE, sizeof(Vertex<Components...>),
-                reinterpret_cast<void*>(offset));
-            glEnableVertexAttribArray(i++);
-        }
-    }
-
 }
+
+#include <MPGL/Core/Context/Buffers/VertexArray.tpp>
