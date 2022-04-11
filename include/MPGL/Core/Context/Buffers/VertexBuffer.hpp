@@ -197,26 +197,6 @@ namespace mpgl {
         Reference                               reference;
     };
 
-    template <std::ranges::contiguous_range Range>
-        requires std::ranges::sized_range<Range>
-    void VertexBuffer::setBufferData(
-        Range&& range,
-        BufferType const& type) const noexcept
-    {
-        glBufferData(GL_ARRAY_BUFFER,
-            sizeof(std::ranges::range_value_t<Range>) * range.size(),
-            // change to std::to_underlying in C++23
-            std::ranges::data(range), static_cast<uint16>(type));
-    }
-
-    template <std::ranges::contiguous_range Range>
-        requires std::ranges::sized_range<Range>
-    void VertexBuffer::changeBufferData(
-        Range&& range) const noexcept
-    {
-        glBufferSubData(GL_ARRAY_BUFFER, 0,
-            sizeof(std::ranges::range_value_t<Range>) * range.size(),
-            std::ranges::data(range));
-    }
-
 }
+
+#include <MPGL/Core/Context/Buffers/VertexBuffer.tpp>
