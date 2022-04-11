@@ -278,12 +278,6 @@ namespace mpgl {
         Storage                                     storage;
     };
 
-    template <typename Tp>
-    template <typename... Args>
-        requires std::constructible_from<Tp, Args...>
-    void RegisterInterface<Tp>::emplaceBack(Args&&... args) {
-        storage.push_back(std::make_shared<Tp>(
-            std::forward<Args>(args)...));
-    }
-
 }
+
+#include <MPGL/Core/Registers/RegisterInterface.tpp>
