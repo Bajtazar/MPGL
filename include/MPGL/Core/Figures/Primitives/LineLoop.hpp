@@ -115,14 +115,6 @@ namespace mpgl {
             std::size_t index) const noexcept;
     };
 
-    template <class ColorTp, AllConvertible<Vector2f>... Vectors>
-        requires std::constructible_from<Color, ColorTp>
-    LineLoop::LineLoop(ColorTp&& color, Vectors&&... vertices)
-        : ResizableAngular{std::forward<Color>(color),
-            std::forward<Vectors>(vertices)...} {}
-
-    template <AllConvertible<Vector2f>... Vectors>
-    LineLoop::LineLoop(Vectors&&... vertices)
-        : ResizableAngular{std::forward<Vectors>(vertices)...} {}
-
 }
+
+#include <MPGL/Core/Figures/Primitives/LineLoop.tpp>
