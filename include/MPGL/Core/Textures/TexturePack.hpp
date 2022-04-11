@@ -289,19 +289,6 @@ namespace mpgl {
         Value const                                 defaultValue;
     };
 
-    template <std::input_iterator Iter,
-        std::sentinel_for<Iter> Sent>
-            requires SameIterType<Iter, TexturePack::value_type>
-    TexturePack::TexturePack(Iter iter, Sent const& sent,
-        Value const& defaultTexture)
-            : textureMap{iter, sent},
-            defaultValue{defaultTexture} {}
-
-    template <std::ranges::input_range Range>
-        requires SameRangeType<Range, TexturePack::value_type>
-    TexturePack::TexturePack(Range&& range,
-        Value const& defaultTexture)
-            : TexturePack{std::ranges::begin(range),
-                std::ranges::end(range), defaultTexture} {}
-
 }
+
+#include <MPGL/Core/Textures/TexturePack.tpp>
