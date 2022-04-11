@@ -173,17 +173,6 @@ namespace mpgl {
         mutable bool                                    isExtended = false;
     };
 
-    template <class ColorTp, AllConvertible<Vector2f>... Args>
-        requires std::constructible_from<Color, ColorTp>
-    ResizableAngular::ResizableAngular(ColorTp&& color,
-        Args&&... positions)
-            : Angular{Vertices{Vertex{Vector2f{
-                std::forward<Args>(positions)},
-                std::forward<ColorTp>(color)}...}} {}
-
-    template <AllConvertible<Vector2f>... Args>
-    ResizableAngular::ResizableAngular(Args&&... positions)
-        : Angular{Vertices{Vertex{Vector2f{
-            std::forward<Args>(positions)}, Color{}}...}} {}
-
 }
+
+#include <MPGL/Core/Figures/ResizableAngular.tpp>
