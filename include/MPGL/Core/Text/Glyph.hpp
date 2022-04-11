@@ -115,20 +115,13 @@ namespace mpgl {
          * @return the universal reference to the given element
          */
         template <std::size_t Index, class Base>
-        static constexpr auto&& helper(Base&& base) noexcept {
-            if constexpr (Index == 0)
-                return std::forward<Base>(base).texture;
-            else if constexpr (Index == 1)
-                return std::forward<Base>(base).dimensions;
-            else if constexpr (Index == 2)
-                return std::forward<Base>(base).bearing;
-            else
-                return std::forward<Base>(base).advance;
-        }
+        static constexpr auto&& helper(Base&& base) noexcept;
 
     };
 
 }
+
+#include <MPGL/Core/Text/Glyph.tpp>
 
 namespace std {
 
