@@ -25,48 +25,16 @@
  */
 #pragma once
 
-#include <algorithm>
-
-#include <MPGL/Core/Registers/RegisterInterface.hpp>
-#include <MPGL/Events/Event.hpp>
-
 namespace mpgl {
 
-    template <Event Tp, typename Signature, Signature Method>
-    class UniversalRegister;
-
-    /**
-     * Register that allows to construct the simple register for
-     * cutom event
-     */
     template <Event Tp, typename... Args,
         void(Tp::*EventMethod)(Args...)>
-    struct UniversalRegister<Tp, void(Tp::*)(Args...), EventMethod>
-        : public RegisterInterface<Tp>
+    void UniversalRegister<Tp, void(Tp::*)(Args...),
+        EventMethod>::onEvent(Args&&... args) noexcept
     {
-        /**
-         * Constructs a new Universal Register object
-         */
-        explicit UniversalRegister(void) noexcept = default;
-
-        UniversalRegister(UniversalRegister&&) = default;
-
-        UniversalRegister& operator=(UniversalRegister&&) = default;
-
-        /**
-         * Calls the event on the underlying objects with
-         * the given arguments
-         *
-         * @param args the event arguments
-         */
-        void onEvent(Args&&... args) noexcept;
-
-        /**
-         * Destroys the Universal Register object
-         */
-        ~UniversalRegister(void) noexcept = default;
-    };
+        std::ranges::for_each(this->storage, [...args
+            = std::forward<Args>(args)]
+                (auto& event){ (event.get()->*EventMethod)(args...); });
+    }
 
 }
-
-#include <MPGL/Core/Registers/UniversalRegister.tpp>
