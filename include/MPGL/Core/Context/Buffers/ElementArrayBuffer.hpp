@@ -127,15 +127,6 @@ namespace mpgl {
         uint32                                  elementID;
     };
 
-    template <std::ranges::contiguous_range Range>
-        requires std::ranges::sized_range<Range>
-    void ElementArrayBuffer::setBufferData(
-        Range&& range,
-        BufferType const& type) const noexcept
-    {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-            sizeof(std::ranges::range_value_t<Range>) * range.size(),
-            std::ranges::data(range), static_cast<uint16>(type));
-    }
-
 }
+
+#include <MPGL/Core/Context/Buffers/ElementArrayBuffer.tpp>

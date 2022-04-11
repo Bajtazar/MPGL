@@ -176,4 +176,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Core/Registers/RegistersHolder.hpp>
+#include <MPGL/Core/Registers/RegistersHolder.tpp>
