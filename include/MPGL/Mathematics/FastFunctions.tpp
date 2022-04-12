@@ -25,41 +25,11 @@
  */
 #pragma once
 
-#include <MPGL/Traits/Types.hpp>
-
-#include <concepts>
-
 namespace mpgl {
 
-    /**
-     * Calculates the binary logarithm of the given number
-     * by using the single assembler instruction. Works
-     * only for the powers of two
-     *
-     * @param number the logarithmed number
-     * @return the log2 value
-     */
-    [[nodiscard]] uint8 fastLog2(uint32 number) noexcept;
-
-    /**
-     * Calculates the square root of the given number.
-     * Works only for the powers of two
-     *
-     * @tparam Int the integer type
-     * @param number the number that is the power of two
-     * @return the square root of the number
-     */
     template <std::integral Int>
-    [[nodiscard]] Int fast2Sqrt(Int number) noexcept;
-
-    /**
-     * Checks whether the given number is the power of two
-     *
-     * @param number the checked number
-     * @return if the given number is the power of two
-     */
-    [[nodiscard]] bool isPowerOf2(uint32 number) noexcept;
+    [[nodiscard]] Int fast2Sqrt(Int number) noexcept {
+        return static_cast<Int>(1 << (fastLog2(number) / 2));
+    }
 
 }
-
-#include <MPGL/Mathematics/FastFunctions.tpp>
