@@ -25,42 +25,48 @@
  */
 #pragma once
 
-#include <MPGL/Events/ScreenTransformationEvent.hpp>
-#include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
-#include <MPGL/Core/Figures/Primitives/Line.hpp>
-#include <MPGL/Core/DrawableCollection.hpp>
-#include <MPGL/Core/Drawable.hpp>
+#include <MPGL/Events/KeyPressEvent.hpp>
+#include <MPGL/Events/TickEvent.hpp>
 
-#include <utility>
+#include <World.hpp>
 
-class World :
+#include <list>
+
+class Snake :
     public mpgl::ScreenTransformationEvent,
-    public mpgl::Drawable2D
+    public mpgl::KeyPressEvent,
+    public mpgl::Drawable2D,
+    public mpgl::TickEvent
 {
 public:
-    explicit World(void);
+    explicit Snake(World& world);
+
+    virtual void onKeyPress(mpgl::Key const& key) noexcept;
 
     virtual void onScreenTransformation(
         mpgl::Vector2u const& oldDimensions) noexcept;
 
     virtual void draw(void) const noexcept;
 
-    void createNewApple(void) noexcept;
+    virtual void onTick(
+        std::chrono::milliseconds const& delta) noexcept;
 
-    mpgl::Vector2f const& applePosition(void) const noexcept
-        { return apple.first; }
-
-    ~World(void) noexcept = default;
+    ~Snake(void) noexcept = default;
 private:
+    typedef std::list<mpgl::Vector2f>               Modules;
     typedef mpgl::DrawableCollection<
-        mpgl::Line>                             Lines;
-    typedef std::pair<
-        mpgl::Vector2f, mpgl::Tetragon>         AppleTuple;
+        mpgl::Tetragon, std::list<mpgl::Tetragon>>  SnakeModules;
 
-    Lines                                       table;
-    AppleTuple                                  apple;
+    SnakeModules                                    snakeModules;
+    Modules                                         modules;
+    mpgl::Vector2si                                 momentum;
+    World&                                          world;
+    bool                                            freeze;
 
-    void generateTable(void);
+    bool isFreeze(void) noexcept;
 
-    static mpgl::Vector2f genApplePosition(void) noexcept;
+    bool onFreeze(void) noexcept;
+
+    mpgl::Tetragon returnModule(
+        mpgl::Vector2si const& vector) const noexcept;
 };
