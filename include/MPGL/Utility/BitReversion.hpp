@@ -86,15 +86,6 @@ namespace mpgl {
 
     inline constexpr BitReversion                       reverseBits;
 
-    template <std::unsigned_integral Tp>
-    [[nodiscard]] constexpr Tp BitReversion::operator() (
-        Tp bits) const noexcept
-    {
-        Tp result{0};
-        for (uint8 i = 0; i < sizeof(Tp); ++i)
-            result |= (Tp) lookupTable[(bits >> (i * 8)) & 0xFF]
-                << (8 * (sizeof(Tp) - i - 1));
-        return result;
-    }
-
 }
+
+#include <MPGL/Utility/BitReversion.tpp>
