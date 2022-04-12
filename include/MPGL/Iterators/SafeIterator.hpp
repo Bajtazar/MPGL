@@ -333,24 +333,6 @@ namespace mpgl {
         sentinel_type                               sentinel;
     };
 
-    template <std::random_access_iterator Iter,
-        std::sentinel_for<Iter> Sent>
-    [[nodiscard]] constexpr SafeIterator<Iter, Sent>::reference
-        SafeIterator<Iter, Sent>::operator*(void) const
-    {
-        if (iter >= sentinel || iter < begin)
-            throw SafeIteratorOutOfRangeException{};
-        return *iter;
-    }
-
-    template <std::random_access_iterator Iter,
-        std::sentinel_for<Iter> Sent>
-    [[nodiscard]] constexpr SafeIterator<Iter, Sent>::pointer
-        SafeIterator<Iter, Sent>::operator->(void) const
-    {
-        if (iter >= sentinel || iter < begin)
-            throw SafeIteratorOutOfRangeException{};
-        return std::addressof(*iter);
-    }
-
 }
+
+#include <MPGL/Iterators/SafeIterator.tpp>
