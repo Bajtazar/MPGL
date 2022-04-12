@@ -25,63 +25,54 @@
  */
 #pragma once
 
-#include <MPGL/Mathematics/Matrix.hpp>
-
-#include <istream>
-#include <ostream>
-
 namespace mpgl {
 
-    /**
-     * Writes the given vector to the output stream
-     *
-     * @tparam Tp the type of the vector elements
-     * @tparam Size the size of the vector
-     */
     template <Arithmetic Tp, std::size_t Size>
         requires (Size > 0)
     std::ostream& operator<< (
         std::ostream& os,
-        Vector<Tp, Size> const& vector);
+        Vector<Tp, Size> const& vector)
+    {
+        os << '[';
+        for (std::size_t i = 0;i < vector.size() - 1; ++i)
+            os << vector[i] << '\t';
+        os << vector[vector.size() - 1] << ']';
+        return os;
+    }
 
-    /**
-     * Writes the given matrix to the output stream
-     *
-     * @tparam Tp the type of the matrix elements
-     * @tparam Rows the number of matrix's rows
-     * @tparam Cols the number of matrix's columns
-     */
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
     std::ostream& operator<< (
         std::ostream& os,
-        Matrix<Tp, Rows, Cols> const& matrix);
+        Matrix<Tp, Rows, Cols> const& matrix)
+    {
+        os << '[';
+        for (std::size_t i = 0;i < matrix.size() - 1; ++i)
+            os << matrix[i] << "\n ";
+        os << matrix[matrix.size() - 1] << ']';
+        return os;
+    }
 
-    /**
-     * Writes data from a input stream to the vector
-     *
-     * @tparam Tp the type of the vector elements
-     * @tparam Size the size of the vector
-     */
     template <Arithmetic Tp, std::size_t Size>
         requires (Size > 0)
     std::istream& operator>> (
         std::istream& is,
-        Vector<Tp, Size>& vector);
+        Vector<Tp, Size>& vector)
+    {
+        for (auto& element : vector)
+            is >> element;
+        return is;
+    }
 
-    /**
-     * Writes data from a input stream to the matrix
-     *
-     * @tparam Tp the type of the matrix elements
-     * @tparam Rows the number of matrix's rows
-     * @tparam Cols the number of matrix's columns
-     */
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
     std::istream& operator>> (
         std::istream& is,
-        Matrix<Tp, Rows, Cols>& matrix);
+        Matrix<Tp, Rows, Cols>& matrix)
+    {
+        for (auto& row : matrix)
+            is >> row;
+        return is;
+    }
 
 }
-
-#include <MPGL/IO/MathTypesIO.tpp>
