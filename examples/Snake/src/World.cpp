@@ -55,7 +55,7 @@ Vector2f World::genApplePosition(void) noexcept {
     uint64_t time = std::chrono::duration_cast<
         std::chrono::nanoseconds>(std::chrono::system_clock::now(
             ).time_since_epoch()).count();
-    return {time % 14, time % 24};
+    return {time % 24, time % 14};
 }
 
 void World::generateTable(void) {

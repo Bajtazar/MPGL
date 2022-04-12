@@ -5,8 +5,11 @@ BIN	:= bin
 SRC	:= $(shell find src/ -name "*.cpp")
 T_SRC	:= $(shell find . -name "*.cpp" | awk '{ if (/main/ && !seen) { seen = 1 } else print }')
 INCLUDE	:= ./include
+SNK_SRC := $(shell find examples/Snake/ -name "*.cpp")
+SNK_INC := ./examples/Snake/include
 
 EXECUTABLE	:= Epsilon
+SNAKE_EXEC	:= Snake
 TEST_EXEC	:= Test
 
 all: test app
@@ -23,6 +26,10 @@ app: $(SRC) glad.c main.cpp
 test: $(T_SRC) glad.c
 	clear
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $(BIN)/$(TEST_EXEC)
+
+snake: $(SRC) $(SNK_SRC) glad.c
+	clear
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -I$(SNK_INC) $^ -o $(BIN)/$(SNAKE_EXEC)
 
 clean:
 	-rm $(BIN)/*

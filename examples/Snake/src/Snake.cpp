@@ -1,3 +1,28 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
 #include <Snake.hpp>
 
 #include <MPGL/Core/Figures/Views.hpp>
@@ -28,15 +53,14 @@ Tetragon Snake::returnModule(Vector2si const& vector) const noexcept {
     };
 }
 
-bool Snake::isFreeze(void) noexcept{
-    if (!between(0.f, 14.f, modules.front()[0]))
+bool Snake::isFreeze(void) noexcept {
+    if (!between({0, 0}, {24, 14}, modules.front()))
         return onFreeze();
-    if (!between(0.f, 23.f, modules.front()[1]))
-        return onFreeze();
-    for (auto const& module : modules)
-        if (totalCompare(module, modules.front())
-            == std::partial_ordering::equivalent)
-                return onFreeze();
+    for (auto const& module : modules | std::views::drop(1)
+        | std::views::reverse | std::views::drop(1))
+            if (totalCompare(module, modules.front())
+                == std::partial_ordering::equivalent)
+                    return onFreeze();
     return false;
 }
 
@@ -52,7 +76,7 @@ void Snake::onTick(
 {
     if (freeze)
         return;
-    modules.push_front(modules.back() + vectorCast<float32>(momentum));
+    modules.push_front(modules.front() + vectorCast<float32>(momentum));
     if (isFreeze())
         return modules.pop_back();
     snakeModules.push_front(returnModule(modules.front()));
@@ -70,15 +94,19 @@ void Snake::onTick(
 void Snake::onKeyPress(Key const& key) noexcept {
     switch (key) {
         case Key::Right:
+        case Key::D:
             momentum = Vector2si{1, 0};
             break;
         case Key::Left:
+        case Key::A:
             momentum = Vector2si{-1, 0};
             break;
-        case Key::Up:
+        case Key::Down:
+        case Key::S:
             momentum = Vector2si{0, -1};
             break;
-        case Key::Down:
+        case Key::Up:
+        case Key::W:
             momentum = Vector2si{0, 1};
             break;
     }
