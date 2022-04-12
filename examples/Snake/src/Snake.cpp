@@ -34,9 +34,7 @@ using namespace mpgl;
 Snake::Snake(World& world)
     : world{world}, freeze{false}, momentum{1, 0}
 {
-    if (totalCompare(world.applePosition(), {0, 0})
-        == std::partial_ordering::equivalent)
-    {
+    if (world.applePosition() == Vector2f{0, 0}) {
         snakeModules.emplace_back(returnModule({1, 0}));
         modules.emplace_back(1, 0);
     } else {
@@ -56,11 +54,11 @@ Tetragon Snake::returnModule(Vector2si const& vector) const noexcept {
 bool Snake::isFreeze(void) noexcept {
     if (!between({0, 0}, {24, 14}, modules.front()))
         return onFreeze();
-    for (auto const& module : modules | std::views::drop(1)
-        | std::views::reverse | std::views::drop(1))
-            if (totalCompare(module, modules.front())
-                == std::partial_ordering::equivalent)
-                    return onFreeze();
+    auto moduleView = modules | std::views::drop(1)
+        | std::views::reverse | std::views::drop(1);
+    for (auto const& module : moduleView)
+        if (module == modules.front())
+            return onFreeze();
     return false;
 }
 
@@ -80,16 +78,13 @@ void Snake::onTick(
     if (isFreeze())
         return modules.pop_back();
     snakeModules.push_front(returnModule(modules.front()));
-    if (totalCompare(modules.front(), world.applePosition())
-        == std::partial_ordering::equivalent)
-    {
+    if (modules.front() == world.applePosition())
         world.createNewApple();
-    } else {
+    else {
         snakeModules.pop_back();
         modules.pop_back();
     }
 }
-
 
 void Snake::onKeyPress(Key const& key) noexcept {
     switch (key) {
