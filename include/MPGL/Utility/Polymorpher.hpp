@@ -100,36 +100,6 @@ namespace mpgl {
         std::variant<Types...>                          variant;
     };
 
-    template <class... Types>
-    template <typename Fn, typename... Args>
-        requires std::conjunction_v<std::is_invocable<
-            Fn, Types&, Args...>...>
-    decltype(auto) Polymorpher<Types...>::invoke(
-        Fn&& invocable, Args&&... args)
-    {
-        return std::visit(variant,
-            [&invocable, ...args=std::forward<Args>(args)]
-            (auto&& base) {
-                return std::invoke(invocable, base,
-                    std::forward<Args>(args)...);
-            }
-        );
-    }
-
-    template <class... Types>
-    template <typename Fn, typename... Args>
-        requires std::conjunction_v<std::is_invocable<Fn,
-            Types const&, Args...>...>
-    decltype(auto) Polymorpher<Types...>::invoke(
-        Fn&& invocable, Args&&... args) const
-    {
-        return std::visit(variant,
-            [&invocable, ...args=std::forward<Args>(args)]
-            (auto&& base) {
-                return std::invoke(invocable, base,
-                    std::forward<Args>(args)...);
-            }
-        );
-    }
-
 }
+
+#include <MPGL/Utility/Polymorpher.tpp>
