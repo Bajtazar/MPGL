@@ -66,13 +66,11 @@ namespace mpgl {
          */
         template <typename... Args>
             requires std::constructible_from<Derived, Args...>
-        BasePtr operator() (
+        [[nodiscard]] BasePtr operator() (
             Args&&... args) const noexcept(
-                NothrowConstructible<Args...>)
-        {
-            return std::make_unique<Derived>(
-                std::forward<Args>(args)...);
-        }
+                NothrowConstructible<Args...>);
     };
 
 }
+
+#include <MPGL/Utility/FunctionalWrapper.tpp>
