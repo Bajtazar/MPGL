@@ -72,17 +72,6 @@ namespace mpgl {
     template <TemplateString... Strings>
     struct TSHolder {};
 
-    template <std::size_t S1, std::size_t S2>
-    [[nodiscard]] constexpr bool operator==(
-        TemplateString<S1> const& leftString,
-        TemplateString<S2> const& rightString) noexcept
-    {
-        if constexpr (S1 != S2)
-            return false;
-        for (std::size_t i = 0; i != S1; ++i)
-            if (leftString.string[i] != rightString.string[i])
-                return false;
-        return true;
-    }
-
 }
+
+#include <MPGL/Traits/TemplateString.tpp>
