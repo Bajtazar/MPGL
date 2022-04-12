@@ -92,16 +92,7 @@ namespace mpgl {
      * @return the tuple with reversed arguments
      */
     template <typename... Args>
-    constexpr auto tupleReverser(Args&&... args) noexcept {
-        return []<std::size_t... I>(std::tuple<
-            std::remove_reference_t<Args>...> tuple,
-            std::index_sequence<I...>)
-        {
-            return std::tuple{std::get<sizeof...(Args) - I - 1>(
-                tuple)...};
-        }(std::tuple{std::forward<Args>(args)...},
-            std::make_index_sequence<sizeof...(Args)>{});
-    }
+    constexpr auto tupleReverser(Args&&... args) noexcept;
 
     /**
      * The convenient for shortcut the uniform tuple [one
@@ -135,3 +126,5 @@ namespace mpgl {
         std::declval<Args>()...));
 
 }
+
+#include <MPGL/Traits/TupleTraits.tpp>
