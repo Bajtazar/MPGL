@@ -16,7 +16,7 @@ run: clean all
 	./$(BIN)/$(TEST_EXEC)
 	./$(BIN)/$(EXECUTABLE)
 
-app: $(SRC) glad.c
+app: $(SRC) glad.c main.cpp
 	clear
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $(BIN)/$(EXECUTABLE)
 

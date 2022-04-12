@@ -11,3 +11,4 @@ Makefile.save.*
 glad.c
 ./textures/
 main.cpp
+.vscode/
