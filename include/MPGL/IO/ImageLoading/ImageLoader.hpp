@@ -145,15 +145,6 @@ namespace mpgl {
     template class ImageLoader<Secured>;
     template class ImageLoader<Unsecured>;
 
-    template <security::SecurityPolicy Policy>
-    template <std::derived_from<LoaderInterface> Tp>
-        requires (std::same_as<typename Tp::Tag,
-            typename ImageLoader<Policy>::Path const>
-                && std::invocable<Tp, Policy,
-            typename ImageLoader<Policy>::Path const>)
-    void ImageLoader<Policy>::addFormatLoader(void) {
-        loaders[Tp::Tag] = LoadingFun{ FunctionalWrapper<Tp,
-            LoaderInterface>{} };
-    }
-
 }
+
+#include <MPGL/IO/ImageLoading/ImageLoader.tpp>
