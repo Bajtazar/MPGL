@@ -605,6 +605,25 @@ namespace mpgl {
         return first;
     }
 
+    template <Arithmetic Tp, std::size_t Size>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    [[nodiscard]] bool constexpr operator== (
+        Vector<Tp, Size> const& left,
+        Vector<Tp, Size> const& right) noexcept
+    {
+        return totalCompare(left, right)
+            == std::partial_ordering::equivalent;
+    }
+
+    template <Arithmetic Tp, std::size_t Size>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    [[nodiscard]] std::partial_ordering constexpr operator<=> (
+        Vector<Tp, Size> const& left,
+        Vector<Tp, Size> const& right) noexcept
+    {
+        return totalCompare(left, right);
+    }
+
     [[nodiscard]] constexpr Vector2f operator"" _x(
         float128 value) noexcept
     {

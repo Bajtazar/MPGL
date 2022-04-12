@@ -1117,6 +1117,37 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) noexcept;
 
+    /**
+     * Checks whether two vectors are equivalent in the total
+     * order
+     *
+     * @tparam Tp the vector's type
+     * @tparam Size the vector's size
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right vector
+     * @return if the vectors are equals
+     */
+    template <Arithmetic Tp, std::size_t Size>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    [[nodiscard]] bool constexpr operator== (
+        Vector<Tp, Size> const& left,
+        Vector<Tp, Size> const& right) noexcept;
+
+    /**
+     * Compares two vectors in the total order
+     *
+     * @tparam Tp the vector's type
+     * @tparam Size the vector's size
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right vector
+     * @return the ordering result
+     */
+    template <Arithmetic Tp, std::size_t Size>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    [[nodiscard]] std::partial_ordering constexpr operator<=> (
+        Vector<Tp, Size> const& left,
+        Vector<Tp, Size> const& right) noexcept;
+
     template class Vector<float32, 2>;
     template class Vector<uint32, 2>;
 
