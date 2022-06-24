@@ -176,6 +176,31 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    RingSprite<IsColorable>::Locations::Locations(void)
+        : outerShift{new ShaderLocation},
+        innerShift{new ShaderLocation},
+        outerTransform{new ShaderLocation},
+        innerTransform{new ShaderLocation} {}
+
+    template <bool IsColorable>
+    void RingSprite<IsColorable>::setLocations(
+        std::string const& shaderName)
+    {
+        Shadeable::setLocations(shaderName,
+            [locations=locations](ShaderProgram const& program)
+        {
+            *locations.outerShift
+                = ShaderLocation{program, "outerShift"};
+            *locations.innerShift
+                = ShaderLocation{program, "innerShift"};
+            *locations.outerTransform
+                = ShaderLocation{program, "outerTransform"};
+            *locations.innerTransform
+                = ShaderLocation{program, "innerTransform"};
+        });
+    }
+
+    template <bool IsColorable>
     RingSprite<IsColorable>::RingSprite(
         Texture const& texture,
         Vector2f const& center,
@@ -187,6 +212,7 @@ namespace mpgl {
                 texture, shaderName()}, innerEllipse{innerEllipse}
     {
         actualizeMatrices();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -203,6 +229,7 @@ namespace mpgl {
                     innerEllipse{innerEllipse}
     {
         actualizeMatrices();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -217,6 +244,7 @@ namespace mpgl {
                     innerEllipse{innerEllipse}
     {
         actualizeMatrices();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -232,6 +260,7 @@ namespace mpgl {
                     innerEllipse{innerEllipse}
     {
         actualizeMatrices();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -359,25 +388,29 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTRingConv" : "MPGL/2D/TRingConv");
-        this->shaderProgram->setUniform("convolution", convolution);
-        this->shaderProgram->setUniform(
-            "screen", this->texture.getTextureDimensions());
+        setLocations(IsColorable ?
+            "MPGL/2D/CTRingConv" : "MPGL/2D/TRingConv");
+        ShaderLocation{*this->shaderProgram, "tex"}(0);
+        ShaderLocation{*this->shaderProgram, "convolution"}(
+            convolution);
+        ShaderLocation{*this->shaderProgram, "screen"}(
+            this->texture.getTextureDimensions());
     }
 
     template <bool IsColorable>
     void RingSprite<IsColorable>::resetConvolution(void) {
         this->setShader(shaderName());
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
     void RingSprite<IsColorable>::setUniforms(void) const noexcept {
-        this->shaderProgram->setUniform("outerShift",
+        (*locations.outerShift)(
             Vector2f{get<"position">(this->vertices.front())});
-        this->shaderProgram->setUniform("innerShift",
+        (*locations.innerShift)(
             Vector2f{innerEllipse.vertices.front()});
-        this->shaderProgram->setUniform("outerTransform", outline);
-        this->shaderProgram->setUniform("innerTransform",
-            innerEllipse.outline);
+        (*locations.outerTransform)(outline);
+        (*locations.innerTransform)(innerEllipse.outline);
     }
 
     template <bool IsColorable>

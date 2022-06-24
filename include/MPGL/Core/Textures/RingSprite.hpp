@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Textures/EllipticSprite.hpp>
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 
 namespace mpgl {
 
@@ -450,8 +451,33 @@ namespace mpgl {
          */
         ~RingSprite(void) noexcept = default;
     private:
+        /**
+         * Collection of all shader location's pointers
+         */
+        struct Locations {
+            typedef std::shared_ptr<ShaderLocation>     LocationPtr;
+
+            LocationPtr                                 outerShift;
+            LocationPtr                                 innerShift;
+            LocationPtr                                 outerTransform;
+            LocationPtr                                 innerTransform;
+
+            /**
+             * Constructs a new Locations object
+             */
+            explicit Locations(void);
+        };
+
+        Locations                                       locations;
         InnerEllipse                                    innerEllipse;
         Matrix2f                                        outline;
+
+        /**
+         * Sets the shader locations
+         *
+         * @param shaderName shader's name
+         */
+        void setLocations(std::string const& shaderName);
 
         /**
          * Actualizes the matrices responsible for the outline

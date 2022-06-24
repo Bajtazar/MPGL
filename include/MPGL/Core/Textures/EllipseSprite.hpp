@@ -227,8 +227,10 @@ namespace mpgl {
 
         /**
          * Sets the shader locations
+         *
+         * @param shaderName shader's name
          */
-        void setLocations(void);
+        void setLocations(std::string const& shaderName);
 
         /**
          * Actualizes the matrices responsible for the outline

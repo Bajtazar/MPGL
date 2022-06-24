@@ -43,8 +43,10 @@ namespace mpgl {
         : shift{new ShaderLocation}, transform{new ShaderLocation} {}
 
     template <bool IsColorable>
-    void EllipseSprite<IsColorable>::setLocations(void) {
-        Shadeable::setLocations(shaderName(),
+    void EllipseSprite<IsColorable>::setLocations(
+        std::string const& shaderName)
+    {
+        Shadeable::setLocations(shaderName,
             [locations=locations](ShaderProgram const& program)
         {
             *locations.shift = ShaderLocation{program, "shift"};
@@ -63,7 +65,7 @@ namespace mpgl {
                 texture, shaderName()}
     {
         actualizeMatrices();
-        setLocations();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -78,7 +80,7 @@ namespace mpgl {
                 texture, shaderName(), color}
     {
         actualizeMatrices();
-        setLocations();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -91,7 +93,7 @@ namespace mpgl {
                 texture, shaderName()}
     {
         actualizeMatrices();
-        setLocations();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -105,7 +107,7 @@ namespace mpgl {
                 texture, shaderName(), color}
     {
         actualizeMatrices();
-        setLocations();
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
@@ -187,6 +189,9 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
+        setLocations(IsColorable ?
+            "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
+        ShaderLocation{*this->shaderProgram, "tex"}(0);
         ShaderLocation{*this->shaderProgram, "convolution"}(convolution);
         ShaderLocation{*this->shaderProgram, "screen"}(
             this->texture.getTextureDimensions());
@@ -195,6 +200,7 @@ namespace mpgl {
     template <bool IsColorable>
     void EllipseSprite<IsColorable>::resetConvolution(void) {
         this->setShader(shaderName());
+        setLocations(shaderName());
     }
 
     template <bool IsColorable>
