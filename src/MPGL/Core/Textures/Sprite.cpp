@@ -24,7 +24,7 @@
  *  distribution
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Core/Textures/Sprite.hpp>
 
 namespace mpgl {
@@ -43,7 +43,7 @@ namespace mpgl {
             = [](ShaderProgram const& program)
     {
         program.use();
-        program.setUniform("tex", 0);
+        ShaderLocation{program, "tex"}(0);
     };
 
     template <bool IsColorable>
@@ -140,10 +140,11 @@ namespace mpgl {
         Shadeable::setShader(IsColorable ?
             "MPGL/2D/CTextureConv" : "MPGL/2D/TextureConv");
         this->shaderProgram->use();
-        this->shaderProgram->setUniform("tex", 0);
-        this->shaderProgram->setUniform("convolution", convolution);
-        this->shaderProgram->setUniform(
-            "screen", this->texture.getTextureDimensions());
+        ShaderLocation{*this->shaderProgram, "tex"}(0);
+        ShaderLocation{*this->shaderProgram, "convolution",
+            convolution};
+        ShaderLocation{*this->shaderProgram,
+            "screen", this->texture.getTextureDimensions()};
     }
 
     template <bool IsColorable>
