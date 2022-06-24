@@ -27,6 +27,7 @@
 
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
 #include <MPGL/Core/Context/Buffers/VertexCast.hpp>
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Core/DrawableCollection.hpp>
 #include <MPGL/Core/Shaders/Shadeable.hpp>
 #include <MPGL/Core/Text/GlyphSprite.hpp>
@@ -639,6 +640,19 @@ namespace mpgl {
         float32                                 angle = 0.f;
     };
 
+    class MonochromaticTextBase {
+    protected:
+        explicit MonochromaticTextBase(void);
+
+        typedef std::shared_ptr<ShaderLocation>     LocationPtr;
+
+        LocationPtr                                 colorLoc;
+    };
+
+    template <bool IsColorable>
+    using TextBase = std::conditional_t<IsColorable,
+        std::monostate, MonochromaticTextBase>;
+
     /**
      * Represents a text on the screen
      *
@@ -646,7 +660,9 @@ namespace mpgl {
      * be colorable
      */
     template <bool IsColorable = false>
-    class Text : public Shadeable, public Transformable2D {
+    class Text : public Shadeable, public Transformable2D,
+        private TextBase<IsColorable>
+    {
     public:
         typedef GlyphSprite<IsColorable>            FontGlyph;
         typedef DrawableCollection<FontGlyph>       GlyphsVector;

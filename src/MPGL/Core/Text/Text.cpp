@@ -30,6 +30,9 @@
 
 namespace mpgl {
 
+    MonochromaticTextBase::MonochromaticTextBase(void)
+        : colorLoc{new ShaderLocation} {}
+
     template <bool IsColorable>
     Text<IsColorable>::String const
         Text<IsColorable>::shaderType(void)
@@ -42,9 +45,9 @@ namespace mpgl {
 
     template <bool IsColorable>
     const Text<IsColorable>::Executable Text<IsColorable>::shaderExec =
-        [](ShaderProgram const& pointer) -> void {
-            pointer.use();
-            pointer.setUniform("tex", 0);
+        [](ShaderProgram const& program) -> void {
+            program.use();
+            ShaderLocation{program, "tex"}(0);
         };
 
     template <bool IsColorable>
@@ -93,6 +96,13 @@ namespace mpgl {
             mods{options.mods}
     {
         loadGlyphs(parseString(text));
+        if constexpr (!IsColorable)
+            Shadeable::setLocations(shaderType(),
+                [color=MonochromaticTextBase::colorLoc]
+                (ShaderProgram const& program)
+            {
+                *color = ShaderLocation{program, "color"};
+            });
     }
 
     template <bool IsColorable>
@@ -311,7 +321,7 @@ namespace mpgl {
     void Text<IsColorable>::draw(void) const noexcept {
         shaderProgram->use();
         if constexpr (!IsColorable)
-            shaderProgram->setUniform("color", color);
+            (*MonochromaticTextBase::colorLoc)(color);
         glyphs.draw();
         underlines.draw();
         strikethroughs.draw();
