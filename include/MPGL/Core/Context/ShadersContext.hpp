@@ -43,7 +43,7 @@ namespace mpgl {
         typedef std::optional<ShaderLibrary>    Library;
         typedef std::shared_ptr<ShaderProgram>  ProgramPtr;
         typedef std::function<void(
-            ProgramPtr&)>                       Executable;
+            ShaderProgram const&)>              Executable;
 
         /**
          * Constructs a new Shaders Context object
@@ -108,6 +108,19 @@ namespace mpgl {
             Executable exec);
 
         /**
+         * Executes the given invocable with the given shader program
+         * if it is available. Otherwise adds the executable to
+         * the queue and waits until the library is available
+         *
+         * @param name the constant reference to the shader program
+         * name
+         * @param exec the executable
+         */
+        void executeOrQueue(
+            std::string const& name,
+            Executable exec);
+
+        /**
          * Returns whether the shader library is defined
          *
          * @return if the shader library is defined
@@ -115,37 +128,55 @@ namespace mpgl {
         [[nodiscard]] bool isHolding(void) const noexcept
             { return std::holds_alternative<ShaderLibrary>(shaders); }
     private:
-        typedef std::pair<ProgramPtr,
-            Executable>                         ExecutablePair;
+        typedef std::tuple<ProgramPtr,
+            std::string, Executable>            ShaderTuple;
         typedef std::pair<ProgramPtr,
             std::string>                        ShaderPair;
-        typedef std::queue<ShaderPair>          Queue;
+        typedef std::pair<Executable,
+            std::string>                        ExecutablePair;
+        typedef std::queue<ShaderTuple>         TupleQueue;
+        typedef std::queue<ShaderPair>          PairQueue;
         typedef std::queue<ExecutablePair>      Executables;
         typedef std::variant<std::monostate,
             ShaderLibrary>                      Shaders;
 
-        Queue                                   queue;
-        Shaders                                 shaders;
+        TupleQueue                              tupleQueue;
+        PairQueue                               pairQueue;
         Executables                             executables;
+        Shaders                                 shaders;
 
         /**
-         * Initializes the shaders from the shader program queue
+         * Initializes the shaders from the shader program pair queue
          *
          * @param exception the reference to the exception object
          * @param library the constant reference to the shader
          * library object
          */
-        void setShaderFromQueue(
+        void setShaderFromPairQueue(
             std::exception_ptr& exception,
             ShaderLibrary const& library) noexcept;
 
         /**
-         * Executes the executable associated with the shader program
-         * shared pointer
+         * Initializes the shaders from the shader program tuple queue
          *
          * @param exception the reference to the exception object
+         * @param library the constant reference to the shader
+         * library object
          */
-        void runExecutable(std::exception_ptr& exception) noexcept;
+        void setShaderFromTupleQueue(
+            std::exception_ptr& exception,
+            ShaderLibrary const& library) noexcept;
+
+        /**
+         * Executes the executables
+         *
+         * @param exception the reference to the exception object
+         * @param library the constant reference to the shader
+         * library object
+         */
+        void runExecutable(
+            std::exception_ptr& exception,
+            ShaderLibrary const& library) noexcept;
     };
 
 }

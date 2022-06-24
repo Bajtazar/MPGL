@@ -40,10 +40,10 @@ namespace mpgl {
     template <bool IsColorable>
     Sprite<IsColorable>::Executable const
         Sprite<IsColorable>::shaderExec
-            = [](Shadeable::ProgramPtr& program)
+            = [](ShaderProgram const& program)
     {
-        program->use();
-        program->setUniform("tex", 0);
+        program.use();
+        program.setUniform("tex", 0);
     };
 
     template <bool IsColorable>
@@ -51,7 +51,7 @@ namespace mpgl {
         ShaderProgram const& program) noexcept
     {
         Shadeable::setShader(program);
-        shaderExec(this->shaderProgram);
+        shaderExec(*this->shaderProgram);
     }
 
     template <bool IsColorable>
@@ -59,7 +59,7 @@ namespace mpgl {
         ShaderProgram&& program) noexcept
     {
         Shadeable::setShader(std::move(program));
-        shaderExec(this->shaderProgram);
+        shaderExec(*this->shaderProgram);
     }
 
     template <bool IsColorable>

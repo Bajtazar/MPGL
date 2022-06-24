@@ -30,34 +30,51 @@ namespace mpgl {
     void ShadersContext::setLibrary(ShaderLibrary const& library) {
         shaders = library;
         std::exception_ptr exception;
-        while (!queue.empty())
-            setShaderFromQueue(exception, library);
+        while (!tupleQueue.empty())
+            setShaderFromTupleQueue(exception, library);
+        while (!pairQueue.empty())
+            setShaderFromPairQueue(exception, library);
         while (!executables.empty())
-            runExecutable(exception);
+            runExecutable(exception, library);
         if (exception)
             std::rethrow_exception(exception);
     }
 
-    void ShadersContext::setShaderFromQueue(
+    void ShadersContext::setShaderFromPairQueue(
         std::exception_ptr& exception,
         ShaderLibrary const& library) noexcept
     {
         try {
-            auto& [shader, name] = queue.front();
+            auto&& [shader, name] = std::move(pairQueue.front());
+            pairQueue.pop();
             *shader = library[name];
-            queue.pop();
+        } catch (...) {
+            exception = std::current_exception();
+        }
+    }
+
+    void ShadersContext::setShaderFromTupleQueue(
+        std::exception_ptr& exception,
+        ShaderLibrary const& library) noexcept
+    {
+        try {
+            auto&& [shader, name, exec] = std::move(tupleQueue.front());
+            tupleQueue.pop();
+            *shader = library[name];
+            exec(*shader);
         } catch (...) {
             exception = std::current_exception();
         }
     }
 
     void ShadersContext::runExecutable(
-        std::exception_ptr& exception) noexcept
+        std::exception_ptr& exception,
+        ShaderLibrary const& library) noexcept
     {
         try {
-            auto& [shader, exec] = executables.front();
-            exec(shader);
+            auto&& [exec, name] = std::move(executables.front());
             executables.pop();
+            exec(std::get<ShaderLibrary>(shaders)[name]);
         } catch (...) {
             exception = std::current_exception();
         }
@@ -78,7 +95,7 @@ namespace mpgl {
         if (isHolding())
             *pointer = std::get<ShaderLibrary>(shaders)[name];
         else
-            queue.emplace(pointer, name);
+            pairQueue.emplace(std::move(pointer), name);
     }
 
     void ShadersContext::setOrQueue(
@@ -88,11 +105,21 @@ namespace mpgl {
     {
         if (isHolding()) {
             *pointer = std::get<ShaderLibrary>(shaders)[name];
-            exec(pointer);
-        } else {
-            queue.emplace(pointer, name);
-            executables.emplace(pointer, std::move(exec));
-        }
+            exec(*pointer);
+        } else
+            tupleQueue.emplace(std::move(pointer), name,
+                std::move(exec));
+    }
+
+    void ShadersContext::executeOrQueue(
+        std::string const& name,
+        Executable exec)
+    {
+        if (isHolding()) {
+            auto const& ptr = std::get<ShaderLibrary>(shaders)[name];
+            exec(ptr);
+        } else
+            executables.emplace(std::move(exec), name);
     }
 
 }

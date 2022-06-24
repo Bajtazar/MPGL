@@ -146,10 +146,10 @@ namespace mpgl {
     }
 
     Ring::Executable const Ring::shaderExec
-        = [](ProgramPtr& program)
+        = [](ShaderProgram const& program)
     {
-        program->use();
-        program->setUniform("aafactor", (float32)
+        program.use();
+        program.setUniform("aafactor", (float32)
             context.windowOptions.antiAliasingSamples / 4.f);
     };
 

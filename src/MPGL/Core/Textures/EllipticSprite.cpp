@@ -66,11 +66,11 @@ namespace mpgl {
     template <bool IsColorable>
     EllipticSprite<IsColorable>::Executable const
         EllipticSprite<IsColorable>::shaderExec
-            = [](Shadeable::ProgramPtr& program)
+            = [](ShaderProgram const& program)
     {
-        program->use();
-        program->setUniform("tex", 0);
-        program->setUniform("aafactor", (float32)
+        program.use();
+        program.setUniform("tex", 0);
+        program.setUniform("aafactor", (float32)
             GraphicalObject::context.windowOptions.antiAliasingSamples / 4.f);
     };
 
@@ -79,7 +79,7 @@ namespace mpgl {
         ShaderProgram const& program) noexcept
     {
         Shadeable::setShader(program);
-        shaderExec(this->shaderProgram);
+        shaderExec(*this->shaderProgram);
     }
 
     template <bool IsColorable>
@@ -87,7 +87,7 @@ namespace mpgl {
         ShaderProgram&& program) noexcept
     {
         Shadeable::setShader(std::move(program));
-        shaderExec(this->shaderProgram);
+        shaderExec(*this->shaderProgram);
     }
 
     template <bool IsColorable>

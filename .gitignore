@@ -12,3 +12,4 @@ glad.c
 ./textures/
 main.cpp
 .vscode/
+*.txt

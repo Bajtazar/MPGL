@@ -42,9 +42,9 @@ namespace mpgl {
 
     template <bool IsColorable>
     const Text<IsColorable>::Executable Text<IsColorable>::shaderExec =
-        [](ProgramPtr& pointer) -> void {
-            pointer->use();
-            pointer->setUniform("tex", 0);
+        [](ShaderProgram const& pointer) -> void {
+            pointer.use();
+            pointer.setUniform("tex", 0);
         };
 
     template <bool IsColorable>
@@ -296,7 +296,7 @@ namespace mpgl {
         ShaderProgram const& program) noexcept
     {
         Shadeable::setShader(program);
-        shaderExec(shaderProgram);
+        shaderExec(*shaderProgram);
     }
 
     template <bool IsColorable>
@@ -304,7 +304,7 @@ namespace mpgl {
         ShaderProgram&& program) noexcept
     {
         Shadeable::setShader(std::move(program));
-        shaderExec(shaderProgram);
+        shaderExec(*shaderProgram);
     }
 
     template <bool IsColorable>
