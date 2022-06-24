@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Core/Figures/Elliptic.hpp>
 
 namespace mpgl {
@@ -150,10 +151,32 @@ namespace mpgl {
          */
         ~Ellipse(void) noexcept = default;
     private:
-        Matrix2f                                    outlineTransform;
+        /**
+         * Collection of all shader location's pointers
+         */
+        struct Locations {
+            typedef std::shared_ptr<ShaderLocation>     LocationPtr;
+
+            LocationPtr                                 color;
+            LocationPtr                                 shift;
+            LocationPtr                                 transform;
+
+            /**
+             * Constructs a new Locations object
+             */
+            explicit Locations(void);
+        };
+
+        Locations                                       locations;
+        Matrix2f                                        outlineTransform;
 
         /// Loads the shader's constant variables
-        static const Executable                     shaderExec;
+        static const Executable                         shaderExec;
+
+        /**
+         * Sets the shader locations
+         */
+        void setLocations(void);
 
         /**
          * Actualizes the matrices responsible for the outline

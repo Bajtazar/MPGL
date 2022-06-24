@@ -34,9 +34,25 @@ namespace mpgl {
         = [](ShaderProgram const& program)
     {
         program.use();
-        program.setUniform("aafactor", (float32)
-            context.windowOptions.antiAliasingSamples / 4.f);
+        ShaderLocation aaFactor{program, "aafactor"};
+        aaFactor(float32(context.windowOptions.antiAliasingSamples)
+            / 4.f);
     };
+
+    Ellipse::Locations::Locations(void)
+        : color{new ShaderLocation}, shift{new ShaderLocation},
+        transform{new ShaderLocation} {}
+
+    void Ellipse::setLocations(void) {
+        Shadeable::setLocations("MPGL/2D/Ellipse",
+            [locations=locations](ShaderProgram const& program)
+        {
+            *locations.color = ShaderLocation{program, "color"};
+            *locations.shift = ShaderLocation{program, "shift"};
+            *locations.transform
+                = ShaderLocation{program, "transform"};
+        });
+    }
 
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
         Color const& color, float angle)
@@ -44,6 +60,7 @@ namespace mpgl {
                 "MPGL/2D/Ellipse", shaderExec, color}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     Ellipse::Ellipse(Vector2f const& center, float radius,
@@ -52,6 +69,7 @@ namespace mpgl {
                 "MPGL/2D/Ellipse", shaderExec, color}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     void Ellipse::actualizeMatrices(void) noexcept {
@@ -128,10 +146,9 @@ namespace mpgl {
     void Ellipse::draw(void) const noexcept {
         actualizeBufferBeforeDraw();
         shaderProgram->use();
-        shaderProgram->setUniform("color", color);
-        shaderProgram->setUniform("shift",
-            Vector2f{get<"position">(vertices.front())});
-        shaderProgram->setUniform("transform", outlineTransform);
+        (*locations.color)(color);
+        (*locations.shift)(Vector2f{get<"position">(vertices.front())});
+        (*locations.transform)(outlineTransform);
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawElements(VertexArray::DrawMode::Triangles,
             6, DataType::UInt32);
