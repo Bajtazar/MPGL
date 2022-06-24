@@ -141,10 +141,10 @@ namespace mpgl {
             "MPGL/2D/CTextureConv" : "MPGL/2D/TextureConv");
         this->shaderProgram->use();
         ShaderLocation{*this->shaderProgram, "tex"}(0);
-        ShaderLocation{*this->shaderProgram, "convolution",
-            convolution};
-        ShaderLocation{*this->shaderProgram,
-            "screen", this->texture.getTextureDimensions()};
+        ShaderLocation{*this->shaderProgram, "convolution"}(
+            convolution);
+        ShaderLocation{*this->shaderProgram, "screen"}(
+            this->texture.getTextureDimensions());
     }
 
     template <bool IsColorable>

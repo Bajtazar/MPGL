@@ -225,6 +225,9 @@ namespace mpgl {
         Locations                                       locations;
         Matrix2f                                        outline;
 
+        /**
+         * Sets the shader locations
+         */
         void setLocations(void);
 
         /**

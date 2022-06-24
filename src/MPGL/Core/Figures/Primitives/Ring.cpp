@@ -149,9 +149,8 @@ namespace mpgl {
         = [](ShaderProgram const& program)
     {
         program.use();
-        ShaderLocation aaLocation{program, "aafactor"};
-        aaLocation(float32(context.windowOptions.antiAliasingSamples)
-            / 4.f);
+        ShaderLocation{program, "aafactor"}(
+            float32(context.windowOptions.antiAliasingSamples) / 4.f);
     };
 
     Ring::Locations::Locations(void)

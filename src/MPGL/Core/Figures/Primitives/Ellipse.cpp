@@ -34,9 +34,8 @@ namespace mpgl {
         = [](ShaderProgram const& program)
     {
         program.use();
-        ShaderLocation aaFactor{program, "aafactor"};
-        aaFactor(float32(context.windowOptions.antiAliasingSamples)
-            / 4.f);
+        ShaderLocation{program, "aafactor"}(
+            float32(context.windowOptions.antiAliasingSamples) / 4.f);
     };
 
     Ellipse::Locations::Locations(void)
