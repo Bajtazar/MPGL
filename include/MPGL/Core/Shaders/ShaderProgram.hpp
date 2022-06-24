@@ -102,84 +102,6 @@ namespace mpgl {
          */
         inline void use(void) const noexcept;
 
-        /**
-         * Sets the integer uniform
-         *
-         * @tparam Ints the number of setted integers
-         * @param uniform the uniform's name
-         * @param values the uniform's values
-         */
-        template <AllIntegrals... Ints>
-            requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0
-                && !AllUnsignedIntegrals<Ints...>)
-        inline void setUniform(
-            std::string const& uniform,
-            Ints... values) const noexcept;
-
-        /**
-         * Sets the unsigned integer uniform
-         *
-         * @tparam UInts the number of setted unsigned integers
-         * @param uniform the uniform's name
-         * @param values the uniform's values
-         */
-        template <AllUnsignedIntegrals... UInts>
-            requires (sizeof...(UInts) <= 4 && sizeof...(UInts) != 0)
-        inline void setUniform(
-            std::string const& uniform,
-            UInts... values) const noexcept;
-
-        /**
-         * Sets the floating point uniform
-         *
-         * @tparam UInts the number of setted floating points
-         * @param uniform the uniform's name
-         * @param values the uniform's values
-         */
-        template <AllFloatingPoints... Floats>
-            requires (sizeof...(Floats) <= 4 && sizeof...(Floats) != 0)
-        inline void setUniform(
-            std::string const& uniform,
-            Floats... values) const noexcept;
-
-        /**
-         * Sets the color unifrom
-         *
-         * @param uniform the uniform's name
-         * @param color the uniform's color
-         */
-        inline void setUniform(
-            std::string const& uniform,
-            Color const& color) const noexcept;
-
-        /**
-         * Sets the vector unifrom
-         *
-         * @param Tp the vector's type
-         * @param Size the vector's size
-         * @param uniform the uniform's name
-         * @param vector the uniform's vector
-         */
-        template <Arithmetic Tp, std::size_t Size>
-            requires (Size <= 4 && Size > 1)
-        inline void setUniform(
-            std::string const& uniform,
-            Vector<Tp, Size> const& vector) const noexcept;
-
-        /**
-         * Sets the matrix uniform
-         *
-         * @param Tp the matrix's type
-         * @param Size the matrix's size
-         * @param uniform the uniform's name
-         * @param matrix the uniform's matrix
-         */
-        template <std::size_t Size>
-            requires (Size <= 4 && Size > 1)
-        inline void setUniform(
-            std::string const& uniform,
-            Matrix<float32, Size, Size> const& matrix) const noexcept;
-
         friend class ShaderLocation;
     private:
         /**
@@ -201,15 +123,6 @@ namespace mpgl {
              */
             void operator()(uint32* ptr) const noexcept;
         };
-
-        /**
-         * Returns the location of the uniform
-         *
-         * @param uniform the uniform name
-         * @return the location of the uniform
-         */
-        inline uint32 location(
-            std::string const& uniform) const noexcept;
 
         /**
          * Verifies the shader program linking status

@@ -34,17 +34,4 @@ namespace mpgl {
         }
     }
 
-    inline uint32 ShaderProgram::location(
-        std::string const& uniform) const noexcept
-    {
-        return glGetUniformLocation(*shaderProgramID, uniform.c_str());
-    }
-
-    inline void ShaderProgram::setUniform(
-        std::string const& uniform,
-        Color const& color) const noexcept
-    {
-        setUniform(uniform, static_cast<Vector4f const&>(color));
-    }
-
 }
