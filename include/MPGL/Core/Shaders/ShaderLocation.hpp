@@ -25,82 +25,47 @@
  */
 #pragma once
 
-#include <MPGL/Core/Shaders/Shader.hpp>
+#include <MPGL/Core/Shaders/ShaderProgram.hpp>
 #include <MPGL/Mathematics/Matrix.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 #include <MPGL/Core/Color.hpp>
-
-#include <memory>
 
 namespace mpgl {
 
     /**
      * Grants access to the location in the shader
      */
-    class ShaderLocation;
-
-    /**
-     * Manages the OpenGL shader program object
-     */
-    class ShaderProgram {
+    class ShaderLocation {
     public:
         /**
-         * Constructs a new Shader Program object
-         */
-        explicit ShaderProgram(void) noexcept;
-
-        /**
-         * Constructs a new Shader Program object from the
-         * given vertex and fragment shader
+         * Construct a new Shader Location object
          *
-         * @param vertex the constant reference to the vertex
-         * shader
-         * @param fragment the constant reference to the fragment
-         * shader
+         * @param program the constant reference to the shader program
+         * @param uniform the location name
+         * @throws ShaderLocationInvalidProgramException
+         * when the given shader program is not linked
+         * or does not exist
+         * @throws ShaderLocationUniformException when the given
+         * uniform does not exist
          */
-        explicit ShaderProgram(
-            VertexShader const& vertex,
-            FragmentShader const& fragment) noexcept;
+        explicit ShaderLocation(
+            ShaderProgram const& program,
+            std::string const& uniform);
 
         /**
-         * Attaches the shader of the given type to the shader program
+         * Construct a new Shader Location object
          *
-         * @tparam Type the type of the shader
-         * @param shader the constant reference to the shader object
+         * @param program the constant reference to the shader program
+         * @param uniform the location name
+         * @throws ShaderLocationInvalidProgramException
+         * when the given shader program is not linked
+         * or does not exist
+         * @throws ShaderLocationUniformException when the given
+         * uniform does not exist
          */
-        template <bool Type>
-        void attachShader(Shader<Type> const& shader) const noexcept;
-
-        /**
-         * Links the shader program
-         *
-         * @throw ShaderProgramLinkingException when the linking
-         * cannot be completed
-         * @param programName the constant reference to the string
-         * with the shader program name [for the debugging purposes]
-         */
-        void link(std::string const& programName = {}) const;
-
-        /**
-         * Returns whether the shader program exist and is linked
-         *
-         * @return if the shader program exist and is linked
-         */
-        [[nodiscard]] bool isReady(void) const noexcept
-            { return *shaderProgramID != 0 && isLinked(); }
-
-        /**
-         * Returns whether the shader program exist and is linked
-         *
-         * @return if the shader program exist and is linked
-         */
-        [[nodiscard]] operator bool() const noexcept
-            { return isReady(); }
-
-        /**
-         * Uses the shader program
-         */
-        inline void use(void) const noexcept;
+        explicit ShaderLocation(
+            ShaderProgram&& program,
+            std::string const& uniform);
 
         /**
          * Sets the integer uniform
@@ -112,7 +77,7 @@ namespace mpgl {
         template <AllIntegrals... Ints>
             requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0
                 && !AllUnsignedIntegrals<Ints...>)
-        inline void setUniform(
+        inline void operator()(
             std::string const& uniform,
             Ints... values) const noexcept;
 
@@ -125,7 +90,7 @@ namespace mpgl {
          */
         template <AllUnsignedIntegrals... UInts>
             requires (sizeof...(UInts) <= 4 && sizeof...(UInts) != 0)
-        inline void setUniform(
+        inline void operator()(
             std::string const& uniform,
             UInts... values) const noexcept;
 
@@ -138,7 +103,7 @@ namespace mpgl {
          */
         template <AllFloatingPoints... Floats>
             requires (sizeof...(Floats) <= 4 && sizeof...(Floats) != 0)
-        inline void setUniform(
+        inline void operator()(
             std::string const& uniform,
             Floats... values) const noexcept;
 
@@ -148,7 +113,7 @@ namespace mpgl {
          * @param uniform the uniform's name
          * @param color the uniform's color
          */
-        inline void setUniform(
+        inline void operator()(
             std::string const& uniform,
             Color const& color) const noexcept;
 
@@ -162,7 +127,7 @@ namespace mpgl {
          */
         template <Arithmetic Tp, std::size_t Size>
             requires (Size <= 4 && Size > 1)
-        inline void setUniform(
+        inline void operator()(
             std::string const& uniform,
             Vector<Tp, Size> const& vector) const noexcept;
 
@@ -176,63 +141,36 @@ namespace mpgl {
          */
         template <std::size_t Size>
             requires (Size <= 4 && Size > 1)
-        inline void setUniform(
+        inline void operator()(
             std::string const& uniform,
             Matrix<float32, Size, Size> const& matrix) const noexcept;
 
-        friend class ShaderLocation;
+        /**
+         * Returns the constant reference to the shader program
+         *
+         * @return the constant reference to the shader program
+         */
+        [[nodiscard]] ShaderProgram const&
+            getProgram(void) const noexcept
+                { return program; }
     private:
-        /**
-         * Program called upon shader program id destruction
-         */
-        class ProgramDeleter {
-        public:
-            /**
-             * Constructs a new Program Deleter object
-             */
-            explicit ProgramDeleter(void) noexcept = default;
-
-            /**
-             * Called upon the destruction of the shader program id
-             * pointer. Deletes the OpenGL shader program and deletes
-             * pointer
-             *
-             * @param ptr the pointer with shader program id
-             */
-            void operator()(uint32* ptr) const noexcept;
-        };
+        ShaderProgram                               program;
+        uint32                                      location;
 
         /**
-         * Returns the location of the uniform
+         * Sets the value of the location
          *
-         * @param uniform the uniform name
-         * @return the location of the uniform
+         * @param uniform the location name
+         * @throws ShaderLocationInvalidProgramException
+         * when the given shader program is not linked
+         * or does not exist
+         * @throws ShaderLocationUniformException when the given
+         * uniform does not exist
          */
-        inline uint32 location(
-            std::string const& uniform) const noexcept;
-
-        /**
-         * Verifies the shader program linking status
-         *
-         * @throw ShaderProgramLinkingException when linking
-         * failed
-         * @param filePath the path to the shader file
-         */
-        void verifyLinkingStatus(std::string const& filePath) const;
-
-        /**
-         * Checks whether the shader program is linked
-         *
-         * @return if the shader program is linked
-         */
-        bool isLinked(void) const noexcept;
-
-        std::shared_ptr<uint32>             shaderProgramID;
-
-        static uint32                       lastProgramID;
+        void setLocation(std::string const& uniform);
     };
 
 }
 
-#include <MPGL/Core/Shaders/ShaderProgram.tpp>
-#include <MPGL/Core/Shaders/ShaderProgram.ipp>
+#include <MPGL/Core/Shaders/ShaderLocation.ipp>
+#include <MPGL/Core/Shaders/ShaderLocation.tpp>

@@ -45,7 +45,7 @@ namespace mpgl {
          *
          * @param name the uniform's name
          */
-        constexpr explicit ShaderLocationUniformException(
+        explicit ShaderLocationUniformException(
             std::string const& name) noexcept
                 : message{"The unifrom with name {"
                     + name + "} does not exist!"} {}
@@ -56,7 +56,7 @@ namespace mpgl {
          *
          * @return the exception description
          */
-        [[nodiscard]] constexpr const char* what(
+        [[nodiscard]] const char* what(
             void) const noexcept final
                 { return message.c_str(); }
 
@@ -64,7 +64,7 @@ namespace mpgl {
          * Destroys the Shader Location Uniform
          * Exception object
          */
-        constexpr ~ShaderLocationUniformException(
+        ~ShaderLocationUniformException(
             void) noexcept = default;
     private:
         std::string                                 message;

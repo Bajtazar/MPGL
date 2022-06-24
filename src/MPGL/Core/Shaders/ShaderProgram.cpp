@@ -53,12 +53,16 @@ namespace mpgl {
         delete ptr;
     }
 
+    bool ShaderProgram::isLinked(void) const noexcept {
+        int32 status = 0;
+        glGetProgramiv(*shaderProgramID, GL_LINK_STATUS, &status);
+        return status != 0;
+    }
+
     void ShaderProgram::verifyLinkingStatus(
         std::string const& programName) const
     {
-        int32 status = 0;
-        glGetProgramiv(*shaderProgramID, GL_LINK_STATUS, &status);
-        if (!status) {
+        if (!isLinked()) {
             std::string info;
             info.resize(512);
             glGetProgramInfoLog(*shaderProgramID, 512, nullptr,

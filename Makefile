@@ -3,7 +3,7 @@ CXX_FLAGS	:= -std=c++20 -O3 -ggdb3 -lGL -lglfw -ldl -pthread
 
 BIN	:= bin
 SRC	:= $(shell find src/ -name "*.cpp")
-T_SRC	:= $(shell find . -name "*.cpp" | awk '{ if (/main/ && !seen) { seen = 1 } else print }')
+T_SRC	:= $(shell find src/ -name "*.cpp") $(shell find tests/ -name "*.cpp")
 INCLUDE	:= ./include
 SNK_SRC := $(shell find examples/Snake/ -name "*.cpp")
 SNK_INC := ./examples/Snake/include
