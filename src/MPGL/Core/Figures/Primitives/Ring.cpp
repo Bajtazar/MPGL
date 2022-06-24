@@ -149,10 +149,32 @@ namespace mpgl {
         = [](ShaderProgram const& program)
     {
         program.use();
-        program.setUniform("aafactor", (float32)
-            context.windowOptions.antiAliasingSamples / 4.f);
+        ShaderLocation aaLocation{program, "aafactor"};
+        aaLocation(float32(context.windowOptions.antiAliasingSamples)
+            / 4.f);
     };
 
+    Ring::Locations::Locations(void)
+        : color{new ShaderLocation}, outerShift{new ShaderLocation},
+        innerShift{new ShaderLocation},
+        outerTransform{new ShaderLocation},
+        innerTransform{new ShaderLocation} {}
+
+    void Ring::setLocations(void) {
+        Shadeable::setLocations("MPGL/2D/Ring",
+            [locations=locations](ShaderProgram const& program)
+        {
+            *locations.color = ShaderLocation{program, "color"};
+            *locations.outerShift
+                = ShaderLocation{program, "outerShift"};
+            *locations.innerShift
+                = ShaderLocation{program, "innerShift"};
+            *locations.outerTransform
+                = ShaderLocation{program, "outerTransform"};
+            *locations.innerTransform
+                = ShaderLocation{program, "innerTransform"};
+        });
+    }
 
     Ring::Ring(
         Vector2f const& center,
@@ -165,6 +187,7 @@ namespace mpgl {
             innerEllipse{innerEllipse}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     Ring::Ring(
@@ -177,6 +200,7 @@ namespace mpgl {
             innerEllipse{innerEllipse}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     Ring::Ring(
@@ -270,13 +294,13 @@ namespace mpgl {
     }
 
     void Ring::setUniforms(void) const noexcept {
-        shaderProgram->setUniform("color", color);
-        shaderProgram->setUniform("outerShift",
+        (*locations.color)(color);
+        (*locations.outerShift)(
             Vector2f{get<"position">(vertices.front())});
-        shaderProgram->setUniform("innerShift",
+        (*locations.innerShift)(
             Vector2f{innerEllipse.vertices.front()});
-        shaderProgram->setUniform("outerTransform", outline);
-        shaderProgram->setUniform("innerTransform", innerEllipse.outline);
+        (*locations.outerTransform)(outline);
+        (*locations.innerTransform)(innerEllipse.outline);
     }
 
     void Ring::draw(void) const noexcept {
