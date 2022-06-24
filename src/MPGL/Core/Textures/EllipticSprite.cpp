@@ -24,7 +24,7 @@
  *  distribution
  */
 #include <MPGL/Core/Textures/EllipticSprite.hpp>
-
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
 namespace mpgl {
@@ -69,9 +69,10 @@ namespace mpgl {
             = [](ShaderProgram const& program)
     {
         program.use();
-        program.setUniform("tex", 0);
-        program.setUniform("aafactor", (float32)
-            GraphicalObject::context.windowOptions.antiAliasingSamples / 4.f);
+        ShaderLibrary{program, "tex"}(0);
+        ShaderLibrary{program, "aafactor", float32(
+            GraphicalObject::context.windowOptions.antiAliasingSamples)
+            / 4.f};
     };
 
     template <bool IsColorable>
