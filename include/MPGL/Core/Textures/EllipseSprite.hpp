@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Textures/EllipticSprite.hpp>
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 
 namespace mpgl {
 
@@ -206,7 +207,25 @@ namespace mpgl {
          */
         ~EllipseSprite(void) noexcept = default;
     private:
+        /**
+         * Collection of all shader location's pointers
+         */
+        struct Locations {
+            typedef std::shared_ptr<ShaderLocation>     LocationPtr;
+
+            LocationPtr                                 shift;
+            LocationPtr                                 transform;
+
+            /**
+             * Constructs a new Locations object
+             */
+            explicit Locations(void);
+        };
+
+        Locations                                       locations;
         Matrix2f                                        outline;
+
+        void setLocations(void);
 
         /**
          * Actualizes the matrices responsible for the outline

@@ -39,6 +39,20 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    EllipseSprite<IsColorable>::Locations::Locations(void)
+        : shift{new ShaderLocation}, transform{new ShaderLocation} {}
+
+    template <bool IsColorable>
+    void EllipseSprite<IsColorable>::setLocations(void) {
+        Shadeable::setLocations(shaderName(),
+            [locations=locations](ShaderProgram const& program)
+        {
+            *locations.shift = ShaderLocation{program, "shift"};
+            *locations.transform = ShaderLocation{program, "transform"};
+        });
+    }
+
+    template <bool IsColorable>
     EllipseSprite<IsColorable>::EllipseSprite(
         Texture const& texture,
         Vector2f const& center,
@@ -49,6 +63,7 @@ namespace mpgl {
                 texture, shaderName()}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -63,6 +78,7 @@ namespace mpgl {
                 texture, shaderName(), color}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -75,6 +91,7 @@ namespace mpgl {
                 texture, shaderName()}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -88,6 +105,7 @@ namespace mpgl {
                 texture, shaderName(), color}
     {
         actualizeMatrices();
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -169,9 +187,9 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
-        this->shaderProgram->setUniform("convolution", convolution);
-        this->shaderProgram->setUniform(
-            "screen", this->texture.getTextureDimensions());
+        ShaderLocation{*this->shaderProgram, "convolution"}(convolution);
+        ShaderLocation{*this->shaderProgram, "screen"}(
+            this->texture.getTextureDimensions());
     }
 
     template <bool IsColorable>
@@ -184,9 +202,9 @@ namespace mpgl {
         auto const& textureBuffer = this->texture.getTextureBuffer();
         this->actualizeBufferBeforeDraw();
         this->shaderProgram->use();
-        this->shaderProgram->setUniform("shift",
+        (*locations.shift)(
             Vector2f{get<"position">(this->vertices.front())});
-        this->shaderProgram->setUniform("transform", outline);
+        (*locations.transform)(outline);
         textureBuffer.activate();
         BindGuard textureGuard{textureBuffer};
         BindGuard vaoGuard{this->vertexArray};
