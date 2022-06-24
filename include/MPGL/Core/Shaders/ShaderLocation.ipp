@@ -28,10 +28,9 @@
 namespace mpgl {
 
     inline void ShaderLocation::operator() (
-        std::string const& uniform,
         Color const& color) const noexcept
     {
-        (*this)(uniform, static_cast<Vector4f const&>(color));
+        (*this)(static_cast<Vector4f const&>(color));
     }
 
 }

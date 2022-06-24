@@ -31,7 +31,6 @@ namespace mpgl {
         requires (sizeof...(Ints) <= 4 && sizeof...(Ints) != 0
             && !AllUnsignedIntegrals<Ints...>)
     inline void ShaderLocation::operator() (
-        std::string const& uniform,
         Ints... values) const noexcept
     {
         if constexpr (sizeof...(Ints) == 1)
@@ -47,7 +46,6 @@ namespace mpgl {
     template <AllUnsignedIntegrals... UInts>
         requires (sizeof...(UInts) <= 4 && sizeof...(UInts) != 0)
     inline void ShaderLocation::operator() (
-        std::string const& uniform,
         UInts... values) const noexcept
     {
         if constexpr (sizeof...(UInts) == 1)
@@ -63,7 +61,6 @@ namespace mpgl {
     template <AllFloatingPoints... Floats>
         requires (sizeof...(Floats) <= 4 && sizeof...(Floats) != 0)
     inline void ShaderLocation::operator() (
-        std::string const& uniform,
         Floats... values) const noexcept
     {
         if constexpr (sizeof...(Floats) == 1)
@@ -79,11 +76,10 @@ namespace mpgl {
     template <Arithmetic Tp, std::size_t Size>
         requires (Size <= 4 && Size > 1)
     inline void ShaderLocation::operator() (
-        std::string const& uniform,
         Vector<Tp, Size> const& vector) const noexcept
     {
         [&]<std::size_t... Index>(std::index_sequence<Index...>) {
-            (*this)(uniform, std::get<Size - Index - 1>(
+            (*this)(std::get<Size - Index - 1>(
                 static_cast<UniformTuple<Tp, Size> const&>(vector))...);
         }(std::make_index_sequence<Size>{});
     }
@@ -91,7 +87,6 @@ namespace mpgl {
     template <std::size_t Size>
         requires (Size <= 4 && Size > 1)
     inline void ShaderLocation::operator() (
-        std::string const& uniform,
         Matrix<float32, Size, Size> const& matrix) const noexcept
     {
         float32 const* const memory = reinterpret_cast<
