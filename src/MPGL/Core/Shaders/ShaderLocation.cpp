@@ -30,6 +30,9 @@
 
 namespace mpgl {
 
+    ShaderLocation::ShaderLocation(void) noexcept
+        : location{0xFFFFFFFF} {}
+
     ShaderLocation::ShaderLocation(
         ShaderProgram const& program,
         std::string const& uniform)

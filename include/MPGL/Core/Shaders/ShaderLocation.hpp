@@ -38,6 +38,11 @@ namespace mpgl {
     class ShaderLocation {
     public:
         /**
+         * Constructs a new Shader Location object
+         */
+        explicit ShaderLocation(void) noexcept;
+
+        /**
          * Construct a new Shader Location object
          *
          * @param program the constant reference to the shader program
@@ -137,6 +142,22 @@ namespace mpgl {
         [[nodiscard]] ShaderProgram const&
             getProgram(void) const noexcept
                 { return program; }
+
+        /**
+         * Returns whether the given shader location is valid
+         *
+         * @return if the given shader location is valid
+         */
+        [[nodiscard]] bool isValid(void) const noexcept
+            { return location == 0xFFFFFFFF; }
+
+        /**
+         * Returns whether the given shader location is valid
+         *
+         * @return if the given shader location is valid
+         */
+        [[nodiscard]] operator bool() const noexcept
+            { return isValid(); }
     private:
         ShaderProgram                               program;
         uint32                                      location;
