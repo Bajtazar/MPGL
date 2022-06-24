@@ -182,6 +182,16 @@ namespace mpgl {
             std::string const& program,
             Executable exec);
 
+        /**
+         * Sets the shader locations executable
+         *
+         * @param program the shader program's name
+         * @param exec the executable with locations
+         */
+        void setLocations(
+            std::string const& program,
+            Executable exec);
+
         ProgramPtr                                  shaderProgram;
     };
 
