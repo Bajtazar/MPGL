@@ -42,13 +42,13 @@ namespace mpgl {
         transform{new ShaderLocation} {}
 
     void Ellipse::setLocations(void) {
-        Shadeable::setLocations("MPGL/2D/Ellipse",
-            [locations=locations](ShaderProgram const& program)
+        Shadeable::setLocations(
+            [program=shaderProgram,locations=locations](void)
         {
-            *locations.color = ShaderLocation{program, "color"};
-            *locations.shift = ShaderLocation{program, "shift"};
+            *locations.color = ShaderLocation{*program, "color"};
+            *locations.shift = ShaderLocation{*program, "shift"};
             *locations.transform
-                = ShaderLocation{program, "transform"};
+                = ShaderLocation{*program, "transform"};
         });
     }
 

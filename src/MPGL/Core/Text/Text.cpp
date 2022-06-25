@@ -81,11 +81,11 @@ namespace mpgl {
     template <bool IsColorable>
     void Text<IsColorable>::setLocations(void) {
         if constexpr (!IsColorable)
-            Shadeable::setLocations(shaderType(),
-                [color=MonochromaticTextBase::colorLoc]
-                (ShaderProgram const& program)
+            Shadeable::setLocations(
+                [program=this->shaderProgram,
+                color=MonochromaticTextBase::colorLoc](void)
             {
-                *color = ShaderLocation{program, "color"};
+                *color = ShaderLocation{*program, "color"};
             });
     }
 

@@ -159,18 +159,18 @@ namespace mpgl {
         innerTransform{new ShaderLocation} {}
 
     void Ring::setLocations(void) {
-        Shadeable::setLocations("MPGL/2D/Ring",
-            [locations=locations](ShaderProgram const& program)
+        Shadeable::setLocations(
+            [program=shaderProgram,locations=locations](void)
         {
-            *locations.color = ShaderLocation{program, "color"};
+            *locations.color = ShaderLocation{*program, "color"};
             *locations.outerShift
-                = ShaderLocation{program, "outerShift"};
+                = ShaderLocation{*program, "outerShift"};
             *locations.innerShift
-                = ShaderLocation{program, "innerShift"};
+                = ShaderLocation{*program, "innerShift"};
             *locations.outerTransform
-                = ShaderLocation{program, "outerTransform"};
+                = ShaderLocation{*program, "outerTransform"};
             *locations.innerTransform
-                = ShaderLocation{program, "innerTransform"};
+                = ShaderLocation{*program, "innerTransform"};
         });
     }
 
