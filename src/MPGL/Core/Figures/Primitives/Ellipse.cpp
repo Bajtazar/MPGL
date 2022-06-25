@@ -163,8 +163,7 @@ namespace mpgl {
     }
 
     void Ellipse::setShader(std::string const& name) {
-        Shadeable::setShader(name);
-        context.shaders.executeOrQueue(name, shaderExec);
+        Shadeable::setShader(name, shaderExec);
     }
 
     [[nodiscard]] bool Ellipse::contains(

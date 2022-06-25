@@ -323,8 +323,7 @@ namespace mpgl {
     }
 
     void Ring::setShader(std::string const& name) {
-        Shadeable::setShader(name);
-        context.shaders.executeOrQueue(name, shaderExec);
+        Shadeable::setShader(name, shaderExec);
         setLocations();
     }
 

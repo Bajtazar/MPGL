@@ -46,7 +46,6 @@ namespace mpgl {
     template <bool IsColorable>
     const Text<IsColorable>::Executable Text<IsColorable>::shaderExec =
         [](ShaderProgram const& program) -> void {
-            program.use();
             ShaderLocation{program, "tex"}(0);
         };
 
@@ -80,6 +79,17 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    void Text<IsColorable>::setLocations(void) {
+        if constexpr (!IsColorable)
+            Shadeable::setLocations(shaderType(),
+                [color=MonochromaticTextBase::colorLoc]
+                (ShaderProgram const& program)
+            {
+                *color = ShaderLocation{program, "color"};
+            });
+    }
+
+    template <bool IsColorable>
     Text<IsColorable>::Text(
         Font const& font,
         Vector2f const& position,
@@ -96,13 +106,7 @@ namespace mpgl {
             mods{options.mods}
     {
         loadGlyphs(parseString(text));
-        if constexpr (!IsColorable)
-            Shadeable::setLocations(shaderType(),
-                [color=MonochromaticTextBase::colorLoc]
-                (ShaderProgram const& program)
-            {
-                *color = ShaderLocation{program, "color"};
-            });
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -307,6 +311,7 @@ namespace mpgl {
     {
         Shadeable::setShader(program);
         shaderExec(*shaderProgram);
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -315,6 +320,13 @@ namespace mpgl {
     {
         Shadeable::setShader(std::move(program));
         shaderExec(*shaderProgram);
+        setLocations();
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::setShader(String const& name) {
+        Shadeable::setShader(name, shaderExec);
+        setLocations();
     }
 
     template <bool IsColorable>

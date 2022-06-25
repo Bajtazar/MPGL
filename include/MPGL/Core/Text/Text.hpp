@@ -917,8 +917,7 @@ namespace mpgl {
          *
          * @param name the name of the shader program
          */
-        void setShader(String const& name) final override
-            { Shadeable::setShader(name, shaderExec); }
+        void setShader(String const& name) final override;
 
         /**
          * Returns the size of the text [number of the nonwhite
@@ -1252,6 +1251,12 @@ namespace mpgl {
          * Reloads glyphs displayed by the text
          */
         void reloadGlyphs(void);
+
+        /**
+         * Sets the shader locations
+         */
+        void setLocations(void);
+
 
         /**
          * Parses unicode string into IDs array
