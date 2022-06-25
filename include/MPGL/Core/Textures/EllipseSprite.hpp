@@ -167,6 +167,32 @@ namespace mpgl {
             Matrix2f const& rotation) noexcept override final;
 
         /**
+         * Sets the given shader program
+         *
+         * @param program the constant reference to the
+         * shader program object
+         */
+        void setShader(
+            ShaderProgram const& program) noexcept override final;
+
+        /**
+         * Sets the given shader program
+         *
+         * @param program the rvalue reference to the
+         * shader program object
+         */
+        void setShader(
+            ShaderProgram&& program) noexcept override final;
+
+        /**
+         * Sets the given shader program from an internal
+         * library
+         *
+         * @param name the name of the shader program
+         */
+        void setShader(std::string const& name) override final;
+
+        /**
          * Returns the position of the center of the ellipse
          *
          * @return the position of the center of the ellipse
@@ -227,10 +253,8 @@ namespace mpgl {
 
         /**
          * Sets the shader locations
-         *
-         * @param shaderName shader's name
          */
-        void setLocations(std::string const& shaderName);
+        void setLocations(void);
 
         /**
          * Actualizes the matrices responsible for the outline

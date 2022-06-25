@@ -43,14 +43,12 @@ namespace mpgl {
         : shift{new ShaderLocation}, transform{new ShaderLocation} {}
 
     template <bool IsColorable>
-    void EllipseSprite<IsColorable>::setLocations(
-        std::string const& shaderName)
-    {
-        Shadeable::setLocations(shaderName,
-            [locations=locations](ShaderProgram const& program)
+    void EllipseSprite<IsColorable>::setLocations(void) {
+        Shadeable::setLocations(
+            [program=this->shaderProgram,locations=locations]()
         {
-            *locations.shift = ShaderLocation{program, "shift"};
-            *locations.transform = ShaderLocation{program, "transform"};
+            *locations.shift = ShaderLocation{*program, "shift"};
+            *locations.transform = ShaderLocation{*program, "transform"};
         });
     }
 
@@ -65,7 +63,7 @@ namespace mpgl {
                 texture, shaderName()}
     {
         actualizeMatrices();
-        setLocations(shaderName());
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -80,7 +78,7 @@ namespace mpgl {
                 texture, shaderName(), color}
     {
         actualizeMatrices();
-        setLocations(shaderName());
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -93,7 +91,7 @@ namespace mpgl {
                 texture, shaderName()}
     {
         actualizeMatrices();
-        setLocations(shaderName());
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -107,7 +105,7 @@ namespace mpgl {
                 texture, shaderName(), color}
     {
         actualizeMatrices();
-        setLocations(shaderName());
+        setLocations();
     }
 
     template <bool IsColorable>
@@ -184,23 +182,48 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    void EllipseSprite<IsColorable>::setShader(
+        ShaderProgram const& program) noexcept
+    {
+        EllipticSprite<IsColorable>::setShader(program);
+        setLocations();
+    }
+
+    template <bool IsColorable>
+    void EllipseSprite<IsColorable>::setShader(
+        ShaderProgram&& program) noexcept
+    {
+        EllipticSprite<IsColorable>::setShader(std::move(program));
+        setLocations();
+    }
+
+    template <bool IsColorable>
+    void EllipseSprite<IsColorable>::setShader(
+        std::string const& name)
+    {
+        EllipticSprite<IsColorable>::setShader(name);
+        setLocations();
+    }
+
+    template <bool IsColorable>
     void EllipseSprite<IsColorable>::setConvolution(
         Matrix3f const& convolution)
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
-        setLocations(IsColorable ?
-            "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
-        ShaderLocation{*this->shaderProgram, "tex"}(0);
-        ShaderLocation{*this->shaderProgram, "convolution"}(convolution);
-        ShaderLocation{*this->shaderProgram, "screen"}(
-            this->texture.getTextureDimensions());
+        Shadeable::setLocations(
+            [program=this->shaderProgram,
+            convolution=convolution,
+            dimensions=this->texture.getTextureDimensions()](void)
+        {
+            ShaderLocation{*program, "convolution"}(convolution);
+            ShaderLocation{*program, "screen"}(dimensions);
+        });
     }
 
     template <bool IsColorable>
     void EllipseSprite<IsColorable>::resetConvolution(void) {
         this->setShader(shaderName());
-        setLocations(shaderName());
     }
 
     template <bool IsColorable>
