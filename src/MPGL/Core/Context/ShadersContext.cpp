@@ -47,7 +47,8 @@ namespace mpgl {
         try {
             auto&& [shader, name] = std::move(pairQueue.front());
             pairQueue.pop();
-            *shader = library[name];
+            if (auto program = shader.lock())
+                *program = library[name];
         } catch (...) {
             exception = std::current_exception();
         }
@@ -60,8 +61,8 @@ namespace mpgl {
         try {
             auto&& [shader, name, exec] = std::move(tupleQueue.front());
             tupleQueue.pop();
-            *shader = library[name];
-            exec(*shader);
+            if (auto program = shader.lock())
+                exec(*program = library[name]);
         } catch (...) {
             exception = std::current_exception();
         }
@@ -84,7 +85,7 @@ namespace mpgl {
     {
         if (isHolding())
             return {std::get<ShaderLibrary>(shaders)};
-        return {};
+        return std::nullopt;
     }
 
     void ShadersContext::setOrQueue(
@@ -94,7 +95,7 @@ namespace mpgl {
         if (isHolding())
             *pointer = std::get<ShaderLibrary>(shaders)[name];
         else
-            pairQueue.emplace(std::move(pointer), name);
+            pairQueue.emplace(pointer, name);
     }
 
     void ShadersContext::setOrQueue(
@@ -102,18 +103,16 @@ namespace mpgl {
         std::string const& name,
         Executable exec)
     {
-        if (isHolding()) {
-            *pointer = std::get<ShaderLibrary>(shaders)[name];
-            exec(*pointer);
-        } else
-            tupleQueue.emplace(std::move(pointer), name,
-                std::move(exec));
+        if (isHolding())
+            exec(*pointer = std::get<ShaderLibrary>(shaders)[name]);
+        else
+            tupleQueue.emplace(pointer, name, std::move(exec));
     }
 
     void ShadersContext::executeOrQueue(IndependentExecutable exec) {
-        if (isHolding()) {
+        if (isHolding())
             exec();
-        } else
+        else
             executables.emplace(std::move(exec));
     }
 

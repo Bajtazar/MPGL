@@ -125,9 +125,10 @@ namespace mpgl {
         [[nodiscard]] bool isHolding(void) const noexcept
             { return std::holds_alternative<ShaderLibrary>(shaders); }
     private:
-        typedef std::tuple<ProgramPtr,
+        typedef std::weak_ptr<ShaderProgram>    WeakProgram;
+        typedef std::tuple<WeakProgram,
             std::string, Executable>            ShaderTuple;
-        typedef std::pair<ProgramPtr,
+        typedef std::pair<WeakProgram,
             std::string>                        ShaderPair;
         typedef std::queue<ShaderTuple>         TupleQueue;
         typedef std::queue<ShaderPair>          PairQueue;
