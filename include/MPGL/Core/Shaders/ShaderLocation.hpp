@@ -58,21 +58,6 @@ namespace mpgl {
             std::string const& uniform);
 
         /**
-         * Construct a new Shader Location object
-         *
-         * @param program the constant reference to the shader program
-         * @param uniform the location name
-         * @throws ShaderLocationInvalidProgramException
-         * when the given shader program is not linked
-         * or does not exist
-         * @throws ShaderLocationUniformException when the given
-         * uniform does not exist
-         */
-        explicit ShaderLocation(
-            ShaderProgram&& program,
-            std::string const& uniform);
-
-        /**
          * Sets the integer uniform
          *
          * @tparam Ints the number of setted integers
@@ -135,15 +120,6 @@ namespace mpgl {
             Matrix<float32, Size, Size> const& matrix) const noexcept;
 
         /**
-         * Returns the constant reference to the shader program
-         *
-         * @return the constant reference to the shader program
-         */
-        [[nodiscard]] ShaderProgram const&
-            getProgram(void) const noexcept
-                { return program; }
-
-        /**
          * Returns whether the given shader location is valid
          *
          * @return if the given shader location is valid
@@ -159,12 +135,13 @@ namespace mpgl {
         [[nodiscard]] operator bool() const noexcept
             { return isValid(); }
     private:
-        ShaderProgram                               program;
         uint32                                      location;
 
         /**
          * Sets the value of the location
          *
+         * @param program the constant reference to the shader
+         * program
          * @param uniform the location name
          * @throws ShaderLocationInvalidProgramException
          * when the given shader program is not linked
@@ -172,7 +149,9 @@ namespace mpgl {
          * @throws ShaderLocationUniformException when the given
          * uniform does not exist
          */
-        void setLocation(std::string const& uniform);
+        void setLocation(
+            ShaderProgram const& program,
+            std::string const& uniform);
     };
 
 }

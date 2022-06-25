@@ -36,20 +36,15 @@ namespace mpgl {
     ShaderLocation::ShaderLocation(
         ShaderProgram const& program,
         std::string const& uniform)
-            : program{program}, location{0xFFFFFFFF}
+            : location{0xFFFFFFFF}
     {
-        setLocation(uniform);
+        setLocation(program, uniform);
     }
 
-    ShaderLocation::ShaderLocation(
-        ShaderProgram&& program,
+    void ShaderLocation::setLocation(
+        ShaderProgram const& program,
         std::string const& uniform)
-            : program{std::move(program)}, location{0xFFFFFFFF}
     {
-        setLocation(uniform);
-    }
-
-    void ShaderLocation::setLocation(std::string const& uniform) {
         if (!program)
             throw ShaderLocationInvalidProgramException{};
         program.use();
