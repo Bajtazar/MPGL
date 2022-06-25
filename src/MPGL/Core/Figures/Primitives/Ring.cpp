@@ -25,6 +25,7 @@
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Figures/Primitives/Ring.hpp>
+#include <MPGL/Utility/DelegationWrapper.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 
@@ -152,26 +153,20 @@ namespace mpgl {
             float32(context.windowOptions.antiAliasingSamples) / 4.f);
     };
 
-    Ring::Locations::Locations(void)
-        : color{new ShaderLocation}, outerShift{new ShaderLocation},
-        innerShift{new ShaderLocation},
-        outerTransform{new ShaderLocation},
-        innerTransform{new ShaderLocation} {}
-
     void Ring::setLocations(void) {
-        Shadeable::setLocations(
-            [program=shaderProgram,locations=locations](void)
+        Shadeable::setLocations(DelegationWrapper{
+            shaderProgram, locations}([](auto program, auto locations)
         {
-            *locations.color = ShaderLocation{*program, "color"};
-            *locations.outerShift
+            locations->color = ShaderLocation{*program, "color"};
+            locations->outerShift
                 = ShaderLocation{*program, "outerShift"};
-            *locations.innerShift
+            locations->innerShift
                 = ShaderLocation{*program, "innerShift"};
-            *locations.outerTransform
+            locations->outerTransform
                 = ShaderLocation{*program, "outerTransform"};
-            *locations.innerTransform
+            locations->innerTransform
                 = ShaderLocation{*program, "innerTransform"};
-        });
+        }));
     }
 
     Ring::Ring(
@@ -182,7 +177,7 @@ namespace mpgl {
         float32 angle)
             : Elliptic{ellipseVertices(center, semiAxis, angle),
                 "MPGL/2D/Ring", shaderExec, color},
-            innerEllipse{innerEllipse}
+            locations{new Locations}, innerEllipse{innerEllipse}
     {
         actualizeMatrices();
         setLocations();
@@ -195,7 +190,7 @@ namespace mpgl {
         Color const& color)
             : Elliptic{circleVertices(center, radius),
                 "MPGL/2D/Ring", shaderExec, color},
-            innerEllipse{innerEllipse}
+            locations{new Locations}, innerEllipse{innerEllipse}
     {
         actualizeMatrices();
         setLocations();
@@ -292,13 +287,13 @@ namespace mpgl {
     }
 
     void Ring::setUniforms(void) const noexcept {
-        (*locations.color)(color);
-        (*locations.outerShift)(
+        locations->color(color);
+        locations->outerShift(
             Vector2f{get<"position">(vertices.front())});
-        (*locations.innerShift)(
+        locations->innerShift(
             Vector2f{innerEllipse.vertices.front()});
-        (*locations.outerTransform)(outline);
-        (*locations.innerTransform)(innerEllipse.outline);
+        locations->outerTransform(outline);
+        locations->innerTransform(innerEllipse.outline);
     }
 
     void Ring::draw(void) const noexcept {

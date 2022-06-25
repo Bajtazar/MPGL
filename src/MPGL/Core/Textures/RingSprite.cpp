@@ -25,6 +25,7 @@
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 
+#include <MPGL/Utility/DelegationWrapper.hpp>
 #include <MPGL/Core/Textures/RingSprite.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
@@ -176,26 +177,20 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    RingSprite<IsColorable>::Locations::Locations(void)
-        : outerShift{new ShaderLocation},
-        innerShift{new ShaderLocation},
-        outerTransform{new ShaderLocation},
-        innerTransform{new ShaderLocation} {}
-
-    template <bool IsColorable>
     void RingSprite<IsColorable>::setLocations(void) {
-        Shadeable::setLocations(
-            [program=this->shaderProgram,locations=locations](void)
-        {
-            *locations.outerShift
-                = ShaderLocation{*program, "outerShift"};
-            *locations.innerShift
-                = ShaderLocation{*program, "innerShift"};
-            *locations.outerTransform
-                = ShaderLocation{*program, "outerTransform"};
-            *locations.innerTransform
-                = ShaderLocation{*program, "innerTransform"};
-        });
+        Shadeable::setLocations(DelegationWrapper{this->shaderProgram,
+            locations}([](auto program, auto locations)
+            {
+                locations->outerShift
+                    = ShaderLocation{*program, "outerShift"};
+                locations->innerShift
+                    = ShaderLocation{*program, "innerShift"};
+                locations->outerTransform
+                    = ShaderLocation{*program, "outerTransform"};
+                locations->innerTransform
+                    = ShaderLocation{*program, "innerTransform"};
+            }
+        ));
     }
 
     template <bool IsColorable>
@@ -207,7 +202,8 @@ namespace mpgl {
         float32 angle)
             : EllipticSprite<IsColorable>{
                 this->ellipsePositions(center, semiAxis, angle),
-                texture, shaderName()}, innerEllipse{innerEllipse}
+                texture, shaderName()}, locations{new Locations},
+                innerEllipse{innerEllipse}
     {
         actualizeMatrices();
         setLocations();
@@ -223,7 +219,7 @@ namespace mpgl {
         float32 angle) requires (IsColorable)
             : EllipticSprite<IsColorable>{
                 this->ellipsePositions(center, semiAxis, angle),
-                texture, shaderName(), color},
+                texture, shaderName(), color}, locations{new Locations},
                     innerEllipse{innerEllipse}
     {
         actualizeMatrices();
@@ -238,7 +234,7 @@ namespace mpgl {
         InnerEllipse const& innerEllipse)
             : EllipticSprite<IsColorable>{
                 this->circlePositions(center, radius),
-                texture, shaderName()},
+                texture, shaderName()}, locations{new Locations},
                     innerEllipse{innerEllipse}
     {
         actualizeMatrices();
@@ -254,7 +250,7 @@ namespace mpgl {
         Color const& color) requires (IsColorable)
             : EllipticSprite<IsColorable>{
                 this->circlePositions(center, radius),
-                texture, shaderName(), color},
+                texture, shaderName(), color}, locations{new Locations},
                     innerEllipse{innerEllipse}
     {
         actualizeMatrices();
@@ -410,14 +406,12 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTRingConv" : "MPGL/2D/TRingConv");
-        Shadeable::setLocations(
-            [program=this->shaderProgram,
-            convolution=convolution,
-            dimensions=this->texture.getTextureDimensions()](void)
-        {
-            ShaderLocation{*program, "convolution"}(convolution);
-            ShaderLocation{*program, "screen"}(dimensions);
-        });
+        Shadeable::setLocations(DelegationWrapper{this->shaderProgram}(
+            [](auto program, auto convolution, auto dimensions) {
+                ShaderLocation{*program, "convolution"}(convolution);
+                ShaderLocation{*program, "screen"}(dimensions);
+            }, convolution, this->texture.getTextureDimensions()
+        ));
     }
 
     template <bool IsColorable>
@@ -427,12 +421,12 @@ namespace mpgl {
 
     template <bool IsColorable>
     void RingSprite<IsColorable>::setUniforms(void) const noexcept {
-        (*locations.outerShift)(
+        locations->outerShift(
             Vector2f{get<"position">(this->vertices.front())});
-        (*locations.innerShift)(
+        locations->innerShift(
             Vector2f{innerEllipse.vertices.front()});
-        (*locations.outerTransform)(outline);
-        (*locations.innerTransform)(innerEllipse.outline);
+        locations->outerTransform(outline);
+        locations->innerTransform(innerEllipse.outline);
     }
 
     template <bool IsColorable>

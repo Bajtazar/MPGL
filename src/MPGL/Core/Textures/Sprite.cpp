@@ -25,6 +25,7 @@
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
+#include <MPGL/Utility/DelegationWrapper.hpp>
 #include <MPGL/Core/Textures/Sprite.hpp>
 
 namespace mpgl {
@@ -138,14 +139,12 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTextureConv" : "MPGL/2D/TextureConv");
-        Shadeable::setLocations(
-            [program=this->shaderProgram,
-            convolution=convolution,
-            dimensions=this->texture.getTextureDimensions()](void)
-        {
-            ShaderLocation{*program, "convolution"}(convolution);
-            ShaderLocation{*program, "screen"}(dimensions);
-        });
+        Shadeable::setLocations(DelegationWrapper{this->shaderProgram}(
+            [](auto program, auto convolution, auto dimensions) {
+                ShaderLocation{*program, "convolution"}(convolution);
+                ShaderLocation{*program, "screen"}(dimensions);
+            }, convolution, this->texture.getTextureDimensions()
+        ));
     }
 
     template <bool IsColorable>

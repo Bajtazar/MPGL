@@ -26,6 +26,7 @@
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 
 #include <MPGL/Core/Textures/EllipseSprite.hpp>
+#include <MPGL/Utility/DelegationWrapper.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
 namespace mpgl {
@@ -39,17 +40,16 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    EllipseSprite<IsColorable>::Locations::Locations(void)
-        : shift{new ShaderLocation}, transform{new ShaderLocation} {}
-
-    template <bool IsColorable>
     void EllipseSprite<IsColorable>::setLocations(void) {
-        Shadeable::setLocations(
-            [program=this->shaderProgram,locations=locations]()
-        {
-            *locations.shift = ShaderLocation{*program, "shift"};
-            *locations.transform = ShaderLocation{*program, "transform"};
-        });
+        Shadeable::setLocations(DelegationWrapper{
+            this->shaderProgram, locations}(
+                [](auto program, auto locations)
+            {
+                locations->shift = ShaderLocation{*program, "shift"};
+                locations->transform
+                    = ShaderLocation{*program, "transform"};
+            }
+        ));
     }
 
     template <bool IsColorable>
@@ -60,7 +60,7 @@ namespace mpgl {
         float angle)
             : EllipticSprite<IsColorable>{
                 this->ellipsePositions(center, semiAxis, angle),
-                texture, shaderName()}
+                texture, shaderName()}, locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
@@ -75,7 +75,7 @@ namespace mpgl {
         Color const& color) requires (IsColorable)
             : EllipticSprite<IsColorable>{
                 this->ellipsePositions(center, semiAxis, angle),
-                texture, shaderName(), color}
+                texture, shaderName(), color}, locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
@@ -88,7 +88,7 @@ namespace mpgl {
         float radius)
             : EllipticSprite<IsColorable>{
                 this->circlePositions(center, radius),
-                texture, shaderName()}
+                texture, shaderName()}, locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
@@ -102,7 +102,7 @@ namespace mpgl {
         Color const& color) requires (IsColorable)
             : EllipticSprite<IsColorable>{
                 this->circlePositions(center, radius),
-                texture, shaderName(), color}
+                texture, shaderName(), color}, locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
@@ -211,14 +211,12 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
-        Shadeable::setLocations(
-            [program=this->shaderProgram,
-            convolution=convolution,
-            dimensions=this->texture.getTextureDimensions()](void)
-        {
-            ShaderLocation{*program, "convolution"}(convolution);
-            ShaderLocation{*program, "screen"}(dimensions);
-        });
+        Shadeable::setLocations(DelegationWrapper{this->shaderProgram}(
+            [](auto program, auto convolution, auto dimensions) {
+                ShaderLocation{*program, "convolution"}(convolution);
+                ShaderLocation{*program, "screen"}(dimensions);
+            }, convolution, this->texture.getTextureDimensions()
+        ));
     }
 
     template <bool IsColorable>
@@ -231,9 +229,9 @@ namespace mpgl {
         auto const& textureBuffer = this->texture.getTextureBuffer();
         this->actualizeBufferBeforeDraw();
         this->shaderProgram->use();
-        (*locations.shift)(
+        locations->shift(
             Vector2f{get<"position">(this->vertices.front())});
-        (*locations.transform)(outline);
+        locations->transform(outline);
         textureBuffer.activate();
         BindGuard textureGuard{textureBuffer};
         BindGuard vaoGuard{this->vertexArray};

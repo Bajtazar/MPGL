@@ -385,21 +385,16 @@ namespace mpgl {
          * Collection of all shader location's pointers
          */
         struct Locations {
-            typedef std::shared_ptr<ShaderLocation>     LocationPtr;
-
-            LocationPtr                                 color;
-            LocationPtr                                 outerShift;
-            LocationPtr                                 innerShift;
-            LocationPtr                                 outerTransform;
-            LocationPtr                                 innerTransform;
-
-            /**
-             * Constructs a new Locations object
-             */
-            explicit Locations(void);
+            ShaderLocation                              color;
+            ShaderLocation                              outerShift;
+            ShaderLocation                              innerShift;
+            ShaderLocation                              outerTransform;
+            ShaderLocation                              innerTransform;
         };
 
-        Locations                                       locations;
+        typedef std::shared_ptr<Locations>              LocationPtr;
+
+        LocationPtr                                     locations;
         InnerEllipse                                    innerEllipse;
         Matrix2f                                        outline;
 

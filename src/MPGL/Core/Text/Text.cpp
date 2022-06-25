@@ -25,6 +25,7 @@
  */
 #include <MPGL/Core/Figures/Views.hpp>
 
+#include <MPGL/Utility/DelegationWrapper.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 #include <MPGL/Core/Text/Text.hpp>
 
@@ -81,12 +82,11 @@ namespace mpgl {
     template <bool IsColorable>
     void Text<IsColorable>::setLocations(void) {
         if constexpr (!IsColorable)
-            Shadeable::setLocations(
-                [program=this->shaderProgram,
-                color=MonochromaticTextBase::colorLoc](void)
-            {
-                *color = ShaderLocation{*program, "color"};
-            });
+            Shadeable::setLocations(DelegationWrapper{
+                this->shaderProgram, MonochromaticTextBase::colorLoc}(
+                [](auto program, auto color) {
+                    *color = ShaderLocation{*program, "color"};
+                }));
     }
 
     template <bool IsColorable>
