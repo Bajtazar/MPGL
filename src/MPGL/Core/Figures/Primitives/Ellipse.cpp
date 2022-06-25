@@ -153,6 +153,21 @@ namespace mpgl {
             6, DataType::UInt32);
     }
 
+    void Ellipse::setShader(ShaderProgram const& program) noexcept {
+        Shadeable::setShader(program);
+        shaderExec(program);
+    }
+
+    void Ellipse::setShader(ShaderProgram&& program) noexcept {
+        Shadeable::setShader(std::move(program));
+        shaderExec(*this->shaderProgram);
+    }
+
+    void Ellipse::setShader(std::string const& name) {
+        Shadeable::setShader(name);
+        context.shaders.executeOrQueue(name, shaderExec);
+    }
+
     [[nodiscard]] bool Ellipse::contains(
         Vector2f const& position) const noexcept
     {
