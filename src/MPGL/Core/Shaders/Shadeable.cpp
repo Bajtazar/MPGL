@@ -49,11 +49,8 @@ namespace mpgl {
             std::move(exec));
     }
 
-    void Shadeable::setLocations(
-        std::string const& program,
-        Executable exec)
-    {
-        context.shaders.executeOrQueue(program, std::move(exec));
+    void Shadeable::setLocations(IndependentExecutable exec) {
+        context.shaders.executeOrQueue(std::move(exec));
     }
 
     Shadeable::Shadeable(

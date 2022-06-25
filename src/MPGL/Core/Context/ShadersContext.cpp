@@ -35,7 +35,7 @@ namespace mpgl {
         while (!pairQueue.empty())
             setShaderFromPairQueue(exception, library);
         while (!executables.empty())
-            runExecutable(exception, library);
+            runExecutable(exception);
         if (exception)
             std::rethrow_exception(exception);
     }
@@ -68,13 +68,12 @@ namespace mpgl {
     }
 
     void ShadersContext::runExecutable(
-        std::exception_ptr& exception,
-        ShaderLibrary const& library) noexcept
+        std::exception_ptr& exception) noexcept
     {
         try {
-            auto&& [exec, name] = std::move(executables.front());
+            auto&& exec = std::move(executables.front());
             executables.pop();
-            exec(std::get<ShaderLibrary>(shaders)[name]);
+            exec();
         } catch (...) {
             exception = std::current_exception();
         }
@@ -111,15 +110,11 @@ namespace mpgl {
                 std::move(exec));
     }
 
-    void ShadersContext::executeOrQueue(
-        std::string const& name,
-        Executable exec)
-    {
+    void ShadersContext::executeOrQueue(IndependentExecutable exec) {
         if (isHolding()) {
-            auto const& ptr = std::get<ShaderLibrary>(shaders)[name];
-            exec(ptr);
+            exec();
         } else
-            executables.emplace(std::move(exec), name);
+            executables.emplace(std::move(exec));
     }
 
 }

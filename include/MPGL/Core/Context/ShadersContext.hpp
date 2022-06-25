@@ -44,6 +44,7 @@ namespace mpgl {
         typedef std::shared_ptr<ShaderProgram>  ProgramPtr;
         typedef std::function<void(
             ShaderProgram const&)>              Executable;
+        typedef std::function<void(void)>       IndependentExecutable;
 
         /**
          * Constructs a new Shaders Context object
@@ -108,17 +109,13 @@ namespace mpgl {
             Executable exec);
 
         /**
-         * Executes the given invocable with the given shader program
-         * if it is available. Otherwise adds the executable to
-         * the queue and waits until the library is available
+         * Executes the given invocable if the library is available.
+         * Otherwise adds the executable to the queue and waits until
+         * the library is available
          *
-         * @param name the constant reference to the shader program
-         * name
-         * @param exec the executable
+         * @param exec the independent executable
          */
-        void executeOrQueue(
-            std::string const& name,
-            Executable exec);
+        void executeOrQueue(IndependentExecutable exec);
 
         /**
          * Returns whether the shader library is defined
@@ -132,11 +129,10 @@ namespace mpgl {
             std::string, Executable>            ShaderTuple;
         typedef std::pair<ProgramPtr,
             std::string>                        ShaderPair;
-        typedef std::pair<Executable,
-            std::string>                        ExecutablePair;
         typedef std::queue<ShaderTuple>         TupleQueue;
         typedef std::queue<ShaderPair>          PairQueue;
-        typedef std::queue<ExecutablePair>      Executables;
+        typedef std::queue<
+            IndependentExecutable>              Executables;
         typedef std::variant<std::monostate,
             ShaderLibrary>                      Shaders;
 
@@ -171,12 +167,9 @@ namespace mpgl {
          * Executes the executables
          *
          * @param exception the reference to the exception object
-         * @param library the constant reference to the shader
-         * library object
          */
         void runExecutable(
-            std::exception_ptr& exception,
-            ShaderLibrary const& library) noexcept;
+            std::exception_ptr& exception) noexcept;
     };
 
 }

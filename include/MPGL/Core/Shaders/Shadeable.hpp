@@ -87,6 +87,8 @@ namespace mpgl {
         virtual ~Shadeable(void) noexcept = default;
     protected:
         typedef typename ShadersContext::Executable Executable;
+        typedef typename
+            ShadersContext::IndependentExecutable   IndependentExecutable;
 
         /**
          * Constructs a new Shadeable object from the given
@@ -185,12 +187,9 @@ namespace mpgl {
         /**
          * Sets the shader locations executable
          *
-         * @param program the shader program's name
-         * @param exec the executable with locations
+         * @param exec the independent executable with locations
          */
-        void setLocations(
-            std::string const& program,
-            Executable exec);
+        void setLocations(IndependentExecutable exec);
 
         ProgramPtr                                  shaderProgram;
     };
