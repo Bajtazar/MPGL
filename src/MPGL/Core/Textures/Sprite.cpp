@@ -42,7 +42,6 @@ namespace mpgl {
         Sprite<IsColorable>::shaderExec
             = [](ShaderProgram const& program)
     {
-        program.use();
         ShaderLocation{program, "tex"}(0);
     };
 
@@ -137,14 +136,16 @@ namespace mpgl {
     void Sprite<IsColorable>::setConvolution(
         Matrix3f const& convolution)
     {
-        Shadeable::setShader(IsColorable ?
+        this->setShader(IsColorable ?
             "MPGL/2D/CTextureConv" : "MPGL/2D/TextureConv");
-        this->shaderProgram->use();
-        ShaderLocation{*this->shaderProgram, "tex"}(0);
-        ShaderLocation{*this->shaderProgram, "convolution"}(
-            convolution);
-        ShaderLocation{*this->shaderProgram, "screen"}(
-            this->texture.getTextureDimensions());
+        Shadeable::setLocations(
+            [program=this->shaderProgram,
+            convolution=convolution,
+            dimensions=this->texture.getTextureDimensions()](void)
+        {
+            ShaderLocation{*program, "convolution"}(convolution);
+            ShaderLocation{*program, "screen"}(dimensions);
+        });
     }
 
     template <bool IsColorable>
