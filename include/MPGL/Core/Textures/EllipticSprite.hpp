@@ -251,7 +251,7 @@ namespace mpgl {
          * shader program object
          */
         void setShader(
-            ShaderProgram const& program) noexcept override final;
+            ShaderProgram const& program) noexcept override;
 
         /**
          * Sets the given shader program
@@ -260,7 +260,7 @@ namespace mpgl {
          * shader program object
          */
         void setShader(
-            ShaderProgram&& program) noexcept override final;
+            ShaderProgram&& program) noexcept override;
 
         /**
          * Sets the given shader program from an internal
@@ -269,7 +269,7 @@ namespace mpgl {
          * @param name the name of the shader program
          */
         void setShader(
-            std::string const& name) override final;
+            std::string const& name) override;
 
         /**
          * Pure virtual method. Has to be overloaded. Applies

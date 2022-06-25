@@ -68,7 +68,6 @@ namespace mpgl {
         EllipticSprite<IsColorable>::shaderExec
             = [](ShaderProgram const& program)
     {
-        program.use();
         ShaderLocation{program, "tex"}(0);
         ShaderLocation{program, "aafactor"}(float32(
             GraphicalObject::context.windowOptions.antiAliasingSamples)
