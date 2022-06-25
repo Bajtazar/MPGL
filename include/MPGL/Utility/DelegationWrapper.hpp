@@ -151,8 +151,7 @@ namespace mpgl {
          */
         template <PureType... Args,
             std::invocable<Handles..., Args...> Func>
-        [[nodiscard]] ArgumentsWrapper<Args...>::DelegatedFunctor<Func>
-            operator() (Func&& functor, Args... args);
+        [[nodiscard]] auto operator() (Func&& functor, Args... args);
     private:
         /**
          * Converts the shared pointers to the weak pointers

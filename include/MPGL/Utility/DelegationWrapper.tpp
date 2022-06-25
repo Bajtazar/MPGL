@@ -112,9 +112,7 @@ namespace mpgl {
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args,
         std::invocable<Handles..., Args...> Func>
-    [[nodiscard]] DelegationWrapper<Handles...>::
-        ArgumentsWrapper<Args...>::DelegatedFunctor<Func>
-    DelegationWrapper<Handles...>::operator() (
+    [[nodiscard]] auto DelegationWrapper<Handles...>::operator() (
         Func&& functor,
         Args... args)
     {

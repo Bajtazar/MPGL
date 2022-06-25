@@ -25,6 +25,7 @@
  */
 #include <MPGL/Core/Figures/Primitives/Ellipse.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
+#include <MPGL/Utility/DelegationWrapper.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 
@@ -37,25 +38,22 @@ namespace mpgl {
             float32(context.windowOptions.antiAliasingSamples) / 4.f);
     };
 
-    Ellipse::Locations::Locations(void)
-        : color{new ShaderLocation}, shift{new ShaderLocation},
-        transform{new ShaderLocation} {}
-
     void Ellipse::setLocations(void) {
-        Shadeable::setLocations(
-            [program=shaderProgram,locations=locations](void)
+        Shadeable::setLocations(DelegationWrapper{
+            shaderProgram, locations}([](auto program, auto locations)
         {
-            *locations.color = ShaderLocation{*program, "color"};
-            *locations.shift = ShaderLocation{*program, "shift"};
-            *locations.transform
+            locations->color = ShaderLocation{*program, "color"};
+            locations->shift = ShaderLocation{*program, "shift"};
+            locations->transform
                 = ShaderLocation{*program, "transform"};
-        });
+        }));
     }
 
     Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
         Color const& color, float angle)
             : Elliptic{ellipseVertices(center, semiAxis, angle),
-                "MPGL/2D/Ellipse", shaderExec, color}
+                "MPGL/2D/Ellipse", shaderExec, color},
+            locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
@@ -64,7 +62,8 @@ namespace mpgl {
     Ellipse::Ellipse(Vector2f const& center, float radius,
         Color const& color)
             : Elliptic{circleVertices(center, radius),
-                "MPGL/2D/Ellipse", shaderExec, color}
+                "MPGL/2D/Ellipse", shaderExec, color},
+            locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
@@ -144,9 +143,9 @@ namespace mpgl {
     void Ellipse::draw(void) const noexcept {
         actualizeBufferBeforeDraw();
         shaderProgram->use();
-        (*locations.color)(color);
-        (*locations.shift)(Vector2f{get<"position">(vertices.front())});
-        (*locations.transform)(outlineTransform);
+        locations->color(color);
+        locations->shift(Vector2f{get<"position">(vertices.front())});
+        locations->transform(outlineTransform);
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawElements(VertexArray::DrawMode::Triangles,
             6, DataType::UInt32);
