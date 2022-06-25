@@ -33,7 +33,6 @@ namespace mpgl {
     Ellipse::Executable const Ellipse::shaderExec
         = [](ShaderProgram const& program)
     {
-        program.use();
         ShaderLocation{program, "aafactor"}(
             float32(context.windowOptions.antiAliasingSamples) / 4.f);
     };

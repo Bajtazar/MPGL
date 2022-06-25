@@ -52,6 +52,7 @@ namespace mpgl {
     void ShaderLocation::setLocation(std::string const& uniform) {
         if (!program)
             throw ShaderLocationInvalidProgramException{};
+        program.use();
         location = glGetUniformLocation(*program.shaderProgramID,
             uniform.c_str());
         if (location == -1)

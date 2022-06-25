@@ -302,6 +302,31 @@ namespace mpgl {
             Matrix2f const& rotation) noexcept final;
 
         /**
+         * Sets the given shader program
+         *
+         * @param program the constant reference to the shader program
+         * object
+         */
+        void setShader(
+            ShaderProgram const& program) noexcept override final;
+
+        /**
+         * Sets the given shader program
+         *
+         * @param program the rvalue reference to the shader program
+         * object
+         */
+        void setShader(
+            ShaderProgram&& program) noexcept override final;
+
+        /**
+         * Sets the given shader program
+         *
+         * @param name the name of the shader program
+         */
+        void setShader(std::string const& name) override final;
+
+        /**
          * Returns the center of the ring
          *
          * @return the center of the ring

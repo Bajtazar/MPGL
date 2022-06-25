@@ -148,7 +148,6 @@ namespace mpgl {
     Ring::Executable const Ring::shaderExec
         = [](ShaderProgram const& program)
     {
-        program.use();
         ShaderLocation{program, "aafactor"}(
             float32(context.windowOptions.antiAliasingSamples) / 4.f);
     };
@@ -309,6 +308,24 @@ namespace mpgl {
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawElements(VertexArray::DrawMode::Triangles,
             6, DataType::UInt32);
+    }
+
+    void Ring::setShader(ShaderProgram const& program) noexcept {
+        Shadeable::setShader(program);
+        shaderExec(program);
+        setLocations();
+    }
+
+    void Ring::setShader(ShaderProgram&& program) noexcept {
+        Shadeable::setShader(std::move(program));
+        shaderExec(*this->shaderProgram);
+        setLocations();
+    }
+
+    void Ring::setShader(std::string const& name) {
+        Shadeable::setShader(name);
+        context.shaders.executeOrQueue(name, shaderExec);
+        setLocations();
     }
 
     [[nodiscard]] bool Ring::insideSystem(
