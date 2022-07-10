@@ -27,6 +27,7 @@
 
 #include <MPGL/Core/Textures/EllipticSprite.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
+#include <MPGL/Utility/DelegatePointer.hpp>
 
 namespace mpgl {
 
@@ -487,9 +488,7 @@ namespace mpgl {
             ShaderLocation                              innerTransform;
         };
 
-        typedef std::shared_ptr<Locations>              LocationPtr;
-
-        LocationPtr                                     locations;
+        DelegatePointer<Locations>                      locations;
         InnerEllipse                                    innerEllipse;
         Matrix2f                                        outline;
 

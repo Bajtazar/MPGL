@@ -28,6 +28,7 @@
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
 #include <MPGL/Core/Context/Buffers/VertexCast.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
+#include <MPGL/Utility/DelegatePointer.hpp>
 #include <MPGL/Core/DrawableCollection.hpp>
 #include <MPGL/Core/Shaders/Shadeable.hpp>
 #include <MPGL/Core/Text/GlyphSprite.hpp>
@@ -644,9 +645,7 @@ namespace mpgl {
     protected:
         explicit MonochromaticTextBase(void);
 
-        typedef std::shared_ptr<ShaderLocation>     LocationPtr;
-
-        LocationPtr                                 colorLoc;
+        DelegatePointer<ShaderLocation>         colorLoc;
     };
 
     template <bool IsColorable>

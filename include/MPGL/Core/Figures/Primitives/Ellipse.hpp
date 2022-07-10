@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
+#include <MPGL/Utility/DelegatePointer.hpp>
 #include <MPGL/Core/Figures/Elliptic.hpp>
 
 namespace mpgl {
@@ -185,9 +186,7 @@ namespace mpgl {
             ShaderLocation                              transform;
         };
 
-        typedef std::shared_ptr<Locations>              LocationPtr;
-
-        LocationPtr                                     locations;
+        DelegatePointer<Locations>                      locations;
         Matrix2f                                        outlineTransform;
 
         /// Loads the shader's constant variables
