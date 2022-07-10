@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <utility>
+
 namespace mpgl {
 
     template <InstanceOf<std::shared_ptr>... Handles>
@@ -105,9 +107,10 @@ namespace mpgl {
     }
 
     template <InstanceOf<std::shared_ptr>... Handles>
-    DelegationWrapper<Handles...>::DelegationWrapper(Handles... handles)
-        : handles{std::weak_ptr{handles}...} {}
-
+    DelegationWrapper<Handles...>::DelegationWrapper(
+        Handles&&... handles)
+            : handles{std::weak_ptr{std::forward<Handles>(handles)}...}
+                {}
 
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args,

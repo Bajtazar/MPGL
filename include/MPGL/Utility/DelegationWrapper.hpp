@@ -136,7 +136,7 @@ namespace mpgl {
          *
          * @param handles the resource handling shared pointer types
          */
-        explicit DelegationWrapper(Handles... handles);
+        explicit DelegationWrapper(Handles&&... handles);
 
         /**
          * Creates the functor that handles and manages the given
@@ -168,7 +168,8 @@ namespace mpgl {
             template <typename... Args>
             static constexpr auto weaken(Args... handles);
         public:
-            using Type = decltype(weaken(std::declval<Handles>()...));
+            using Type = decltype(weaken(std::declval<
+                std::remove_cvref_t<Handles>>()...));
         };
 
         typedef WeakPointers::Type              HandlingTuple;
