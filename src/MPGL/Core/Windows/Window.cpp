@@ -29,10 +29,13 @@ namespace mpgl {
 
     using std::operator""us;
 
-    Window::Window(Vector2u const& dimensions,
-        std::string const& title, Options const& options)
-            : WindowPlatform{dimensions, title, options},
-                sleepTime{0us}, lastTime{0us}
+    Window::Window(
+        Vector2u const& dimensions,
+        std::string const& title,
+        Options const& options,
+        EventManagerPtr eventManager)
+            : WindowPlatform{dimensions, title, options,
+                std::move(eventManager)}, sleepTime{0us}, lastTime{0us}
     {
         glEnable(GL_BLEND);
         glEnable(GL_MULTISAMPLE);
@@ -69,15 +72,15 @@ namespace mpgl {
 
     void Window::setTickrate(std::size_t ticks) noexcept {
         using std::operator""ms;
-        get<TickRegister>(events).setPeriod(
-            ticks ? TickRegister::Duration{1'000ms} / ticks : 0ms);
+        eventManager->setPeriod(ticks ? TickRegister::Duration{1'000ms}
+            / ticks : 0ms);
     }
 
     void Window::windowLoop(const Color& background) noexcept {
         openWindow();
         while (!shouldWindowClose()) {
             clear(background);
-            get<TickRegister>(events).onEvent();
+            eventManager->onTick();
             drawDrawables();
             draw();
         }

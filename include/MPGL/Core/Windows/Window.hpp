@@ -31,7 +31,7 @@ namespace mpgl {
 
     /**
      * Creates window and renders the given content on the screen.
-     * Calls the objects inheireiting from specific event when this
+     * Calls the specific event manager method when the designated
      * event occurs
      */
     class Window : public WindowPlatform {
@@ -44,11 +44,14 @@ namespace mpgl {
          * @param title the title of the window
          * @param options the options which determins different
          * behaviours of window
+         * @param eventManager the event manager used by the window
          */
         explicit Window(
             Vector2u const& dimensions,
             std::string const& title,
-            Options const& options = Options{});
+            Options const& options = Options{},
+            EventManagerPtr eventManager
+                = std::make_unique<BasicWindowEventManager>());
 
         Window(Window const& window) noexcept = delete;
         Window(Window&& window) noexcept = delete;
