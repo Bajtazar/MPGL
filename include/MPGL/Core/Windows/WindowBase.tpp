@@ -29,21 +29,21 @@ namespace mpgl {
 
     template <Event Tp>
     void WindowBase::pushEvent(std::shared_ptr<Tp> const& event) {
-        events.addIfDerived(event);
+        eventManager->push(event);
     }
 
     template <Event Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
     void WindowBase::emplaceEvent(Args&&... args) {
-        events.addIfDerived(std::make_shared<Tp>(
-            std::forward<Args>(args)...));
+        eventManager->emplace(std::forward(args)...);
     }
 
     template <std::derived_from<Drawable2D> Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
     void WindowBase::emplaceDrawable(Args&&... args) {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
-        events.addIfDerived(ptr);
+        if constexpr (Event<Tp>)
+            eventManager->push(ptr);
         drawables.push_back(std::move(ptr));
     }
 
@@ -51,16 +51,18 @@ namespace mpgl {
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp> const& drawable)
     {
-        events.addIfDerived(drawable);
+        if constexpr (Event<Tp>)
+            eventManager->push(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             drawable));
     }
 
-    template <std::derived_from<Drawable2D> T>
+    template <std::derived_from<Drawable2D> Tp>
     void WindowBase::pushDrawable(
-        std::shared_ptr<T>&& drawable)
+        std::shared_ptr<Tp>&& drawable)
     {
-        events.addIfDerived(drawable);
+        if constexpr (Event<Tp>)
+            eventManager->push(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             std::move(drawable)));
     }

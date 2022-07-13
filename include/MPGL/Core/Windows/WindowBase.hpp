@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Events/Management/BasicWindowEventManager.hpp>
 #include <MPGL/Core/Context/Context.hpp>
 #include <MPGL/Collections/Image.hpp>
 #include <MPGL/Events/EventBus.hpp>
@@ -39,7 +40,8 @@ namespace mpgl {
      */
     class WindowBase : protected GraphicalObject {
     public:
-        typedef std::shared_ptr<Drawable2D>    DrawablePtr;
+        typedef std::shared_ptr<Drawable2D>         DrawablePtr;
+        typedef std::unique_ptr<WindowEventManager> EventManagerPtr;
         typedef std::vector<DrawablePtr>            Drawables;
         typedef std::size_t                         size_type;
 
@@ -278,10 +280,14 @@ namespace mpgl {
 
         /**
          * Construct a new Window Base object
+         *
+         * @param eventManager the unique pointer with the event
+         * manager object
          */
-        explicit WindowBase(void) noexcept = default;
+        explicit WindowBase(EventManagerPtr&& eventManager) noexcept
+            : eventManager{std::move(eventManager)} {}
 
-        EventBus                                    events;
+        EventManagerPtr                             eventManager;
         Drawables                                   drawables;
     };
 
