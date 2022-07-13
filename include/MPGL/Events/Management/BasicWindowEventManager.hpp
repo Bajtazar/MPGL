@@ -124,13 +124,27 @@ namespace mpgl {
         void onScroll(Vector2f const& scroll) noexcept final;
 
         /**
-         * Informs tick event observers that the tick has occurred
+         * Informs tick event observers that the tick has occurred.
+         * Propagates already existing tick
          *
          * @param delta the time difference between last and current
          * tick
          */
         void onTick(
             std::chrono::milliseconds const& delta) noexcept final;
+
+        /**
+         * Informs tick event observers that the tick has occurred.
+         * Creates tick "from scratch"
+         */
+        void onTick(void) noexcept final;
+
+        /**
+         * Sets a new tick period
+         *
+         * @param period the new tick period
+         */
+        void setPeriod(Duration const& period) noexcept final;
 
         /**
          * Destroys the basic window event manager object

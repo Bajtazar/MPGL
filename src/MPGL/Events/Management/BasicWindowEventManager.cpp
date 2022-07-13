@@ -78,10 +78,22 @@ namespace mpgl {
         get<ScrollRegister>(registers).onEvent(scroll);
     }
 
-    void BasicWindowEventManager::onTick([[maybe_unused]]
+    void BasicWindowEventManager::onTick(
         std::chrono::milliseconds const& delta) noexcept
     {
+        for (auto& event : get<TickRegister>(registers))
+            event->onTick(delta);
+    }
+
+    void BasicWindowEventManager::onTick(void) noexcept
+    {
         get<TickRegister>(registers).onEvent();
+    }
+
+    void BasicWindowEventManager::setPeriod(
+        Duration const& period) noexcept
+    {
+        get<TickRegister>(registers).setPeriod(period);
     }
 
     void BasicWindowEventManager::push(STEPtr const& event) {
