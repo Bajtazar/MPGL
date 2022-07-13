@@ -88,6 +88,87 @@ namespace mpgl {
             void pushIfDerived(std::shared_ptr<Ep> const& event);
         };
 
+        /**
+         * Specialization of the event manager base class for the
+         * tick event. Allows to set a new period of the tick
+         */
+        template <>
+        class EventManagerBase<TickEvent> : public TickEvent {
+        public:
+            typedef std::chrono::duration<float64,
+                std::milli>                     Duration;
+
+            /**
+             * Constructs a new event manager base tail object
+             */
+            explicit EventManagerBase(void) noexcept = default;
+
+            EventManagerBase(EventManagerBase const&) = delete;
+            EventManagerBase(EventManagerBase&&) = delete;
+
+            EventManagerBase& operator=(
+                EventManagerBase const&) = delete;
+            EventManagerBase& operator=(
+                EventManagerBase&&) = delete;
+
+            /**
+             * Informs tick event observers that the tick has occurred.
+             * Propagates already existing tick
+             *
+             * @param delta the time difference between last and current
+             * tick
+             */
+            virtual void onTick(
+                std::chrono::milliseconds const& delta) noexcept = 0;
+
+            /**
+             * Informs tick event observers that a new tick has
+             * occured. Creates tick "from scratch"
+             */
+            virtual void onTick(void) noexcept = 0;
+
+            /**
+             * Sets a new tick period
+             *
+             * @param period the new tick period
+             */
+            virtual void setPeriod(Duration const& period) noexcept = 0;
+
+            /**
+             * Destroys the event manager base object
+             */
+            virtual ~EventManagerBase(void) noexcept = default;
+        protected:
+            /**
+             * Registers an event pointer in the event manager
+             *
+             * @param event the constant reference to the tick event's
+             * shared pointer
+             */
+            virtual void push(
+                std::shared_ptr<TickEvent> const& event) = 0;
+
+            /**
+             * Registers an event pointer in the event manager
+             *
+             * @param event the rvalue reference to the tick event's
+             * shared pointer
+             */
+            virtual void push(
+                std::shared_ptr<TickEvent>&& event) = 0;
+
+            /**
+             * Registers an event object in the event manager if
+             * the event type is derived from the tick event
+             *
+             * @tparam Ep the event's type
+             * @param event the constant reference to the event's
+             * shared pointer
+             */
+            template <Event Ep>
+            void pushIfDerived(std::shared_ptr<Ep> const& event);
+        };
+
     }
 
     /**

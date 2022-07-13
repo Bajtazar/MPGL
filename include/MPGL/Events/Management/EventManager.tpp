@@ -40,6 +40,16 @@ namespace mpgl {
                 this->push(std::static_pointer_cast<EventTp>(event));
         }
 
+        template <Event Ep>
+        void EventManagerBase<TickEvent>::pushIfDerived(
+            std::shared_ptr<Ep> const& event)
+        {
+            if constexpr (std::same_as<Ep, TickEvent>)
+                this->push(event);
+            else if constexpr (std::derived_from<Ep, TickEvent>)
+                this->push(std::static_pointer_cast<Ep>(event));
+        }
+
     }
 
     template <Event... Events>
