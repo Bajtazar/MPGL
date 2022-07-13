@@ -59,9 +59,10 @@ namespace mpgl {
          * @param background the color of the background used by
          * the render method
          */
-        explicit RenderingAdapter(RenderWindow& renderWindow,
+        explicit RenderingAdapter(
+            RenderWindow& renderWindow,
             CleaningOptions const& cleaning
-            = CleaningOptions::ColorAndDepthAndStencil,
+                = CleaningOptions::ColorAndDepthAndStencil,
             Color const& background = {}) noexcept
                 : background{background}, cleaning{cleaning},
                 reference{renderWindow} {}

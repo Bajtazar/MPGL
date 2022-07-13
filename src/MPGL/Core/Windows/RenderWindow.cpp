@@ -29,8 +29,11 @@
 
 namespace mpgl {
 
-    RenderWindow::RenderWindow(Options const& options)
-        : windowTexture{options}
+    RenderWindow::RenderWindow(
+        Options const& options,
+        EventManagerPtr eventManager)
+            : WindowBase{std::move(eventManager)},
+            windowTexture{options}
     {
         glGenFramebuffers(1, &framebuffer);
         glGenRenderbuffers(1, &renderbuffer);
@@ -71,11 +74,11 @@ namespace mpgl {
     }
 
     RenderWindow::RenderWindow(RenderWindow&& window) noexcept
-        : windowTexture{std::move(window.windowTexture)},
+        : WindowBase{std::move(window.eventManager)},
+        windowTexture{std::move(window.windowTexture)},
         framebuffer{window.framebuffer},
         renderbuffer{window.renderbuffer}
     {
-        events = std::move(window.events);
         window.framebuffer = window.renderbuffer = 0;
     }
 
@@ -86,7 +89,7 @@ namespace mpgl {
         windowTexture = std::move(window.windowTexture);
         framebuffer = window.framebuffer;
         renderbuffer = window.renderbuffer;
-        events = std::move(window.events);
+        eventManager = std::move(window.eventManager);
         window.framebuffer = window.renderbuffer = 0;
         return *this;
     }
@@ -129,56 +132,53 @@ namespace mpgl {
     void RenderWindow::onScreenTransformation(
         Vector2u const& oldDimensions) noexcept
     {
-        get<ScreenTransformationRegister>(events).onEvent(
-            oldDimensions);
+        eventManager->onScreenTransformation(oldDimensions);
     }
 
     void RenderWindow::onMouseRelease(
         MouseButton const& button) noexcept
     {
-        get<MouseReleaseRegister>(events).onEvent(button);
+        eventManager->onMouseRelease(button);
     }
 
     void RenderWindow::onWindowClose(void) noexcept {
-        get<WindowCloseRegister>(events).onEvent();
+        eventManager->onWindowClose();
     }
 
     void RenderWindow::onMouseMotion(
         Vector2f const& position) noexcept
     {
-        get<MouseMotionRegister>(events).onEvent(position);
+        eventManager->onMouseMotion(position);
     }
 
     void RenderWindow::onMousePress(
         MouseButton const& button) noexcept
     {
-        get<MousePressRegister>(events).onEvent(button);
+        eventManager->onMousePress(button);
     }
 
     void RenderWindow::onKeyRelease(Key const& key) noexcept {
-        get<KeyReleaseRegister>(events).onEvent(key);
+        eventManager->onKeyRelease(key);
     }
 
     void RenderWindow::onTextWrite(
         std::string const& unicodeString) noexcept
     {
-        get<TextWriteRegister>(events).onEvent(unicodeString);
+        eventManager->onTextWrite(unicodeString);
     }
 
     void RenderWindow::onKeyPress(Key const& key) noexcept {
-        get<KeyPressRegister>(events).onEvent(key);
+        eventManager->onKeyPress(key);
     }
 
     void RenderWindow::onScroll(Vector2f const& scroll) noexcept {
-        get<ScrollRegister>(events).onEvent(scroll);
+        eventManager->onScroll(scroll);
     }
 
     void RenderWindow::onTick(
         std::chrono::milliseconds const& delta) noexcept
     {
-        std::ranges::for_each(get<TickRegister>(events),
-            [&delta](auto const& drawable)
-            { drawable->onTick(delta); });
+        eventManager->onTick(delta);
     }
 
     RenderWindow::~RenderWindow(void) noexcept {

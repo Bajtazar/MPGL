@@ -66,9 +66,12 @@ namespace mpgl {
          * texture options
          *
          * @param options the texture options
+         * @param eventManager the event manager
          */
-        explicit RenderWindow(Options const& options
-            = defaultOptions);
+        explicit RenderWindow(
+            Options const& options = defaultOptions,
+            EventManagerPtr eventManager
+                = std::make_unique<BasicWindowEventManager>());
 
         RenderWindow(RenderWindow const&) = delete;
 
