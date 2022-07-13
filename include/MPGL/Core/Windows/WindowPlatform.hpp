@@ -149,12 +149,16 @@ namespace mpgl {
         /**
          * Construct a new Window Platform object
          *
-         * @param dimensions the window dimensions
-         * @param title the window title
-         * @param options the window options
+         * @param dimensions the window's dimensions
+         * @param title the window's title
+         * @param options the window's options
+         * @param eventManager the window's event manager
          */
-        explicit WindowPlatform(Vector2u dimensions,
-            std::string title, Options const& options = Options{});
+        explicit WindowPlatform(
+            Vector2u dimensions,
+            std::string title,
+            Options const& options,
+            EventManagerPtr&& eventManager);
 
         /**
          * Returns whether the window should be closed

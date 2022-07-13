@@ -31,10 +31,14 @@
 
 namespace mpgl {
 
-    WindowPlatform::WindowPlatform(Vector2u dimensions,
-        std::string title, Options const& options)
-        : dimensions{dimensions}, options{options},
-        title{title}, window{nullptr}
+    WindowPlatform::WindowPlatform(
+        Vector2u dimensions,
+        std::string title,
+        Options const& options,
+        EventManagerPtr&& eventManager)
+            : WindowBase{std::move(eventManager)},
+            dimensions{dimensions}, options{options},
+            title{title}, window{nullptr}
     {
         setWindowOptions();
         window = glfwCreateWindow(dimensions[0], dimensions[1],
@@ -66,8 +70,7 @@ namespace mpgl {
         Vector2u oldDimensions = render->dimensions;
         render->setDimensions(vectorCast<uint32>(
             Vector2i{width, height}));
-        get<ScreenTransformationRegister>(render->events).onEvent(
-            oldDimensions);
+        render->eventManager->onScreenTransformation(oldDimensions);
     }
 
     void keyCallback(GLFWwindow* window, int32 key,
@@ -78,9 +81,9 @@ namespace mpgl {
             glfwGetWindowUserPointer(window));
         auto keyCode = static_cast<Key>(static_cast<int16>(key));
         if (action == GLFW_PRESS)
-            get<KeyPressRegister>(render->events).onEvent(keyCode);
+            render->eventManager->onKeyPress(keyCode);
         else if (action == GLFW_RELEASE)
-            get<KeyReleaseRegister>(render->events).onEvent(keyCode);
+            render->eventManager->onKeyRelease(keyCode);
     }
 
     void mouseButtonCallback(GLFWwindow* window, int32 button,
@@ -91,24 +94,21 @@ namespace mpgl {
         auto buttonCode = static_cast<MouseButton>(
             static_cast<uint8>(button));
         if (action == GLFW_PRESS)
-            get<MousePressRegister>(render->events).onEvent(
-                buttonCode);
+            render->eventManager->onMousePress(buttonCode);
         else if (action == GLFW_RELEASE)
-            get<MouseReleaseRegister>(render->events).onEvent(
-                buttonCode);
+            render->eventManager->onMouseRelease(buttonCode);
     }
 
     void textCallback(GLFWwindow* window, uint32 character) noexcept {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
-        get<TextWriteRegister>(render->events).onEvent(
-            toUTF8(character));
+        render->eventManager->onTextWrite(toUTF8(character));
     }
 
     void windowCloseCallback(GLFWwindow* window) noexcept {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
-        get<WindowCloseRegister>(render->events).onEvent();
+        render->eventManager->onWindowClose();
     }
 
     void mousePosCallback(GLFWwindow* window, float64 xpos,
@@ -116,9 +116,8 @@ namespace mpgl {
     {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
-        get<MouseMotionRegister>(render->events).onEvent(
-            Vector2f{xpos,
-                GraphicalObject::context.windowDimensions[1] - ypos});
+        render->eventManager->onMouseMotion(Vector2f{xpos,
+            GraphicalObject::context.windowDimensions[1] - ypos});
     }
 
     void WindowPlatform::setCallbacks(void) noexcept {
