@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Registers/RegisterInterface.hpp>
+#include <MPGL/Events/Registers/RegisterInterface.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <tuple>
@@ -176,4 +176,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Core/Registers/RegistersHolder.tpp>
+#include <MPGL/Events/Registers/RegistersHolder.tpp>

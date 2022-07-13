@@ -23,7 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Registers/TickRegister.hpp>
+#include <MPGL/Events/Registers/TickRegister.hpp>
 
 #include <algorithm>
 

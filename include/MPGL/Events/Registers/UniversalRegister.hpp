@@ -27,7 +27,7 @@
 
 #include <algorithm>
 
-#include <MPGL/Core/Registers/RegisterInterface.hpp>
+#include <MPGL/Events/Registers/RegisterInterface.hpp>
 #include <MPGL/Events/Event.hpp>
 
 namespace mpgl {
@@ -69,4 +69,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Core/Registers/UniversalRegister.tpp>
+#include <MPGL/Events/Registers/UniversalRegister.tpp>

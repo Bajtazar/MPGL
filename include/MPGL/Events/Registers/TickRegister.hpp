@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Registers/RegisterInterface.hpp>
+#include <MPGL/Events/Registers/RegisterInterface.hpp>
 #include <MPGL/Events/Types/TickEvent.hpp>
 #include <MPGL/Traits/Types.hpp>
 
