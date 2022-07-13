@@ -224,10 +224,6 @@ namespace mpgl {
          * Destroys the event manager object
          */
         virtual ~EventManager(void) noexcept = default;
-    private:
-        template <std::size_t Idx>
-        using EventType = decltype(std::get<Idx>(
-            std::declval<std::tuple<Events...>>()));
     };
 
     typedef EventManager<
