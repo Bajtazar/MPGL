@@ -33,7 +33,7 @@ namespace mpgl {
     /**
      * Base class for classes that are notified when key is released
      */
-    class KeyReleaseEvent : public EventBase {
+    class KeyReleaseEvent : public virtual EventBase {
     public:
         explicit KeyReleaseEvent(void) noexcept = default;
 

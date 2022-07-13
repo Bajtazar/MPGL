@@ -34,7 +34,7 @@ namespace mpgl {
      * Base class for classes that are notified when user uses
      * mouse scroll
      */
-    class ScrollEvent : public EventBase {
+    class ScrollEvent : public virtual EventBase {
     public:
         explicit ScrollEvent(void) noexcept = default;
 

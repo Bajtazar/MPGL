@@ -35,7 +35,7 @@ namespace mpgl {
      * Base class for classes that are notified when user writes
      * text
      */
-    class TextWriteEvent : public EventBase {
+    class TextWriteEvent : public virtual EventBase {
     public:
         explicit TextWriteEvent(void) noexcept = default;
 

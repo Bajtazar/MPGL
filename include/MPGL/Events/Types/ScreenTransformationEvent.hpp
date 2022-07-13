@@ -34,7 +34,7 @@ namespace mpgl {
      * Base class for classes that are notified when window is
      * changes its shape
      */
-    class ScreenTransformationEvent : public EventBase {
+    class ScreenTransformationEvent : public virtual EventBase {
     public:
         explicit ScreenTransformationEvent(void) noexcept = default;
 

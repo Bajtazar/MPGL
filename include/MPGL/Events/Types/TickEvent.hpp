@@ -34,7 +34,7 @@ namespace mpgl {
     /**
      * Base class for classes that are notified during tick
      */
-    class TickEvent : public EventBase {
+    class TickEvent : public virtual EventBase {
     public:
         explicit TickEvent(void) noexcept = default;
 

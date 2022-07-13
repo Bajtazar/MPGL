@@ -34,7 +34,7 @@ namespace mpgl {
      * Base class for classes that are notified when mouse button
      * is pressed
      */
-    class MousePressEvent : public EventBase {
+    class MousePressEvent : public virtual EventBase {
     public:
         explicit MousePressEvent(void) noexcept = default;
 

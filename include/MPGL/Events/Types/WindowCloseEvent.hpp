@@ -33,7 +33,7 @@ namespace mpgl {
      * Base class for classes that are notified when window is
      * being closed
      */
-    class WindowCloseEvent : public EventBase {
+    class WindowCloseEvent : public virtual EventBase {
     public:
         explicit WindowCloseEvent(void) noexcept = default;
 

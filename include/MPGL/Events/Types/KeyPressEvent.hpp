@@ -33,7 +33,7 @@ namespace mpgl {
     /**
      * Base class for classes that are notified when key is pressed
      */
-    class KeyPressEvent : public EventBase {
+    class KeyPressEvent : public virtual EventBase {
     public:
         explicit KeyPressEvent(void) noexcept = default;
 

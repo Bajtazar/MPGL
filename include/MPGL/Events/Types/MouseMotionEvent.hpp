@@ -33,7 +33,7 @@ namespace mpgl {
     /**
      * Base class for classes that are notified when mouse is moved
      */
-    class MouseMotionEvent : public EventBase {
+    class MouseMotionEvent : public virtual EventBase {
     public:
         explicit MouseMotionEvent(void) noexcept = default;
 

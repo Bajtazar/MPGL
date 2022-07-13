@@ -33,7 +33,7 @@ namespace mpgl {
      * Base class for classes that are notified when mouse button
      * is released
      */
-    class MouseReleaseEvent : public EventBase {
+    class MouseReleaseEvent : public virtual EventBase {
     public:
         explicit MouseReleaseEvent(void) noexcept = default;
 
