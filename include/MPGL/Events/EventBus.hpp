@@ -75,12 +75,12 @@ namespace mpgl {
 
     /// The scroll event register
     typedef UniversalRegister<ScrollEvent, void(ScrollEvent::*)(Vector2f const&),
-        &ScrollEvent::onScroll>                             ScrollRegistry;
+        &ScrollEvent::onScroll>                             ScrollRegister;
 
     /// The MPGL events registers holder
     typedef RegistersHolder<TickRegister, ScreenTransformationRegister,
         MouseReleaseRegister, MouseMotionRegister, MousePressRegister,
         WindowCloseRegister, KeyReleaseRegister, TextWriteRegister,
-        KeyPressRegister, ScrollRegistry>                   EventBus;
+        KeyPressRegister, ScrollRegister>                   EventBus;
 
 }

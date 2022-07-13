@@ -41,7 +41,7 @@ namespace mpgl {
         class EventManagerBase : public EventTp {
         public:
             /**
-             * Constructs a new event manager base object
+             * Constructs a new event manager base tail object
              */
             explicit EventManagerBase(void) noexcept = default;
 
@@ -88,24 +88,6 @@ namespace mpgl {
             void pushIfDerived(std::shared_ptr<Ep> const& event);
         };
 
-        /**
-         * Base for the event manager class. Implements interface for
-         * the multiple events
-         *
-         * @tparam EventTp the type of the event
-         * @tparam Events the types of the rest of events
-         */
-        template <Event EventTp, Event... Events>
-        struct EventManagerBase :
-            public EventManagerBase<EventTp>,
-            public EventManagerBase<Events...>
-        {
-            /**
-             * Destroys the event manager base object
-             */
-            virtual ~EventManagerBase(void) noexcept = default;
-        };
-
     }
 
     /**
@@ -121,7 +103,7 @@ namespace mpgl {
      * @tparam Events the types of events that are being managed
      */
     template <Event... Events>
-    class EventManager : public details::EventManagerBase<Events...> {
+    class EventManager : public details::EventManagerBase<Events>... {
     public:
         /**
          * Constructs a new event manager object
@@ -161,6 +143,10 @@ namespace mpgl {
          * Destroys the event manager object
          */
         virtual ~EventManager(void) noexcept = default;
+    private:
+        template <std::size_t Idx>
+        using EventType = decltype(std::get<Idx>(
+            std::declval<std::tuple<Events...>>()));
     };
 
     typedef EventManager<

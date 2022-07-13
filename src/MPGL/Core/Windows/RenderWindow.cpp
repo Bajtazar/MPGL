@@ -170,7 +170,7 @@ namespace mpgl {
     }
 
     void RenderWindow::onScroll(Vector2f const& scroll) noexcept {
-        get<ScrollRegistry>(events).onEvent(scroll);
+        get<ScrollRegister>(events).onEvent(scroll);
     }
 
     void RenderWindow::onTick(

@@ -37,7 +37,7 @@ namespace mpgl {
             if constexpr (std::same_as<Ep, EventTp>)
                 this->push(event);
             else if constexpr (std::derived_from<Ep, EventTp>)
-                this->push(std::static_pointer_cast<EventTp>(pointer));
+                this->push(std::static_pointer_cast<EventTp>(event));
         }
 
     }
@@ -47,14 +47,8 @@ namespace mpgl {
     void EventManager<Events...>::push(
         std::shared_ptr<Ep> const& event)
     {
-        using Types = std::tuple<Events...>;
-
-        [&event]<std::size_t... I>(std::index_sequence<I...>) {
-            using Tp = decltype(std::get<I>(std::declval<Types>()));
-
-            (details::EventManagerBase<std::remove_cvref_t<Tp>::push(
-                event), ...);
-        }(std::make_index_sequence<sizeof...(Events)>{});
+        (details::EventManagerBase<Events>::pushIfDerived(event),
+            ...);
     }
 
     template <Event... Events>
