@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Events/ScreenTransformationEvent.hpp>
+#include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Core/Dimensions.hpp>
 
 namespace mpgl {

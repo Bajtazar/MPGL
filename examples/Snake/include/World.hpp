@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Events/ScreenTransformationEvent.hpp>
+#include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
 #include <MPGL/Core/DrawableCollection.hpp>

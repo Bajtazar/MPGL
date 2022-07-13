@@ -25,8 +25,8 @@
  */
 #pragma once
 
-#include <MPGL/Events/KeyPressEvent.hpp>
-#include <MPGL/Events/TickEvent.hpp>
+#include <MPGL/Events/Types/KeyPressEvent.hpp>
+#include <MPGL/Events/Types/TickEvent.hpp>
 
 #include <World.hpp>
 

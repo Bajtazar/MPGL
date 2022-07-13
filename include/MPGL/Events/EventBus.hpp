@@ -25,18 +25,18 @@
  */
 #pragma once
 
+#include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Core/Registers/UniversalRegister.hpp>
-#include <MPGL/Events/ScreenTransformationEvent.hpp>
 #include <MPGL/Core/Registers/RegistersHolder.hpp>
+#include <MPGL/Events/Types/MouseReleaseEvent.hpp>
+#include <MPGL/Events/Types/WindowCloseEvent.hpp>
+#include <MPGL/Events/Types/MouseMotionEvent.hpp>
+#include <MPGL/Events/Types/MousePressEvent.hpp>
+#include <MPGL/Events/Types/KeyReleaseEvent.hpp>
 #include <MPGL/Core/Registers/TickRegister.hpp>
-#include <MPGL/Events/MouseReleaseEvent.hpp>
-#include <MPGL/Events/WindowCloseEvent.hpp>
-#include <MPGL/Events/MouseMotionEvent.hpp>
-#include <MPGL/Events/MousePressEvent.hpp>
-#include <MPGL/Events/KeyReleaseEvent.hpp>
-#include <MPGL/Events/TextWriteEvent.hpp>
-#include <MPGL/Events/KeyPressEvent.hpp>
-#include <MPGL/Events/ScrollEvent.hpp>
+#include <MPGL/Events/Types/TextWriteEvent.hpp>
+#include <MPGL/Events/Types/KeyPressEvent.hpp>
+#include <MPGL/Events/Types/ScrollEvent.hpp>
 
 namespace mpgl {
 
