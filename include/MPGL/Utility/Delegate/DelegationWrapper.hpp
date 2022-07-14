@@ -179,4 +179,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Utility/DelegationWrapper.tpp>
+#include <MPGL/Utility/Delegate/DelegationWrapper.tpp>

@@ -87,4 +87,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Utility/DelegatePointer.tpp>
+#include <MPGL/Utility/Delegate/DelegatePointer.tpp>

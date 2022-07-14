@@ -25,7 +25,7 @@
  */
 #include <MPGL/Core/Figures/Views.hpp>
 
-#include <MPGL/Utility/DelegationWrapper.hpp>
+#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 #include <MPGL/Core/Text/Text.hpp>
 

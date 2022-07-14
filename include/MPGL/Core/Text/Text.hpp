@@ -26,9 +26,9 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
+#include <MPGL/Utility/Delegate/DelegatePointer.hpp>
 #include <MPGL/Core/Context/Buffers/VertexCast.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
-#include <MPGL/Utility/DelegatePointer.hpp>
 #include <MPGL/Core/DrawableCollection.hpp>
 #include <MPGL/Core/Shaders/Shadeable.hpp>
 #include <MPGL/Core/Text/GlyphSprite.hpp>

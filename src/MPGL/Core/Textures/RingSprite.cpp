@@ -25,7 +25,7 @@
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 
-#include <MPGL/Utility/DelegationWrapper.hpp>
+#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Core/Textures/RingSprite.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 

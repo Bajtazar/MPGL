@@ -25,7 +25,7 @@
  */
 #include <MPGL/Core/Figures/Primitives/Ellipse.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Utility/DelegationWrapper.hpp>
+#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 

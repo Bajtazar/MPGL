@@ -25,9 +25,9 @@
  */
 #pragma once
 
+#include <MPGL/Utility/Delegate/DelegatePointer.hpp>
 #include <MPGL/Core/Textures/EllipticSprite.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
-#include <MPGL/Utility/DelegatePointer.hpp>
 
 namespace mpgl {
 

@@ -26,7 +26,7 @@
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 
 #include <MPGL/Core/Textures/EllipseSprite.hpp>
-#include <MPGL/Utility/DelegationWrapper.hpp>
+#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
 namespace mpgl {
