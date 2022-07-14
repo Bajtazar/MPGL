@@ -116,4 +116,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Utility/ZigZacRange.tpp>
+#include <MPGL/IO/ImageLoading/ZigZacRange.tpp>
