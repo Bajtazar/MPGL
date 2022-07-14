@@ -23,7 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Utility/Delegate/DeferredExecutionWrapper.hpp>
+#include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Figures/Primitives/Ring.hpp>
 #include <MPGL/Mathematics/Systems.hpp>

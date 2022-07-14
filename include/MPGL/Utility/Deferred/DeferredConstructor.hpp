@@ -62,4 +62,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Utility/Delegate/DeferredConstructor.tpp>
+#include <MPGL/Utility/Deferred/DeferredConstructor.tpp>

@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
-#include <MPGL/Utility/Delegate/DelegatePointer.hpp>
+#include <MPGL/Utility/Deferred/DelegatePointer.hpp>
 #include <MPGL/Core/Context/Buffers/VertexCast.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Core/DrawableCollection.hpp>

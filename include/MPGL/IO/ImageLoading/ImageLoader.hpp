@@ -29,7 +29,7 @@
 #include <memory>
 #include <functional>
 
-#include <MPGL/Utility/Delegate/DeferredConstructor.hpp>
+#include <MPGL/Utility/Deferred/DeferredConstructor.hpp>
 #include <MPGL/IO/ImageLoading/LoaderInterface.hpp>
 #include <MPGL/Utility/Tokens/Security.hpp>
 

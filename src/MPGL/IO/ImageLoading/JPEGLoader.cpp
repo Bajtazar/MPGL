@@ -27,7 +27,7 @@
 #include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
 #include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
-#include <MPGL/Utility/Delegate/DeferredConstructor.hpp>
+#include <MPGL/Utility/Deferred/DeferredConstructor.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
 #include <MPGL/IO/ImageLoading/ZigZacRange.hpp>
 #include <MPGL/IO/ImageLoading/JPEGLoader.hpp>
