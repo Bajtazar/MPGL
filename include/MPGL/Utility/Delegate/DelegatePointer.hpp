@@ -33,7 +33,7 @@ namespace mpgl {
 
     /**
      * Modification of shared pointer used when unique pointer cannot
-     * be used due to execution delegation. Creates a new resource
+     * be used due to dereffered execution. Creates a new resource
      * handler whenever it is being copied
      *
      * @tparam Tp the resource type

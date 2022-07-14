@@ -27,17 +27,15 @@
 
 namespace mpgl {
 
-    template <class Derived, class Base>
-        requires std::derived_from<Derived, Base>
+    template <class Derived, BaseFor<Derived> Base>
     template <typename... Args>
         requires std::constructible_from<Derived, Args...>
-    [[nodiscard]] FunctionalWrapper<Derived, Base>::BasePtr
-        FunctionalWrapper<Derived, Base>::operator() (
+    [[nodiscard]] std::unique_ptr<Base>
+        DeferredConstructor<Derived, Base>::operator() (
             Args&&... args) const noexcept(
-                NothrowConstructible<Args...>)
+                NothrowConstructible<Derived, Args...>)
     {
-        return std::make_unique<Derived>(
-            std::forward<Args>(args)...);
+        return std::make_unique<Derived>(std::forward<Args>(args)...);
     }
 
 }

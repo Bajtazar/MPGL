@@ -575,4 +575,14 @@ namespace mpgl {
     concept FloatConvertible = std::is_arithmetic_v<Tp>
         && std::convertible_to<Tp, float64>;
 
+    /**
+     * Checks whether the base type is the parent of the
+     * derived type
+     *
+     * @tparam Base the checked base type
+     * @tparam Derived the derived type
+     */
+    template <class Base, class Derived>
+    concept BaseFor = std::derived_from<Derived, Base>;
+
 }

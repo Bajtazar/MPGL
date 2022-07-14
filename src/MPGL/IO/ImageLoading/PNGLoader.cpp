@@ -24,7 +24,6 @@
  *  distribution
  */
 #include <MPGL/Exceptions/ImageLoadingFileCorruptionException.hpp>
-
 #include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
 #include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
@@ -401,8 +400,8 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     PNGLoader<Policy>::ChunkMap const PNGLoader<Policy>::chunkParsers {
-        {"IHDR", FunctionalWrapper<PNGLoader::IHDRChunk, PNGLoader::ChunkInterface>{}},
-        {"IDAT", FunctionalWrapper<PNGLoader::IDATChunk, PNGLoader::ChunkInterface>{}}
+        {"IHDR", DeferredConstructor<PNGLoader::IHDRChunk, PNGLoader::ChunkInterface>{}},
+        {"IDAT", DeferredConstructor<PNGLoader::IDATChunk, PNGLoader::ChunkInterface>{}}
     };
 
 }

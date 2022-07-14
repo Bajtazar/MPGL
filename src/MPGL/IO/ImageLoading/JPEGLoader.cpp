@@ -27,10 +27,10 @@
 #include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
 #include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
+#include <MPGL/Utility/Delegate/DeferredConstructor.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
 #include <MPGL/IO/ImageLoading/ZigZacRange.hpp>
 #include <MPGL/IO/ImageLoading/JPEGLoader.hpp>
-#include <MPGL/Utility/FunctionalWrapper.hpp>
 #include <MPGL/Mathematics/IFCT.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 #include <MPGL/IO/FileIO.hpp>
@@ -396,20 +396,20 @@ namespace mpgl {
     template <security::SecurityPolicy Policy>
     JPEGLoader<Policy>::ChunkParser const
         JPEGLoader<Policy>::emptyChunk
-            = FunctionalWrapper<JPEGLoader<Policy>::EmptyChunk,
+            = DeferredConstructor<JPEGLoader<Policy>::EmptyChunk,
                 JPEGLoader<Policy>::ChunkInterface>{};
 
     template <security::SecurityPolicy Policy>
     JPEGLoader<Policy>::ParserMap const
         JPEGLoader<Policy>::chunkParser
     {
-        {0xFFC4, FunctionalWrapper<JPEGLoader::DHTChunk,
+        {0xFFC4, DeferredConstructor<JPEGLoader::DHTChunk,
             JPEGLoader::ChunkInterface>{}},
-        {0xFFDB, FunctionalWrapper<JPEGLoader::DQTChunk,
+        {0xFFDB, DeferredConstructor<JPEGLoader::DQTChunk,
             JPEGLoader::ChunkInterface>{}},
-        {0xFFC0, FunctionalWrapper<JPEGLoader::SOF0Chunk,
+        {0xFFC0, DeferredConstructor<JPEGLoader::SOF0Chunk,
             JPEGLoader::ChunkInterface>{}},
-        {0xFFDA, FunctionalWrapper<JPEGLoader::SOSChunk,
+        {0xFFDA, DeferredConstructor<JPEGLoader::SOSChunk,
             JPEGLoader::ChunkInterface>{}}
     };
 

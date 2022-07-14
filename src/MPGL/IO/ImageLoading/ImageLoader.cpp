@@ -69,11 +69,11 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     ImageLoader<Policy>::Loaders ImageLoader<Policy>::loaders {
-        {"bmp", {FunctionalWrapper<BMPLoader<Policy>, LoaderInterface>{}}},
-        {"png", {FunctionalWrapper<PNGLoader<Policy>, LoaderInterface>{}}},
-        {"jpg", {FunctionalWrapper<JPEGLoader<Policy>, LoaderInterface>{}}},
-        {"jpe", {FunctionalWrapper<JPEGLoader<Policy>, LoaderInterface>{}}},
-        {"jpeg", {FunctionalWrapper<JPEGLoader<Policy>, LoaderInterface>{}}}
+        {"bmp", {DeferredConstructor<BMPLoader<Policy>, LoaderInterface>{}}},
+        {"png", {DeferredConstructor<PNGLoader<Policy>, LoaderInterface>{}}},
+        {"jpg", {DeferredConstructor<JPEGLoader<Policy>, LoaderInterface>{}}},
+        {"jpe", {DeferredConstructor<JPEGLoader<Policy>, LoaderInterface>{}}},
+        {"jpeg", {DeferredConstructor<JPEGLoader<Policy>, LoaderInterface>{}}}
     };
 
 }

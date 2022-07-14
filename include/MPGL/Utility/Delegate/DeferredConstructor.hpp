@@ -25,7 +25,8 @@
  */
 #pragma once
 
-#include <concepts>
+#include <MPGL/Traits/Concepts.hpp>
+
 #include <memory>
 
 namespace mpgl {
@@ -37,24 +38,12 @@ namespace mpgl {
      * @tparam Derived the given type
      * @tparam Base the base type
      */
-    template <class Derived, class Base = Derived>
-        requires std::derived_from<Derived, Base>
-    struct FunctionalWrapper {
-        typedef std::unique_ptr<Base>           BasePtr;
-
+    template <class Derived, BaseFor<Derived> Base = Derived>
+    struct DeferredConstructor {
         /**
-         * Checks whether the given type is nothrow constructible
-         *
-         * @tparam Args the type's constructor argument types
+         * Constructs a new deferred wrapper object
          */
-        template <typename... Args>
-        constexpr static bool NothrowConstructible =
-            std::is_nothrow_constructible_v<Derived, Args...>;
-
-        /**
-         * Constructs a new Functional Wrapper object
-         */
-        FunctionalWrapper(void) noexcept = default;
+        constexpr DeferredConstructor(void) noexcept = default;
 
         /**
          * Constructs and casts the given type into the base type
@@ -66,11 +55,11 @@ namespace mpgl {
          */
         template <typename... Args>
             requires std::constructible_from<Derived, Args...>
-        [[nodiscard]] BasePtr operator() (
+        [[nodiscard]] std::unique_ptr<Base> operator() (
             Args&&... args) const noexcept(
-                NothrowConstructible<Args...>);
+                NothrowConstructible<Derived, Args...>);
     };
 
 }
 
-#include <MPGL/Utility/FunctionalWrapper.tpp>
+#include <MPGL/Utility/Delegate/DeferredConstructor.tpp>

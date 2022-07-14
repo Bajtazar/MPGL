@@ -34,7 +34,7 @@ namespace mpgl {
                 && std::invocable<Tp, Policy,
             typename ImageLoader<Policy>::Path const>)
     void ImageLoader<Policy>::addFormatLoader(void) {
-        loaders[Tp::Tag] = LoadingFun{ FunctionalWrapper<Tp,
+        loaders[Tp::Tag] = LoadingFun{ DeferredConstructor<Tp,
             LoaderInterface>{} };
     }
 
