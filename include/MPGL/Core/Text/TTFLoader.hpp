@@ -26,8 +26,8 @@
 #pragma once
 
 #include <MPGL/Core/Text/FontComponents.hpp>
+#include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>
-#include <MPGL/Utility/Security.hpp>
 #include <MPGL/IO/FileIO.hpp>
 
 #include <variant>

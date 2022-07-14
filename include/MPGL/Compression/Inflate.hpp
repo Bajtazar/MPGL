@@ -27,9 +27,9 @@
 
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
 #include <MPGL/Exceptions/InflateDataCorruptionException.hpp>
+#include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Compression/HuffmanTree.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>
-#include <MPGL/Utility/Security.hpp>
 #include <MPGL/IO/Readers.hpp>
 
 namespace mpgl {

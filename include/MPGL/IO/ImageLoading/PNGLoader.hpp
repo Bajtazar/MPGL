@@ -27,8 +27,8 @@
 
 #include <MPGL/IO/ImageLoading/LoaderInterface.hpp>
 #include <MPGL/Utility/FunctionalWrapper.hpp>
+#include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>
-#include <MPGL/Utility/Security.hpp>
 
 #include <map>
 #include <array>
