@@ -23,10 +23,9 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Utility/Delegate/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
 #include <MPGL/Core/Textures/EllipseSprite.hpp>
-#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
 namespace mpgl {
@@ -41,7 +40,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     void EllipseSprite<IsColorable>::setLocations(void) {
-        Shadeable::setLocations(DelegationWrapper{
+        Shadeable::setLocations(DeferredExecutionWrapper{
             this->shaderProgram, locations}(
                 [](auto program, auto locations)
             {
@@ -211,7 +210,7 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTEllipseConv" : "MPGL/2D/TEllipseConv");
-        Shadeable::setLocations(DelegationWrapper{this->shaderProgram}(
+        Shadeable::setLocations(DeferredExecutionWrapper{this->shaderProgram}(
             [](auto program, auto convolution, auto dimensions) {
                 ShaderLocation{*program, "convolution"}(convolution);
                 ShaderLocation{*program, "screen"}(dimensions);

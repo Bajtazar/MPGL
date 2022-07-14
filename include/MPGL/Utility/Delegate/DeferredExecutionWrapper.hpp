@@ -32,14 +32,14 @@ namespace mpgl {
 
     /**
      * Wrapps the invocable and it's arguments that are supposed to
-     * be executed derefferedly. Stores the resource handles as the
+     * be executed deferredly. Stores the resource handles as the
      * weak pointers. If the resource is not available via the
      * weak pointer then abandons the execution of the invocable
      *
      * @tparam Handles the shared pointer resources types
      */
     template <InstanceOf<std::shared_ptr>... Handles>
-    class DelegationWrapper {
+    class DeferredExecutionWrapper {
     public:
         /**
          * Wrapps the non-handling resources of the delegation wrapper
@@ -47,7 +47,7 @@ namespace mpgl {
          * @tparam Args the non-handling types
          */
         template <PureType... Args>
-        class ArgumentsWrapper {
+        class InvocableArgumentsWrapper {
         public:
             /**
              * Wrapps the invocable. Decides whether to execute
@@ -56,10 +56,10 @@ namespace mpgl {
              * @tparam Function the wrapped invocable type
              */
             template <std::invocable<Handles..., Args...> Function>
-            class DelegatedFunctor {
+            class DeferredExecutor {
             public:
                 /**
-                 * Constructs a new Delegated Functor object
+                 * Constructs a new deffered executor object
                  *
                  * @param handles the rvalue reference to the
                  * delegation wrapper
@@ -68,9 +68,9 @@ namespace mpgl {
                  * @param invocable the rvalue reference to the
                  * invocable object
                  */
-                explicit DelegatedFunctor(
-                    DelegationWrapper&& handles,
-                    ArgumentsWrapper&& arguments,
+                explicit DeferredExecutor(
+                    DeferredExecutionWrapper&& handles,
+                    InvocableArgumentsWrapper&& arguments,
                     Function&& invocable);
 
                 /**
@@ -96,20 +96,20 @@ namespace mpgl {
                  */
                 auto replenishSharedPointers(void) const;
 
-                DelegationWrapper       handles;
-                ArgumentsWrapper        arguments;
+                DeferredExecutionWrapper       handles;
+                InvocableArgumentsWrapper        arguments;
                 Function                invocable;
             };
 
             /**
-             * Constructs a new Arguments Wrapper object
+             * Constructs a new invocable arguments wrapper object
              *
              * @param wrapper the rvalue referece to the delegation
              * wrapper
              * @param args the non-handling arguments
              */
-            explicit ArgumentsWrapper(
-                DelegationWrapper&& wrapper,
+            explicit InvocableArgumentsWrapper(
+                DeferredExecutionWrapper&& wrapper,
                 Args... args);
 
             /**
@@ -122,21 +122,21 @@ namespace mpgl {
              * @return the delegated functor
              */
             template <std::invocable<Handles..., Args...> Function>
-            [[nodiscard]] DelegatedFunctor<Function> operator() (
+            [[nodiscard]] DeferredExecutor<Function> operator() (
                 Function&& func);
         private:
             typedef std::tuple<Args...> ArgTuple;
 
-            DelegationWrapper           wrapper;
+            DeferredExecutionWrapper           wrapper;
             ArgTuple                    args;
         };
 
         /**
-         * Constructs a new Delegation Wrapper object
+         * Constructs a new deffered execution wrapper object
          *
          * @param handles the resource handling shared pointer types
          */
-        explicit DelegationWrapper(Handles&&... handles);
+        explicit DeferredExecutionWrapper(Handles&&... handles);
 
         /**
          * Creates the functor that handles and manages the given
@@ -179,4 +179,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Utility/Delegate/DelegationWrapper.tpp>
+#include <MPGL/Utility/Delegate/DeferredExecutionWrapper.tpp>

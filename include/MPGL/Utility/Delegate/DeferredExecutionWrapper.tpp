@@ -32,7 +32,7 @@ namespace mpgl {
     template <InstanceOf<std::shared_ptr>... Handles>
     template <typename... Args>
     constexpr auto
-        DelegationWrapper<Handles...>::WeakPointers::weaken(
+        DeferredExecutionWrapper<Handles...>::WeakPointers::weaken(
             Args... handles)
     {
         return std::tuple{std::weak_ptr{handles}...};
@@ -41,20 +41,21 @@ namespace mpgl {
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
-    DelegationWrapper<Handles...>::ArgumentsWrapper<Args...>::
-    DelegatedFunctor<Function>::DelegatedFunctor(
-        DelegationWrapper&& handles,
-        ArgumentsWrapper&& arguments,
-        Function&& invocable)
-            : handles{std::move(handles)},
-            arguments{std::move(arguments)},
-            invocable{std::move(invocable)} {}
+    DeferredExecutionWrapper<Handles...>::InvocableArgumentsWrapper<
+        Args...>::DeferredExecutor<Function>::DeferredExecutor(
+            DeferredExecutionWrapper&& handles,
+            InvocableArgumentsWrapper&& arguments,
+            Function&& invocable)
+                : handles{std::move(handles)},
+                arguments{std::move(arguments)},
+                invocable{std::move(invocable)} {}
 
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
-    void DelegationWrapper<Handles...>::ArgumentsWrapper<Args...>::
-        DelegatedFunctor<Function>::operator() (void) const
+    void DeferredExecutionWrapper<Handles...
+        >::InvocableArgumentsWrapper<Args...>::DeferredExecutor<
+        Function>::operator() (void) const
     {
         if (hasExpired())
             return;
@@ -69,8 +70,9 @@ namespace mpgl {
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
-    bool DelegationWrapper<Handles...>::ArgumentsWrapper<Args...>::
-        DelegatedFunctor<Function>::hasExpired(void) const
+    bool DeferredExecutionWrapper<Handles...
+        >::InvocableArgumentsWrapper<Args...>::DeferredExecutor<
+        Function>::hasExpired(void) const
     {
         return std::apply([](auto&&... args) {
             return (args.expired() && ...);
@@ -80,8 +82,9 @@ namespace mpgl {
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
-    auto DelegationWrapper<Handles...>::ArgumentsWrapper<Args...>::
-        DelegatedFunctor<Function>::replenishSharedPointers(void) const
+    auto DeferredExecutionWrapper<Handles...
+        >::InvocableArgumentsWrapper<Args...>::DeferredExecutor<
+        Function>::replenishSharedPointers(void) const
     {
         return std::apply([](auto&&... args) {
             return std::tuple{args.lock()...};
@@ -90,24 +93,26 @@ namespace mpgl {
 
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args>
-    DelegationWrapper<Handles...>::ArgumentsWrapper<Args...>::
-        ArgumentsWrapper(DelegationWrapper&& wrapper, Args... args)
+    DeferredExecutionWrapper<Handles...>::InvocableArgumentsWrapper<
+        Args...>::InvocableArgumentsWrapper(
+            DeferredExecutionWrapper&& wrapper,
+            Args... args)
             : wrapper{std::move(wrapper)}, args{args...} {}
 
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
-    [[nodiscard]] DelegationWrapper<Handles...>::
-        ArgumentsWrapper<Args...>::DelegatedFunctor<Function>
-    DelegationWrapper<Handles...>::ArgumentsWrapper<Args...>::
-        operator() (Function&& func)
+    [[nodiscard]] DeferredExecutionWrapper<Handles...>::
+        InvocableArgumentsWrapper<Args...>::DeferredExecutor<Function>
+    DeferredExecutionWrapper<Handles...>::InvocableArgumentsWrapper<
+        Args...>::operator() (Function&& func)
     {
-        return DelegatedFunctor{std::move(wrapper),
+        return DeferredExecutor{std::move(wrapper),
             std::move(*this), std::move(func)};
     }
 
     template <InstanceOf<std::shared_ptr>... Handles>
-    DelegationWrapper<Handles...>::DelegationWrapper(
+    DeferredExecutionWrapper<Handles...>::DeferredExecutionWrapper(
         Handles&&... handles)
             : handles{std::weak_ptr{std::forward<Handles>(handles)}...}
                 {}
@@ -115,11 +120,11 @@ namespace mpgl {
     template <InstanceOf<std::shared_ptr>... Handles>
     template <PureType... Args,
         std::invocable<Handles..., Args...> Func>
-    [[nodiscard]] auto DelegationWrapper<Handles...>::operator() (
+    [[nodiscard]] auto DeferredExecutionWrapper<Handles...>::operator()(
         Func&& functor,
         Args... args)
     {
-        return ArgumentsWrapper<Args...>{std::move(*this),
+        return InvocableArgumentsWrapper<Args...>{std::move(*this),
             args...}(std::move(functor));
     }
 

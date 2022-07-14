@@ -23,9 +23,8 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Utility/Delegate/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
-#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Core/Textures/RingSprite.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
@@ -178,7 +177,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     void RingSprite<IsColorable>::setLocations(void) {
-        Shadeable::setLocations(DelegationWrapper{this->shaderProgram,
+        Shadeable::setLocations(DeferredExecutionWrapper{this->shaderProgram,
             locations}([](auto program, auto locations)
             {
                 locations->outerShift
@@ -406,7 +405,7 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTRingConv" : "MPGL/2D/TRingConv");
-        Shadeable::setLocations(DelegationWrapper{this->shaderProgram}(
+        Shadeable::setLocations(DeferredExecutionWrapper{this->shaderProgram}(
             [](auto program, auto convolution, auto dimensions) {
                 ShaderLocation{*program, "convolution"}(convolution);
                 ShaderLocation{*program, "screen"}(dimensions);

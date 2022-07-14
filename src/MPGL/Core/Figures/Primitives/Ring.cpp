@@ -23,9 +23,9 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Utility/Delegate/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Figures/Primitives/Ring.hpp>
-#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 
@@ -154,7 +154,7 @@ namespace mpgl {
     };
 
     void Ring::setLocations(void) {
-        Shadeable::setLocations(DelegationWrapper{
+        Shadeable::setLocations(DeferredExecutionWrapper{
             shaderProgram, locations}([](auto program, auto locations)
         {
             locations->color = ShaderLocation{*program, "color"};

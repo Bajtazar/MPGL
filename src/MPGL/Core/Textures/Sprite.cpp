@@ -23,9 +23,9 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Utility/Delegate/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
-#include <MPGL/Utility/Delegate/DelegationWrapper.hpp>
 #include <MPGL/Core/Textures/Sprite.hpp>
 
 namespace mpgl {
@@ -139,7 +139,7 @@ namespace mpgl {
     {
         this->setShader(IsColorable ?
             "MPGL/2D/CTextureConv" : "MPGL/2D/TextureConv");
-        Shadeable::setLocations(DelegationWrapper{this->shaderProgram}(
+        Shadeable::setLocations(DeferredExecutionWrapper{this->shaderProgram}(
             [](auto program, auto convolution, auto dimensions) {
                 ShaderLocation{*program, "convolution"}(convolution);
                 ShaderLocation{*program, "screen"}(dimensions);
