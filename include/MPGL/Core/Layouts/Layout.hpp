@@ -71,9 +71,14 @@ namespace mpgl {
         void clear(void)
             { shapes.clear(); }
     protected:
-        struct Hash {
-            [[nodiscard]] size_t operator() (
+        class Hash {
+        public:
+            [[nodiscard]] std::size_t operator() (
                 LayoutPair const& layoutPair) const noexcept;
+        private:
+            typedef std::hash<pointer>          Hasher;
+
+            [[no_unique_address]] Hasher        hasher{};
         };
 
         struct EqualTo {
@@ -144,6 +149,7 @@ namespace mpgl {
         InsertResult emplace(Args&&... args);
 
         template <typename... Args>
+            requires std::constructible_from<LayoutPair, Args...>
         iterator emplaceHint(const_iterator hint, Args&&... args);
 
         iterator erase(iterator position)
@@ -195,4 +201,8 @@ namespace mpgl {
 
     typedef Layout<Figure>                      FigureLayout;
 
+    template class Layout<Figure>;
+
 }
+
+#include <MPGL/Core/Layouts/Layout.tpp>
