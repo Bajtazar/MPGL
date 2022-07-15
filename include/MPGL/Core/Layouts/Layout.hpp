@@ -25,184 +25,64 @@
  */
 #pragma once
 
-#include <MPGL/Core/Figures/Figure.hpp>
+#include <MPGL/Core/Context/Buffers/Vertex.hpp>
+#include <MPGL/Core/Context/Context.hpp>
 
 #include <unordered_set>
 
 namespace mpgl {
 
-    template <std::derived_from<Transformable2D> Tp>
-    class Layout : public ScreenTransformationEvent {
+    class Layout : protected GraphicalObject {
     public:
-        typedef Tp*                             pointer;
+        explicit Layout(void) noexcept = default;
 
-        struct LayoutPair {
-            Vector2u                            hook;
-            pointer                             transformable;
-        };
+        using PVertex = Vertex<
+            VertexComponent<"position", Adapter<Vector2f>,
+                DataType::Float32>
+        >;
 
-        explicit Layout(void) = noexcept;
+        using PCVertex = Vertex<
+            VertexComponent<"position", Adapter<Vector2f>,
+                DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
 
-        template <std::input_iterator Iter,
-            std::sentinel_for<Iter> Sent>
-                requires std::convertible_to<std::iter_value_t<Iter>,
-                    LayoutPair>
-        explicit Layout(Iter first, Sent const& last);
+        using PTVertex = Vertex<
+            VertexComponent<"position", Adapter<Vector2f>,
+                DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>
+        >;
 
-        template <std::ranges::input_range Range>
-            requires std::convertible_to<std::ranges::range_value_t<
-                Range>, LayoutPair>
-        explicit Layout(Range&& range);
+        using PTCVertex = Vertex<
+            VertexComponent<"position", Adapter<Vector2f>,
+                DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
 
-        Layout(std::initializer_list<LayoutPair> init);
+        virtual void operator() (
+            std::vector<PVertex>& range,
+            Vector2u const& oldDimensions) const noexcept = 0;
 
-        virtual void onScreenTransformation(
-            Vector2u const& oldDimensions) noexcept = 0;
+        virtual void operator() (
+            std::vector<PCVertex>& range,
+            Vector2u const& oldDimensions) const noexcept = 0;
 
-        [[nodiscard]] bool empty(void) const noexcept
-            { return shapes.empty(); }
+        virtual void operator() (
+            std::vector<PTVertex>& range,
+            Vector2u const& oldDimensions) const noexcept = 0;
 
-        [[nodiscard]] std::size_t size(void) const noexcept
-            { return shapes.size(); }
-
-        [[nodiscard]] std::size_t maxSize(void) const noexcept
-            { return shapes.max_size(); }
-
-        void clear(void)
-            { shapes.clear(); }
-    protected:
-        class Hash {
-        public:
-            [[nodiscard]] std::size_t operator() (
-                LayoutPair const& layoutPair) const noexcept;
-        private:
-            typedef std::hash<pointer>          Hasher;
-
-            [[no_unique_address]] Hasher        hasher{};
-        };
-
-        struct EqualTo {
-            [[nodiscard]] bool operator() (
-                LayoutPair const& left,
-                LayoutPair const& right) const noexcept;
-        };
-
-        typedef std::unordered_set<
-            LayoutPair, Hash, EqualTo>          UnorderedSet;
-    public:
-        typedef UnorderedSet::iterator          iterator;
-        typedef UnorderedSet::const_iterator    const_iterator;
-
-        [[nodiscard]] iterator begin(void) noexcept
-            { return shapes.begin(); }
-
-        [[nodiscard]] iterator end(void) noexcept
-            { return shapes.end(); }
-
-        [[nodiscard]] const_iterator begin(void) const noexcept
-            { return shapes.begin(); }
-
-        [[nodiscard]] const_iterator end(void) const noexcept
-            { return shapes.end(); }
-
-        [[nodiscard]] const_iterator cbegin(void) const noexcept
-            { return shapes.cbegin(); }
-
-        [[nodiscard]] const_iterator cend(void) const noexcept
-            { return shapes.cend(); }
-
-        typedef std::pair<iterator, bool>       InsertResult;
-
-        InsertResult insert(LayoutPair const& pair)
-            { return shapes.insert(pair); }
-
-        InsertResult insert(LayoutPair&& pair)
-            { return shapes.insert(std::move(pair)); }
-
-        InsertResult insert(Vector2u const& hook, pointer pointer)
-            { return shapes.insert(LayoutPair{hook, pointer}); }
-
-        iterator insert(const_iterator hint, LayoutPair const& pair)
-            { return shapes.insert(hint, pair); }
-
-        iterator insert(const_iterator hint, LayoutPair&& pair)
-            { return shapes.insert(hint, std::mov(pair)); }
-
-        iterator insert(
-            const_iterator hint,
-            Vector2u const& hook,
-            pointer pointer);
-
-        template <std::input_iterator Iter,
-            std::sentinel_for<Iter> Sent>
-                requires std::convertible_to<std::iter_value_t<Iter>,
-                    LayoutPair>
-        iterator insert(Iter first, Sent const& last);
-
-        template <std::ranges::input_range Range>
-            requires std::convertible_to<std::ranges::range_value_t<
-                Range>, LayoutPair>
-        iterator insert(Range&& range);
-
-        template <typename... Args>
-            requires std::constructible_from<LayoutPair, Args...>
-        InsertResult emplace(Args&&... args);
-
-        template <typename... Args>
-            requires std::constructible_from<LayoutPair, Args...>
-        iterator emplaceHint(const_iterator hint, Args&&... args);
-
-        iterator erase(iterator position)
-            { return shapes.erase(position); }
-
-        iterator erase(const_iterator position)
-            { return shapes.erase(position); }
-
-        iterator erase(const_iterator first, const_iterator last)
-            { return shapes.erase(first, last); }
-
-        std::size_t erase(pointer pointer)
-            { return shapes.erase(LayoutPair{{}, pointer}); }
-
-        [[nodiscard]] iterator find(pointer pointer)
-            { return shapes.find(LayoutPair{{}, pointer}); }
-
-        [[nodiscard]] const_iterator find(pointer pointer) const
-            { return shapes.find(LayoutPair{{}, pointer}); }
-
-        [[nodiscard]] bool contains(pointer pointer) const
-            { return shapes.contains(LayoutPair{{}, pointer}); }
-
-        [[nodiscard]] float32 loadFactor(void) const noexcept
-            { return shapes.load_factor(); }
-
-        [[nodiscard]] float32 maxLoadFactor(void) const noexcept
-            { return shapes.max_load_factor(); }
-
-        void maxLoadFactor(float32 factor)
-            { shapes.max_load_factor(factor); }
-
-        void rehash(std::size_t count)
-            { shapes.rehash(count); }
-
-        void reserve(std::size_t count)
-            { shapes.reserve(count); }
+        virtual void operator() (
+            std::vector<PTCVertex>& range,
+            Vector2u const& oldDimensions) const noexcept = 0;
 
         virtual ~Layout(void) noexcept = default;
     protected:
-        Layout(Layout const&) = default;
+        Layout(Layout const&) noexcept = default;
         Layout(Layout&&) noexcept = default;
 
-        Layout& operator=(Layout const&) = default;
+        Layout& operator=(Layout const&) noexcept = default;
         Layout& operator=(Layout&&) noexcept = default;
-
-        UnorderedSet                            shapes;
     };
 
-    typedef Layout<Figure>                      FigureLayout;
-
-    template class Layout<Figure>;
-
 }
-
-#include <MPGL/Core/Layouts/Layout.tpp>
