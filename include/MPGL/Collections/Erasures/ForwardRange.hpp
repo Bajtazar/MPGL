@@ -28,24 +28,32 @@
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <iterator>
+#include <memory.h>
 
 namespace mpgl::exp {
 
-    template <PureType Tp>
-    class ForwardRange {
-    public:
-        typedef Tp&                         reference;
-        typedef Tp const&                   const_reference;
+    namespace details {
 
-    private:
+        template <PureType Tp>
         class WrappedRangeIteratorBase {
+        public:
+            typedef std::remove_cvref_t<Tp> type;
+            typedef type&                   reference;
+            typedef type const&             const_reference;
+        protected:
+            constexpr static bool           PlainType 
+                = !std::is_const_v<Tp>;
         public:
             [[nodiscard]] virtual bool hasNext(void) const noexcept = 0;
 
-            [[nodiscard]] virtual reference next(void) noexcept = 0;
+            [[nodiscard]] virtual reference next(
+                void) noexcept requires PlainType = 0;
 
             [[nodiscard]] virtual const_reference const& next(
                 void) const noexcept = 0; 
+
+            [[nodiscard]] virtual WrappedRangeIteratorBase*
+                clone(void) = 0;
 
             virtual ~WrappedRangeIteratorBase(
                 void) noexcept = default;
@@ -61,6 +69,42 @@ namespace mpgl::exp {
 
             WrappedRangeIteratorBase& operator=(
                 WrappedRangeIteratorBase&&) noexcept = default;
+        };
+
+    }
+
+    template <PureType Tp>
+    class ForwardRange {
+    public:
+        typedef Tp&                         reference;
+        typedef Tp const&                   const_reference;
+
+    private:
+        class RangeInterface {
+        public:
+            [[nodiscard]] virtual std::size_t size(
+                void) const noexcept = 0;
+
+            [[nodiscard]] virtual bool empty(
+                void) const noexcept = 0;
+
+            using Iter = typename WrappedRangeIteratorBase<Tp>;
+            using ConstIter = typename WrappedRangeIteratorBase<
+                std::remove_const_t<Tp> const>;
+
+            using IterPtr = std::unique_ptr<Iter>;
+            using ConstIterPtr = std::unique_ptr<ConstIter>;
+
+            [[nodiscard]] virtual IterPtr iterator(void) noexcept = 0;
+
+            [[nodiscard]] virtual ConstIterPtr iterator(
+                void) const noexcept = 0;
+
+            [[nodiscard]] virtual RangeInterface* clone(void) = 0; 
+            
+            virtual ~RangeInterface(void) noexcept = default;
+        protected:
+
         };
 
     };
