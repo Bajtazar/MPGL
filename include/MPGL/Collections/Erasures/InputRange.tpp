@@ -30,27 +30,6 @@ namespace mpgl::exp {
     namespace details {
 
         template <std::ranges::input_range Range>
-        [[nodiscard]] WrappedRangeIterator<Range>::reference
-            WrappedRangeIterator<Range>::next(
-                void) noexcept requires (
-                    WrappedRangeIterator<Range>::Base::PlainType)
-        {
-            auto& ref = *iter;
-            ++iter;
-            return ref;
-        }
-
-        template <std::ranges::input_range Range>
-        [[nodiscard]] WrappedRangeIterator<Range>::const_reference
-            WrappedRangeIterator<Range>::next(
-                void) const noexcept
-        {
-            auto const& cref = *iter;
-            ++iter;
-            return cref;
-        }
-
-        template <std::ranges::input_range Range>
         [[nodiscard]] WrappedRangeIterator<Range>::Base*
             WrappedRangeIterator<Range>::clone(void) 
         {
@@ -73,7 +52,7 @@ namespace mpgl::exp {
     template <PureType Tp>
     template <std::ranges::input_range Rg>
     [[nodiscard]] InputRange<Tp>::RangeInterface::ConstIterPtr
-        InputRange<Tp>::WrappedRange<Rg>::iterator(void) const noexcept 
+        InputRange<Tp>::WrappedRange<Rg>::citerator(void) const noexcept 
     {
         return std::make_unique<WConstIter>(
             std::ranges::cbegin(range),
@@ -99,6 +78,36 @@ namespace mpgl::exp {
     {
         rangePointer = std::unique_ptr{
             inputRange.rangePointer->clone()};
+        return *this;
+    }
+
+    template <PureType Tp>
+    template <typename BaseTp>
+    InputRange<Tp>::Iterator<BaseTp>::Iterator(
+        Iterator const& iterator)
+            : iterPtr{iterator.iterPtr ? 
+                iterator.iterPtr->clone() : nullptr} {}
+
+    template <PureType Tp>
+    template <typename BaseTp>
+    InputRange<Tp>::Iterator<BaseTp>&
+        InputRange<Tp>::Iterator<BaseTp>::operator=(
+            Iterator const& iterator)
+    {
+        iterPtr = UnderlyingPtr{
+            iterator.iterPtr ? 
+            iterator.iterPtr->clone() : nullptr
+        };
+        return *this;
+    }
+
+    template <PureType Tp>
+    template <typename BaseTp>
+    [[nodiscard]] InputRange<Tp>::Iterator<BaseTp>
+        InputRange<Tp>::Iterator<BaseTp>::operator++(int)
+    {
+        auto copy = *this;
+        iterPtr->increment();
         return *this;
     }
 
