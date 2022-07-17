@@ -29,18 +29,18 @@ namespace mpgl::exp {
 
     namespace details {
 
-        template <std::ranges::forward_range Range>
+        template <std::ranges::input_range Range>
         [[nodiscard]] WrappedRangeIterator<Range>::reference
             WrappedRangeIterator<Range>::next(
                 void) noexcept requires (
-                    WrappedRangeIterator<Range>::PlainType)
+                    WrappedRangeIterator<Range>::Base::PlainType)
         {
             auto& ref = *iter;
             ++iter;
             return ref;
         }
 
-        template <std::ranges::forward_range Range>
+        template <std::ranges::input_range Range>
         [[nodiscard]] WrappedRangeIterator<Range>::const_reference
             WrappedRangeIterator<Range>::next(
                 void) const noexcept
@@ -50,8 +50,8 @@ namespace mpgl::exp {
             return cref;
         }
 
-        template <std::ranges::forward_range Range>
-        [[nodiscard]] WrappedRangeIterator<Range>*
+        template <std::ranges::input_range Range>
+        [[nodiscard]] WrappedRangeIterator<Range>::Base*
             WrappedRangeIterator<Range>::clone(void) 
         {
             return new WrappedRangeIterator{iter, sent};
@@ -60,9 +60,9 @@ namespace mpgl::exp {
     }
 
     template <PureType Tp>
-    template <std::ranges::forward_range Rg>
-    [[nodiscard]] ForwardRange<Tp>::WrappedRange<Rg>::IterPtr
-        ForwardRange::WrappedRange::iterator(void) noexcept 
+    template <std::ranges::input_range Rg>
+    [[nodiscard]] InputRange<Tp>::RangeInterface::IterPtr
+        InputRange<Tp>::WrappedRange<Rg>::iterator(void) noexcept 
     {
         return std::make_unique<WIter>(
             std::ranges::begin(range),
@@ -71,9 +71,9 @@ namespace mpgl::exp {
     }
 
     template <PureType Tp>
-    template <std::ranges::forward_range Rg>
-    [[nodiscard]] ForwardRange<Tp>::WrappedRange<Rg>::ConstIterPtr
-        ForwardRange::WrappedRange::iterator(void) const noexcept 
+    template <std::ranges::input_range Rg>
+    [[nodiscard]] InputRange<Tp>::RangeInterface::ConstIterPtr
+        InputRange<Tp>::WrappedRange<Rg>::iterator(void) const noexcept 
     {
         return std::make_unique<WConstIter>(
             std::ranges::cbegin(range),
@@ -82,23 +82,23 @@ namespace mpgl::exp {
     }
 
     template <PureType Tp>
-    template <std::ranges::forward_range Range>
+    template <std::ranges::input_range Range>
         requires std::same_as<Tp, std::ranges::range_value_t<Range>>
-    ForwardRange<Tp>::ForwardRange(Range&& range)
+    InputRange<Tp>::InputRange(Range&& range)
         : rangePointer{std::make_unique<WrappedRange<Range>>(
             std::forward(range))} {}
 
     template <PureType Tp>
-    ForwardRange<Tp>::ForwardRange(
-        ForwardRange const& forwardRange)
-            : rangePointer{forwardRange.rangePointer->clone()} {}
+    InputRange<Tp>::InputRange(
+        InputRange const& inputRange)
+            : rangePointer{inputRange.rangePointer->clone()} {}
 
     template <PureType Tp>
-    ForwardRange<Tp>& ForwardRange<Tp>::operator=(
-        ForwardRange const& forwardRange) 
+    InputRange<Tp>& InputRange<Tp>::operator=(
+        InputRange const& inputRange) 
     {
         rangePointer = std::unique_ptr{
-            forwardRange.rangePointer->clone()};
+            inputRange.rangePointer->clone()};
         return *this;
     }
 
