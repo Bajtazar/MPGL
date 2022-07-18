@@ -27,7 +27,7 @@
 
 #include <utility>
 
-namespace mpgl::exp {
+namespace mpgl {
 
     namespace details {
 
@@ -42,8 +42,8 @@ namespace mpgl::exp {
 
     template <PureType Tp>
     template <std::ranges::input_range Rg>
-    [[nodiscard]] InputRange<Tp>::RangeInterface::IterPtr
-        InputRange<Tp>::WrappedRange<Rg>::iterator(void) noexcept 
+    [[nodiscard]] RangeErasurer<Tp>::RangeInterface::IterPtr
+        RangeErasurer<Tp>::WrappedRange<Rg>::iterator(void) noexcept 
     {
         return std::make_unique<WIter>(
             std::ranges::begin(range),
@@ -54,28 +54,28 @@ namespace mpgl::exp {
     template <PureType Tp>
     template <std::ranges::input_range Range>
         requires std::same_as<Tp, std::ranges::range_value_t<Range>>
-    InputRange<Tp>::InputRange(Range&& range)
+    RangeErasurer<Tp>::RangeErasurer(Range&& range)
         : rangePointer{std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range))} {}
 
     template <PureType Tp>
-    InputRange<Tp>::InputRange(
-        InputRange const& inputRange)
-            : rangePointer{inputRange.rangePointer->clone()} {}
+    RangeErasurer<Tp>::RangeErasurer(
+        RangeErasurer const& rangeErasurer)
+            : rangePointer{rangeErasurer.rangePointer->clone()} {}
 
     template <PureType Tp>
-    InputRange<Tp>& InputRange<Tp>::operator=(
-        InputRange const& inputRange) 
+    RangeErasurer<Tp>& RangeErasurer<Tp>::operator=(
+        RangeErasurer const& rangeErasurer) 
     {
         rangePointer = std::unique_ptr{
-            inputRange.rangePointer->clone()};
+            rangeErasurer.rangePointer->clone()};
         return *this;
     }
 
     template <PureType Tp>
     template <std::ranges::input_range Range>
         requires std::same_as<Tp, std::ranges::range_value_t<Range>>
-    InputRange<Tp>& InputRange<Tp>::operator=(Range&& range) {
+    RangeErasurer<Tp>& RangeErasurer<Tp>::operator=(Range&& range) {
         rangePointer = std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range));
         return *this;
@@ -83,15 +83,15 @@ namespace mpgl::exp {
 
     template <PureType Tp>
     template <typename BaseTp>
-    InputRange<Tp>::Iterator<BaseTp>::Iterator(
+    RangeErasurer<Tp>::Iterator<BaseTp>::Iterator(
         Iterator const& iterator)
             : iterPtr{iterator.iterPtr ? 
                 iterator.iterPtr->clone() : nullptr} {}
 
     template <PureType Tp>
     template <typename BaseTp>
-    InputRange<Tp>::Iterator<BaseTp>&
-        InputRange<Tp>::Iterator<BaseTp>::operator=(
+    RangeErasurer<Tp>::Iterator<BaseTp>&
+        RangeErasurer<Tp>::Iterator<BaseTp>::operator=(
             Iterator const& iterator)
     {
         iterPtr = UnderlyingPtr{
@@ -103,8 +103,8 @@ namespace mpgl::exp {
 
     template <PureType Tp>
     template <typename BaseTp>
-    [[nodiscard]] InputRange<Tp>::Iterator<BaseTp>
-        InputRange<Tp>::Iterator<BaseTp>::operator++(int)
+    [[nodiscard]] RangeErasurer<Tp>::Iterator<BaseTp>
+        RangeErasurer<Tp>::Iterator<BaseTp>::operator++(int)
     {
         auto copy = *this;
         iterPtr->increment();

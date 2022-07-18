@@ -30,7 +30,7 @@
 #include <iterator>
 #include <memory>
 
-namespace mpgl::exp {
+namespace mpgl {
 
     namespace details {
 
@@ -118,24 +118,24 @@ namespace mpgl::exp {
     }
 
     template <PureType Tp>
-    class InputRange {
+    class RangeErasurer {
     public:
         typedef Tp&                         reference;
         typedef Tp const&                   const_reference;
 
         template <std::ranges::input_range Range>
             requires std::same_as<Tp, std::ranges::range_value_t<Range>>
-        explicit InputRange(Range&& range);
+        explicit RangeErasurer(Range&& range);
 
-        InputRange(InputRange const& inputRange);
-        InputRange(InputRange&&) = default;
+        RangeErasurer(RangeErasurer const& rangeErasurer);
+        RangeErasurer(RangeErasurer&&) = default;
 
-        InputRange& operator=(InputRange const& inputRange);
-        InputRange& operator=(InputRange&&) = default;
+        RangeErasurer& operator=(RangeErasurer const& rangeErasurer);
+        RangeErasurer& operator=(RangeErasurer&&) = default;
     
         template <std::ranges::input_range Range>
             requires std::same_as<Tp, std::ranges::range_value_t<Range>>
-        InputRange& operator=(Range&& range);
+        RangeErasurer& operator=(Range&& range);
 
         class sentinel {};
 
@@ -206,10 +206,10 @@ namespace mpgl::exp {
         [[nodiscard]] sentinel cend(void) const noexcept 
             { return {}; }
 
-        void swap(InputRange& other) noexcept
+        void swap(RangeErasurer& other) noexcept
             { rangePointer.swap(other.rangePointer); }
 
-        ~InputRange(void) noexcept = default;
+        ~RangeErasurer(void) noexcept = default;
     private:
         class RangeInterface {
         public:
@@ -240,7 +240,7 @@ namespace mpgl::exp {
         class WrappedRange : public RangeInterface {
         public:
             explicit WrappedRange(Range&& range) 
-                : range{std::forward<Range>(range)} {}
+                : range{std::forward(range)} {}
 
             WrappedRange(WrappedRange const&) = default;
             WrappedRange(WrappedRange&&) = default;
@@ -254,7 +254,7 @@ namespace mpgl::exp {
             using WIter = details::WrappedRangeIterator<Range>;
 
             [[nodiscard]] RangeInterface* clone(void) final
-                { return new WrappedRange{range}; }
+                { return new WrappedRange{*this}; }
         
             [[nodiscard]] IterPtr iterator(void) noexcept final;
 
@@ -263,9 +263,12 @@ namespace mpgl::exp {
             Range                           range;
         };
 
-        std::unique_ptr<RangeInterface>     rangePointer;
+        typedef std::unique_ptr<
+            RangeInterface>                 InterfacePtr;
+
+        InterfacePtr                        rangePointer;
     };
 
 }
 
-#include <MPGL/Collections/Erasures/InputRange.tpp>
+#include <MPGL/Collections/Erasurers/RangeErasurer.tpp>
