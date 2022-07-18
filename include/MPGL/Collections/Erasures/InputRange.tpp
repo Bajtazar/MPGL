@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <utility>
+
 namespace mpgl::exp {
 
     namespace details {
@@ -50,22 +52,11 @@ namespace mpgl::exp {
     }
 
     template <PureType Tp>
-    template <std::ranges::input_range Rg>
-    [[nodiscard]] InputRange<Tp>::RangeInterface::ConstIterPtr
-        InputRange<Tp>::WrappedRange<Rg>::citerator(void) const noexcept 
-    {
-        return std::make_unique<WConstIter>(
-            std::ranges::cbegin(range),
-            std::ranges::cend(range)
-        );
-    }
-
-    template <PureType Tp>
     template <std::ranges::input_range Range>
         requires std::same_as<Tp, std::ranges::range_value_t<Range>>
     InputRange<Tp>::InputRange(Range&& range)
         : rangePointer{std::make_unique<WrappedRange<Range>>(
-            std::forward(range))} {}
+            std::forward<Range>(range))} {}
 
     template <PureType Tp>
     InputRange<Tp>::InputRange(

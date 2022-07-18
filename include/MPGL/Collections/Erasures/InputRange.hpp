@@ -28,7 +28,7 @@
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <iterator>
-#include <memory.h>
+#include <memory>
 
 namespace mpgl::exp {
 
@@ -37,6 +37,8 @@ namespace mpgl::exp {
         template <PureType Tp>
         class WrappedRangeIteratorBase {
         public:
+            explicit WrappedRangeIteratorBase(void) noexcept = default;
+
             using reference = Tp&; 
 
             [[nodiscard]] virtual bool hasNext(
@@ -75,7 +77,7 @@ namespace mpgl::exp {
             using RangeIter = std::ranges::iterator_t<Range>;
             using RangeSent = std::ranges::sentinel_t<Range>;
             using Base = WrappedRangeIteratorBase<
-                std::iter_value_t<std::ranges::iterator_t<Range>>
+                std::iter_value_t<std::ranges::iterator_t<Range>>>;
             using reference = typename Base::reference;
 
             explicit WrappedRangeIterator(
@@ -97,7 +99,7 @@ namespace mpgl::exp {
 
             [[nodiscard]] bool hasNext(
                 void) const noexcept final
-                    { return iter != iter; }
+                    { return iter != sent; }
 
             void increment(void) noexcept final
                 { ++iter; }
@@ -134,16 +136,17 @@ namespace mpgl::exp {
         class sentinel {};
 
         template <typename BaseTp>
-        class Iterator : std::iterator<
-            std::input_iterator_tag, BaseTp> 
-        {
+        class Iterator {
         public:
+            using iterator_category = std::input_iterator_tag;
+            using value_type = BaseTp;
+            using difference_type = std::ptrdiff_t;
+            using pointer = BaseTp*;
+            using reference = BaseTp&;
+
             using UnderlyingIter = 
                 details::WrappedRangeIteratorBase<BaseTp>;
             using UnderlyingPtr = std::unique_ptr<UnderlyingIter>;
-            using reference = typename UnderlyingIter::reference;
-            using ptrdiff_t = std::ptrdiff_t;
-            using pointer = std::remove_reference_t<reference>*;
 
             explicit Iterator(UnderlyingPtr&& pointer)
                 : iterPtr{std::move(pointer)} {}
@@ -188,10 +191,10 @@ namespace mpgl::exp {
             { return iterator{rangePointer->iterator()}; }
 
         [[nodiscard]] const_iterator begin(void) const 
-            { return const_iterator{rangePointer->citerator()}; }
+            { return const_iterator{rangePointer->iterator()}; }
 
         [[nodiscard]] const_iterator cbegin(void) const 
-            { return const_iterator{rangePointer->citerator()}; }
+            { return const_iterator{rangePointer->iterator()}; }
 
         [[nodiscard]] sentinel end(void) const noexcept 
             { return {}; }
@@ -206,17 +209,12 @@ namespace mpgl::exp {
     private:
         class RangeInterface {
         public:
-            using Iter = typename details::WrappedRangeIteratorBase<Tp>;
-            using ConstIter = typename details::WrappedRangeIteratorBase<
-                std::remove_const_t<Tp> const>;
+            explicit RangeInterface(void) noexcept = default;
 
+            using Iter = typename details::WrappedRangeIteratorBase<Tp>;
             using IterPtr = std::unique_ptr<Iter>;
-            using ConstIterPtr = std::unique_ptr<ConstIter>;
 
             [[nodiscard]] virtual IterPtr iterator(void) noexcept = 0;
-
-            [[nodiscard]] virtual ConstIterPtr citerator(
-                void) const noexcept = 0;
 
             [[nodiscard]] virtual RangeInterface* clone(void) = 0; 
             
@@ -238,7 +236,7 @@ namespace mpgl::exp {
         class WrappedRange : public RangeInterface {
         public:
             explicit WrappedRange(Range&& range) 
-                : range{std::forward(range)} {}
+                : range{std::forward<Range>(range)} {}
 
             WrappedRange(WrappedRange const&) = default;
             WrappedRange(WrappedRange&&) = default;
@@ -249,17 +247,12 @@ namespace mpgl::exp {
                 WrappedRange&&) = default;
 
             using IterPtr = typename RangeInterface::IterPtr;
-            using ConstIterPtr = typename RangeInterface::ConstIterPtr;
             using WIter = details::WrappedRangeIterator<Range>;
-            using WConstIter = details::WrappedRangeIterator<Range const>;
 
             [[nodiscard]] RangeInterface* clone(void) final
                 { return new WrappedRange{range}; }
         
             [[nodiscard]] IterPtr iterator(void) noexcept final;
-
-            [[nodiscard]] ConstIterPtr citerator(
-                void) const noexcept final;
 
             ~WrappedRange(void) noexcept = default;
         private:
