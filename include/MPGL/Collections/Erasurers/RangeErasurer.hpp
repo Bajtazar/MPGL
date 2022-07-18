@@ -240,7 +240,7 @@ namespace mpgl {
         class WrappedRange : public RangeInterface {
         public:
             explicit WrappedRange(Range&& range) 
-                : range{std::forward(range)} {}
+                : range{std::forward<Range>(range)} {}
 
             WrappedRange(WrappedRange const&) = default;
             WrappedRange(WrappedRange&&) = default;
@@ -268,6 +268,36 @@ namespace mpgl {
 
         InterfacePtr                        rangePointer;
     };
+
+}
+
+namespace std {
+
+    template <mpgl::PureType Tp>
+    void swap(
+        mpgl::RangeErasurer<Tp>& left, 
+        mpgl::RangeErasurer<Tp>& right) noexcept 
+    {
+        left.swap(right);
+    }
+
+    template <mpgl::PureType Tp>
+    void swap(
+        typename mpgl::RangeErasurer<Tp>::iterator& left,
+        typename mpgl::RangeErasurer<Tp>::iterator& right
+        ) noexcept
+    {
+        left.swap(right);
+    }
+
+    template <mpgl::PureType Tp>
+    void swap(
+        typename mpgl::RangeErasurer<Tp>::const_iterator& left,
+        typename mpgl::RangeErasurer<Tp>::const_iterator& right
+        ) noexcept
+    {
+        left.swap(right);
+    }
 
 }
 
