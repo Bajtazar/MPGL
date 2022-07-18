@@ -132,6 +132,10 @@ namespace mpgl::exp {
 
         InputRange& operator=(InputRange const& inputRange);
         InputRange& operator=(InputRange&&) = default;
+    
+        template <std::ranges::input_range Range>
+            requires std::same_as<Tp, std::ranges::range_value_t<Range>>
+        InputRange& operator=(Range&& range);
 
         class sentinel {};
 
@@ -145,7 +149,7 @@ namespace mpgl::exp {
             using reference = BaseTp&;
 
             using UnderlyingIter = 
-                details::WrappedRangeIteratorBase<BaseTp>;
+                details::WrappedRangeIteratorBase<Tp>;
             using UnderlyingPtr = std::unique_ptr<UnderlyingIter>;
 
             explicit Iterator(UnderlyingPtr&& pointer)

@@ -73,6 +73,15 @@ namespace mpgl::exp {
     }
 
     template <PureType Tp>
+    template <std::ranges::input_range Range>
+        requires std::same_as<Tp, std::ranges::range_value_t<Range>>
+    InputRange<Tp>& InputRange<Tp>::operator=(Range&& range) {
+        rangePointer = std::make_unique<WrappedRange<Range>>(
+            std::forward<Range>(range));
+        return *this;
+    }
+
+    template <PureType Tp>
     template <typename BaseTp>
     InputRange<Tp>::Iterator<BaseTp>::Iterator(
         Iterator const& iterator)
