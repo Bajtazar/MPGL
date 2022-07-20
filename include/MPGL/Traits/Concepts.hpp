@@ -585,4 +585,27 @@ namespace mpgl {
     template <class Base, class Derived>
     concept BaseFor = std::derived_from<Derived, Base>;
 
+    /**
+     * Checks whether the type can be cloned using the
+     * prototype design pattern
+     *
+     * @tparam Tp the checked type
+     */
+    template <typename Tp>
+    concept Clonable = std::convertible_to<Tp, std::remove_pointer_t<
+        decltype(std::declval<Tp>().clone())>>;
+
+    /**
+     * Checks whether the type underlying pointer can be cloned
+     * using the prototype design pattern
+     *
+     * @tparam Tp the checked type
+     */
+    template <class Pointer>
+    concept ClonablePointer = std::convertible_to<
+        decltype(*std::declval<Pointer>()),
+        std::remove_pointer_t<decltype(
+        std::declval<Pointer>()->clone())>>
+    && requires (Pointer const& ptr) { bool(ptr); };
+
 }

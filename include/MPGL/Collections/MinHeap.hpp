@@ -25,9 +25,10 @@
  */
 #pragma once
 
+#include <MPGL/Traits/Concepts.hpp>
+
 #include <algorithm>
 #include <vector>
-#include <ranges>
 #include <memory>
 
 namespace mpgl {
@@ -38,9 +39,9 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <typename Tp>
-    concept SmartPtr = std::is_object_v<Tp> && (
-        std::same_as<Tp, std::shared_ptr<typename Tp::element_type>> ||
-        std::same_as<Tp, std::unique_ptr<typename Tp::element_type>>);
+    concept SmartPtr = std::is_object_v<Tp> &&
+        (InstanceOf<Tp, std::shared_ptr> ||
+        InstanceOf<Tp, std::unique_ptr>);
 
     /**
      * Compares two smart pointers with each other
