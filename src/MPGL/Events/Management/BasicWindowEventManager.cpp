@@ -34,6 +34,15 @@ namespace mpgl {
             oldDimensions);
     }
 
+    void BasicWindowEventManager::onScreenTransformation(
+        std::vector<std::unique_ptr<Layout>>& layouts,
+        Vector2u const& oldDimensions) noexcept
+    {
+        /// @TODO
+        get<ScreenTransformationRegister>(registers).onEvent(
+            oldDimensions);
+    }
+
     void BasicWindowEventManager::onMouseRelease(
         MouseButton const& button) noexcept
     {

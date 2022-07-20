@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Core/Layouts/Layout.hpp>
 #include <MPGL/Events/EventBus.hpp>
 
 namespace mpgl {
@@ -156,6 +157,87 @@ namespace mpgl {
              */
             virtual void push(
                 std::shared_ptr<TickEvent>&& event) = 0;
+
+            /**
+             * Registers an event object in the event manager if
+             * the event type is derived from the tick event
+             *
+             * @tparam Ep the event's type
+             * @param event the constant reference to the event's
+             * shared pointer
+             */
+            template <Event Ep>
+            void pushIfDerived(std::shared_ptr<Ep> const& event);
+        };
+
+        /**
+         * Specialization of the event manager base class for the
+         * screen transformation event. Allows to distribute layout
+         * among the events
+         */
+        template <>
+        class EventManagerBase<ScreenTransformationEvent>
+            : public ScreenTransformationEvent
+        {
+        public:
+            /**
+             * Constructs a new event manager base tail object
+             */
+            explicit EventManagerBase(void) noexcept = default;
+
+            EventManagerBase(EventManagerBase const&) = delete;
+            EventManagerBase(EventManagerBase&&) = delete;
+
+            EventManagerBase& operator=(
+                EventManagerBase const&) = delete;
+            EventManagerBase& operator=(
+                EventManagerBase&&) = delete;
+
+            /**
+             * Pure virtual method. Has to be overloaded.
+             * Notifies when window changes its shape
+             *
+             * @param oldDimensions the old window dimensions
+             */
+            virtual void onScreenTransformation(
+                Vector2u const& oldDimensions) noexcept = 0;
+
+            /**
+             * Pure virtual method. Has to be overloaded.
+             * Notifies when window changes its shape. Propagates
+             * the given layouts among the corresponding event
+             * objects
+             *
+             * @param layouts the reference to the vector that
+             * contains layouts
+             * @param oldDimensions the old window dimensions
+             */
+            virtual void onScreenTransformation(
+                std::vector<std::unique_ptr<Layout>>& layouts,
+                Vector2u const& oldDimensions) noexcept = 0;
+
+            /**
+             * Destroys the event manager base object
+             */
+            virtual ~EventManagerBase(void) noexcept = default;
+        protected:
+            using STEPtr = std::shared_ptr<ScreenTransformationEvent>;
+
+            /**
+             * Registers an event pointer in the event manager
+             *
+             * @param event the constant reference to the screen
+             * transformation event's shared pointer
+             */
+            virtual void push(STEPtr const& event) = 0;
+
+            /**
+             * Registers an event pointer in the event manager
+             *
+             * @param event the rvalue reference to the screen
+             * transformation event's shared pointer
+             */
+            virtual void push(STEPtr&& event) = 0;
 
             /**
              * Registers an event object in the event manager if
