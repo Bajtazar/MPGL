@@ -70,7 +70,8 @@ namespace mpgl {
         Vector2u oldDimensions = render->dimensions;
         render->setDimensions(vectorCast<uint32>(
             Vector2i{width, height}));
-        render->eventManager->onScreenTransformation(oldDimensions);
+        render->eventManager->onScreenTransformation(
+            render->layouts, oldDimensions);
     }
 
     void keyCallback(GLFWwindow* window, int32 key,

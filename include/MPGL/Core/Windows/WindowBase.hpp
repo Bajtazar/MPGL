@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Events/Management/BasicWindowEventManager.hpp>
+#include <MPGL/Core/Layouts/DefaultLayout.hpp>
 #include <MPGL/Core/Context/Context.hpp>
 #include <MPGL/Collections/Image.hpp>
 #include <MPGL/Events/EventBus.hpp>
@@ -44,6 +45,8 @@ namespace mpgl {
         typedef std::unique_ptr<WindowEventManager> EventManagerPtr;
         typedef std::vector<DrawablePtr>            Drawables;
         typedef std::size_t                         size_type;
+        typedef std::unique_ptr<Layout>             LayoutPtr;
+        typedef ScreenTransformationEvent           STEvent;
 
         WindowBase(WindowBase&&) = delete;
         WindowBase(WindowBase const&) = delete;
@@ -58,10 +61,27 @@ namespace mpgl {
          * @param event the event shared pointer object
          */
         template <Event Tp>
-        void pushEvent(std::shared_ptr<Tp> const& event);
+            requires (!std::derived_from<Tp, STEvent>)
+        void pushEvent(
+            std::shared_ptr<Tp> const& event);
 
         /**
-         * Emplaces event into event registers it derives from
+         * Pushes event into event registers it derives from .
+         * Attaches the layout to the drawable
+         *
+         * @tparam Tp the type of the event
+         * @param event the event shared pointer object
+         * @param layout the optional layout of the event
+         */
+        template <std::derived_from<STEvent> Tp>
+        void pushEvent(
+            std::shared_ptr<Tp> const& event,
+            LayoutPtr layout = std::make_unique<DefaultLayout>());
+
+        /**
+         * Emplaces event into event registers it derives from. If
+         * event derives from Screen Transformation Event than
+         * automaticaly assigns the Default Layout to it
          *
          * @tparam Tp the type of the event
          * @tparam Args the type of arguments passed into the event
@@ -73,6 +93,22 @@ namespace mpgl {
         void emplaceEvent(Args&&... args);
 
         /**
+         * Emplaces event into event registers it derives from.
+         * Attaches the layout to the event
+         *
+         * @tparam Tp the type of the event
+         * @tparam Args the type of arguments passed into the event
+         * constructor
+         * @param layout the layout of the event
+         * @param args the arguments passed into event constructor
+         */
+        template <std::derived_from<STEvent> Tp, typename... Args>
+            requires std::constructible_from<Tp, Args...>
+        void emplaceEventWithLayout(
+            LayoutPtr&& layout,
+            Args&&... args);
+
+        /**
          * Pushes drawable into drawable vector and adds drawable
          * to event registers it derives from
          *
@@ -80,7 +116,23 @@ namespace mpgl {
          * @param drawable the drawable shared pointer object
          */
         template <std::derived_from<Drawable2D> Tp>
+            requires (!std::derived_from<Tp, STEvent>)
         void pushDrawable(std::shared_ptr<Tp> const& drawable);
+
+        /**
+         * Pushes drawable into drawable vector and adds drawable
+         * to event registers it derives from. Attaches the layout
+         * to the drawable
+         *
+         * @tparam Tp the type of the drawable
+         * @param drawable the drawable shared pointer object
+         * @param layout the optional drawable's layout
+         */
+        template <std::derived_from<Drawable2D> Tp>
+            requires std::derived_from<Tp, STEvent>
+        void pushDrawable(
+            std::shared_ptr<Tp> const& drawable,
+            LayoutPtr layout = std::make_unique<DefaultLayout>());
 
         /**
          * Moves drawable into drawable vector and adds drawable
@@ -90,11 +142,29 @@ namespace mpgl {
          * @param drawable the drawable shared pointer object
          */
         template <std::derived_from<Drawable2D> Tp>
+            requires (!std::derived_from<Tp, STEvent>)
         void pushDrawable(std::shared_ptr<Tp>&& drawable);
 
         /**
+         * Moves drawable into drawable vector and adds drawable
+         * to event registers it derives from. Attaches the layout
+         * to the drawable
+         *
+         * @tparam Tp the type of the drawable
+         * @param drawable the drawable shared pointer object
+         * @param layout the optional drawable's layout
+         */
+        template <std::derived_from<Drawable2D> Tp>
+            requires std::derived_from<Tp, STEvent>
+        void pushDrawable(
+            std::shared_ptr<Tp>&& drawable,
+            LayoutPtr layout = std::make_unique<DefaultLayout>());
+
+        /**
          * Emplaces drawable into drawables vector and adds
-         * drawable to event registers it derives from
+         * drawable to event registers it derives from. If drawable
+         * derives from Screen Transformation Event than automaticaly
+         * assigns the Default Layout to it
          *
          * @tparam Tp the type of the drawable
          * @tparam Args the type of arguments passed into the
@@ -106,6 +176,26 @@ namespace mpgl {
             typename... Args>
                 requires std::constructible_from<Tp, Args...>
         void emplaceDrawable(Args&&... args);
+
+        /**
+         * Emplaces drawable into drawables vector and adds
+         * drawable to event registers it derives from. Attaches
+         * layout to the drawable
+         *
+         * @tparam Tp the type of the drawable
+         * @tparam Args the type of arguments passed into the
+         * drawable constructor
+         * @param layout the layout of the event
+         * @param args the arguments passed into the drawable
+         * constructor
+         */
+        template <std::derived_from<Drawable2D> Tp,
+            typename... Args>
+                requires (std::constructible_from<Tp, Args...>
+                    && std::derived_from<Tp, STEvent>)
+        void emplaceDrawableWithLayout(
+            LayoutPtr&& layout,
+            Args&&... args);
 
         /**
          * Pure virtual method. Has to be overloaded. Saves the
@@ -120,6 +210,7 @@ namespace mpgl {
          */
         virtual ~WindowBase(void) noexcept = default;
     protected:
+        typedef std::vector<LayoutPtr>              Layouts;
 
         /**
          * Construct a new Window Base object
@@ -132,6 +223,7 @@ namespace mpgl {
 
         EventManagerPtr                             eventManager;
         Drawables                                   drawables;
+        Layouts                                     layouts;
     };
 
 }

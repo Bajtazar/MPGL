@@ -132,7 +132,7 @@ namespace mpgl {
     void RenderWindow::onScreenTransformation(
         Vector2u const& oldDimensions) noexcept
     {
-        eventManager->onScreenTransformation(oldDimensions);
+        eventManager->onScreenTransformation(layouts, oldDimensions);
     }
 
     void RenderWindow::onMouseRelease(
