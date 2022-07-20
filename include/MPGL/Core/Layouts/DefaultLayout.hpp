@@ -48,7 +48,7 @@ namespace mpgl {
             DefaultLayout const&) noexcept = default;
 
         DefaultLayout& operator=(
-            DefaultLayout const&) noexcept = default;
+            DefaultLayout&&) noexcept = default;
 
         /**
          * Ensures that the object will be intact by the

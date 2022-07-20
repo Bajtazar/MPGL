@@ -51,7 +51,8 @@ namespace mpgl::any {
     }
 
     template <PureType Tp>
-    InputRange<Tp>::InputRange(InputRangeCompatible<Tp> auto&& range)
+    template <InputRangeCompatible<Tp> Range>
+    InputRange<Tp>::InputRange(Range&& range)
         : rangePointer{std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range))} {}
 
@@ -71,9 +72,8 @@ namespace mpgl::any {
     }
 
     template <PureType Tp>
-    InputRange<Tp>& InputRange<Tp>::operator=(
-        InputRangeCompatible<Tp> auto&& range)
-    {
+    template <InputRangeCompatible<Tp> Range>
+    InputRange<Tp>& InputRange<Tp>::operator=(Range&& range) {
         rangePointer = std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range));
         return *this;

@@ -72,12 +72,14 @@ namespace mpgl::any {
          * Constructs a new Input Range object handling or owning
          * the given Input-Range-compatible range
          *
+         * @tparam Range the range type
          * @param range the universal reference to the compatible
          * range (if it is a lvalue reference then InputRange holds a
          * reference - if it is a rvalue reference then InputRange
          * holds an object)
          */
-        explicit InputRange(InputRangeCompatible<Tp> auto&& range);
+        template <InputRangeCompatible<Tp> Range>
+        explicit InputRange(Range&& range);
 
         /**
          * Constructs a new Input Range object. Creates a copy of
@@ -109,202 +111,15 @@ namespace mpgl::any {
         /**
          * Assigns the given Input-Range-compatible range
          *
+         * @tparam Range the range type
          * @param range the universal reference to the compatible
          * range (if it is a lvalue reference then InputRange holds a
          * reference - if it is a rvalue reference then InputRange
          * holds an object)
          * @return the reference to this object
          */
-        InputRange& operator=(InputRangeCompatible<Tp> auto&& range);
-
-        /**
-         * Sentinel for the Input Range iterator
-         */
-        class sentinel {};
-
-        /**
-         * The input iterator that allows to interact with the
-         * wrapped range. Acts as a facade to the underlying
-         * type erasuring system. This class works heavely on virtual
-         * methods thus it should be used wisely where performance
-         * is important
-         *
-         * @tparam BaseTp the type used by the iterator
-         */
-        template <typename BaseTp>
-        class Iterator {
-        public:
-            using iterator_category = std::input_iterator_tag;
-            using value_type = BaseTp;
-            using difference_type = std::ptrdiff_t;
-            using pointer = BaseTp*;
-            using reference = BaseTp&;
-
-            using UnderlyingIter =
-                details::WrappedRangeIteratorBase<Tp>;
-            using UnderlyingPtr = std::unique_ptr<UnderlyingIter>;
-
-            /**
-             * Constructs a new Iterator object
-             *
-             * @param pointer the rvalue reference to the smart
-             * pointer managing the erasured iterator
-             */
-            explicit Iterator(UnderlyingPtr&& pointer) noexcept
-                : iterPtr{std::move(pointer)} {}
-
-            /**
-             * Constructs a new Iterator object
-             */
-            explicit Iterator(void) noexcept :
-                iterPtr{nullptr} {}
-
-            /**
-             * Constructs a new Iterator object from the other
-             * Iterator object
-             *
-             * @param iterator the constant reference to the
-             * Iterator object
-             */
-            Iterator(Iterator const& iterator);
-
-            Iterator(Iterator&&) noexcept = default;
-
-            /**
-             * Assigns an other Iterator object
-             *
-             * @param iterator the constant reference to the
-             * Iterator object
-             * @return the reference to this object
-             */
-            Iterator& operator=(Iterator const& iterator);
-
-            Iterator& operator=(Iterator&&) = default;
-
-            /**
-             * Returns the reference to the range's element
-             *
-             * @return the reference to the range's element
-             */
-            [[nodiscard]] reference operator*(void) const noexcept
-                { return iterPtr->get(); }
-
-            /**
-             * Returns the pointer to the range's element
-             *
-             * @return the pointer to the range's element
-             */
-            [[nodiscard]] pointer operator->(void) const noexcept
-                { return &(iterPtr->get()); }
-
-            /**
-             * Pre-increments an iterator
-             *
-             * @return the reference to this object
-             */
-            Iterator& operator++(void) noexcept
-                { iterPtr->increment(); return *this; }
-
-            /**
-             * Post-increments an iterator
-             *
-             * @return a copy of the pre-incremented iterator
-             */
-            [[nodiscard]] Iterator operator++(int);
-
-            /**
-             * Swaps two iterators toghether
-             *
-             * @param other the reference to the other iterator
-             * object
-             */
-            void swap(Iterator& other) noexcept
-                { iterPtr.swap(other.iterPtr); }
-
-            /**
-             * Compares the iterator to the sentinel
-             *
-             * @param iter the constant reference to the iterator
-             * @param sent the constant reference to the sentinel
-             * @return true if the iterator has reached its end
-             * otherwise returns false
-             */
-            friend [[nodiscard]] bool operator==(
-                Iterator const& iter,
-                [[maybe_unused]] sentinel const& sent) noexcept
-                    { return !iter.iterPtr || !iter.iterPtr->hasNext(); }
-
-            /**
-             * Compares the iterator to the sentinel
-             *
-             * @param sent the constant reference to the sentinel
-             * @param iter the constant reference to the iterator
-             * @return true if the iterator has reached its end
-             * otherwise returns false
-             */
-            friend [[nodiscard]] bool operator==(
-                [[maybe_unused]] sentinel const& sent,
-                Iterator const& iter) noexcept
-                    { return iter == sent; }
-        private:
-            UnderlyingPtr                   iterPtr;
-        };
-
-        using iterator = Iterator<Tp>;
-        using const_iterator = Iterator<Tp const>;
-
-        /**
-         * Returns an iterator to the begining of the range
-         *
-         * @return the iterator to the begining of the range
-         */
-        [[nodiscard]] iterator begin(void)
-            { return iterator{rangePointer->iterator()}; }
-
-        /**
-         * Returns a constant iterator to the begining of the range
-         *
-         * @return the constant iterator to the begining of the range
-         */
-        [[nodiscard]] const_iterator begin(void) const
-            { return const_iterator{rangePointer->iterator()}; }
-
-        /**
-         * Returns a constant iterator to the begining of the range
-         *
-         * @return the constant iterator to the begining of the range
-         */
-        [[nodiscard]] const_iterator cbegin(void) const
-            { return const_iterator{rangePointer->iterator()}; }
-
-        /**
-         * Returns the sentinel (signalizes end of the range)
-         *
-         * @return the sentinel
-         */
-        [[nodiscard]] sentinel end(void) const noexcept
-            { return {}; }
-
-        /**
-         * Returns the sentinel (signalizes end of the range)
-         *
-         * @return the sentinel
-         */
-        [[nodiscard]] sentinel cend(void) const noexcept
-            { return {}; }
-
-        /**
-         * Swaps to Input Range objects
-         *
-         * @param other the reference to the other object
-         */
-        void swap(InputRange& other) noexcept
-            { rangePointer.swap(other.rangePointer); }
-
-        /**
-         * Destroys the Input Range object
-         */
-        ~InputRange(void) noexcept = default;
+        template <InputRangeCompatible<Tp> Range>
+        InputRange& operator=(Range&& range);
     private:
         /**
          * An interface for the RangeWrapper. Allows to abstract
@@ -420,7 +235,195 @@ namespace mpgl::any {
             RangeInterface& operator=(
                 RangeInterface&&) noexcept = default;
         };
+    public:
+        /**
+         * Sentinel for the Input Range iterator
+         */
+        class sentinel {};
 
+        /**
+         * The input iterator that allows to interact with the
+         * wrapped range. Acts as a facade to the underlying
+         * type erasuring system. This class works heavely on virtual
+         * methods thus it should be used wisely where performance
+         * is important
+         *
+         * @tparam BaseTp the type used by the iterator
+         */
+        template <typename BaseTp>
+        class Iterator {
+        public:
+            using iterator_category = std::input_iterator_tag;
+            using value_type = BaseTp;
+            using difference_type = std::ptrdiff_t;
+            using pointer = BaseTp*;
+            using reference = BaseTp&;
+
+            using UnderlyingIter = RangeInterface::IteratorInterface;
+            using UnderlyingPtr = std::unique_ptr<UnderlyingIter>;
+
+            /**
+             * Constructs a new Iterator object
+             *
+             * @param pointer the rvalue reference to the smart
+             * pointer managing the erasured iterator
+             */
+            explicit Iterator(UnderlyingPtr&& pointer) noexcept
+                : iterPtr{std::move(pointer)} {}
+
+            /**
+             * Constructs a new Iterator object
+             */
+            explicit Iterator(void) noexcept :
+                iterPtr{nullptr} {}
+
+            /**
+             * Constructs a new Iterator object from the other
+             * Iterator object
+             *
+             * @param iterator the constant reference to the
+             * Iterator object
+             */
+            Iterator(Iterator const& iterator);
+
+            Iterator(Iterator&&) noexcept = default;
+
+            /**
+             * Assigns an other Iterator object
+             *
+             * @param iterator the constant reference to the
+             * Iterator object
+             * @return the reference to this object
+             */
+            Iterator& operator=(Iterator const& iterator);
+
+            Iterator& operator=(Iterator&&) = default;
+
+            /**
+             * Returns the reference to the range's element
+             *
+             * @return the reference to the range's element
+             */
+            [[nodiscard]] reference operator*(void) const noexcept
+                { return iterPtr->get(); }
+
+            /**
+             * Returns the pointer to the range's element
+             *
+             * @return the pointer to the range's element
+             */
+            [[nodiscard]] pointer operator->(void) const noexcept
+                { return &(iterPtr->get()); }
+
+            /**
+             * Pre-increments an iterator
+             *
+             * @return the reference to this object
+             */
+            Iterator& operator++(void) noexcept
+                { iterPtr->increment(); return *this; }
+
+            /**
+             * Post-increments an iterator
+             *
+             * @return a copy of the pre-incremented iterator
+             */
+            [[nodiscard]] Iterator operator++(int);
+
+            /**
+             * Swaps two iterators toghether
+             *
+             * @param other the reference to the other iterator
+             * object
+             */
+            void swap(Iterator& other) noexcept
+                { iterPtr.swap(other.iterPtr); }
+
+            /**
+             * Compares the iterator to the sentinel
+             *
+             * @param iter the constant reference to the iterator
+             * @param sent the constant reference to the sentinel
+             * @return true if the iterator has reached its end
+             * otherwise returns false
+             */
+            [[nodiscard]] friend bool operator==(
+                Iterator const& iter,
+                [[maybe_unused]] sentinel const& sent) noexcept
+                    { return !iter.iterPtr || !iter.iterPtr->hasNext(); }
+
+            /**
+             * Compares the iterator to the sentinel
+             *
+             * @param sent the constant reference to the sentinel
+             * @param iter the constant reference to the iterator
+             * @return true if the iterator has reached its end
+             * otherwise returns false
+             */
+            [[nodiscard]] friend bool operator==(
+                [[maybe_unused]] sentinel const& sent,
+                Iterator const& iter) noexcept
+                    { return iter == sent; }
+        private:
+            UnderlyingPtr                   iterPtr;
+        };
+
+        using iterator = Iterator<Tp>;
+        using const_iterator = Iterator<Tp const>;
+
+        /**
+         * Returns an iterator to the begining of the range
+         *
+         * @return the iterator to the begining of the range
+         */
+        [[nodiscard]] iterator begin(void)
+            { return iterator{rangePointer->iterator()}; }
+
+        /**
+         * Returns a constant iterator to the begining of the range
+         *
+         * @return the constant iterator to the begining of the range
+         */
+        [[nodiscard]] const_iterator begin(void) const
+            { return const_iterator{rangePointer->iterator()}; }
+
+        /**
+         * Returns a constant iterator to the begining of the range
+         *
+         * @return the constant iterator to the begining of the range
+         */
+        [[nodiscard]] const_iterator cbegin(void) const
+            { return const_iterator{rangePointer->iterator()}; }
+
+        /**
+         * Returns the sentinel (signalizes end of the range)
+         *
+         * @return the sentinel
+         */
+        [[nodiscard]] sentinel end(void) const noexcept
+            { return {}; }
+
+        /**
+         * Returns the sentinel (signalizes end of the range)
+         *
+         * @return the sentinel
+         */
+        [[nodiscard]] sentinel cend(void) const noexcept
+            { return {}; }
+
+        /**
+         * Swaps to Input Range objects
+         *
+         * @param other the reference to the other object
+         */
+        void swap(InputRange& other) noexcept
+            { rangePointer.swap(other.rangePointer); }
+
+        /**
+         * Destroys the Input Range object
+         */
+        ~InputRange(void) noexcept = default;
+    private:
         /**
          * Wrapps the input range. Allows to use dynamic
          * polymorphism on the given range via the Range Interface
@@ -457,7 +460,7 @@ namespace mpgl::any {
             public:
                 using RangeIter = std::ranges::iterator_t<Range>;
                 using RangeSent = std::ranges::sentinel_t<Range>;
-                using reference =
+                using reference
                     = typename IIter::reference;
 
                 /**
