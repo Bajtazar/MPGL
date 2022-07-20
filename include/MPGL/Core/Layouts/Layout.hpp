@@ -25,57 +25,38 @@
  */
 #pragma once
 
+#include <MPGL/Collections/Erasers/InputRange.hpp>
 #include <MPGL/Core/Context/Buffers/Vertex.hpp>
 #include <MPGL/Core/Context/Context.hpp>
-
-#include <unordered_set>
+#include <MPGL/Utility/Adapter.hpp>
 
 namespace mpgl {
 
+    /**
+     * An interface for all layouts. Layout allows to determine
+     * the behavior of the screen transformation event
+     */
     class Layout : protected GraphicalObject {
     public:
+        using PositionRange = any::InputRange<Adapter<Vector2f>>;
+
+        /**
+         * Constructs a new Layout object
+         */
         explicit Layout(void) noexcept = default;
 
-        using PVertex = Vertex<
-            VertexComponent<"position", Adapter<Vector2f>,
-                DataType::Float32>
-        >;
-
-        using PCVertex = Vertex<
-            VertexComponent<"position", Adapter<Vector2f>,
-                DataType::Float32>,
-            VertexComponent<"color", Color, DataType::Float32>
-        >;
-
-        using PTVertex = Vertex<
-            VertexComponent<"position", Adapter<Vector2f>,
-                DataType::Float32>,
-            VertexComponent<"texCoords", Vector2f, DataType::Float32>
-        >;
-
-        using PTCVertex = Vertex<
-            VertexComponent<"position", Adapter<Vector2f>,
-                DataType::Float32>,
-            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
-            VertexComponent<"color", Color, DataType::Float32>
-        >;
-
+        /**
+         * Pure virtual object. Has to be overloaded. Determines
+         * the behavior of the screen transformation event
+         *
+         * @param range the reference to the position range object
+         */
         virtual void operator() (
-            std::vector<PVertex>& range,
-            Vector2u const& oldDimensions) const noexcept = 0;
+            PositionRange& range) const noexcept = 0;
 
-        virtual void operator() (
-            std::vector<PCVertex>& range,
-            Vector2u const& oldDimensions) const noexcept = 0;
-
-        virtual void operator() (
-            std::vector<PTVertex>& range,
-            Vector2u const& oldDimensions) const noexcept = 0;
-
-        virtual void operator() (
-            std::vector<PTCVertex>& range,
-            Vector2u const& oldDimensions) const noexcept = 0;
-
+        /**
+         * Virtual destructor. Destroys the Layout object
+         */
         virtual ~Layout(void) noexcept = default;
     protected:
         Layout(Layout const&) noexcept = default;
