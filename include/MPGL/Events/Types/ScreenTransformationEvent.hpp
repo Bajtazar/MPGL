@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Core/Layouts/Layout.hpp>
 #include <MPGL/Mathematics/Vector.hpp>
 #include <MPGL/Events/Event.hpp>
 
