@@ -38,8 +38,6 @@ namespace mpgl {
      */
     class Layout : protected GraphicalObject {
     public:
-        using PositionRange = any::InputRange<Adapter<Vector2f>>;
-
         /**
          * Constructs a new Layout object
          */
@@ -50,9 +48,12 @@ namespace mpgl {
          * the behavior of the screen transformation event
          *
          * @param range the reference to the position range object
+         * @param oldDimensions the constant reference to the old
+         * window dimensions
          */
         virtual void operator() (
-            PositionRange& range) const noexcept = 0;
+            any::InputRange<Adapter<Vector2f>>& range,
+            Vector2u const& oldDimensions) const noexcept = 0;
 
         /**
          * Virtual destructor. Destroys the Layout object
