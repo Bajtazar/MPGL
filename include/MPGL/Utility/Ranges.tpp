@@ -182,4 +182,20 @@ namespace mpgl {
         (*this)(std::ranges::begin(range), std::ranges::end(range));
     }
 
+    template <Clonable Tp>
+    [[nodiscard]] constexpr auto CloneFn::operator() (
+        Tp const& object) const
+            -> decltype(std::declval<Tp>().clone())
+    {
+        return object.clone();
+    }
+
+    template <ClonablePointer Ptr>
+    [[nodiscard]] constexpr auto CloneFn::operator() (
+        Ptr const& pointer) const
+            -> decltype(std::declval<Ptr>()->clone())
+    {
+        return pointer ? pointer->clone() : nullptr;
+    }
+
 }

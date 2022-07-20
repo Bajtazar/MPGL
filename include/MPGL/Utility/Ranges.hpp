@@ -241,7 +241,7 @@ namespace mpgl {
 
     };
 
-    inline constexpr FindFirstAndLastIfFn findFirstAndLastIf;
+    inline constexpr FindFirstAndLastIfFn               findFirstAndLastIf;
 
     /**
      * Copies the elements to the given range until the range
@@ -293,7 +293,7 @@ namespace mpgl {
 
     };
 
-    inline constexpr CopyToFn copyTo;
+    inline constexpr CopyToFn                           copyTo;
 
     /**
      * The range version of std::reverse algorithm
@@ -323,7 +323,42 @@ namespace mpgl {
 
     };
 
-    inline ReverseFn reverse;
+    inline constexpr ReverseFn                          reverse;
+
+    /**
+     * Simplifies interactions with clonable objects
+     */
+    struct CloneFn {
+
+        /**
+         * Clones the given object
+         *
+         * @tparam Tp the type of the cloned object
+         * @param object the constant reference to the cloned object
+         * @return a pointer to the cloned object
+         */
+        template <Clonable Tp>
+        [[nodiscard]] constexpr auto operator() (
+            Tp const& object) const
+                -> decltype(std::declval<Tp>().clone());
+
+        /**
+         * Clones the value underlying the pointer. If the pointer
+         * containts the nullptr then returns the nullptr
+         *
+         * @tparam the type of the pointer
+         * @param pointer the constant reference to the pointer
+         * @return a pointer to the cloned object (if object exist)
+         * or nullptr (if object does not exist)
+         */
+        template <ClonablePointer Ptr>
+        [[nodiscard]] constexpr auto operator() (
+            Ptr const& pointer) const
+                -> decltype(std::declval<Ptr>()->clone());
+
+    };
+
+    inline constexpr CloneFn                            clone;
 
 }
 
