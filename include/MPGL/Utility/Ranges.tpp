@@ -195,7 +195,7 @@ namespace mpgl {
         Ptr const& pointer) const
             -> decltype(std::declval<Ptr>()->clone())
     {
-        return pointer ? pointer->clone() : nullptr;
+        return bool(pointer) ? pointer->clone() : nullptr;
     }
 
 }

@@ -27,6 +27,8 @@
 
 #include <utility>
 
+#include <MPGL/Utility/Ranges.hpp>
+
 namespace mpgl::any {
 
     template <PureType Tp>
@@ -49,9 +51,7 @@ namespace mpgl::any {
     }
 
     template <PureType Tp>
-    template <std::ranges::input_range Range>
-        requires std::same_as<Tp, std::ranges::range_value_t<Range>>
-    InputRange<Tp>::InputRange(Range&& range)
+    InputRange<Tp>::InputRange(InputRangeCompatible<Tp> auto&& range)
         : rangePointer{std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range))} {}
 
@@ -64,15 +64,16 @@ namespace mpgl::any {
     InputRange<Tp>& InputRange<Tp>::operator=(
         InputRange const& inputRange)
     {
+        // input range has to have the valid pointer
         rangePointer = std::unique_ptr{
             inputRange.rangePointer->clone()};
         return *this;
     }
 
     template <PureType Tp>
-    template <std::ranges::input_range Range>
-        requires std::same_as<Tp, std::ranges::range_value_t<Range>>
-    InputRange<Tp>& InputRange<Tp>::operator=(Range&& range) {
+    InputRange<Tp>& InputRange<Tp>::operator=(
+        InputRangeCompatible<Tp> auto&& range)
+    {
         rangePointer = std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range));
         return *this;
@@ -82,8 +83,7 @@ namespace mpgl::any {
     template <typename BaseTp>
     InputRange<Tp>::Iterator<BaseTp>::Iterator(
         Iterator const& iterator)
-            : iterPtr{iterator.iterPtr ?
-                iterator.iterPtr->clone() : nullptr} {}
+            : iterPtr{clone(iterator.iterPtr)} {}
 
     template <PureType Tp>
     template <typename BaseTp>
@@ -91,10 +91,7 @@ namespace mpgl::any {
         InputRange<Tp>::Iterator<BaseTp>::operator=(
             Iterator const& iterator)
     {
-        iterPtr = UnderlyingPtr{
-            iterator.iterPtr ?
-            iterator.iterPtr->clone() : nullptr
-        };
+        iterPtr = UnderlyingPtr{clone(iterator.iterPtr)};
         return *this;
     }
 

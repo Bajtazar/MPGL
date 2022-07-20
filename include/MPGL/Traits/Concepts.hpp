@@ -605,6 +605,7 @@ namespace mpgl {
     concept ClonablePointer = std::convertible_to<
         decltype(*std::declval<Pointer>()),
         std::remove_pointer_t<decltype(
-        std::declval<Pointer>()->clone())>>;
+        std::declval<Pointer>()->clone())>>
+    && requires (Pointer const& ptr) { bool(ptr); };
 
 }
