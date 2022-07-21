@@ -44,6 +44,7 @@ public:
     virtual void onKeyPress(mpgl::Key const& key) noexcept;
 
     virtual void onScreenTransformation(
+        mpgl::Layout& layout,
         mpgl::Vector2u const& oldDimensions) noexcept;
 
     virtual void draw(void) const noexcept;

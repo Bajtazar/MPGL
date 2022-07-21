@@ -69,10 +69,11 @@ void World::generateTable(void) {
 }
 
 void World::onScreenTransformation(
+    Layout& layout,
     Vector2u const& oldDimensions) noexcept
 {
-    table.onScreenTransformation(oldDimensions);
-    apple.second.onScreenTransformation(oldDimensions);
+    table.onScreenTransformation(layout, oldDimensions);
+    apple.second.onScreenTransformation(layout, oldDimensions);
 }
 
 void World::draw(void) const noexcept {
