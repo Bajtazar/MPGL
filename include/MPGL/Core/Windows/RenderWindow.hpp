@@ -105,13 +105,22 @@ namespace mpgl {
 
         /**
          * Perform screen transformation on the inside
-         * drawable objects
+         * drawable objects using their layouts
          *
-         * @param layout the layout of the figure (unused)
          * @param oldDimensions the old dimensions of the window
          */
         void onScreenTransformation(
-            [[maybe_unused]] Layout& layout,
+            Vector2u const& oldDimensions) noexcept;
+
+        /**
+         * Perform screen transformation on the inside
+         * drawable objects using the given layout
+         *
+         * @param layout the layout of the figure
+         * @param oldDimensions the old dimensions of the window
+         */
+        void onScreenTransformation(
+            Layout& layout,
             Vector2u const& oldDimensions) noexcept final;
 
         /**
