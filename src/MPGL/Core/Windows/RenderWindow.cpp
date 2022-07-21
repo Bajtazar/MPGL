@@ -130,6 +130,7 @@ namespace mpgl {
     }
 
     void RenderWindow::onScreenTransformation(
+        [[maybe_unused]] Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
         eventManager->onScreenTransformation(layouts, oldDimensions);

@@ -55,10 +55,13 @@ namespace mpgl {
          * Calls the screen transformation event on the underlying
          * objects
          *
+         * @param layout the reference to the layout
          * @param oldDimensions the constant reference to window's
          * old dimensions
          */
-        void onEvent(Vector2u const& oldDimensions) noexcept;
+        void onEvent(
+            Layout& layout,
+            Vector2u const& oldDimensions) noexcept;
 
         /**
          * Calls the screen transformation event on the underlying

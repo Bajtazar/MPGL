@@ -28,9 +28,10 @@
 namespace mpgl {
 
     void RenderingAdapter::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        reference.get().onScreenTransformation(oldDimensions);
+        reference.get().onScreenTransformation(layout, oldDimensions);
     }
 
     void RenderingAdapter::onMouseRelease(

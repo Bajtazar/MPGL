@@ -847,9 +847,11 @@ namespace mpgl {
          * Transforms the text during the screen
          * transformation event
          *
+         * @param layout the layout of the text
          * @param oldDimensions the old screen dimensions
          */
         void onScreenTransformation(
+            Layout& layout,
             Vector2u const& oldDimensions) noexcept final;
 
         /**

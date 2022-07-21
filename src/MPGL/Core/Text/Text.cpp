@@ -523,13 +523,14 @@ namespace mpgl {
 
     template <bool IsColorable>
     void Text<IsColorable>::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        glyphs.onScreenTransformation(oldDimensions);
+        glyphs.onScreenTransformation(layout, oldDimensions);
         if (mods & Modifiers::Underline)
-            underlines.onScreenTransformation(oldDimensions);
+            underlines.onScreenTransformation(layout, oldDimensions);
         if (mods & Modifiers::Strikethrough)
-            strikethroughs.onScreenTransformation(oldDimensions);
+            strikethroughs.onScreenTransformation(layout, oldDimensions);
     }
 
 }

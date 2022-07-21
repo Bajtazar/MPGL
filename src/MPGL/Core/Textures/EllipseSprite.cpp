@@ -138,10 +138,11 @@ namespace mpgl {
 
     template <bool IsColorable>
     void EllipseSprite<IsColorable>::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
         EllipticSprite<IsColorable>::onScreenTransformation(
-            oldDimensions);
+            layout, oldDimensions);
         actualizeMatrices();
     }
 

@@ -78,12 +78,14 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Transforms the figure during the screen
+         * Transforms the ellipse during the screen
          * transformation event
          *
+         * @param layout the layout of the ellipse
          * @param oldDimensions the old screen dimensions
          */
         void onScreenTransformation(
+            Layout& layout,
             Vector2u const& oldDimensions) noexcept final;
 
         /**

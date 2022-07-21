@@ -54,9 +54,11 @@ namespace mpgl {
          * Informs screen transformation event observers that the
          * screen dimensions has been changed
          *
+         * @param layout the layout of the figure
          * @param oldDimensions the old dimensions of the screen
          */
         void onScreenTransformation(
+            Layout& layout,
             Vector2u const& oldDimensions) noexcept final;
 
         /**

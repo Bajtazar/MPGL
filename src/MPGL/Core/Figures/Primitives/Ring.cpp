@@ -99,15 +99,11 @@ namespace mpgl {
     }
 
     void Ring::InnerEllipse::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        for (auto& position : vertices | std::views::transform(
-            (Vector2f&(Vertex::*)(void))&Vertex::get))
-        {
-            position = (position + 1.f) * static_cast<Vector2f>(
-                oldDimensions) / static_cast<Vector2f>(
-                    context.windowDimensions) - 1.f;
-        }
+        any::InputRange<Adapter<Vector2f>> positions{vertices};
+        layout(positions, oldDimensions);
         actualizeMatrices();
     }
 
@@ -237,15 +233,13 @@ namespace mpgl {
     }
 
     void Ring::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        innerEllipse.onScreenTransformation(oldDimensions);
-        for (auto& vertexPosition : vertices | views::position) {
-            Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * static_cast<Vector2f>(
-                oldDimensions) / static_cast<Vector2f>(
-                    context.windowDimensions) - 1.f;
-        }
+        innerEllipse.onScreenTransformation(layout, oldDimensions);
+        any::InputRange<Adapter<Vector2f>> positions{
+            vertices | views::position};
+        layout(positions, oldDimensions);
         actualizeMatrices();
         isModified = true;
     }

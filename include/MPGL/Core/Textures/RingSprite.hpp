@@ -84,9 +84,11 @@ namespace mpgl {
              * Transforms the figure during the screen
              * transformation event
              *
+             * @param layout the layout of the figure
              * @param oldDimensions the old screen dimensions
              */
             void onScreenTransformation(
+                Layout& layout,
                 Vector2u const& oldDimensions) noexcept final;
 
             /**
@@ -349,9 +351,11 @@ namespace mpgl {
          * Transforms the figure during the screen
          * transformation event
          *
+         * @param layout the layout of the figure
          * @param oldDimensions the old screen dimensions
          */
         void onScreenTransformation(
+            Layout& layout,
             Vector2u const& oldDimensions) noexcept override final;
 
         /**

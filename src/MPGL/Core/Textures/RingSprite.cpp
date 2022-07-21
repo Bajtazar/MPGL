@@ -124,15 +124,11 @@ namespace mpgl {
 
     template <bool IsColorable>
     void RingSprite<IsColorable>::InnerEllipse::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        for (auto& position : vertices | std::views::transform(
-            (Vector2f&(Vertex::*)(void))&Vertex::get))
-        {
-            position = (position + 1.f) * static_cast<Vector2f>(
-                oldDimensions) / static_cast<Vector2f>(
-                    GraphicalObject::context.windowDimensions) - 1.f;
-        }
+        any::InputRange<Adapter<Vector2f>> positions{vertices};
+        layout(positions, oldDimensions);
         actualizeMatrices();
     }
 
@@ -327,12 +323,13 @@ namespace mpgl {
 
     template <bool IsColorable>
     void RingSprite<IsColorable>::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
         EllipticSprite<IsColorable>::onScreenTransformation(
-            oldDimensions);
+            layout, oldDimensions);
         actualizeMatrices();
-        innerEllipse.onScreenTransformation(oldDimensions);
+        innerEllipse.onScreenTransformation(layout, oldDimensions);
     }
 
     template <bool IsColorable>

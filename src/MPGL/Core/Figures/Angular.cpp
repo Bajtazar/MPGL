@@ -75,14 +75,12 @@ namespace mpgl {
     }
 
     void Angular::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        for (auto& vertexPosition : vertices | views::position) {
-            Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * vectorCast<float32>(
-                oldDimensions) / vectorCast<float32>(
-                    context.windowDimensions) - 1.f;
-        }
+        any::InputRange<Adapter<Vector2f>> positions{
+            vertices | views::position};
+        layout(positions, oldDimensions);
         isModified = true;
     }
 

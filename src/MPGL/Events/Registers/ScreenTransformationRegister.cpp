@@ -28,19 +28,20 @@
 namespace mpgl {
 
     void ScreenTransformationRegister::onEvent(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
         for (auto& event : storage)
-            event->onScreenTransformation(oldDimensions);
+            event->onScreenTransformation(layout, oldDimensions);
     }
 
     void ScreenTransformationRegister::onEvent(
         std::vector<std::unique_ptr<Layout>>& layouts,
         Vector2u const& oldDimensions) noexcept
     {
-        // @TODO
         for (std::size_t i = 0; i < storage.size(); ++i)
-            storage[i]->onScreenTransformation(oldDimensions);
+            storage[i]->onScreenTransformation(
+                *layouts[i], oldDimensions);
     }
 
 }

@@ -92,14 +92,12 @@ namespace mpgl {
     }
 
     void Ellipse::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        for (auto& vertexPosition : vertices | views::position) {
-            Vector2f& position = vertexPosition.get();
-            position = (position + 1.f) * static_cast<Vector2f>(
-                oldDimensions) / static_cast<Vector2f>(
-                    context.windowDimensions) - 1.f;
-        }
+        any::InputRange<Adapter<Vector2f>> positions{
+            vertices | views::position};
+        layout(positions, oldDimensions);
         actualizeMatrices();
         isModified = true;
     }

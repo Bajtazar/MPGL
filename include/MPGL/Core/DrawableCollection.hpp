@@ -180,9 +180,11 @@ namespace mpgl {
          * Transforms the contained drawables during the screen
          * transformation event
          *
+         * @param layout the layout of the object
          * @param oldDimensions the old screen dimensions
          */
         void onScreenTransformation(
+            Layout& layout,
             Vector2u const& oldDimensions) noexcept final;
 
         /**
@@ -252,9 +254,11 @@ namespace mpgl {
          * Transforms the contained drawables during the screen
          * transformation event
          *
+         * @param layout the layout of the object
          * @param oldDimensions the old screen dimensions
          */
         void onScreenTransformation(
+            Layout& layout,
             Vector2u const& oldDimensions) noexcept final;
 
         /**

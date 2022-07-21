@@ -28,10 +28,11 @@
 namespace mpgl {
 
     void BasicWindowEventManager::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
         get<ScreenTransformationRegister>(registers).onEvent(
-            oldDimensions);
+            layout, oldDimensions);
     }
 
     void BasicWindowEventManager::onScreenTransformation(

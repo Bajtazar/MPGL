@@ -66,10 +66,11 @@ namespace mpgl {
     template <details::ScreenExtDrawable Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        std::ranges::for_each(*this, [&oldDimensions](auto& drawable)
-            { drawable.onScreenTransformation(oldDimensions); });
+        for (auto& drawable : *this)
+            drawable.onScreenTransformation(layout, oldDimensions);
     }
 
     template <details::Trans2DDrawable Base,
@@ -93,10 +94,11 @@ namespace mpgl {
     template <details::Trans2DDrawable Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::onScreenTransformation(
+        Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        std::ranges::for_each(*this, [&oldDimensions](auto& drawable)
-            { drawable.onScreenTransformation(oldDimensions); });
+        for (auto& drawable : *this)
+            drawable.onScreenTransformation(layout, oldDimensions);
     }
 
     template <details::Trans2DDrawable Base,
