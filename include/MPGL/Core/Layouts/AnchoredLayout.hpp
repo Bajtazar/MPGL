@@ -33,37 +33,31 @@ namespace mpgl {
      * The layout that ensures that the figure will be translated
      * accordingly to the hook's movement (hook is the point on the
      * screen which is described in the [0, 1]^2 space. That means
-     * the (0.4, 0.4) hook will be always in the 40% x and 40% y 
+     * the (0.4, 0.4) hook will be always in the 40% x and 40% y
      * of the screen) during the screen transformation event (
-     * object's scale will be intanct as in default layout) 
-     * and applies a scale factor which determines how strong
-     * the transformation will be
+     * object's scale will be intanct as in default layout)
      */
     class AnchoredLayout : public Layout {
     public:
         /**
          * Constructs a new anchored layout object
-         * 
-         * @param hook the layout's hook (in the [0, 1]^2 
+         *
+         * @param hook the layout's hook (in the [0, 1]^2
          * coordinate space)
-         * @param scale the scale vector of the transformation
          */
         explicit AnchoredLayout(
-            Vector2f const& hook = {},
-            Vector2f const& scale = {1.f, 1.f}) noexcept;
+            Vector2f const& hook = {0.f, 0.f}) noexcept;
 
         /**
          * Constructs a new anchored layout object
-         * 
-         * @param hook the layout's hook (in the screen pixels 
+         *
+         * @param hook the layout's hook (in the screen pixels
          * coordinate space)
-         * @param scale the scale vector of the transformation
          */
         explicit AnchoredLayout(
-            Vector2u const& hook,
-            Vector2f const& scale = {1.f, 1.f}) noexcept;
+            Vector2u const& hook) noexcept;
 
-        AnchoredLayout(AnchoredLayout const&) noexcept = default; 
+        AnchoredLayout(AnchoredLayout const&) noexcept = default;
         AnchoredLayout(AnchoredLayout&&) noexcept = default;
 
         AnchoredLayout& operator=(
@@ -73,35 +67,19 @@ namespace mpgl {
 
         /**
          * Returns the reference to the layout's hook
-         * 
+         *
          * @return the reference to the layout's hook
          */
-        [[nodiscard]] Vector2f& getHook(void) noexcept 
+        [[nodiscard]] Vector2f& getHook(void) noexcept
             { return hook; }
 
         /**
          * Returns the constant reference to the layout's hook
-         * 
+         *
          * @return the constant reference to the layout's hook
          */
-        [[nodiscard]] Vector2f const& getHook(void) const noexcept 
+        [[nodiscard]] Vector2f const& getHook(void) const noexcept
             { return hook; }
-
-        /**
-         * Returns the reference to the layout's scale
-         * 
-         * @return the reference to the layout's scale
-         */
-        [[nodiscard]] Vector2f& getScale(void) noexcept 
-            { return scale; }
-
-        /**
-         * Returns the constant reference to the layout's scale
-         * 
-         * @return the constant reference to the layout's scale
-         */
-        [[nodiscard]] Vector2f const& getScale(void) const noexcept 
-            { return scale; }
 
         /**
          * Ensures that the object will be shifted acording to the
@@ -121,7 +99,6 @@ namespace mpgl {
         ~AnchoredLayout(void) noexcept = default;
     private:
         Vector2f                                hook;
-        Vector2f                                scale;
     };
 
 }
