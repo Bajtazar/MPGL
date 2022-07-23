@@ -216,8 +216,8 @@ namespace mpgl {
     {
         bool windowsPlatform = (record.platformID == 3) &&
             (record.encodingID < 2 || record.encodingID == 10);
-        bool unicodePlatform = !record.platformID &&
-            record.encodingID < 5;
+        // bool unicodePlatform = !record.platformID &&
+        //    record.encodingID < 5;
         if (windowsPlatform)
             return {record.subtableOffset};
         return {};
@@ -265,7 +265,7 @@ namespace mpgl {
         TTFLoader& loader)
     {
         for (std::size_t i = 0; i != endCode.size(); ++i)
-            for (std::size_t j = startCode[i];
+            for (int64 j = startCode[i];
                 j != endCode[i] + 1; ++j)
                     tryReadGlyph(i, j, loader);
     }
@@ -283,7 +283,7 @@ namespace mpgl {
             if (idRangeOffsets[i]) {
                 auto glyphOffset = rangeOffsets + (j
                     - startCode[i] + i) * 2 + idRangeOffsets[i];
-                if (index = readType<uint16, true>(glyphOffset))
+                if ((index = readType<uint16, true>(glyphOffset)))
                     index = (index + idDelta[i]) & 0xFFFF;
             } else
                 index = (j + idDelta[i]) & 0xFFFF;

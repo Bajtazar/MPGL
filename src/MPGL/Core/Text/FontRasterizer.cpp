@@ -35,11 +35,14 @@ namespace mpgl {
         FontData const& mainData,
         GlyphData const& glyph,
         size_type size)
-            : mainData{mainData}, glyph{glyph}, lastPosition{0, 0},
-            pixelSetter{&FontRasterizer::deducingPixelSetter},
-            size{size}, ascending{false}, aaCoefficient{fast2Sqrt(
-                context.windowOptions.antiAliasingSamples)}
+            : lastPosition{0, 0}, pixelSetter{
+                &FontRasterizer::deducingPixelSetter}, size{size},
+                aaCoefficient{fast2Sqrt(
+                context.windowOptions.antiAliasingSamples)},
+            mainData{mainData}, glyph{glyph},
+            ascending{false}
     {
+        size *= aaCoefficient;
         primitiveQueue.reserve(3);
         separateContours(glyph);
     }

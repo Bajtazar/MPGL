@@ -64,7 +64,7 @@ namespace mpgl {
     constexpr Matrix<Tp, Rows, Cols>::Matrix(Args&&... args) noexcept
         : normalBase{tupleBuilder(std::forward<Args>(args)...)}
     {
-        if constexpr (!std::is_constant_evaluated())
+        if (!std::is_constant_evaluated())
             reverse(begin(), end());
     }
 
@@ -74,7 +74,7 @@ namespace mpgl {
     constexpr Matrix<Tp, Rows, Cols>::NormalBase
         Matrix<Tp, Rows, Cols>::tupleBuilder(Args&&... args) const noexcept
     {
-        if constexpr (std::is_constant_evaluated())
+        if (std::is_constant_evaluated())
             return tupleReverser(std::forward<Args>(args)...);
         else
             return {std::forward<Args>(args)...};

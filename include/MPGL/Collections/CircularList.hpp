@@ -75,8 +75,8 @@ namespace mpgl {
                 NodePtr lastNode,
                 NodePtr nextNode,
                 Args&&... args)
-                    : nextNode{nextNode}, lastNode{lastNode},
-                    value{std::forward<Args>(args)...} {}
+                    : value{std::forward<Args>(args)...},
+                    nextNode{nextNode}, lastNode{lastNode} {}
 
             /**
              * Constructs a new node object from the given
@@ -88,8 +88,8 @@ namespace mpgl {
             template <typename... Args>
                 requires std::constructible_from<value_type, Args...>
             constexpr explicit Node(Args&&... args)
-                    : nextNode{nullptr}, lastNode{nullptr},
-                    value{std::forward<Args>(args)...} {}
+                    : value{std::forward<Args>(args)...},
+                    nextNode{nullptr}, lastNode{nullptr} {}
 
             /**
              * Destroys the node object

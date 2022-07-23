@@ -132,7 +132,7 @@ namespace mpgl {
         Iter& iter)
     {
         uint16 bits;
-        for (uint8 length = 1, code; code = table->decoder(iter);
+        for (uint8 length = 1u, code; (code = table->decoder(iter));
             ++length)
         {
             if (code > 15) {
@@ -252,7 +252,7 @@ namespace mpgl {
         uint16 length = readType<uint16, true>(data) - 3;
         uint8 header = readType<uint8>(data);
         QuantizationTable table;
-        if (table.precision = header >> 4)
+        if ((table.precision = header >> 4))
             throw NotSupportedException{
                 "Only 8-pixels quantization tables are supported."};
         table.information.resize(length);
@@ -359,7 +359,7 @@ namespace mpgl {
         uint8 code,
         uint16 bits) noexcept
     {
-        uint16 coeff = 1 << code - 1;
+        uint16 coeff = (1 << code) - 1;
         return bits >= coeff ? bits : (int32) bits - (2 * coeff - 1);
     }
 

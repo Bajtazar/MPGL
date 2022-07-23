@@ -50,7 +50,7 @@ namespace mpgl {
         program.use();
         location = glGetUniformLocation(*program.shaderProgramID,
             uniform.c_str());
-        if (location == -1)
+        if (location == 0xFFFFFFFF)
             throw ShaderLocationUniformException{uniform};
     }
 

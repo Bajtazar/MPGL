@@ -36,7 +36,7 @@ namespace mpgl {
         : UniformTuple<Tp, Size>{tupleBuilder(
             std::forward<Args>(args)...)}
     {
-        if constexpr (!std::is_constant_evaluated())
+        if (!std::is_constant_evaluated())
             reverse(*this);
     }
 
@@ -45,7 +45,7 @@ namespace mpgl {
     constexpr UniformTuple<Tp, Size>
         Vector<Tp, Size>::tupleBuilder(Args&&... args) const noexcept
     {
-        if constexpr (std::is_constant_evaluated())
+        if (std::is_constant_evaluated())
             return tupleReverser(std::forward<Args>(args)...);
         else
             return {std::forward<Args>(args)...};

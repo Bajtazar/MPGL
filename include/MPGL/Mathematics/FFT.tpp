@@ -102,9 +102,9 @@ namespace mpgl {
     constexpr FFT::size_type FFT::BluesteinBase<Size>::convoluteLen(
         void) noexcept
     {
-        size_type n = 2 * Size + 1, m = 0;
-        for (;1 << m < n; m += 1);
-        return 1 << m;
+        size_type n = 2u * Size + 1u, m = 0u;
+        for (;1u << m < n; m += 1u);
+        return 1u << m;
     }
 
     template <FFT::size_type Size>

@@ -96,13 +96,13 @@ namespace mpgl {
         TextOptions const& options) : Shadeable{shaderType(),
             shaderExec}, text{text}, font{font}, underlines{
                 generateUnderline(position, options.angle, options.size,
-                options.color)}, color{options.color},
+                options.color)},
             strikethroughs{
                 generateStrikethrough(position, options.angle,
                 options.size, options.color)},
-            position{position}, textSize{options.size},
-            angle{options.angle}, style{options.style},
-            mods{options.mods}
+            color{options.color}, position{position},
+            textSize{options.size}, angle{options.angle},
+            style{options.style}, mods{options.mods}
     {
         loadGlyphs(parseString(text));
         setLocations();
@@ -243,8 +243,6 @@ namespace mpgl {
         Vector2f position = getPosition();
         Matrix2f rot = rotationMatrix<float32>(angle);
         Vector2f yVersor = rot * 1._y;
-        Vector2f intersec = intersectionOf(
-            position, yVersor, this->position, rot * 1._x);
         this->position = position - 1.1f * textSize * yVersor;
         emplaceModifiers();
     }
