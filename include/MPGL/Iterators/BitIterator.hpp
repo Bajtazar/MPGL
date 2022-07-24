@@ -98,12 +98,11 @@ namespace mpgl {
      * an individual bytes
      */
     template <ByteInputIterator Iter>
-    class LittleEndianInputBitIter : public std::iterator<
-        BitInputIteratorTag, bool>
-    {
+    class LittleEndianInputBitIter {
     public:
         using bit =                     bool;
         using value_type =              bit;
+        using difference_type =         std::ptrdiff_t;
         using iterator_category =       BitInputIteratorTag;
 
         /**
@@ -212,12 +211,11 @@ namespace mpgl {
      * an individual bytes
      */
     template <ByteOutputIterator Iter>
-    class LittleEndianOutputBitIter : public std::iterator<
-        BitOutputIteratorTag, bool>
-    {
+    class LittleEndianOutputBitIter {
     public:
         using bit =                     bool;
         using value_type =              bit;
+        using difference_type =         std::ptrdiff_t;
         using iterator_category =       BitOutputIteratorTag;
 
         /**
@@ -337,12 +335,11 @@ namespace mpgl {
      * an individual bytes
      */
     template <ByteInputIterator Iter>
-    class BigEndianInputBitIter : public std::iterator<
-        BitInputIteratorTag, bool>
-    {
+    class BigEndianInputBitIter {
     public:
         using bit =                     bool;
         using value_type =              bit;
+        using difference_type =         std::ptrdiff_t;
         using iterator_category =       BitInputIteratorTag;
 
         /**
@@ -392,8 +389,8 @@ namespace mpgl {
          *
          * @return the copied object
          */
-        [[nodiscard]] constexpr BigEndianInputBitIter operator++(
-            int) noexcept
+        [[nodiscard]] constexpr BigEndianInputBitIter
+            operator++(int) noexcept
                 { auto temp = *this; ++(*this); return temp; }
 
         /**
@@ -450,12 +447,11 @@ namespace mpgl {
      * an individual bytes
      */
     template <ByteOutputIterator Iter>
-    class BigEndianOutputBitIter : public std::iterator<
-        BitOutputIteratorTag, bool>
-    {
+    class BigEndianOutputBitIter {
     public:
         using bit =                     bool;
         using value_type =              bit;
+        using difference_type =         std::ptrdiff_t;
         using iterator_category =       BitOutputIteratorTag;
 
         /**
@@ -517,8 +513,8 @@ namespace mpgl {
          *
          * @return the copied object
          */
-        [[nodiscard]] constexpr BigEndianOutputBitIter operator++(
-            int) noexcept
+        [[nodiscard]] constexpr BigEndianOutputBitIter
+            operator++(int) noexcept
                 { return *this; }
 
         /**
