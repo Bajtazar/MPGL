@@ -32,7 +32,7 @@
 using namespace mpgl;
 
 Snake::Snake(World& world)
-    : world{world}, freeze{false}, momentum{1, 0}
+    : momentum{1, 0}, world{world}, freeze{false}
 {
     if (world.applePosition() == Vector2f{0, 0}) {
         snakeModules.emplace_back(returnModule({1, 0}));
@@ -103,6 +103,8 @@ void Snake::onKeyPress(Key const& key) noexcept {
         case Key::Up:
         case Key::W:
             momentum = Vector2si{0, 1};
+            break;
+        default:
             break;
     }
 }
