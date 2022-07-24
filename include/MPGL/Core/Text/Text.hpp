@@ -102,20 +102,15 @@ namespace mpgl {
          * @tparam Iter the glyph sprite iterator
          */
         template <class BaseTp, std::random_access_iterator Iter>
-        class Iterator : public std::iterator<
-            std::random_access_iterator_tag, BaseTp>
-        {
+        class Iterator {
         public:
             typedef BaseTp                          value_type;
             typedef value_type*                     pointer;
             typedef value_type&                     reference;
             typedef std::ptrdiff_t                  difference_type;
-
-            using compare =
-                std::compare_three_way_result_t<Iter, Iter>;
-
-            using iterator_category =
-                std::random_access_iterator_tag;
+            typedef std::random_access_iterator_tag iterator_category;
+            typedef std::compare_three_way_result_t<Iter, Iter>
+                                                    compare;
 
             /**
              * Constructs a new Iterator object
