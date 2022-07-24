@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.17)
+
+project(MPGL VERSION 0.4 LANGUAGES CXX)
+
+file(GLOB MPGL_SOURCES "${PROJECT_SOURCE_DIR}/src/*")
+
+add_library(MPGL STATIC ${MPGL_SOURCES})
+
+set_target_properties(MPGL PROPERTIES LINKER_LANGUAGE CXX)
+
+target_include_directories(MPGL PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+link_libraries("${PROJECT_SOURCE_DIR}/external/glfw")
+
+install(TARGETS MPGL
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
