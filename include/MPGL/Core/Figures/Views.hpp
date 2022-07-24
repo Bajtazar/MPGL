@@ -64,15 +64,14 @@ namespace mpgl {
         /**
          * The inner view iterator
          */
-        class iterator : public std::iterator<
-            std::input_iterator_tag, ValueType>
-        {
+        class iterator {
         public:
-            using inner_iter =                  std::ranges::iterator_t<Range>;
-            using value_type =                  ValueType;
-            using reference =                   value_type&;
-            using iterator_category =           std::input_iterator_tag;
-            using difference_type =             std::ptrdiff_t;
+            using inner_iter                  = std::ranges::iterator_t<Range>;
+            using value_type                  = ValueType;
+            using reference                   = value_type&;
+            using pointer                     = value_type*;
+            using iterator_category           = std::input_iterator_tag;
+            using difference_type             = std::ptrdiff_t;
 
             /**
              * Construct a new iterator object
@@ -105,6 +104,24 @@ namespace mpgl {
                 { auto tmp = *this; ++iter; return tmp; }
 
             /**
+             * Returns the iterator's value
+             *
+             * @return the iterator's value
+             */
+            [[nodiscard]] auto operator*(void) const noexcept
+                -> decltype(get<Field>(*std::declval<inner_iter>()))
+                    { return get<Field>(*iter); }
+
+            /**
+             * Returns a pointer to the iterator's value
+             *
+             * @return a pointer to the iterator's value
+             */
+            [[nodiscard]] auto operator->(void) const noexcept
+                -> decltype(&get<Field>(*std::declval<inner_iter>()))
+                    { return &get<Field>(*iter); }
+
+            /**
              * Returns whether two iterators are equal
              *
              * @param left the left iterator object
@@ -115,14 +132,6 @@ namespace mpgl {
                 iterator const& left,
                 iterator const& right) noexcept
                     { return left.iter == right.iter; }
-
-            /**
-             * Returns the iterator value
-             *
-             * @return the iterator value
-             */
-            [[nodiscard]] decltype(auto) operator*(void) const noexcept
-                { return get<Field>(*iter); }
         private:
             inner_iter                          iter;
         };
