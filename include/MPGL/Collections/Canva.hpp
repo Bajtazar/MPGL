@@ -169,17 +169,16 @@ namespace mpgl {
             /**
              * Iterator that returns the pixels from the row
              *
-             * @tparam value_type the pixels type
+             * @tparam IterTp the pixels' type
              */
-            template <typename value_type>
-            class Iterator : public std::iterator<
-                std::random_access_iterator_tag, value_type>
-            {
+            template <typename IterTp>
+            class Iterator {
             public:
-                using pointer =                     value_type*;
-                using reference =                   value_type&;
-                using difference_type =             std::ptrdiff_t;
-                using iterator_category =           std::random_access_iterator_tag;
+                using value_type                  = IterTp;
+                using pointer                     = IterTp*;
+                using reference                   = IterTp&;
+                using difference_type             = std::ptrdiff_t;
+                using iterator_category           = std::random_access_iterator_tag;
                 using compare =
                     std::compare_three_way_result_t<pointer, pointer>;
 
@@ -629,18 +628,17 @@ namespace mpgl {
          * Iterator that returns the references to the image
          * rows
          *
-         * @tparam value_type the type of the row
+         * @tparam IterTp the type of the row
          * @tparam InnerIter the type of the underlying iterator
          */
-        template <class value_type, class InnerIter>
-        class Iterator : public std::iterator<
-            std::random_access_iterator_tag, value_type>
-        {
+        template <class IterTp, class InnerIter>
+        class Iterator {
         public:
-            using pointer =                     value_type*;
-            using reference =                   value_type&;
-            using difference_type =             std::ptrdiff_t;
-            using iterator_category =           std::random_access_iterator_tag;
+            using value_type                  = IterTp;
+            using pointer                     = IterTp*;
+            using reference                   = IterTp&;
+            using difference_type             = std::ptrdiff_t;
+            using iterator_category           = std::random_access_iterator_tag;
             using compare =
                 std::compare_three_way_result_t<pointer, pointer>;
 
@@ -819,10 +817,10 @@ namespace mpgl {
             InnerIter                           iter;
         };
 
-        using iterator =                            Iterator<Row, RowIter>;
-        using const_iterator =                      Iterator<Row const, RowConstIter>;
-        using reverse_iterator =                    std::reverse_iterator<iterator>;
-        using const_reverse_iterator =              std::reverse_iterator<const_iterator>;
+        using iterator                            = Iterator<Row, RowIter>;
+        using const_iterator                      = Iterator<Row const, RowConstIter>;
+        using reverse_iterator                    = std::reverse_iterator<iterator>;
+        using const_reverse_iterator              = std::reverse_iterator<const_iterator>;
 
         /**
          * Returns an iterator to the begining of the image rows

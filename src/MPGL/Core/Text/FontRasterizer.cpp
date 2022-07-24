@@ -42,7 +42,6 @@ namespace mpgl {
             mainData{mainData}, glyph{glyph},
             ascending{false}
     {
-        size *= aaCoefficient;
         primitiveQueue.reserve(3);
         separateContours(glyph);
     }
