@@ -361,7 +361,7 @@ namespace mpgl {
                  *
                  * @return the pointer to the column's element
                  */
-                [[nodiscard]] constexpr const_pointer operator->(
+                [[nodiscard]] constexpr pointer operator->(
                     void) const noexcept
                         { return ptr; }
 

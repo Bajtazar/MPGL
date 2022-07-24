@@ -292,17 +292,15 @@ namespace mpgl {
         /**
          * Iterares over the elements of the vector
          *
-         * @tparam value_type the iterator's value type
+         * @tparam BaseTp the iterator's value type
          */
-        template <Arithmetic value_type>
-        class Iterator : public std::iterator<
-            std::contiguous_iterator_tag, value_type>
-        {
+        template <Arithmetic BaseTp>
+        class Iterator {
         public:
             using iterator_category =       std::contiguous_iterator_tag;
-            using reference =               value_type&;
-            using pointer =                 value_type*;
-            using const_pointer =           pointer const;
+            using value_type =              BaseTp;
+            using reference =               BaseTp&;
+            using pointer =                 BaseTp*;
             using difference_type =         decltype(
                 std::declval<pointer>() - std::declval<pointer>());
             using iter =                    Iterator;
@@ -373,7 +371,7 @@ namespace mpgl {
              *
              * @return the pointer to the vector's element
              */
-            [[nodiscard]] constexpr const_pointer operator->(
+            [[nodiscard]] constexpr pointer operator->(
                 void) const noexcept
                     { return ptr; }
 
