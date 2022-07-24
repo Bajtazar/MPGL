@@ -53,10 +53,7 @@ namespace mpgl {
      */
     template <std::random_access_iterator Iter,
         std::sentinel_for<Iter> Sent>
-    class SafeIterator<Iter, Sent>
-        : public std::iterator<std::random_access_iterator_tag,
-            typename std::iterator_traits<Iter>::value_type>
-    {
+    class SafeIterator<Iter, Sent> {
         typedef std::iterator_traits<Iter>          traits;
     public:
         typedef Iter                                iterator_type;
@@ -261,7 +258,7 @@ namespace mpgl {
     template <>
     class SafeIterator<std::istreambuf_iterator<char>,
         std::istreambuf_iterator<char>>
-        : public std::iterator<std::input_iterator_tag, char> {
+    {
     public:
         typedef std::istreambuf_iterator<char>      iterator_type;
         typedef std::istreambuf_iterator<char>      sentinel_type;
