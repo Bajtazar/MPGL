@@ -182,16 +182,16 @@ namespace mpgl {
         /**
          * Iterates through the circular list
          *
-         * @tparam value_type the iterator's value type
+         * @tparam IterTp the iterator's value type
          */
-        template <typename value_type>
-        class Iterator : std::iterator<
-            std::bidirectional_iterator_tag, value_type>
-        {
+        template <typename IterTp>
+        class Iterator {
         public:
-            typedef std::bidirectional_iterator_tag iterator_category;
-            typedef value_type&                     reference;
-            typedef value_type*                     pointer;
+            using value_type                      = IterTp;
+            using reference                       = IterTp&;
+            using pointer                         = IterTp*;
+            using difference_type                 = std::ptrdiff_t;
+            using iterator_category               = std::bidirectional_iterator_tag;
 
             /**
              * Constructs a new iterator object from the given
