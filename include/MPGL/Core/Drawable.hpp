@@ -34,6 +34,8 @@ namespace mpgl {
      * Definision of the drawable class. Base class for
      * all drawable objects. Separates the shapes of
      * different dimensions
+     *
+     * @tparam Dim the dimension's tag of the drawable
      */
     template <Dimension Dim>
     class Drawable : virtual protected GraphicalObject {
