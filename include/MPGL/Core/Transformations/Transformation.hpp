@@ -43,8 +43,7 @@ namespace mpgl {
     template <Dimension Dim>
     class Transformation {
     public:
-        using TransformedType = Adapter<
-            Vector<float32, Dim::orhogonal_space_degree>>;
+        using TransformedType = Adapter<Dim::orhogonal_space_degree>;
 
         /**
          * Constructs a new Transformation object
@@ -84,5 +83,8 @@ namespace mpgl {
         constexpr Transformation& operator=(
             Transformation&&) noexcept = default;
     };
+
+    typedef Transformation<dim::Dim2>           Transformation2D;
+    typedef Transformation<dim::Dim3>           Transformation3D;
 
 }

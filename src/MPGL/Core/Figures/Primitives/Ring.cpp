@@ -102,7 +102,7 @@ namespace mpgl {
         Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        any::InputRange<Adapter<Vector2f>> positions{vertices};
+        any::InputRange<Adapter2D> positions{vertices};
         layout(positions, oldDimensions);
         actualizeMatrices();
     }
@@ -237,7 +237,7 @@ namespace mpgl {
         Vector2u const& oldDimensions) noexcept
     {
         innerEllipse.onScreenTransformation(layout, oldDimensions);
-        any::InputRange<Adapter<Vector2f>> positions{
+        any::InputRange<Adapter2D> positions{
             vertices | views::position};
         layout(positions, oldDimensions);
         actualizeMatrices();

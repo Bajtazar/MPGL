@@ -45,7 +45,7 @@ namespace mpgl {
     [[nodiscard]] bool Points::contains(
         Vector2f const& position) const noexcept
     {
-        Vector2f normalized = Adapter<Vector2f>{position}.get();
+        Vector2f normalized = Adapter2D{position}.get();
         for (auto const& pointPos : vertices | views::position)
             if (std::ranges::equal(pointPos.get(), normalized))
                 return true;

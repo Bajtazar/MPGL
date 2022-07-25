@@ -127,7 +127,7 @@ namespace mpgl {
         Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        any::InputRange<Adapter<Vector2f>> positions{vertices};
+        any::InputRange<Adapter2D> positions{vertices};
         layout(positions, oldDimensions);
         actualizeMatrices();
     }

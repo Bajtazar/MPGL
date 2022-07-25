@@ -90,7 +90,7 @@ namespace mpgl {
          * window dimensions
          */
         void operator() (
-            any::InputRange<Adapter<Vector2f>>& range,
+            any::InputRange<Adapter2D>& range,
             Vector2u const& oldDimensions) const noexcept final;
 
         /**

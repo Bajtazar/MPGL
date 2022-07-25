@@ -33,82 +33,200 @@
 namespace mpgl {
 
     /**
-     * Holds a value normalized by the window dimensions and
-     * perform rescaling operations during access
+     * Wrapps the float32 mathematical vector. For the 2D
+     * objects maps the vector from the current screen dimensions
+     * to the normalized OpenGl's [-1, 1]^2 space. For other
+     * dimensions does not perform any transformations or operations
+     * allowing to specialize its instance when other space is more
+     * handy to operate within. Even when the adapter is not
+     * specialized it is recommended to use the get() method for the
+     * performance and safety reasons
      *
-     * @tparam Tp the underlying value type
+     * @tparam Size the size of the vector
      */
-    template <Adaptable Tp>
-    class Adapter : private GraphicalObject {
+    template <std::size_t Size>
+        requires (Size > 1u)
+    class Adapter {
     public:
-        typedef typename Tp::value_type value_type;
+        using value_type                  = Vector<float32, Size>;
+        using reference                   = value_type&;
+        using const_reference             = value_type const&;
 
         /**
-         * Construct a new Adapter object. Normalizes
-         * the given range
+         * Constructs a new Adapter object
          *
-         * @param range the given range constant reference
+         * @param value the constant reference to the adapter's value
          */
-        Adapter(Tp const& range) noexcept;
+        constexpr Adapter(const_reference value) noexcept;
 
         /**
-         * Construct a new Adapter object. Normalizes
-         * the given range
+         * Constructs a new Adapter object
          *
-         * @param range the given range rvalue
+         * @param value the rvalue reference to the adapter's value
          */
-        Adapter(Tp&& range) noexcept;
+        constexpr Adapter(value_type&& value) noexcept;
 
-        Adapter(Adapter const&) = default;
-        Adapter(Adapter&&) noexcept = default;
+        constexpr Adapter(Adapter const&) noexcept = default;
+        constexpr Adapter(Adapter&&) noexcept = default;
 
-        Adapter& operator=(Adapter const&) = default;
-        Adapter& operator=(Adapter&&) noexcept = default;
+        constexpr Adapter& operator=(Adapter const&) noexcept = default;
+        constexpr Adapter& operator=(Adapter&&) noexcept = default;
 
         /**
-         * Assigns the given value to the adapter object
+         * Assigns the value to the adapter object
          *
-         * @param value the given value contant reference
+         * @param value the constant reference to the assigned
+         * value object
          */
-        void operator= (Tp const& value) noexcept;
+        constexpr Adapter& operator=(const_reference value) noexcept;
 
         /**
-         * Assigns the given value to the adapter object
+         * Assigns the value to the adapter object
          *
-         * @param value the given value rvalue
+         * @param value the rvalue reference to the assigned
+         * value object
          */
-        void operator= (Tp&& value) noexcept;
+        constexpr Adapter& operator=(value_type&& value) noexcept;
 
         /**
-         * Rescales and returns the unnormialized value
+         * Returns the copy of the wrapped object
          *
-         * @return the unnormalized value
+         * @return the copy of the wrapped object
          */
-        operator Tp() const noexcept;
+        [[nodiscard]] constexpr operator value_type() const noexcept
+            { return value; }
 
         /**
-         * Returns a reference to the underlying value
+         * Casts the wrapped object onto the given type
          *
-         * @return the reference to the underlying value
+         * @tparam Tp the casted vector's type
+         * @return the casted vector
          */
-        Tp& get(void) noexcept
-            { return range; }
+        template <Arithmetic Tp>
+            requires std::convertible_to<float32, Tp>
+        [[nodiscard]] operator Vector2<Tp>() const noexcept
+            { return value_type(*this); }
 
         /**
-         * Returns a constant reference to the underlying value
+         * Returns a reference to the wrapped object
          *
-         * @return the constant reference to the underlying value
+         * @return the reference to the wrapped object
          */
-        Tp const& get(void) const noexcept
-            { return range; }
+        [[nodiscard]] constexpr reference get(void) noexcept
+            { return value; }
 
         /**
-         * Destroy the Adapter object
+         * Returns constant reference to the wrapped object
+         *
+         * @return the constant reference to the wrapped objecy
          */
-        ~Adapter(void) noexcept = default;
+        [[nodiscard]] constexpr const_reference get(
+            void) const noexcept
+                { return value; }
+
+        /**
+         * Destroys the Adapter object
+         */
+        constexpr ~Adapter(void) noexcept = default;
     private:
-        Tp                              range;
+        value_type                          value;
     };
+
+    /**
+     * Holds a vector mapped from the window dimensions to the
+     * OpenGl's [-1, 1]^2 space and performs rescaling operations
+     * during access
+     */
+    template <>
+    class Adapter<2> : private GraphicalObject {
+    public:
+        using value_type                  = Vector2f;
+        using reference                   = value_type&;
+        using const_reference             = value_type const&;
+
+        /**
+         * Constructs a new Adapter object. Normalizes
+         * the given value
+         *
+         * @param value the constant reference to the adapter's value
+         */
+        Adapter(const_reference value) noexcept;
+
+        /**
+         * Constructs a new Adapter object. Normalizes
+         * the given value
+         *
+         * @param value the rvalue reference to the adapter's value
+         */
+        Adapter(value_type&& value) noexcept;
+
+        constexpr Adapter(Adapter const&) noexcept = default;
+        constexpr Adapter(Adapter&&) noexcept = default;
+
+        constexpr Adapter& operator=(Adapter const&) noexcept = default;
+        constexpr Adapter& operator=(Adapter&&) noexcept = default;
+
+        /**
+         * Assigns the value to the adapter object. Normalizes
+         * the given range
+         *
+         * @param value the constant reference to the assigned
+         * value object
+         */
+        Adapter& operator=(const_reference value) noexcept;
+
+        /**
+         * Assigns the value to the adapter object. Normalizes
+         * the given range
+         *
+         * @param value the rvalue reference to the assigned
+         * value object
+         */
+        Adapter& operator=(value_type&& value) noexcept;
+
+        /**
+         * Rescales and returns the denormalized value
+         *
+         * @return the denormalized value
+         */
+        [[nodiscard]] operator value_type() const noexcept;
+
+        /**
+         * Rescales, converts and returns the denormalized value
+         *
+         * @return the denormalized value
+         */
+        template <Arithmetic Tp>
+            requires std::convertible_to<float32, Tp>
+        [[nodiscard]] operator Vector2<Tp>() const noexcept
+            { return value_type(*this); }
+
+        /**
+         * Returns a reference to the wrapped object
+         *
+         * @return the reference to the wrapped object
+         */
+        [[nodiscard]] constexpr reference get(void) noexcept
+            { return value; }
+
+        /**
+         * Returns constant reference to the wrapped object
+         *
+         * @return the constant reference to the wrapped objecy
+         */
+        [[nodiscard]] constexpr const_reference get(
+            void) const noexcept
+                { return value; }
+
+        /**
+         * Destroys the Adapter object
+         */
+        constexpr ~Adapter(void) noexcept = default;
+    private:
+        value_type                          value;
+    };
+
+    typedef Adapter<2>                      Adapter2D;
 
 }
 

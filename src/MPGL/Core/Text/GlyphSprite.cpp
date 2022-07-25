@@ -214,7 +214,7 @@ namespace mpgl {
         Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        any::InputRange<Adapter<Vector2f>> positions{
+        any::InputRange<Adapter2D> positions{
             vertices | views::position};
         layout(positions, oldDimensions);
         isModified = true;

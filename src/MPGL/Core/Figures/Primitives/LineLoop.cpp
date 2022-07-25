@@ -64,7 +64,7 @@ namespace mpgl {
     [[nodiscard]] bool LineLoop::contains(
         Vector2f const& position) const noexcept
     {
-        Vector2f normalized = Adapter<Vector2f>{position}.get();
+        Vector2f normalized = Adapter2D{position}.get();
         for (std::size_t i = 1; i < size(); ++i)
             if (insideInterval(normalized, i) && onLine(normalized, i))
                 return true;
