@@ -43,15 +43,13 @@ namespace mpgl {
     private:
         /// The default texturable vertex
         using DefaultVertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter<Vector2f>,
-                DataType::Float32>,
+            VertexComponent<"position", Adapter2D, DataType::Float32>,
             VertexComponent<"texCoords", Vector2f, DataType::Float32>
         >;
 
         /// The colorable texturable vertex
         using ColorableVertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter<Vector2f>,
-                DataType::Float32>,
+            VertexComponent<"position", Adapter2D, DataType::Float32>,
             VertexComponent<"texCoords", Vector2f, DataType::Float32>,
             VertexComponent<"color", Color, DataType::Float32>
         >;

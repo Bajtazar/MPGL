@@ -268,18 +268,6 @@ namespace mpgl {
     concept PureType = !std::is_reference_v<Tp>;
 
     /**
-     * Checks whether the given type can be used inside an adapter
-     *
-     * @tparam Tp the type to check
-     */
-    template <typename Tp>
-    concept Adaptable = Absolute<Tp> &&
-        requires { typename Tp::value_type; } &&
-        requires(Tp& a, typename Tp::value_type b)
-            { a / a; a * a; a * b; a / b; a - b; a + b; }
-        && std::is_convertible_v<uint32, typename Tp::value_type>;
-
-    /**
      * Checks whether the given type is a constexpr constructible
      *
      * @tparam Tp the type to check

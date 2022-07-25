@@ -53,6 +53,7 @@ namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
     template <Arithmetic Up>
+        requires std::convertible_to<Tp, Up>
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
         Vector<Up, Size>() const noexcept
     {

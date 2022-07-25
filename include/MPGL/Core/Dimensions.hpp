@@ -62,6 +62,6 @@ namespace mpgl {
     concept Dimension = requires {
         Tp::orhogonal_space_degree;
     } && std::same_as<decltype(Tp::orhogonal_space_degree),
-            std::size_t const> && Tp::orhogonal_space_degree > 0u;
+            std::size_t const> && Tp::orhogonal_space_degree > 1u;
 
 }

@@ -16,6 +16,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Collections/Image.cpp
     ${MPGL_SOURCES}/Mathematics/FFT.cpp
     ${MPGL_SOURCES}/Mathematics/FastFunctions.cpp
+    ${MPGL_SOURCES}/Utility/Adapter.cpp
     ${MPGL_SOURCES}/Utility/StringAlgorithm.cpp
     ${MPGL_SOURCES}/IO/FileIO.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/JPEGLoader.cpp

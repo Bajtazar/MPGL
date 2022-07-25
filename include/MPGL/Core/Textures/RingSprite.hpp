@@ -150,7 +150,7 @@ namespace mpgl {
 
             friend class RingSprite;
         private:
-            typedef Adapter<Vector2f>                       Vertex;
+            typedef Adapter2D                               Vertex;
             typedef std::array<Vertex, 4>                   Vertices;
 
             Vertices                                        vertices;

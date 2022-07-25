@@ -39,8 +39,7 @@ namespace mpgl {
     public:
         /// The vertex used by all elliptic shapes
         using Vertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter<Vector2f>,
-                DataType::Float32>>;
+            VertexComponent<"position", Adapter2D, DataType::Float32>>;
 
         typedef std::vector<Vertex>                     Vertices;
 

@@ -268,6 +268,7 @@ namespace mpgl {
          * @return the casted vector
          */
         template <Arithmetic Up>
+            requires std::convertible_to<Tp, Up>
         [[nodiscard]] constexpr operator Vector<Up, Size>(
             ) const noexcept;
 
