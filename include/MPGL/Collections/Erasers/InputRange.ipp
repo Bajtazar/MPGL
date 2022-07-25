@@ -33,7 +33,7 @@ namespace mpgl::any {
 
     template <PureType Tp>
     template <std::ranges::input_range Rg>
-    [[nodiscard]] InputRange<Tp>::WrappedRange<Rg>::IIter*
+    [[nodiscard]] constexpr InputRange<Tp>::WrappedRange<Rg>::IIter*
         InputRange<Tp>::WrappedRange<Rg>::Iterator::clone(void)
     {
         return new Iterator{*this};
@@ -41,7 +41,7 @@ namespace mpgl::any {
 
     template <PureType Tp>
     template <std::ranges::input_range Rg>
-    [[nodiscard]] InputRange<Tp>::RangeInterface::IterPtr
+    [[nodiscard]] constexpr InputRange<Tp>::RangeInterface::IterPtr
         InputRange<Tp>::WrappedRange<Rg>::iterator(void) noexcept
     {
         return std::make_unique<Iterator>(
@@ -52,17 +52,17 @@ namespace mpgl::any {
 
     template <PureType Tp>
     template <InputRangeCompatible<Tp> Range>
-    InputRange<Tp>::InputRange(Range&& range)
+    constexpr InputRange<Tp>::InputRange(Range&& range)
         : rangePointer{std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range))} {}
 
     template <PureType Tp>
-    InputRange<Tp>::InputRange(
+    constexpr InputRange<Tp>::InputRange(
         InputRange const& inputRange)
             : rangePointer{inputRange.rangePointer->clone()} {}
 
     template <PureType Tp>
-    InputRange<Tp>& InputRange<Tp>::operator=(
+    constexpr InputRange<Tp>& InputRange<Tp>::operator=(
         InputRange const& inputRange)
     {
         // input range has to have the valid pointer
@@ -73,7 +73,7 @@ namespace mpgl::any {
 
     template <PureType Tp>
     template <InputRangeCompatible<Tp> Range>
-    InputRange<Tp>& InputRange<Tp>::operator=(Range&& range) {
+    constexpr InputRange<Tp>& InputRange<Tp>::operator=(Range&& range) {
         rangePointer = std::make_unique<WrappedRange<Range>>(
             std::forward<Range>(range));
         return *this;
@@ -81,13 +81,13 @@ namespace mpgl::any {
 
     template <PureType Tp>
     template <typename BaseTp>
-    InputRange<Tp>::Iterator<BaseTp>::Iterator(
+    constexpr InputRange<Tp>::Iterator<BaseTp>::Iterator(
         Iterator const& iterator)
             : iterPtr{clone(iterator.iterPtr)} {}
 
     template <PureType Tp>
     template <typename BaseTp>
-    InputRange<Tp>::Iterator<BaseTp>&
+    constexpr InputRange<Tp>::Iterator<BaseTp>&
         InputRange<Tp>::Iterator<BaseTp>::operator=(
             Iterator const& iterator)
     {
@@ -97,7 +97,7 @@ namespace mpgl::any {
 
     template <PureType Tp>
     template <typename BaseTp>
-    [[nodiscard]] InputRange<Tp>::Iterator<BaseTp>
+    [[nodiscard]] constexpr InputRange<Tp>::Iterator<BaseTp>
         InputRange<Tp>::Iterator<BaseTp>::operator++(int)
     {
         auto copy = *this;
