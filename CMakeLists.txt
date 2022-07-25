@@ -83,7 +83,7 @@ add_library(${PROJECT_NAME} STATIC
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
-configure_file(mpgl.pc.in mpgl.pc @ONLY)
+# configure_file(mpgl.pc.in mpgl.pc @ONLY)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
@@ -101,6 +101,6 @@ if(MPGL_INSTALL)
     install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-    install(FILES ${CMAKE_BINARY_DIR}/mpgl.pc
-        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
+    # install(FILES ${CMAKE_BINARY_DIR}/mpgl.pc
+    #     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 endif()
