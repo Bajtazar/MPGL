@@ -25,40 +25,33 @@
  */
 #pragma once
 
-#include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
-#include <MPGL/Core/Transformations/Transformation.hpp>
-
 namespace mpgl {
 
-    /**
-     * Definision of the transformable class.
-     * The implementation differs depending on the
-     * number of dimensions
-     *
-     * @tparam Dim the dimension tag type
-     */
     template <Dimension Dim>
-    class Transformable;
-    // {
-    // public:
-    //     constexpr explicit Transformable(void) noexcept = default;
+    constexpr Scaling<Dim>::Scaling(
+        VectorDf const& center,
+        float32 factor) noexcept
+            : center{center}, factor{factor} {}
 
-    //     constexpr virtual void transform(
-    //         Transformation<Dim> const& transformator) noexcept = 0;
+    template <Dimension Dim>
+    constexpr Scaling<Dim>::Scaling(
+        VectorDf&& center,
+        float32 factor) noexcept
+            : center{std::move(center)}, factor{factor} {}
 
-    //     constexpr virtual ~Transformable(void) noexcept = default;
-    // protected:
-    //     constexpr Transformable(
-    //         Transformable const&) noexcept = default;
+    template <Dimension Dim>
+    constexpr void Scaling<Dim>::operator() (
+        any::InputRange<TransformedType>& coords) const noexcept
+    {
+        for (auto& coord : coords)
+            (*this)(coord);
+    }
 
-    //     constexpr Transformable(
-    //         Transformable&&) noexcept = default;
-
-    //     constexpr Transformable& operator=(
-    //         Transformable const&) noexcept = default;
-
-    //     constexpr Transformable& operator=(
-    //         Transformable&&) noexcept = default;
-    // };
+    template <Dimension Dim>
+    constexpr void Scaling<Dim>::operator() (
+        TransformedType& coord) const noexcept
+    {
+        coord = (VectorDf(coord) - center) * factor + center;
+    }
 
 }
