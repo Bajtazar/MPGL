@@ -31,12 +31,22 @@
 
 #include <algorithm>
 
+#ifndef MPGL_SOURCE_DIR
+#define MPGL_SOURCE_DIR "."
+#endif
+
 namespace mpgl {
+
+    std::string const ShaderLibrary::vertexShadersPath
+        = std::string(MPGL_SOURCE_DIR) + "/shaders/Vertex/";
+
+    std::string const ShaderLibrary::fragmentShadersPath
+        = std::string(MPGL_SOURCE_DIR) + "/shaders/Fragment/";
 
     ShaderLibrary::ShaderLibrary(void) {
         for (std::string const& shader : getShaderList()) {
-            VertexShader vertex{"shaders/Vertex/" + shader};
-            FragmentShader fragment{"shaders/Fragment/" + shader};
+            VertexShader vertex{vertexShadersPath + shader};
+            FragmentShader fragment{fragmentShadersPath + shader};
             ShaderProgram program{vertex, fragment};
             program.link(shader);
             programs.emplace(shader.substr(0,
