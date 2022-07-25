@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
-#include <MPGL/Core/Dimensions.hpp>
+#include <MPGL/Core/Transformations/Transformation.hpp>
 
 namespace mpgl {
 
@@ -38,6 +38,27 @@ namespace mpgl {
      * @tparam Dim the dimension tag type
      */
     template <Dimension Dim>
-    struct Transformable;
+    class Transformable;
+    // {
+    // public:
+    //     constexpr explicit Transformable(void) noexcept = default;
+
+    //     constexpr virtual void transform(
+    //         Transformation<Dim>& transformator) noexcept = 0;
+
+    //     constexpr virtual ~Transformable(void) noexcept = default;
+    // protected:
+    //     constexpr Transformable(
+    //         Transformable const&) noexcept = default;
+
+    //     constexpr Transformable(
+    //         Transformable&&) noexcept = default;
+
+    //     constexpr Transformable& operator=(
+    //         Transformable const&) noexcept = default;
+
+    //     constexpr Transformable& operator=(
+    //         Transformable&&) noexcept = default;
+    // };
 
 }

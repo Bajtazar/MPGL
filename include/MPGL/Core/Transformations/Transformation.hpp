@@ -43,7 +43,7 @@ namespace mpgl {
     template <Dimension Dim>
     class Transformation {
     public:
-        using TransformedType = Adapter<Dim::orhogonal_space_degree>;
+        using TransformedType = Adapter<Dim::orthogonal_space_degree>;
 
         /**
          * Constructs a new Transformation object
