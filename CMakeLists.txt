@@ -90,14 +90,23 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "MPGL_SOURCE_DIR=\"${PROJECT_
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw)
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
+
+SET(GLAD_API "gl=4.6" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest")
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/external/glfw/include)
 
+target_include_directories(${PROJECT_NAME}
+    PUBLIC ${GLAD_OUT_DIR}/include)
+
 target_link_directories(${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/external/glfw/src)
 
-target_link_libraries(${PROJECT_NAME} glfw)
+target_link_directories(${PROJECT_NAME}
+    PUBLIC ${GLAD_OUT_DIR}/src)
+
+target_link_libraries(${PROJECT_NAME} glfw glad)
 
 if(MPGL_INSTALL)
     install(TARGETS ${PROJECT_NAME}
