@@ -38,15 +38,15 @@
 namespace mpgl {
 
     std::string const ShaderLibrary::vertexShadersPath
-        = std::string(MPGL_SOURCE_DIR) + "/shaders/Vertex/";
+        = std::string(MPGL_SOURCE_DIR) + "/shaders/Vertex";
 
     std::string const ShaderLibrary::fragmentShadersPath
-        = std::string(MPGL_SOURCE_DIR) + "/shaders/Fragment/";
+        = std::string(MPGL_SOURCE_DIR) + "/shaders/Fragment";
 
     ShaderLibrary::ShaderLibrary(void) {
         for (std::string const& shader : getShaderList()) {
-            VertexShader vertex{vertexShadersPath + shader};
-            FragmentShader fragment{fragmentShadersPath + shader};
+            VertexShader vertex{vertexShadersPath + "/" + shader};
+            FragmentShader fragment{fragmentShadersPath + "/" + shader};
             ShaderProgram program{vertex, fragment};
             program.link(shader);
             programs.emplace(shader.substr(0,
@@ -59,21 +59,22 @@ namespace mpgl {
         Paths const& fragmentShaders) noexcept
     {
         auto compare = [](auto const& left, auto const& right) -> bool {
-            return left.substr(15) == right.substr(17);
+            return left.substr(vertexShadersPath.size() + 1)
+                == right.substr(fragmentShadersPath.size() + 1);
         };
-
         return std::ranges::equal(vertexShaders, fragmentShaders,
             compare);
     }
 
     ShaderLibrary::Paths ShaderLibrary::getShaderList(void) const {
-        auto vertex = FileIO::getRecursiveDirFiles("shaders/Vertex");
-        auto fragment = FileIO::getRecursiveDirFiles("shaders/Fragment");
+        auto vertex = FileIO::getRecursiveDirFiles(vertexShadersPath);
+        auto fragment = FileIO::getRecursiveDirFiles(fragmentShadersPath);
         if (!sameShaders(vertex, fragment))
             throw ShaderLibraryInvalidShadersException{vertex, fragment};
         Paths shaders;
         std::ranges::transform(vertex, std::back_inserter(shaders),
-            [](const auto& path){ return path.substr(15); });
+            [](auto const& path)
+                { return path.substr(vertexShadersPath.size() + 1); });
         return shaders;
     }
 
