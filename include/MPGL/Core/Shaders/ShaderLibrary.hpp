@@ -171,6 +171,10 @@ namespace mpgl {
         static bool sameShaders(
             Paths const& vertexShaders,
             Paths const& fragmentShaders) noexcept;
+
+        static std::string const                        vertexShadersPath;
+
+        static std::string const                        fragmentShadersPath;
     };
 
 }

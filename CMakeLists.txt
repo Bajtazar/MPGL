@@ -83,6 +83,8 @@ add_library(${PROJECT_NAME} STATIC
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
+add_compile_definitions(MPGL_SOURCE_DIR=${PROJECT_SOURCE_DIR})
+
 # configure_file(mpgl.pc.in mpgl.pc @ONLY)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
