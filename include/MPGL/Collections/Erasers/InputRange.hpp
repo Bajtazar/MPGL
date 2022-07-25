@@ -79,7 +79,7 @@ namespace mpgl::any {
          * holds an object)
          */
         template <InputRangeCompatible<Tp> Range>
-        explicit InputRange(Range&& range);
+        constexpr explicit InputRange(Range&& range);
 
         /**
          * Constructs a new Input Range object. Creates a copy of
@@ -90,9 +90,9 @@ namespace mpgl::any {
          * @param inputRange the constant reference to the input
          * range object
          */
-        InputRange(InputRange const& inputRange);
+        constexpr InputRange(InputRange const& inputRange);
 
-        InputRange(InputRange&&) = default;
+        constexpr InputRange(InputRange&&) = default;
 
         /**
          * Assigns an other Input Range object. Assigns a copy of
@@ -104,9 +104,9 @@ namespace mpgl::any {
          * range object
          * @return the reference to this object
          */
-        InputRange& operator=(InputRange const& inputRange);
+        constexpr InputRange& operator=(InputRange const& inputRange);
 
-        InputRange& operator=(InputRange&&) = default;
+        constexpr InputRange& operator=(InputRange&&) = default;
 
         /**
          * Assigns the given Input-Range-compatible range
@@ -119,7 +119,7 @@ namespace mpgl::any {
          * @return the reference to this object
          */
         template <InputRangeCompatible<Tp> Range>
-        InputRange& operator=(Range&& range);
+        constexpr InputRange& operator=(Range&& range);
     private:
         /**
          * An interface for the RangeWrapper. Allows to abstract
@@ -130,7 +130,8 @@ namespace mpgl::any {
             /**
              * Constructs a new Range Interface object
              */
-            explicit RangeInterface(void) noexcept = default;
+            constexpr explicit RangeInterface(
+                void) noexcept = default;
 
             /**
              * An interface for the RangeWrapper's iterator. Creates
@@ -142,7 +143,8 @@ namespace mpgl::any {
                 /**
                  * Constructs a new Iterator Interface object
                  */
-                explicit IteratorInterface(void) noexcept = default;
+                constexpr explicit IteratorInterface(
+                    void) noexcept = default;
 
                 using reference = Tp&;
 
@@ -152,14 +154,14 @@ namespace mpgl::any {
                  *
                  * @return if there is a next element in the iterator
                  */
-                [[nodiscard]] virtual bool hasNext(
+                [[nodiscard]] constexpr virtual bool hasNext(
                     void) const noexcept = 0;
 
                 /**
                  * Pure virtual method. Has to be overloaded.
                  * Increments an iterator
                  */
-                virtual void increment(void) noexcept = 0;
+                constexpr virtual void increment(void) noexcept = 0;
 
                 /**
                  * Pure virtual method. Has to be overloaded. Returns
@@ -167,7 +169,7 @@ namespace mpgl::any {
                  *
                  * @return the reference to the element in the range
                  */
-                [[nodiscard]] virtual reference get(
+                [[nodiscard]] constexpr virtual reference get(
                     void) const noexcept = 0;
 
                 /**
@@ -177,24 +179,24 @@ namespace mpgl::any {
                  *
                  * @return the pointer to the cloned object
                  */
-                [[nodiscard]] virtual IteratorInterface*
+                [[nodiscard]] constexpr virtual IteratorInterface*
                     clone(void) = 0;
 
                 /**
                  * Virtual destructor. Destroys the Iterator
                  * Interface object
                  */
-                virtual ~IteratorInterface(
+                constexpr virtual ~IteratorInterface(
                     void) noexcept = default;
             protected:
-                IteratorInterface(
+                constexpr IteratorInterface(
                     IteratorInterface const&) noexcept = default;
-                IteratorInterface(
+                constexpr IteratorInterface(
                     IteratorInterface&&) noexcept = default;
 
-                IteratorInterface& operator=(
+                constexpr IteratorInterface& operator=(
                     IteratorInterface const&) noexcept = default;
-                IteratorInterface& operator=(
+                constexpr IteratorInterface& operator=(
                     IteratorInterface&&) noexcept = default;
             };
 
@@ -208,7 +210,8 @@ namespace mpgl::any {
              * @return the unique pointer with the iterator pointing
              * begining of the range
              */
-            [[nodiscard]] virtual IterPtr iterator(void) noexcept = 0;
+            [[nodiscard]] constexpr virtual IterPtr iterator(
+                void) noexcept = 0;
 
             /**
              * Pure virtual method. Has to be overloaded. Clones
@@ -217,22 +220,24 @@ namespace mpgl::any {
              *
              * @return the pointer to the cloned object
              */
-            [[nodiscard]] virtual RangeInterface* clone(void) = 0;
+            [[nodiscard]] constexpr virtual RangeInterface* clone(
+                void) = 0;
 
             /**
              * Virtual destructor. Destroys the Range Interface object
              */
-            virtual ~RangeInterface(void) noexcept = default;
+            constexpr virtual ~RangeInterface(void) noexcept = default;
         protected:
-            RangeInterface(
+            constexpr RangeInterface(
                 RangeInterface const&) noexcept = default;
 
-            RangeInterface(RangeInterface&&) noexcept = default;
+            constexpr RangeInterface(
+                RangeInterface&&) noexcept = default;
 
-            RangeInterface& operator=(
+            constexpr RangeInterface& operator=(
                 RangeInterface const&) noexcept = default;
 
-            RangeInterface& operator=(
+            constexpr RangeInterface& operator=(
                 RangeInterface&&) noexcept = default;
         };
     public:
@@ -268,13 +273,14 @@ namespace mpgl::any {
              * @param pointer the rvalue reference to the smart
              * pointer managing the erasured iterator
              */
-            explicit Iterator(UnderlyingPtr&& pointer) noexcept
-                : iterPtr{std::move(pointer)} {}
+            constexpr explicit Iterator(
+                UnderlyingPtr&& pointer) noexcept
+                    : iterPtr{std::move(pointer)} {}
 
             /**
              * Constructs a new Iterator object
              */
-            explicit Iterator(void) noexcept :
+            constexpr explicit Iterator(void) noexcept :
                 iterPtr{nullptr} {}
 
             /**
@@ -284,9 +290,9 @@ namespace mpgl::any {
              * @param iterator the constant reference to the
              * Iterator object
              */
-            Iterator(Iterator const& iterator);
+            constexpr Iterator(Iterator const& iterator);
 
-            Iterator(Iterator&&) noexcept = default;
+            constexpr Iterator(Iterator&&) noexcept = default;
 
             /**
              * Assigns an other Iterator object
@@ -295,32 +301,34 @@ namespace mpgl::any {
              * Iterator object
              * @return the reference to this object
              */
-            Iterator& operator=(Iterator const& iterator);
+            constexpr Iterator& operator=(Iterator const& iterator);
 
-            Iterator& operator=(Iterator&&) = default;
+            constexpr Iterator& operator=(Iterator&&) = default;
 
             /**
              * Returns the reference to the range's element
              *
              * @return the reference to the range's element
              */
-            [[nodiscard]] reference operator*(void) const noexcept
-                { return iterPtr->get(); }
+            [[nodiscard]] constexpr reference operator*(
+                void) const noexcept
+                    { return iterPtr->get(); }
 
             /**
              * Returns the pointer to the range's element
              *
              * @return the pointer to the range's element
              */
-            [[nodiscard]] pointer operator->(void) const noexcept
-                { return &(iterPtr->get()); }
+            [[nodiscard]] constexpr pointer operator->(
+                void) const noexcept
+                    { return &(iterPtr->get()); }
 
             /**
              * Pre-increments an iterator
              *
              * @return the reference to this object
              */
-            Iterator& operator++(void) noexcept
+            constexpr Iterator& operator++(void) noexcept
                 { iterPtr->increment(); return *this; }
 
             /**
@@ -328,7 +336,7 @@ namespace mpgl::any {
              *
              * @return a copy of the pre-incremented iterator
              */
-            [[nodiscard]] Iterator operator++(int);
+            [[nodiscard]] constexpr Iterator operator++(int);
 
             /**
              * Swaps two iterators toghether
@@ -336,7 +344,7 @@ namespace mpgl::any {
              * @param other the reference to the other iterator
              * object
              */
-            void swap(Iterator& other) noexcept
+            constexpr void swap(Iterator& other) noexcept
                 { iterPtr.swap(other.iterPtr); }
 
             /**
@@ -347,7 +355,7 @@ namespace mpgl::any {
              * @return true if the iterator has reached its end
              * otherwise returns false
              */
-            [[nodiscard]] friend bool operator==(
+            [[nodiscard]] friend constexpr bool operator==(
                 Iterator const& iter,
                 [[maybe_unused]] sentinel const& sent) noexcept
                     { return !iter.iterPtr || !iter.iterPtr->hasNext(); }
@@ -360,7 +368,7 @@ namespace mpgl::any {
              * @return true if the iterator has reached its end
              * otherwise returns false
              */
-            [[nodiscard]] friend bool operator==(
+            [[nodiscard]] friend constexpr bool operator==(
                 [[maybe_unused]] sentinel const& sent,
                 Iterator const& iter) noexcept
                     { return iter == sent; }
@@ -376,7 +384,7 @@ namespace mpgl::any {
          *
          * @return the iterator to the begining of the range
          */
-        [[nodiscard]] iterator begin(void)
+        [[nodiscard]] constexpr iterator begin(void)
             { return iterator{rangePointer->iterator()}; }
 
         /**
@@ -384,7 +392,7 @@ namespace mpgl::any {
          *
          * @return the constant iterator to the begining of the range
          */
-        [[nodiscard]] const_iterator begin(void) const
+        [[nodiscard]] constexpr const_iterator begin(void) const
             { return const_iterator{rangePointer->iterator()}; }
 
         /**
@@ -392,7 +400,7 @@ namespace mpgl::any {
          *
          * @return the constant iterator to the begining of the range
          */
-        [[nodiscard]] const_iterator cbegin(void) const
+        [[nodiscard]] constexpr const_iterator cbegin(void) const
             { return const_iterator{rangePointer->iterator()}; }
 
         /**
@@ -400,7 +408,7 @@ namespace mpgl::any {
          *
          * @return the sentinel
          */
-        [[nodiscard]] sentinel end(void) const noexcept
+        [[nodiscard]] constexpr sentinel end(void) const noexcept
             { return {}; }
 
         /**
@@ -408,7 +416,7 @@ namespace mpgl::any {
          *
          * @return the sentinel
          */
-        [[nodiscard]] sentinel cend(void) const noexcept
+        [[nodiscard]] constexpr sentinel cend(void) const noexcept
             { return {}; }
 
         /**
@@ -416,13 +424,13 @@ namespace mpgl::any {
          *
          * @param other the reference to the other object
          */
-        void swap(InputRange& other) noexcept
+        constexpr void swap(InputRange& other) noexcept
             { rangePointer.swap(other.rangePointer); }
 
         /**
          * Destroys the Input Range object
          */
-        ~InputRange(void) noexcept = default;
+        constexpr ~InputRange(void) noexcept = default;
     private:
         /**
          * Wrapps the input range. Allows to use dynamic
@@ -439,15 +447,15 @@ namespace mpgl::any {
              * @param range the universal reference to the range
              * object
              */
-            explicit WrappedRange(Range&& range)
+            constexpr explicit WrappedRange(Range&& range)
                 : range{std::forward<Range>(range)} {}
 
-            WrappedRange(WrappedRange const&) = default;
-            WrappedRange(WrappedRange&&) = default;
+            constexpr WrappedRange(WrappedRange const&) = default;
+            constexpr WrappedRange(WrappedRange&&) = default;
 
-            WrappedRange& operator=(
+            constexpr WrappedRange& operator=(
                 WrappedRange const&) = default;
-            WrappedRange& operator=(
+            constexpr WrappedRange& operator=(
                 WrappedRange&&) = default;
 
             using IIter = RangeInterface::IteratorInterface;
@@ -472,7 +480,7 @@ namespace mpgl::any {
                  * @param sentinel the constant reference to the
                  * sentinel object
                  */
-                explicit Iterator(
+                constexpr explicit Iterator(
                     RangeIter const& iterator,
                     RangeSent const& sentinel)
                         : iter{iterator}, sent{sentinel} {}
@@ -480,13 +488,14 @@ namespace mpgl::any {
                 /**
                  * Constructs a new Iterator object
                  */
-                explicit Iterator(void) = default;
+                constexpr explicit Iterator(void) = default;
 
-                Iterator(Iterator const&) = default;
-                Iterator(Iterator&&) = default;
+                constexpr Iterator(Iterator const&) = default;
+                constexpr Iterator(Iterator&&) = default;
 
-                Iterator& operator=(Iterator const&) = default;
-                Iterator& operator=(Iterator&&) = default;
+                constexpr Iterator& operator=(
+                    Iterator const&) = default;
+                constexpr Iterator& operator=(Iterator&&) = default;
 
                 /**
                  * Checks whether there is a next element in the
@@ -494,14 +503,14 @@ namespace mpgl::any {
                  *
                  * @return if there is a next element in the iterator
                  */
-                [[nodiscard]] bool hasNext(
+                [[nodiscard]] constexpr bool hasNext(
                     void) const noexcept final
                         { return iter != sent; }
 
                 /**
                  * Increments an iterator
                  */
-                void increment(void) noexcept final
+                constexpr void increment(void) noexcept final
                     { ++iter; }
 
                 /**
@@ -509,8 +518,9 @@ namespace mpgl::any {
                  *
                  * @return the reference to the element in the range
                  */
-                [[nodiscard]] reference get(void) const noexcept
-                    { return *iter; }
+                [[nodiscard]] constexpr reference get(
+                    void) const noexcept
+                        { return *iter; }
 
                 /**
                  * Clones the iterator and returns a pointer to the
@@ -518,12 +528,12 @@ namespace mpgl::any {
                  *
                  * @return the pointer to the cloned object
                  */
-                [[nodiscard]] IIter* clone(void) final;
+                [[nodiscard]] constexpr IIter* clone(void) final;
 
                 /**
                  * Destroys the Iterator object
                  */
-                ~Iterator(void) noexcept = default;
+                constexpr ~Iterator(void) noexcept = default;
             private:
                 RangeIter                       iter;
                 RangeSent                       sent;
@@ -537,7 +547,7 @@ namespace mpgl::any {
              *
              * @return the pointer to the cloned object
              */
-            [[nodiscard]] RangeInterface* clone(void) final
+            [[nodiscard]] constexpr RangeInterface* clone(void) final
                 { return new WrappedRange{*this}; }
 
             /**
@@ -547,12 +557,13 @@ namespace mpgl::any {
              * @return the unique pointer with the iterator pointing
              * begining of the range
              */
-            [[nodiscard]] IterPtr iterator(void) noexcept final;
+            [[nodiscard]] constexpr IterPtr iterator(
+                void) noexcept final;
 
             /**
              * Destroys the Wrapped Range object
              */
-            ~WrappedRange(void) noexcept = default;
+            constexpr ~WrappedRange(void) noexcept = default;
         private:
             Range                           range;
         };
@@ -575,7 +586,7 @@ namespace std {
      * @param right the reference to the right object
      */
     template <mpgl::PureType Tp>
-    void swap(
+    constexpr void swap(
         mpgl::any::InputRange<Tp>& left,
         mpgl::any::InputRange<Tp>& right) noexcept
     {
@@ -590,7 +601,7 @@ namespace std {
      * @param right the reference to the right object
      */
     template <mpgl::PureType Tp>
-    void swap(
+    constexpr void swap(
         typename mpgl::any::InputRange<Tp>::iterator& left,
         typename mpgl::any::InputRange<Tp>::iterator& right
         ) noexcept
@@ -606,7 +617,7 @@ namespace std {
      * @param right the reference to the right object
      */
     template <mpgl::PureType Tp>
-    void swap(
+    constexpr void swap(
         typename mpgl::any::InputRange<Tp>::const_iterator& left,
         typename mpgl::any::InputRange<Tp>::const_iterator& right
         ) noexcept
@@ -616,4 +627,4 @@ namespace std {
 
 }
 
-#include <MPGL/Collections/Erasers/InputRange.tpp>
+#include <MPGL/Collections/Erasers/InputRange.ipp>
