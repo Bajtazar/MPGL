@@ -25,26 +25,31 @@
  */
 #pragma once
 
-#include <concepts>
+#include <MPGL/Traits/Concepts.hpp>
 
 namespace mpgl {
 
     namespace dim {
 
         /**
-         * Base class for dimensions tags
+         * Dimension tags class
+         *
+         * @tparam Degree the degree of the orthogonal space
+         * represented by this tag
          */
-        struct Dimension {};
+        template <std::size_t Degree>
+        struct Dimension {
 
-        /**
-         * The 2D tag
-         */
-        struct Dim2 : Dimension {};
+            constexpr static std::size_t const orhogonal_space_degree
+                = Degree;
 
-        /**
-         * The 3D tag
-         */
-        struct Dim3 : Dimension {};
+        };
+
+        /// The 2D tag
+        typedef Dimension<2>                            Dim2;
+
+        /// The 3D tag
+        typedef Dimension<3>                            Dim3;
 
     }
 
@@ -54,6 +59,9 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <class Tp>
-    concept Dimension = std::derived_from<Tp, dim::Dimension>;
+    concept Dimension = requires {
+        Tp::orhogonal_space_degree;
+    } && std::same_as<decltype(Tp::orhogonal_space_degree),
+            std::size_t const> && Tp::orhogonal_space_degree > 0u;
 
 }
