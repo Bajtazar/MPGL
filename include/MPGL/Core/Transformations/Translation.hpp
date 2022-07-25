@@ -90,7 +90,7 @@ namespace mpgl {
          *
          * @return the reference to the translation vector
          */
-        constexpr [[nodiscard]] VectorDf& get(void) noexcept
+        constexpr [[nodiscard]] VectorDf& getTranslation(void) noexcept
             { return translation; }
 
         /**
@@ -98,7 +98,7 @@ namespace mpgl {
          *
          * @return the constant reference to the translation vector
          */
-        constexpr [[nodiscard]] VectorDf const& get(
+        constexpr [[nodiscard]] VectorDf const& getTranslation(
             void) const noexcept
                 { return translation; }
 
