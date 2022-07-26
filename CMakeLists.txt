@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(MPGL VERSION 0.4 LANGUAGES CXX DESCRIPTION "Modern and Precise Graphics Library")
+project(mpgl VERSION 0.4 LANGUAGES CXX DESCRIPTION "Modern and Precise Graphics Library")
 
 include(GNUInstallDirs)
 
