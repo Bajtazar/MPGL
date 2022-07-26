@@ -30,17 +30,17 @@
 namespace mpgl {
 
     template <Dimension Dim>
-    constexpr Translation<Dim>::Translation(
+    Translation<Dim>::Translation(
         VectorDf const& translation) noexcept
             : translation{translation} {}
 
     template <Dimension Dim>
-    constexpr Translation<Dim>::Translation(
+    Translation<Dim>::Translation(
         VectorDf&& translation) noexcept
             : translation{std::move(translation)} {}
 
     template <Dimension Dim>
-    constexpr void Translation<Dim>::operator() (
+    void Translation<Dim>::operator() (
         any::InputRange<TransformedType>& coords) const noexcept
     {
         for (auto& coord : coords)
@@ -48,7 +48,7 @@ namespace mpgl {
     }
 
     template <Dimension Dim>
-    constexpr void Translation<Dim>::operator() (
+    void Translation<Dim>::operator() (
         TransformedType& coord) const noexcept
     {
         coord = VectorDf(coord) + translation;
