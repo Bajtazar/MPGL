@@ -28,7 +28,7 @@
 #include <vector>
 #include <algorithm>
 
-#include <MPGL/Core/Transformations/Transformable2D.hpp>
+#include <MPGL/Core/Transformations/Transformable.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/DrawableTraits.hpp>
 
@@ -262,45 +262,13 @@ namespace mpgl {
             Vector2u const& oldDimensions) noexcept final;
 
         /**
-         * Translates the contained drawables by the given
-         * shift vector
+         * Performes transforation on the contained drawables
          *
-         * @param shift the shift vector
+         * @param transformator the constant reference to the
+         * transforming object
          */
-        void translate(Vector2f const& shift) noexcept final;
-
-        /**
-         * Scales the contained drawables around given center
-         * by the given factor
-         *
-         * @param center the scale center
-         * @param factor the scale factor
-         */
-        void scale(
-            Vector2f const& center,
-            float32 factor) noexcept final;
-
-        /**
-         * Rotates the contained drawables around given point
-         * by the given angle counter clockwise
-         *
-         * @param center the rotation point
-         * @param angle the rotation angle [in rads]
-         */
-        void rotate(
-            Vector2f const& center,
-            float32 angle) noexcept final;
-
-        /**
-         * Rotates the contained drawables around given point
-         * using given matrix
-         *
-         * @param center the rotation point
-         * @param rotation the rotation matrix
-         */
-        void rotate(
-            Vector2f const& center,
-            Matrix2f const& rotation) noexcept final;
+        void transform(
+            Transformation2D const& transformator) noexcept final;
 
         /**
          * Destroys the Drawable Collection object

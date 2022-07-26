@@ -31,34 +31,61 @@
 namespace mpgl {
 
     /**
-     * Definision of the transformable class.
-     * The implementation differs depending on the
-     * number of dimensions
+     * Definision of the transformable class. Allows to the
+     * transform the objects with the transformations suitable
+     * for their dimensions
      *
-     * @tparam Dim the dimension tag type
+     * @tparam Dim the transformed space's dimensions
      */
     template <Dimension Dim>
-    class Transformable;
-    // {
-    // public:
-    //     constexpr explicit Transformable(void) noexcept = default;
+    class Transformable : public ScreenTransformationEvent {
+    public:
+        /**
+         * Constructs a new transformable object
+         */
+        explicit Transformable(void) noexcept = default;
 
-    //     constexpr virtual void transform(
-    //         Transformation<Dim> const& transformator) noexcept = 0;
+        /**
+         * Pure virtual method. Has to be overloaded. Performs
+         * transformation on this object
+         *
+         * @param transformator the constant reference to the object
+         * perfoming a transformation
+         */
+        virtual void transform(
+            Transformation<Dim> const& transformator) noexcept = 0;
 
-    //     constexpr virtual ~Transformable(void) noexcept = default;
-    // protected:
-    //     constexpr Transformable(
-    //         Transformable const&) noexcept = default;
+        /**
+         * Pure virtual function. Has to be overloaded.
+         * Transforms the figure during the screen
+         * transformation event
+         *
+         * @param layout the layout of the figure
+         * @param oldDimensions the old screen dimensions
+         */
+        virtual void onScreenTransformation(
+            Layout& layout,
+            Vector2u const& oldDimensions) noexcept = 0;
 
-    //     constexpr Transformable(
-    //         Transformable&&) noexcept = default;
+        /**
+         * Virtual destructor. Destroys the transformable object
+         */
+        virtual ~Transformable(void) noexcept = default;
+    protected:
+        Transformable(
+            Transformable const&) noexcept = default;
 
-    //     constexpr Transformable& operator=(
-    //         Transformable const&) noexcept = default;
+        Transformable(
+            Transformable&&) noexcept = default;
 
-    //     constexpr Transformable& operator=(
-    //         Transformable&&) noexcept = default;
-    // };
+        Transformable& operator=(
+            Transformable const&) noexcept = default;
+
+        Transformable& operator=(
+            Transformable&&) noexcept = default;
+    };
+
+    typedef Transformable<dim::Dim2>                Transformable2D;
+    typedef Transformable<dim::Dim3>                Transformable3D;
 
 }

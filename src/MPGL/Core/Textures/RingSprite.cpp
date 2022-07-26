@@ -133,41 +133,11 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void RingSprite<IsColorable>::InnerEllipse::translate(
-        Vector2f const& shift) noexcept
+    void RingSprite<IsColorable>::InnerEllipse::transform(
+        Transformation2D const& transformator) noexcept
     {
-        for (auto& position : vertices)
-            position = Vector2f(position) + shift;
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void RingSprite<IsColorable>::InnerEllipse::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        for (auto& position : vertices)
-            position = (static_cast<Vector2f>(position)
-                - center) * factor + center;
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void RingSprite<IsColorable>::InnerEllipse::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    template <bool IsColorable>
-    void RingSprite<IsColorable>::InnerEllipse::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        for (auto& position : vertices)
-            position = rotation * (
-                Vector2f(position) - center) + center;
+        any::InputRange<Adapter2D> positions{vertices};
+        transformator(positions);
         actualizeMatrices();
     }
 
@@ -333,43 +303,12 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void RingSprite<IsColorable>::translate(
-        Vector2f const& shift) noexcept
+    void RingSprite<IsColorable>::transform(
+        Transformation2D const& transformator) noexcept
     {
-        EllipticSprite<IsColorable>::translate(shift);
+        EllipticSprite<IsColorable>::transform(transformator);
         actualizeMatrices();
-        innerEllipse.translate(shift);
-    }
-
-    template <bool IsColorable>
-    void RingSprite<IsColorable>::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        EllipticSprite<IsColorable>::scale(center, factor);
-        actualizeMatrices();
-        innerEllipse.scale(center, factor);
-    }
-
-    template <bool IsColorable>
-    void RingSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        auto matrix = rotationMatrix<float32>(angle);
-        EllipticSprite<IsColorable>::rotate(center, matrix);
-        actualizeMatrices();
-        innerEllipse.rotate(center, matrix);
-    }
-
-    template <bool IsColorable>
-    void RingSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        EllipticSprite<IsColorable>::rotate(center, rotation);
-        actualizeMatrices();
-        innerEllipse.rotate(center, rotation);
+        innerEllipse.transform(transformator);
     }
 
     template <bool IsColorable>

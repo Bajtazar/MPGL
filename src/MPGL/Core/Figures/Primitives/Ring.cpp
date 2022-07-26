@@ -107,38 +107,11 @@ namespace mpgl {
         actualizeMatrices();
     }
 
-    void Ring::InnerEllipse::translate(
-        Vector2f const& shift) noexcept
+    void Ring::InnerEllipse::transform(
+        Transformation2D const& transformator) noexcept
     {
-        for (auto& position : vertices)
-            position = Vector2f(position) + shift;
-        actualizeMatrices();
-    }
-
-    void Ring::InnerEllipse::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        for (auto& position : vertices)
-            position = (static_cast<Vector2f>(position)
-                - center) * factor + center;
-        actualizeMatrices();
-    }
-
-    void Ring::InnerEllipse::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    void Ring::InnerEllipse::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        for (auto& position : vertices)
-            position = rotation * (
-                Vector2f(position) - center) + center;
+        any::InputRange<Adapter2D> positions{vertices};
+        transformator(positions);
         actualizeMatrices();
     }
 
@@ -244,38 +217,13 @@ namespace mpgl {
         isModified = true;
     }
 
-    void Ring::translate(Vector2f const& shift) noexcept {
-        innerEllipse.translate(shift);
-        for (auto& position : vertices | views::position)
-            position = Vector2f(position) + shift;
-        actualizeMatrices();
-        isModified = true;
-    }
-
-    void Ring::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
+    void Ring::transform(
+        Transformation2D const& transformator) noexcept
     {
-        innerEllipse.scale(center, factor);
-        for (auto& position : vertices | views::position)
-            position = (static_cast<Vector2f>(position)
-                - center) * factor + center;
-        actualizeMatrices();
-        isModified = true;
-    }
-
-    void Ring::rotate(Vector2f const& center, float32 angle) noexcept {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    void Ring::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        innerEllipse.rotate(center, rotation);
-        for (auto& position : vertices | views::position)
-            position = rotation * (
-                Vector2f(position) - center) + center;
+        innerEllipse.transform(transformator);
+        any::InputRange<Adapter2D> positions{
+            vertices | views::position};
+        transformator(positions);
         actualizeMatrices();
         isModified = true;
     }

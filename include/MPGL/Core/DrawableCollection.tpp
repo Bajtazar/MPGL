@@ -103,42 +103,11 @@ namespace mpgl {
 
     template <details::Trans2DDrawable Base,
         std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::translate(
-        Vector2f const& shift) noexcept
+    void DrawableCollection<Base, Range>::transform(
+        Transformation2D const& transformator) noexcept
     {
-        std::ranges::for_each(*this, [&shift](auto& drawable)
-            { drawable.translate(shift); });
-    }
-
-    template <details::Trans2DDrawable Base,
-        std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        std::ranges::for_each(*this, [&center, &factor](auto& drawable)
-            { drawable.scale(center, factor); });
-    }
-
-    template <details::Trans2DDrawable Base,
-        std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        auto rot = rotationMatrix<float32>(angle);
-        std::ranges::for_each(*this, [&center, &rot](auto& drawable)
-            { drawable.rotate(center, rot); });
-    }
-
-    template <details::Trans2DDrawable Base,
-        std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        std::ranges::for_each(*this, [&center, &rotation]
-            (auto& drawable){ drawable.rotate(center, rotation); });
+        for (auto& drawable : *this)
+            drawable.transform(transformator);
     }
 
 }

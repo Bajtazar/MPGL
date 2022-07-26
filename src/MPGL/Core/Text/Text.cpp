@@ -24,6 +24,7 @@
  *  distribution
  */
 #include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
+#include <MPGL/Core/Transformations/Rotation.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 #include <MPGL/Core/Text/Text.hpp>
@@ -59,7 +60,7 @@ namespace mpgl {
         float span = 2 * std::ceil(0.05f * textSize);
         Tetragon line{position - Vector2f{0.f,
             span}, Vector2f{0.f, span}, color};
-        line.rotate(position, angle);
+        line.transform(Rotation2D{angle, position});
         return line;
     }
 
@@ -74,7 +75,7 @@ namespace mpgl {
         float halfspan =  std::ceil(0.05f * textSize);
         Tetragon line{position + Vector2f{0.f,
             midspan - halfspan}, Vector2f{0.f, 2 * halfspan}, color};
-        line.rotate(position, angle);
+        line.transform(Rotation2D{angle, position});
         return line;
     }
 
@@ -469,54 +470,18 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void Text<IsColorable>::translate(
-        Vector2f const& shift) noexcept
+    void Text<IsColorable>::transform(
+        Transformation2D const& transformator) noexcept
     {
-        glyphs.translate(shift);
+        glyphs.transform(transformator);
         if (mods & Modifiers::Underline)
-            underlines.translate(shift);
+            underlines.transform(transformator);
         if (mods & Modifiers::Strikethrough)
-            strikethroughs.translate(shift);
-        position += shift;
-    }
-
-    template <bool IsColorable>
-    void Text<IsColorable>::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    template <bool IsColorable>
-    void Text<IsColorable>::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        glyphs.rotate(center, rotation);
-        if (mods & Modifiers::Underline)
-            underlines.rotate(center, rotation);
-        if (mods & Modifiers::Strikethrough)
-            strikethroughs.rotate(center, rotation);
-        position = rotation * (position - center) + center;
-        auto twoPi = std::numbers::pi_v<float32> * 2;
-        this->angle += twoPi - angle;
-        this->angle = angle > twoPi ? angle - twoPi : angle < 0.f ?
-            twoPi + angle : angle;
-    }
-
-    template <bool IsColorable>
-    void Text<IsColorable>::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        glyphs.scale(center, factor);
-        if (mods & Modifiers::Underline)
-            underlines.scale(center, factor);
-        if (mods & Modifiers::Strikethrough)
-            strikethroughs.scale(center, factor);
-        textSize *= factor;
-        position = (position - center) * factor + center;
+            strikethroughs.transform(transformator);
+        Adapter2D adapter{position};
+        transformator(adapter);
+        position = adapter;
+        // determine angle and scale -> local space
     }
 
     template <bool IsColorable>
