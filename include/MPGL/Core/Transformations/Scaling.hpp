@@ -46,7 +46,7 @@ namespace mpgl {
          * @param factor the constant reference to the scaling
          * factors vector
          */
-        constexpr Scaling(VectorDf const& factor) noexcept;
+        Scaling(VectorDf const& factor) noexcept;
 
         /**
          * Constructs a new Scaling object
@@ -54,14 +54,14 @@ namespace mpgl {
          * @param factor the rvalue reference to the scaling
          * factors vector
          */
-        constexpr Scaling(VectorDf&& factor) noexcept;
+        Scaling(VectorDf&& factor) noexcept;
 
-        constexpr Scaling(Scaling const&) noexcept = default;
-        constexpr Scaling(Scaling&&) noexcept = default;
+        Scaling(Scaling const&) noexcept = default;
+        Scaling(Scaling&&) noexcept = default;
 
-        constexpr Scaling& operator=(
+        Scaling& operator=(
             Scaling const&) noexcept = default;
-        constexpr Scaling& operator=(
+        Scaling& operator=(
             Scaling&&) noexcept = default;
 
         /**
@@ -71,7 +71,7 @@ namespace mpgl {
          * @param coords the reference to the input range
          * of coordinates
          */
-        constexpr void operator() (
+        void operator() (
             any::InputRange<TransformedType>& coords
             ) const noexcept final;
 
@@ -81,7 +81,7 @@ namespace mpgl {
          *
          * @param coord the reference to the coordinate object
          */
-        constexpr void operator() (
+        void operator() (
             TransformedType& coord) const noexcept final;
 
         /**
@@ -89,7 +89,7 @@ namespace mpgl {
          *
          * @return the reference to the scaling factor
          */
-        constexpr [[nodiscard]] float32& getFactor(void) noexcept
+        [[nodiscard]] float32& getFactor(void) noexcept
             { return factor; }
 
         /**
@@ -97,17 +97,20 @@ namespace mpgl {
          *
          * @return the constant reference to the scaling factor
          */
-        constexpr [[nodiscard]] float32 const& getFactor(
+        [[nodiscard]] float32 const& getFactor(
             void) const noexcept
                 { return factor; }
 
         /**
          * Destroys a Scaling object
          */
-        constexpr ~Scaling(void) noexcept = default;
+        ~Scaling(void) noexcept = default;
     private:
         VectorDf                                    factor;
     };
+
+    typedef Scaling<dim::Dim2>                      Scaling2D;
+    typedef Scaling<dim::Dim3>                      Scaling3D;
 
 }
 

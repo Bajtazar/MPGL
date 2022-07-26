@@ -48,7 +48,7 @@ namespace mpgl {
         /**
          * Constructs a new Transformation object
          */
-        constexpr explicit Transformation(void) noexcept = default;
+        explicit Transformation(void) noexcept = default;
 
         /**
          * Pure virtual method. Has to be overloaded. Perfoms
@@ -57,7 +57,7 @@ namespace mpgl {
          * @param coords the reference to the input range
          * of coordinates
          */
-        constexpr virtual void operator() (
+        virtual void operator() (
            any::InputRange<TransformedType>& coords) const noexcept = 0;
 
         /**
@@ -66,21 +66,21 @@ namespace mpgl {
          *
          * @param coord the reference to the coordinate object
          */
-        constexpr virtual void operator() (
+        virtual void operator() (
             TransformedType& coord) const noexcept = 0;
 
         /**
          * Destroys the Transformation object
          */
-        constexpr virtual ~Transformation(void) noexcept = default;
+        virtual ~Transformation(void) noexcept = default;
     protected:
-        constexpr Transformation(
+        Transformation(
             Transformation const&) noexcept = default;
-        constexpr Transformation(Transformation&&) noexcept = default;
+        Transformation(Transformation&&) noexcept = default;
 
-        constexpr Transformation& operator=(
+        Transformation& operator=(
             Transformation const&) noexcept = default;
-        constexpr Transformation& operator=(
+        Transformation& operator=(
             Transformation&&) noexcept = default;
     };
 

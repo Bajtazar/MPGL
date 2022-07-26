@@ -47,7 +47,7 @@ namespace mpgl {
          * @param translation the constant reference to the
          * translation vector
          */
-        constexpr Translation(VectorDf const& translation) noexcept;
+        Translation(VectorDf const& translation) noexcept;
 
         /**
          * Constructs a new Translation object
@@ -55,14 +55,14 @@ namespace mpgl {
          * @param translation the rvalue reference to the
          * translation vector
          */
-        constexpr Translation(VectorDf&& translation) noexcept;
+        Translation(VectorDf&& translation) noexcept;
 
-        constexpr Translation(Translation const&) noexcept = default;
-        constexpr Translation(Translation&&) noexcept = default;
+        Translation(Translation const&) noexcept = default;
+        Translation(Translation&&) noexcept = default;
 
-        constexpr Translation& operator=(
+        Translation& operator=(
             Translation const&) noexcept = default;
-        constexpr Translation& operator=(
+        Translation& operator=(
             Translation&&) noexcept = default;
 
         /**
@@ -72,7 +72,7 @@ namespace mpgl {
          * @param coords the reference to the input range
          * of coordinates
          */
-        constexpr void operator() (
+        void operator() (
             any::InputRange<TransformedType>& coords
             ) const noexcept final;
 
@@ -82,7 +82,7 @@ namespace mpgl {
          *
          * @param coord the reference to the coordinate object
          */
-        constexpr void operator() (
+        void operator() (
             TransformedType& coord) const noexcept final;
 
         /**
@@ -90,22 +90,23 @@ namespace mpgl {
          *
          * @return the reference to the translation vector
          */
-        constexpr [[nodiscard]] VectorDf& getTranslation(void) noexcept
-            { return translation; }
+        [[nodiscard]] VectorDf& getTranslation(
+            void) noexcept
+                { return translation; }
 
         /**
          * Returns a constant reference to the translation vector
          *
          * @return the constant reference to the translation vector
          */
-        constexpr [[nodiscard]] VectorDf const& getTranslation(
+        [[nodiscard]] VectorDf const& getTranslation(
             void) const noexcept
                 { return translation; }
 
         /**
          * Destroys a Translation object
          */
-        constexpr ~Translation(void) noexcept = default;
+        ~Translation(void) noexcept = default;
     private:
         VectorDf                                translation;
     };
