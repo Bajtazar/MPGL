@@ -153,6 +153,15 @@ namespace mpgl {
              * Actualizes the matrices responsible for the outline
              */
             void actualizeMatrices(void) noexcept;
+
+            /**
+             * Calculates the new outline transformation matrix
+             *
+             * @return the optional with the matrix. If the matrix does not
+             * exist then returns std::nullopt
+             */
+            std::optional<Matrix2f> calculateNewOutline(
+                void) const noexcept;
         };
 
         /**
@@ -447,6 +456,14 @@ namespace mpgl {
          * Actualizes the matrices responsible for the outline
          */
         void actualizeMatrices(void) noexcept final;
+
+        /**
+         * Calculates the new outline transformation matrix
+         *
+         * @return the optional with the matrix. If the matrix does not
+         * exist then returns std::nullopt
+         */
+        std::optional<Matrix2f> calculateNewOutline(void) const noexcept;
 
         /**
          * Sets the shader program uniforms

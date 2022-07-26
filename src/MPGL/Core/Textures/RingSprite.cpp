@@ -92,15 +92,24 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void RingSprite<IsColorable>::InnerEllipse::actualizeMatrices(
-        void) noexcept
+    std::optional<Matrix2f>
+        RingSprite<IsColorable>::InnerEllipse::calculateNewOutline(
+            void) const noexcept
     {
-        outline = *invert(transpose(
+        return invert(transpose(
             Matrix2f{
                 Vector2f{vertices[1]} - Vector2f{vertices[0]},
                 Vector2f{vertices[3]} - Vector2f{vertices[0]}
             }
         ));
+    }
+
+    template <bool IsColorable>
+    void RingSprite<IsColorable>::InnerEllipse::actualizeMatrices(
+        void) noexcept
+    {
+        if (auto outline = calculateNewOutline())
+            this->outline = *outline;
     }
 
     template <bool IsColorable>
@@ -263,12 +272,21 @@ namespace mpgl {
                     color} {}
 
     template <bool IsColorable>
-    void RingSprite<IsColorable>::actualizeMatrices(void) noexcept {
-        outline = *invert(transpose(
+    std::optional<Matrix2f>
+        RingSprite<IsColorable>::calculateNewOutline(
+            void) const noexcept
+    {
+        return invert(transpose(
             Matrix2f{Vector2f{get<"position">(this->vertices[1])}
                 - Vector2f{get<"position">(this->vertices[0])},
             Vector2f{get<"position">(this->vertices[3])}
                 - Vector2f{get<"position">(this->vertices[0])}}));
+    }
+
+    template <bool IsColorable>
+    void RingSprite<IsColorable>::actualizeMatrices(void) noexcept {
+        if (auto outline = calculateNewOutline())
+            this->outline = *outline;
     }
 
     template <bool IsColorable>
