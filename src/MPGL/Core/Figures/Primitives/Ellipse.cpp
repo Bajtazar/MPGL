@@ -69,12 +69,19 @@ namespace mpgl {
         setLocations();
     }
 
-    void Ellipse::actualizeMatrices(void) noexcept {
-        outlineTransform = *invert(transpose(
+    std::optional<Matrix2f> Ellipse::calculateNewOutline(
+        void) const noexcept
+    {
+        return invert(transpose(
             Matrix2f{Vector2f{get<"position">(vertices[1])}
                 - Vector2f{get<"position">(vertices[0])},
             Vector2f{get<"position">(vertices[3])}
                 - Vector2f{get<"position">(vertices[0])}}));
+    }
+
+    void Ellipse::actualizeMatrices(void) noexcept {
+        if (auto outline = calculateNewOutline())
+            outlineTransform = *outline;
     }
 
     [[nodiscard]] Vector2f Ellipse::getCenter(void) const noexcept {
