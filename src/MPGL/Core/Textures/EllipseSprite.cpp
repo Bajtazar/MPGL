@@ -108,12 +108,21 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void EllipseSprite<IsColorable>::actualizeMatrices(void) noexcept {
-        outline = *invert(transpose(
+    std::optional<Matrix2f>
+        EllipseSprite<IsColorable>::calculateNewOutline(
+            void) const noexcept
+    {
+        return invert(transpose(
             Matrix2f{Vector2f{get<"position">(this->vertices[1])}
                 - Vector2f{get<"position">(this->vertices[0])},
             Vector2f{get<"position">(this->vertices[3])}
                 - Vector2f{get<"position">(this->vertices[0])}}));
+    }
+
+    template <bool IsColorable>
+    void EllipseSprite<IsColorable>::actualizeMatrices(void) noexcept {
+        if (auto outline = calculateNewOutline())
+            this->outline = *outline;
     }
 
     template <bool IsColorable>

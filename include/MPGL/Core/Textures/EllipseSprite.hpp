@@ -228,6 +228,14 @@ namespace mpgl {
         void actualizeMatrices(void) noexcept final;
 
         /**
+         * Calculates the new outline transformation matrix
+         *
+         * @return the optional with the matrix. If the matrix does not
+         * exist then returns std::nullopt
+         */
+        std::optional<Matrix2f> calculateNewOutline(void) const noexcept;
+
+        /**
          * Returns the shader name used by sprite implementation
          *
          * @return the shader name used by sprite implementation
