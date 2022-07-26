@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
-#include <MPGL/Core/Transformations/Transformable2D.hpp>
+#include <MPGL/Core/Transformations/Transformable.hpp>
 #include <MPGL/Core/Context/Buffers/VertexBuffer.hpp>
 #include <MPGL/Core/Context/Buffers/VertexArray.hpp>
 #include <MPGL/Core/Context/Buffers/Vertex.hpp>
@@ -44,55 +44,23 @@ namespace mpgl {
     {
     public:
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;
 
-       /**
-         * Pure virtual function. Has to be overloaded.
-         * Translates the figure by the given shift vector
+        /**
+         * Pure virtual method. Has to be overloaded
+         * Performs transformation on the figure
          *
-         * @param shift the shift vector
+         * @param transformator the constant reference to the
+         * transforming object
          */
-        virtual void translate(
-            Vector2f const& shift) noexcept = 0;
+        virtual void transform(
+            Transformation2D const& transformator) noexcept = 0;
 
         /**
-         * Pure virtual function. Has to be overloaded.
-         * Scales the figure around given center by
-         * the given factor
-         *
-         * @param center the scale center
-         * @param factor the scale factor
-         */
-        virtual void scale(Vector2f const& center,
-            float32 factor) noexcept = 0;
-
-        /**
-         * Pure virtual function. Has to be overloaded.
-         * Rotates the figure around given point by
-         * the given angle counter clockwise
-         *
-         * @param center the rotation point
-         * @param angle the rotation angle [in rads]
-         */
-        virtual void rotate(Vector2f const& center,
-            float32 angle) noexcept = 0;
-
-        /**
-         * Pure virtual function. Has to be overloaded.
-         * Rotates the figure around given point using
-         * given matrix
-         *
-         * @param center the rotation point
-         * @param rotation the rotation matrix
-         */
-        virtual void rotate(Vector2f const& center,
-            Matrix2f const& rotation) noexcept = 0;
-
-        /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Transforms the figure during the screen
          * transformation event
          *

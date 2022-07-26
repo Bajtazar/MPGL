@@ -84,39 +84,12 @@ namespace mpgl {
         isModified = true;
     }
 
-    void Angular::translate(Vector2f const& shift) noexcept {
-        for (auto& vertexPosition : vertices | views::position)
-            vertexPosition = static_cast<Vector2f>(
-                vertexPosition) + shift;
-        isModified = true;
-    }
-
-    void Angular::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
+    void Angular::transform(
+        Transformation2D const& transformator) noexcept
     {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    void Angular::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        for (auto& vertexPosition : vertices | views::position) {
-            Vector2f position = vertexPosition;
-            Vector2f radius = position - center;
-            vertexPosition = rotation * radius + center;
-        }
-        isModified = true;
-    }
-
-    void Angular::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        for (auto& vertexPos : vertices | views::position)
-            vertexPos = (static_cast<Vector2f>(vertexPos) - center
-                ) * factor + center;
+        any::InputRange<Adapter2D> positions{
+            vertices | views::position};
+        transformator(positions);
         isModified = true;
     }
 

@@ -177,41 +177,13 @@ namespace mpgl {
             Vector2u const& oldDimensions) noexcept;
 
         /**
-         * Translates the figure by the given shift vector
+         * Performs transformation on the figure
          *
-         * @param shift the shift vector
+         * @param transformator the constant reference to the
+         * transforming object
          */
-        virtual void translate(Vector2f const& shift) noexcept;
-
-        /**
-         * Scales the figure around given center by
-         * the given factor
-         *
-         * @param center the scale center
-         * @param factor the scale factor
-         */
-        virtual void scale(Vector2f const& center,
-            float32 factor) noexcept;
-
-        /**
-         * Rotates the figure around given point by
-         * the given angle counter clockwise
-         *
-         * @param center the rotation point
-         * @param angle the rotation angle [in rads]
-         */
-        virtual void rotate(Vector2f const& center,
-            float32 angle) noexcept;
-
-        /**
-         * Rotates the figure around given point using
-         * given matrix
-         *
-         * @param center the rotation point
-         * @param rotation the rotation matrix
-         */
-        virtual void rotate(Vector2f const& center,
-            Matrix2f const& rotation) noexcept;
+        virtual void transform(
+            Transformation2D const& transformator) noexcept;
 
         /**
          * Returns the reference to vertex with the given index

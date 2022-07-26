@@ -147,37 +147,10 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void EllipseSprite<IsColorable>::translate(
-        Vector2f const& shift) noexcept
+    void EllipseSprite<IsColorable>::transform(
+        Transformation2D const& transformator) noexcept
     {
-        EllipticSprite<IsColorable>::translate(shift);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void EllipseSprite<IsColorable>::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        EllipticSprite<IsColorable>::scale(center, factor);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void EllipseSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        EllipticSprite<IsColorable>::rotate(center, angle);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void EllipseSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        EllipticSprite<IsColorable>::rotate(center, rotation);
+        EllipticSprite<IsColorable>::transform(transformator);
         actualizeMatrices();
     }
 

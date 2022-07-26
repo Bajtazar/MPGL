@@ -87,41 +87,12 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void ShadeableSprite<IsColorable>::translate(
-        Vector2f const& shift) noexcept
+    void ShadeableSprite<IsColorable>::transform(
+        Transformation2D const& transformator) noexcept
     {
-        for (auto& position : vertices | views::position)
-            position = Vector2f(position) + shift;
-        isModified = true;
-    }
-
-    template <bool IsColorable>
-    void ShadeableSprite<IsColorable>::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        for (auto& position : vertices | views::position)
-            position = (static_cast<Vector2f>(position)
-                - center) * factor + center;
-        isModified = true;
-    }
-
-    template <bool IsColorable>
-    void ShadeableSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    template <bool IsColorable>
-    void ShadeableSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        for (auto& position : vertices | views::position)
-            position = rotation * (
-                Vector2f(position) - center) + center;
+        any::InputRange<Adapter2D> positions{
+            vertices | views::position};
+        transformator(positions);
         isModified = true;
     }
 
