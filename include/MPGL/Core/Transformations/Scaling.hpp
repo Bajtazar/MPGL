@@ -30,8 +30,7 @@
 namespace mpgl {
 
     /**
-     * Scales the coordinates with the given center of the
-     * transformation and the scaling factor
+     * Scales the coordinates by the given vector of factors
      *
      * @tparam Dim the transformed space's dimensions
      */
@@ -44,24 +43,18 @@ namespace mpgl {
         /**
          * Constructs a new Scaling object
          *
-         * @param center the constant reference to the
-         * scaling center
-         * @param factor the scaling factor
+         * @param factor the constant reference to the scaling
+         * factors vector
          */
-        constexpr Scaling(
-            VectorDf const& center,
-            float32 factor) noexcept;
+        constexpr Scaling(VectorDf const& factor) noexcept;
 
         /**
          * Constructs a new Scaling object
          *
-         * @param center the rvalue reference to the
-         * scaling center
-         * @param factor the scaling factor
+         * @param factor the rvalue reference to the scaling
+         * factors vector
          */
-        constexpr Scaling(
-            VectorDf&& center,
-            float32 factor) noexcept;
+        constexpr Scaling(VectorDf&& factor) noexcept;
 
         constexpr Scaling(Scaling const&) noexcept = default;
         constexpr Scaling(Scaling&&) noexcept = default;
@@ -92,23 +85,6 @@ namespace mpgl {
             TransformedType& coord) const noexcept final;
 
         /**
-         * Returns a reference to the scaling center
-         *
-         * @return the reference to the scaling center
-         */
-        constexpr [[nodiscard]] VectorDf& getCenter(void) noexcept
-            { return center; }
-
-        /**
-         * Returns a constant reference to the scaling center
-         *
-         * @return the constant reference to the scaling center
-         */
-        constexpr [[nodiscard]] VectorDf const& getCenter(
-            void) const noexcept
-                { return center; }
-
-        /**
          * Returns a reference to the scaling factor
          *
          * @return the reference to the scaling factor
@@ -130,8 +106,7 @@ namespace mpgl {
          */
         constexpr ~Scaling(void) noexcept = default;
     private:
-        VectorDf                                    center;
-        float32                                     factor;
+        VectorDf                                    factor;
     };
 
 }

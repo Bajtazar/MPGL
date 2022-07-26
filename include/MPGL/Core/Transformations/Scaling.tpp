@@ -29,15 +29,13 @@ namespace mpgl {
 
     template <Dimension Dim>
     constexpr Scaling<Dim>::Scaling(
-        VectorDf const& center,
-        float32 factor) noexcept
-            : center{center}, factor{factor} {}
+        VectorDf const& factor) noexcept
+            : factor{factor} {}
 
     template <Dimension Dim>
     constexpr Scaling<Dim>::Scaling(
-        VectorDf&& center,
-        float32 factor) noexcept
-            : center{std::move(center)}, factor{factor} {}
+        VectorDf&& factor) noexcept
+            : factor{std::move(factor)} {}
 
     template <Dimension Dim>
     constexpr void Scaling<Dim>::operator() (
@@ -51,7 +49,7 @@ namespace mpgl {
     constexpr void Scaling<Dim>::operator() (
         TransformedType& coord) const noexcept
     {
-        coord = (VectorDf(coord) - center) * factor + center;
+        coord = VectorDf(coord) * factor;
     }
 
 }
