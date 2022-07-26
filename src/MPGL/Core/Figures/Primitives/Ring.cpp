@@ -74,13 +74,19 @@ namespace mpgl {
         actualizeMatrices();
     }
 
-    void Ring::InnerEllipse::actualizeMatrices(void) noexcept {
-        outline = *invert(transpose(
+    std::optional<Matrix2f> Ring::InnerEllipse::calculateNewOutline(
+        void) const noexcept
+    {
+        return invert(transpose(
             Matrix2f{
                 Vector2f{vertices[1]} - Vector2f{vertices[0]},
                 Vector2f{vertices[3]} - Vector2f{vertices[0]}
-            }
-        ));
+            }));
+    }
+
+    void Ring::InnerEllipse::actualizeMatrices(void) noexcept {
+        if (auto outline = calculateNewOutline())
+            this->outline = *outline;
     }
 
     [[nodiscard]] Vector2f
@@ -181,12 +187,19 @@ namespace mpgl {
         Color const& color) : Ring{center, outerRadius,
             InnerEllipse{center, innerRadius}, color} {}
 
-    void Ring::actualizeMatrices(void) noexcept {
-        outline = *invert(transpose(
+    std::optional<Matrix2f> Ring::calculateNewOutline(
+        void) const noexcept
+    {
+        return invert(transpose(
             Matrix2f{Vector2f{get<"position">(vertices[1])}
                 - Vector2f{get<"position">(vertices[0])},
             Vector2f{get<"position">(vertices[3])}
                 - Vector2f{get<"position">(vertices[0])}}));
+    }
+
+    void Ring::actualizeMatrices(void) noexcept {
+        if (auto outline = calculateNewOutline())
+            this->outline = *outline;
     }
 
     [[nodiscard]] Vector2f Ring::getCenter(void) const noexcept {
