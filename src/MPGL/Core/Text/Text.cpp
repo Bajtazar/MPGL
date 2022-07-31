@@ -41,7 +41,7 @@ namespace mpgl {
                 Adapter2D{position},
                 Adapter2D{position + 1._y},
                 Adapter2D{position + 1._x + 1._y}
-            }} {}
+            }}, xVersor{1._x}, yVersor{1._y}, position{position} {}
 
     template <bool IsColorable>
     void Text<IsColorable>::PositionHolder::onScreenTransformation(
@@ -50,6 +50,7 @@ namespace mpgl {
     {
         any::InputRange<Adapter2D> positions{vertices};
         layout(positions, oldDimensions);
+        actualize();
     }
 
     template <bool IsColorable>
@@ -58,6 +59,7 @@ namespace mpgl {
     {
         any::InputRange<Adapter2D> positions{vertices};
         transformator(positions);
+        actualize();
     }
 
     template <bool IsColorable>
@@ -65,23 +67,16 @@ namespace mpgl {
         Text<IsColorable>::PositionHolder::getPosition(
             void) const noexcept
     {
-        return Vector2f{vertices[0]};
+        return position;
     }
 
     template <bool IsColorable>
-    [[nodiscard]] Vector2f
-        Text<IsColorable>::PositionHolder::getXVersor(
-            void) const noexcept
+    void Text<IsColorable>::PositionHolder::actualize(
+        void) noexcept
     {
-        return Vector2f{vertices[2]} - Vector2f{vertices[1]};
-    }
-
-    template <bool IsColorable>
-    [[nodiscard]] Vector2f
-        Text<IsColorable>::PositionHolder::getYVersor(
-            void) const noexcept
-    {
-        return Vector2f{vertices[1]} - Vector2f{vertices[0]};
+        position = Vector2f{vertices[0]};
+        yVersor = Vector2f{vertices[1]} - position;
+        xVersor = Vector2f{vertices[2]} - Vector2f{vertices[1]};
     }
 
     template <bool IsColorable>
@@ -89,8 +84,7 @@ namespace mpgl {
         Text<IsColorable>::PositionHolder::changeSystem(
             Vector2f const& position) const noexcept
     {
-        return position[0] * getXVersor() +
-            position[1] * getYVersor();
+        return position[0] * xVersor + position[1] * yVersor;
     }
 
     template <bool IsColorable>
@@ -100,6 +94,7 @@ namespace mpgl {
         Vector2f const realAdvance = changeSystem(advanceVector);
         for (Adapter2D& vertex : vertices)
             vertex = Vector2f{vertex} + realAdvance;
+        actualize();
         return realAdvance;
     }
 
@@ -110,10 +105,9 @@ namespace mpgl {
             float32 width,
             float32 height) const noexcept
     {
-        Vector2f const xVersor = getXVersor();
-        Vector2f const start = getPosition() + changeSystem(bearing);
+        Vector2f const start = position + changeSystem(bearing);
         Vector2f const vWidth = xVersor * width;
-        Vector2f const vHeight = getYVersor() * height;
+        Vector2f const vHeight = yVersor * height;
         return {
             start,
             start + vHeight,
@@ -127,10 +121,9 @@ namespace mpgl {
             float32 midspan,
             float32 halfspan) const noexcept
     {
-        Vector2f const yVersor = getYVersor();
         Vector2f const vMid = yVersor * midspan;
         Vector2f const vHalf = yVersor * halfspan;
-        Vector2f const start = getPosition() + vMid - vHalf;
+        Vector2f const start = position + vMid - vHalf;
         return {
             start,
             start + 2.f * vHalf,
@@ -143,10 +136,8 @@ namespace mpgl {
         Text<IsColorable>::PositionHolder::calculatePositon(
             float32 span) const noexcept
     {
-        Vector2f const vSpan = getYVersor() * span;
-        Vector2f const position = getPosition();
         return {
-            position - vSpan,
+            position - yVersor * span,
             position,
             position
         };
@@ -156,9 +147,10 @@ namespace mpgl {
     void Text<IsColorable>::PositionHolder::move(
         Vector2f const& point) noexcept
     {
-        Vector2f const shift = point - getPosition();
+        Vector2f const shift = point - position;
         for (Adapter2D& vertex : vertices)
             vertex = Vector2f{vertex} + shift;
+        actualize();
     }
 
     template <bool IsColorable>
@@ -167,10 +159,8 @@ namespace mpgl {
             Vector2f const& position,
             Vector2f const& bearing) const noexcept
     {
-        Vector2f const xVersor = getXVersor();
-        Vector2f const firstOrigin = position - xVersor * bearing;
-        return intersectionOf(firstOrigin, getYVersor(),
-            getPosition(), xVersor);
+        return intersectionOf(position - xVersor * bearing, yVersor,
+            this->position, xVersor);
     }
 
     template <bool IsColorable>
