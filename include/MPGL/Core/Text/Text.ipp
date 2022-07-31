@@ -35,4 +35,13 @@ namespace mpgl {
         return static_cast<uint8>(left) & static_cast<uint8>(right);
     }
 
+    template <bool IsColorable>
+    inline void Text<IsColorable>::setColorOnJoinableRange(
+        std::ranges::forward_range auto&& range,
+        Color const& color) noexcept
+    {
+        for (auto& vcolor : range | std::views::join | views::color)
+            vcolor = color;
+    }
+
 }

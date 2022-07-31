@@ -622,8 +622,6 @@ namespace mpgl {
         Style                                   style = Style::Regular;
         /// The modifiers of the text
         Modifiers                               mods = Modifiers::None;
-        /// The counterclockwise angle between x-axis and text base
-        float32                                 angle = 0.f;
     };
 
     class MonochromaticTextBase {
@@ -808,13 +806,6 @@ namespace mpgl {
         [[nodiscard]] String const& getString(
             void) const noexcept
                 { return text; }
-
-        /**
-         * Returns the text's dimensions
-         *
-         * @return the text's dimensions
-         */
-        [[nodiscard]] Vector2f getDimensions(void) const noexcept;
 
         /**
          * Returns the text's position
@@ -1020,10 +1011,11 @@ namespace mpgl {
     private:
         typedef std::vector<uint16>                 IDArray;
         typedef DrawableCollection<Tetragon>        Lines;
-        typedef std::tuple<uint8, float32,
-            Matrix2f>                               ArgTuple;
+        typedef std::pair<uint8, float32>           ArgTuple;
         typedef std::tuple<Vector2f, Vector2f,
             Vector2f>                               VectorTuple;
+        typedef std::tuple<float32, float32,
+            Vector2f>                               GlyphDimensions;
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
 
@@ -1031,6 +1023,8 @@ namespace mpgl {
             = Subfont::shiftBase;
         static constexpr SizeT                      ShiftValue
             = log2N<SizeT, ShiftBase>();
+        static constexpr uint16_t const             Newline = 10u;
+        static constexpr uint16_t const             Tabulator = 9u;
 
         /**
          * Holds the special space that is used to determine a new
@@ -1044,12 +1038,8 @@ namespace mpgl {
              *
              * @param position the constant reference to the
              * text's initial position vector object
-             * @param angle the angle between the text's bottom line
-             * and the x-axis
              */
-            explicit PositionHolder(
-                Vector2f const& position,
-                float32 angle = 0.f) noexcept;
+            explicit PositionHolder(Vector2f const& position) noexcept;
 
             PositionHolder(PositionHolder const&) noexcept = default;
             PositionHolder(PositionHolder&&) noexcept = default;
@@ -1126,6 +1116,34 @@ namespace mpgl {
                 float32 span) const noexcept;
 
             /**
+             * Moves inner space to the given point
+             *
+             * @param vector the point
+             */
+            void move(Vector2f const& point) noexcept;
+
+            /**
+             * Returns the inner space's position vector
+             *
+             * @return the inner space's positon versor
+             */
+            [[nodiscard]] Vector2f getPosition(void) const noexcept;
+
+            /**
+             * Calculates the position of text based on the first
+             * glyph
+             *
+             * @param position the constant reference to the first
+             * glyph's position
+             * @param bearing the constant reference to the glyph's
+             * bearing
+             * @return the original's position
+             */
+            [[nodiscard]] Vector2f findOrigin(
+                Vector2f const& position,
+                Vector2f const& bearing) const noexcept;
+
+            /**
              * Destroys the Position Holder object
              */
             ~PositionHolder(void) noexcept = default;
@@ -1135,11 +1153,13 @@ namespace mpgl {
             Vertices                                vertices;
 
             /**
-             * Returns the inner space's position vector
+             * Transforms the position to the inner linear system
              *
-             * @return the inner space's positon versor
+             * @param position the position in euclidean system
+             * @return the position in the inner system
              */
-            [[nodiscard]] Vector2f getPosition(void) const noexcept;
+            [[nodiscard]] Vector2f changeSystem(
+                Vector2f const& position) const noexcept;
 
             /**
              * Returns the inner space's x-axis versor
@@ -1156,15 +1176,14 @@ namespace mpgl {
             [[nodiscard]] Vector2f getYVersor(void) const noexcept;
         };
 
+        PositionHolder                              positionSpace;
         String                                      text;
         GlyphsVector                                glyphs;
         Font                                        font;
         Lines                                       underlines;
         Lines                                       strikethroughs;
         Color                                       color;
-        Vector2f                                    position;
         SizeT                                       textSize;
-        float32                                     angle;
         Style                                       style;
         Modifiers                                   mods;
 
@@ -1184,14 +1203,12 @@ namespace mpgl {
          * @param level the projection level
          * @param scale the text's scale factor
          * @param index the glyph index
-         * @param rotation the rotation matrix
          */
         void loadGlyph(
             Subfont& subfont,
             uint8 level,
             float32 scale,
-            uint16 index,
-            Matrix2f const& rotation);
+            uint16 index);
 
         /**
          * Loads the nonwhite character into the memory
@@ -1200,14 +1217,12 @@ namespace mpgl {
          * @param level the projection level
          * @param scale the text's scale factor
          * @param index the glyph index
-         * @param rotation the rotation matrix
          */
         void loadCharacter(
             Subfont& subfont,
             uint8 level,
             float32 scale,
-            uint16 index,
-            Matrix2f const& rotation);
+            uint16 index);
 
         /**
          * Loads the tabulator into the memory
@@ -1215,13 +1230,11 @@ namespace mpgl {
          * @param subfont the reference to the subfont object
          * @param level the projection level
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          */
         void loadTab(
             Subfont& subfont,
             uint8 level,
-            float32 scale,
-            Matrix2f const& rotation);
+            float32 scale);
 
         /**
          * Loads the newline into the memory
@@ -1229,26 +1242,22 @@ namespace mpgl {
          * @param subfont the reference to the subfont object
          * @param level the projection level
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          */
         void loadNewline(
             Subfont& subfont,
             uint8 level,
-            float32 scale,
-            Matrix2f const& rotation);
+            float32 scale);
 
         /**
          * Returns the dimensions of the glyph
          *
          * @param glyph the reference wrapper to the glyph object
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          * @return the tuple with glyph dimensions
          */
-        VectorTuple getGlyphDimensions(
+        GlyphDimensions getGlyphDimensions(
             Subfont::GlyphRef glyph,
-            float32 scale,
-            Matrix2f const& rotation) const noexcept;
+            float32 scale) const noexcept;
 
         /**
          * Emplaces glyph into the memory
@@ -1256,13 +1265,11 @@ namespace mpgl {
          * @param texture the glyph's texture
          * @param glpyh the reference wrapper to the glyph object
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          */
         void emplaceGlyph(
             Texture const& texture,
             Subfont::GlyphRef glpyh,
-            float32 scale,
-            Matrix2f const& rotation);
+            float32 scale);
 
         /**
          * Extends text modifiers
@@ -1270,7 +1277,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendModifiers(
-            Vector2f advance) noexcept;
+            Vector2f const& advance) noexcept;
 
         /**
          * Extends text underline
@@ -1278,7 +1285,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendUnderline(
-            Vector2f advance) noexcept;
+            Vector2f const& advance) noexcept;
 
         /**
          * Extends text strikethrough
@@ -1286,7 +1293,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendStrikethrough(
-            Vector2f advance) noexcept;
+           Vector2f const& advance) noexcept;
 
         /**
          * Emplaces modifiers into memory
@@ -1360,31 +1367,38 @@ namespace mpgl {
         /**
          * Generates the underline tetragon
          *
-         * @param position the position of the line
-         * @param angle the rotation angle [in rads]
+         * @param positionSpace the position holder of the text
          * @param textSize the size of the text
          * @param color the color of the text
          * @return the underline tetragon
          */
         static Tetragon generateUnderline(
-            Vector2f position,
-            float32 angle,
+            PositionHolder const& positionSpace,
             SizeT textSize,
             Color const& color) noexcept;
 
         /**
          * Generates the strikethrough tetragon
          *
-         * @param position the position of the line
-         * @param angle the rotation angle [in rads]
+         * @param positionSpace the position holder of the text
          * @param textSize the size of the text
          * @param color the color of the text
          * @return the strikethrough tetragon
          */
         static Tetragon generateStrikethrough(
-            Vector2f position,
-            float32 angle,
+            PositionHolder const& positionSpace,
             SizeT textSize,
+            Color const& color) noexcept;
+
+        /**
+         * Sets the color on the joinable ranges
+         *
+         * @tparam Range the range type
+         * @param range the universal reference to the range object
+         * @param color the constant reference to the color
+         */
+        inline static void setColorOnJoinableRange(
+            std::ranges::forward_range auto&& range,
             Color const& color) noexcept;
     };
 
