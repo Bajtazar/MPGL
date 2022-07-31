@@ -27,7 +27,7 @@
 
 namespace mpgl {
 
- Adapter<2>::Adapter(const_reference value) noexcept
+    Adapter<2>::Adapter(const_reference value) noexcept
         : value{value / static_cast<Vector2f>(context.windowDimensions)
             * 2.f - 1.f} {}
 

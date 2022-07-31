@@ -35,6 +35,121 @@ namespace mpgl {
         : colorLoc{new ShaderLocation} {}
 
     template <bool IsColorable>
+    Text<IsColorable>::PositionHolder::PositionHolder(
+        Vector2f const& position,
+        float32 angle) noexcept
+            : vertices{{
+                Adapter2D{position},
+                Adapter2D{position + 1._y},
+                Adapter2D{position + 1._x + 1._y}
+            }}
+    {
+        if (angle != 0.f)
+            std::ranges::for_each(vertices,
+                Rotation2D{angle, 0._x + 0._y});
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::PositionHolder::onScreenTransformation(
+        Layout& layout,
+        Vector2u const& oldDimensions) noexcept
+    {
+        any::InputRange<Adapter2D> positions{vertices};
+        layout(positions, oldDimensions);
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::PositionHolder::transform(
+        Transformation2D const& transformator) noexcept
+    {
+        any::InputRange<Adapter2D> positions{vertices};
+        transformator(positions);
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Vector2f
+        Text<IsColorable>::PositionHolder::getPosition(
+            void) const noexcept
+    {
+        return Vector2f{vertices[0]};
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Vector2f
+        Text<IsColorable>::PositionHolder::getXVersor(
+            void) const noexcept
+    {
+        return Vector2f{vertices[2]} - Vector2f{vertices[1]};
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Vector2f
+        Text<IsColorable>::PositionHolder::getYVersor(
+            void) const noexcept
+    {
+        return Vector2f{vertices[1]} - Vector2f{vertices[0]};
+    }
+
+    template <bool IsColorable>
+    Vector2f Text<IsColorable>::PositionHolder::advance(
+        Vector2f const& advanceVector) noexcept
+    {
+        Vector2f const realAdvance = getXVersor() * advanceVector;
+        for (Adapter2D& vertex : vertices)
+            vertex = Vector2f{vertex} + realAdvance;
+        return realAdvance;
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Text<IsColorable>::VectorTuple
+        Text<IsColorable>::PositionHolder::calculatePositon(
+            Vector2f const& bearing,
+            float32 width,
+            float32 height) const noexcept
+    {
+        Vector2f const xVersor = getXVersor();
+        Vector2f const start = getPosition() + xVersor * bearing;
+        Vector2f const vWidth = xVersor * width;
+        Vector2f const vHeight = getYVersor() * height;
+        return {
+            start,
+            start + vHeight,
+            start + vWidth + vHeight
+        };
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Text<IsColorable>::VectorTuple
+        Text<IsColorable>::PositionHolder::calculatePositon(
+            float32 midspan,
+            float32 halfspan) const noexcept
+    {
+        Vector2f const yVersor = getYVersor();
+        Vector2f const vMid = yVersor * midspan;
+        Vector2f const vHalf = yVersor * halfspan;
+        Vector2f const start = getPosition() + vMid - vHalf;
+        return {
+            start,
+            start + 2.f * vHalf,
+            start + 2.f * vHalf
+        };
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Text<IsColorable>::VectorTuple
+        Text<IsColorable>::PositionHolder::calculatePositon(
+            float32 span) const noexcept
+    {
+        Vector2f const vSpan = getYVersor() * span;
+        Vector2f const position = getPosition();
+        return {
+            position - vSpan,
+            position,
+            position
+        };
+    }
+
+    template <bool IsColorable>
     Text<IsColorable>::String const
         Text<IsColorable>::shaderType(void)
     {
