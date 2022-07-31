@@ -1016,6 +1016,7 @@ namespace mpgl {
             Vector2f>                               VectorTuple;
         typedef std::tuple<float32, float32,
             Vector2f>                               GlyphDimensions;
+        typedef std::pair<Vector2f, std::size_t>    GlyphPosPair;
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
 
@@ -1327,6 +1328,14 @@ namespace mpgl {
          * Sets the shader locations
          */
         void setLocations(void);
+
+        /**
+         * Finds the first glyph that has an outline in the text
+         * and returns its bearing and it's number
+         *
+         * @return the glyph's bearing and it's number
+         */
+        GlyphPosPair findFirstGlyphBearing(void) const noexcept;
 
         /**
          * Parses unicode string into IDs array
