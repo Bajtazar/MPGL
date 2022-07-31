@@ -55,12 +55,10 @@ namespace mpgl::any {
      * has to obey the std::input_range concept and be copy
      * constructible and assignable. Thus it can be used in places
      * when templates cannot be used but the type generalization is
-     * needed. Input range can be used as a wrapper to already
-     * existing range - to do this only a reference to the range is
-     * required; or it can store an object within itself - then the
-     * desired object has to be moved inside. It cannot be defaultly
-     * initialized. This class works heavely on virtual methods thus
-     * it should be used wisely where performance is important
+     * needed. Input range store an object within itself. It cannot be
+     * defaultly initialized. This class works heavely on virtual
+     * methods thus it should be used wisely where performance is
+     * important
      *
      * @tparam Tp the type of range's elements
      */
@@ -92,7 +90,7 @@ namespace mpgl::any {
          * @param inputRange the constant reference to the input
          * range object
          */
-        constexpr InputRange(InputRange const& inputRange);
+        constexpr InputRange(InputRange const& inputRange) = default;
 
         constexpr InputRange(InputRange&&) = default;
 
@@ -106,7 +104,8 @@ namespace mpgl::any {
          * range object
          * @return the reference to this object
          */
-        constexpr InputRange& operator=(InputRange const& inputRange);
+        constexpr InputRange& operator=(
+            InputRange const& inputRange) = default;
 
         constexpr InputRange& operator=(InputRange&&) = default;
 
@@ -394,7 +393,7 @@ namespace mpgl::any {
          * @return the iterator to the begining of the range
          */
         [[nodiscard]] constexpr iterator begin(void)
-            { return iterator{rangePointer->iterator()}; }
+            { return iterator{rangePointer()->iterator()}; }
 
         /**
          * Returns a constant iterator to the begining of the range
@@ -402,7 +401,7 @@ namespace mpgl::any {
          * @return the constant iterator to the begining of the range
          */
         [[nodiscard]] constexpr const_iterator begin(void) const
-            { return const_iterator{rangePointer->iterator()}; }
+            { return const_iterator{rangePointer()->iterator()}; }
 
         /**
          * Returns a constant iterator to the begining of the range
@@ -410,7 +409,7 @@ namespace mpgl::any {
          * @return the constant iterator to the begining of the range
          */
         [[nodiscard]] constexpr const_iterator cbegin(void) const
-            { return const_iterator{rangePointer->iterator()}; }
+            { return const_iterator{rangePointer()->iterator()}; }
 
         /**
          * Returns the sentinel (signalizes end of the range)
@@ -434,7 +433,7 @@ namespace mpgl::any {
          * @param other the reference to the other object
          */
         constexpr void swap(InputRange& other) noexcept
-            { rangePointer.swap(other.rangePointer); }
+            { storage.swap(other.storage); }
 
         /**
          * Destroys the Input Range object
@@ -585,9 +584,6 @@ namespace mpgl::any {
             Range                           range;
         };
 
-        typedef std::unique_ptr<
-            RangeInterface>                 InterfacePtr;
-
         /**
          * Allocates the object on the stack if it is small enough
          */
@@ -600,7 +596,7 @@ namespace mpgl::any {
              * @param inlineMemory the universal reference to the
              * range object
              */
-            template <std::ranges::input_range Range>
+            template <InputRangeCompatible<Tp> Range>
                 requires (sizeof(Range) <= 15ul)
             explicit InlineMemory(Range&& range) noexcept;
 
@@ -643,32 +639,19 @@ namespace mpgl::any {
                 InlineMemory&& inlineMemory) noexcept;
 
             /**
-             * Returns a reference to the range interface
+             * Returns a pointer to the range interface
              *
-             * @return the reference to the range interface
+             * @return the pointer to the range interface
              */
-            RangeInterface& operator* (void) noexcept;
+            RangeInterface* get(void) const noexcept;
 
             /**
              * Returns a pointer to the range interface
              *
              * @return the pointer to the range interface
              */
-            RangeInterface* operator-> (void) noexcept;
-
-            /**
-             * Returns a constant reference to the range interface
-             *
-             * @return the constant reference to the range interface
-             */
-            RangeInterface const& operator* (void) const noexcept;
-
-            /**
-             * Returns a constant pointer to the range interface
-             *
-             * @return the constant pointer to the range interface
-             */
-            RangeInterface const* operator-> (void) const noexcept;
+            RangeInterface* operator-> (void) const noexcept
+                { return get(); }
 
             /**
              * Destroys the Inline Memory object
@@ -679,7 +662,69 @@ namespace mpgl::any {
             bool                            active = true;
         };
 
-        InterfacePtr                        rangePointer;
+        /**
+         * Special modification of std::unique_ptr that clones the
+         * inner range interface whenever it is being copied
+         *
+         */
+        class InterfacePtr : public std::unique_ptr<RangeInterface> {
+        public:
+            /**
+             * Constructs a new interface ptr object
+             *
+             * @tparam Range the range's type
+             * @param range the universal reference to the range
+             */
+            template <InputRangeCompatible<Tp> Range>
+            explicit InterfacePtr(Range&& range);
+
+            /**
+             * Constructs a new interface ptr object and clones
+             * the other's range interface
+             *
+             * @param interfacePtr the constant reference to the
+             * interface pointer
+             */
+            InterfacePtr(InterfacePtr const& interfacePtr);
+
+            InterfacePtr(
+                InterfacePtr&& interfacePtr) noexcept = default;
+
+            /**
+             * Assigns the other's object and clones it's range
+             * interface
+             *
+             * @param interfacePtr the constant reference to the
+             * interface pointer
+             * @return the reference to this object
+             */
+            InterfacePtr& operator=(InterfacePtr const& interfacePtr);
+
+            InterfacePtr& operator=(
+                InterfacePtr&& interfacePtr) noexcept = default;
+
+            /**
+             * Destroys the interface ptr object
+             */
+            ~InterfacePtr(void) noexcept = default;
+        };
+
+        typedef std::variant<InterfacePtr,
+            InlineMemory>                   Memory;
+
+        Memory                              storage;
+
+        RangeInterface* rangePointer(void) const noexcept;
+
+        /**
+         * Chooses the type of storage for the given range
+         *
+         * @tparam Range the range's type
+         * @param range the universal reference to the range object
+         * @return the std::variant with the choosen storage
+         */
+        template <InputRangeCompatible<Tp> Range>
+        static constexpr Memory createStorage(Range&& range);
     };
 
 }
