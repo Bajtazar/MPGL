@@ -714,6 +714,11 @@ namespace mpgl::any {
 
         Memory                              storage;
 
+        /**
+         * Returns a pointer to the range interface
+         *
+         * @return the pointer to the range interface
+         */
         RangeInterface* rangePointer(void) const noexcept;
 
         /**
