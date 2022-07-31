@@ -54,7 +54,6 @@ namespace mpgl {
         typedef std::conditional_t<IsConst,
             Color const, Color>                     value_type;
         typedef value_type&                         reference;
-        typedef Color const&                        const_reference;
 
         /**
          * Constructs a new Text Glyph View object from a reference
@@ -80,17 +79,6 @@ namespace mpgl {
          * @return the reference to the glyph sprite vertex's color
          */
         [[nodiscard]] reference operator[] (
-            SizeT index) noexcept requires (!IsConst)
-                { return ref.get()[index] & cast::color; }
-
-        /**
-         * Returns a constant reference to the glyph sprite
-         * vertex's color
-         *
-         * @return the constant reference to the glyph sprite
-         * vertex's color
-         */
-        [[nodiscard]] const_reference operator[] (
             SizeT index) const noexcept
                 { return ref.get()[index] & cast::color; }
 
@@ -309,7 +297,6 @@ namespace mpgl {
         [[nodiscard]] iterator end(void) noexcept requires (!IsConst)
             { return iterator{ ref.get().end()}; }
 
-
         /**
          * Returns the constant iterator to the begining
          * of the vertices
@@ -439,6 +426,7 @@ namespace mpgl {
             typename GlyphsVector::iterator>        GlyphIter;
         typedef TextGlyphView<IsConst>              value_type;
         typedef std::ptrdiff_t                      difference_type;
+        typedef std::output_iterator_tag            iterator_category;
 
         using compare =
             std::compare_three_way_result_t<GlyphIter, GlyphIter>;
