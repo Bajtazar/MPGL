@@ -26,7 +26,6 @@
 #pragma once
 
 #include <utility>
-#include <iostream>
 
 #include <MPGL/Utility/Ranges.hpp>
 
@@ -56,15 +55,13 @@ namespace mpgl::any {
     constexpr InputRange<Tp>::Memory InputRange<Tp>::createStorage(
         Range&& range)
     {
-        if constexpr (sizeof(Range) > 15ul)
+        if constexpr (sizeof(WrappedRange<Range>) > 16ul)
             return { InterfacePtr{std::forward<Range>(range)} };
         else {
             if (std::is_constant_evaluated())
                 return { InterfacePtr{std::forward<Range>(range)} };
-            else {
-                std::cout << "Inline!\n";
+            else
                 return { InlineMemory{std::forward<Range>(range)} };
-            }
         }
     }
 
@@ -139,7 +136,6 @@ namespace mpgl::any {
 
     template <PureType Tp>
     template <InputRangeCompatible<Tp> Range>
-        requires (sizeof(Range) <= 15ul)
     InputRange<Tp>::InlineMemory::InlineMemory(
         Range&& range) noexcept
     {

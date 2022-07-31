@@ -597,7 +597,6 @@ namespace mpgl::any {
              * range object
              */
             template <InputRangeCompatible<Tp> Range>
-                requires (sizeof(Range) <= 15ul)
             explicit InlineMemory(Range&& range) noexcept;
 
             /**
@@ -658,7 +657,7 @@ namespace mpgl::any {
              */
             ~InlineMemory(void) noexcept;
         private:
-            std::array<std::byte, 15ul>     memory;
+            std::array<std::byte, 16ul>     memory;
             bool                            active = true;
         };
 
