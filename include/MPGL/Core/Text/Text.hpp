@@ -34,6 +34,8 @@
 #include <MPGL/Core/Text/GlyphSprite.hpp>
 #include <MPGL/Core/Text/Font.hpp>
 
+#include <array>
+
 namespace mpgl {
 
     /**
@@ -675,6 +677,14 @@ namespace mpgl {
         Text& operator= (Text&& text) = default;
 
         /**
+         * Adds the given string to the text
+         *
+         * @param left the constant reference to the string
+         * @return the reference to this object
+         */
+        Text& operator+= (String const& left);
+
+        /**
          * Displays the given string information
          *
          * @param text the constant reference to the string
@@ -697,6 +707,15 @@ namespace mpgl {
          */
         [[nodiscard]] operator String() const& noexcept
             { return text; }
+
+        /**
+         * Returns the size of the text [number of the nonwhite
+         * characters]
+         *
+         * @return the size of the text
+         */
+        [[nodiscard]] SizeT size(void) const noexcept
+            { return glyphs.size(); }
 
         /**
          * Sets the font used by this text object
@@ -732,6 +751,14 @@ namespace mpgl {
          * @param size the new size of the text
          */
         void setSize(SizeT size);
+
+        /**
+         * Sets the given string
+         *
+         * @param text the constant reference to the
+         * new string object
+         */
+        void setString(String const& text);
 
         /**
          * Returns the font used by the text
@@ -774,27 +801,6 @@ namespace mpgl {
             { return mods; }
 
         /**
-         * Removes string displayed by the text
-         */
-        void clear(void) noexcept;
-
-        /**
-         * Adds the given string to the text
-         *
-         * @param left the constant reference to the string
-         * @return the reference to this object
-         */
-        Text& operator+= (String const& left);
-
-        /**
-         * Sets the given string
-         *
-         * @param text the constant reference to the
-         * new string object
-         */
-        void setString(String const& text);
-
-        /**
          * Returns the string handled by the text object
          *
          * @return the constant reference to the string object
@@ -818,13 +824,9 @@ namespace mpgl {
         [[nodiscard]] Vector2f getPosition(void) const noexcept;
 
         /**
-         * Returns a counterclockwise angle between text base
-         * and x-axis
-         *
-         * @return the angle between text base and x-axis
+         * Removes string displayed by the text
          */
-        [[nodiscard]] float32 getAngle(void) const noexcept
-            { return angle; }
+        void clear(void) noexcept;
 
         /**
          * Transforms the text during the screen
@@ -871,15 +873,6 @@ namespace mpgl {
          * @param name the name of the shader program
          */
         void setShader(String const& name) final override;
-
-        /**
-         * Returns the size of the text [number of the nonwhite
-         * characters]
-         *
-         * @return the size of the text
-         */
-        [[nodiscard]] SizeT size(void) const noexcept
-            { return glyphs.size(); }
 
         /**
          * Draws the text on the screen
@@ -1038,6 +1031,130 @@ namespace mpgl {
             = Subfont::shiftBase;
         static constexpr SizeT                      ShiftValue
             = log2N<SizeT, ShiftBase>();
+
+        /**
+         * Holds the special space that is used to determine a new
+         * position of glyphs / modifiers in text. Rememberes all
+         * of the linear transformations performed on it
+         */
+        class PositionHolder : public Transformable2D {
+        public:
+            /**
+             * Constructs a new Position Holder object
+             *
+             * @param position the constant reference to the
+             * text's initial position vector object
+             * @param angle the angle between the text's bottom line
+             * and the x-axis
+             */
+            explicit PositionHolder(
+                Vector2f const& position,
+                float32 angle = 0.f) noexcept;
+
+            PositionHolder(PositionHolder const&) noexcept = default;
+            PositionHolder(PositionHolder&&) noexcept = default;
+
+            PositionHolder& operator=(
+                PositionHolder const&) noexcept = default;
+            PositionHolder& operator=(
+                PositionHolder&&) noexcept = default;
+
+            /**
+             * Transforms the space during the screen
+             * transformation event
+             *
+             * @param layout the layout of the space
+             * @param oldDimensions the old screen dimensions
+             */
+            void onScreenTransformation(
+                Layout& layout,
+                Vector2u const& oldDimensions) noexcept final;
+
+            /**
+             * Performs transformation on the space
+             *
+             * @param transformator the constant reference to the
+             * transforming object
+             */
+            void transform(
+                Transformation2D const& transformator) noexcept final;
+
+            /**
+             * Advances space according to the advance vector
+             *
+             * @param advanceVector the constant reference to the
+             * advance vector
+             * @return the real advancement
+             */
+            Vector2f advance(Vector2f const& advanceVector) noexcept;
+
+            /**
+             * Calculates the position of the glyph sprite according
+             * to the inner space
+             *
+             * @param bearing the constant reference to the glyph's
+             * bearing
+             * @param width the glyph's width
+             * @param height the glyph's height
+             * @return the glyph's position
+             */
+            [[nodiscard]] VectorTuple calculatePositon(
+                Vector2f const& bearing,
+                float32 width,
+                float32 height) const noexcept;
+
+            /**
+             * Calculates the position of the strikethrough according
+             * to the inner space
+             *
+             * @param midspan the strikethrough's midsppan
+             * @param halfspan the strikethrough's halfspan
+             * @return the strikethrough's position
+             */
+            [[nodiscard]] VectorTuple calculatePositon(
+                float32 midspan,
+                float32 halfspan) const noexcept;
+
+            /**
+             * Calculates the position of the underline according
+             * to the inner space
+             *
+             * @param span the underline's span
+             * @return the underline's position
+             */
+            [[nodiscard]] VectorTuple calculatePositon(
+                float32 span) const noexcept;
+
+            /**
+             * Destroys the Position Holder object
+             */
+            ~PositionHolder(void) noexcept = default;
+        private:
+            typedef std::array<Adapter2D, 3>        Vertices;
+
+            Vertices                                vertices;
+
+            /**
+             * Returns the inner space's position vector
+             *
+             * @return the inner space's positon versor
+             */
+            [[nodiscard]] Vector2f getPosition(void) const noexcept;
+
+            /**
+             * Returns the inner space's x-axis versor
+             *
+             * @return the inner space's x-axis versor
+             */
+            [[nodiscard]] Vector2f getXVersor(void) const noexcept;
+
+            /**
+             * Returns the inner space's y-axis versor
+             *
+             * @return the inner space's y-axis versor
+             */
+            [[nodiscard]] Vector2f getYVersor(void) const noexcept;
+        };
 
         String                                      text;
         GlyphsVector                                glyphs;
@@ -1209,7 +1326,6 @@ namespace mpgl {
          * Sets the shader locations
          */
         void setLocations(void);
-
 
         /**
          * Parses unicode string into IDs array
