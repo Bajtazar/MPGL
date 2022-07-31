@@ -1346,21 +1346,6 @@ namespace mpgl {
         static IDArray parseString(String const& string);
 
         /**
-         * Returns an intersection of two vectorized lines
-         *
-         * @param firstPoint the point on the first line
-         * @param firstVersor the versor of the first line
-         * @param secondPoint the point on the second line
-         * @param secondVersor the versor of the second line
-         * @return the intersection point of the two lines
-         */
-        static Vector2f intersectionOf(
-            Vector2f const& firstPoint,
-            Vector2f const& firstVersor,
-            Vector2f const& secondPoint,
-            Vector2f const& secondVersor) noexcept;
-
-        /**
          * Returns a type of shader used by the text
          *
          * @return the type of shader used by the text
