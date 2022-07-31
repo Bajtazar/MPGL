@@ -1151,6 +1151,14 @@ namespace mpgl {
             typedef std::array<Adapter2D, 3>        Vertices;
 
             Vertices                                vertices;
+            Vector2f                                xVersor;
+            Vector2f                                yVersor;
+            Vector2f                                position;
+
+            /**
+             * Actualizes the inner versors and position
+             */
+            void actualize(void) noexcept;
 
             /**
              * Transforms the position to the inner linear system
@@ -1160,20 +1168,6 @@ namespace mpgl {
              */
             [[nodiscard]] Vector2f changeSystem(
                 Vector2f const& position) const noexcept;
-
-            /**
-             * Returns the inner space's x-axis versor
-             *
-             * @return the inner space's x-axis versor
-             */
-            [[nodiscard]] Vector2f getXVersor(void) const noexcept;
-
-            /**
-             * Returns the inner space's y-axis versor
-             *
-             * @return the inner space's y-axis versor
-             */
-            [[nodiscard]] Vector2f getYVersor(void) const noexcept;
         };
 
         PositionHolder                              positionSpace;
@@ -1397,7 +1391,7 @@ namespace mpgl {
          * @param range the universal reference to the range object
          * @param color the constant reference to the color
          */
-        inline static void setColorOnJoinableRange(
+        static void setColorOnJoinableRange(
             std::ranges::forward_range auto&& range,
             Color const& color) noexcept;
     };
@@ -1419,3 +1413,4 @@ namespace mpgl {
 }
 
 #include <MPGL/Core/Text/Text.ipp>
+#include <MPGL/Core/Text/Text.tpp>

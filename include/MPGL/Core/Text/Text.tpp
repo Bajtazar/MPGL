@@ -27,12 +27,13 @@
 
 namespace mpgl {
 
-    constexpr uint8 operator&(
-        TextOptions::Modifiers const& left,
-        TextOptions::Modifiers const& right) noexcept
+    template <bool IsColorable>
+    void Text<IsColorable>::setColorOnJoinableRange(
+        std::ranges::forward_range auto&& range,
+        Color const& color) noexcept
     {
-        /// change to std::to_underlying in C++23
-        return static_cast<uint8>(left) & static_cast<uint8>(right);
+        for (auto& vcolor : range | std::views::join | views::color)
+            vcolor = color;
     }
 
 }
