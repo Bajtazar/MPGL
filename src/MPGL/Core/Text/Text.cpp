@@ -159,7 +159,8 @@ namespace mpgl {
             Vector2f const& position,
             Vector2f const& bearing) const noexcept
     {
-        return intersectionOf(position - xVersor * bearing, yVersor,
+        // versors cannot be parallel
+        return *intersectionOf(position - xVersor * bearing, yVersor,
             this->position, xVersor);
     }
 
@@ -467,18 +468,6 @@ namespace mpgl {
         auto&& [bearing, id] = findFirstGlyphBearing();
         return positionSpace.findOrigin({glyphs.front()[id]
             & cast::position}, bearing);
-    }
-
-    template <bool IsColorable>
-    Vector2f Text<IsColorable>::intersectionOf(
-        Vector2f const& firstPoint,
-        Vector2f const& firstVersor,
-        Vector2f const& secondPoint,
-        Vector2f const& secondVersor) noexcept
-    {
-        Vector2f pos = *invert(transpose(Matrix2f{firstVersor,
-            -secondVersor})) * (secondPoint - firstPoint);
-        return firstPoint + firstVersor * pos[0];
     }
 
     template <bool IsColorable>

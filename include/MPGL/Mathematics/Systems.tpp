@@ -58,6 +58,23 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr std::optional<Vector2<Tp>>
+        intersectionOf(
+            Vector2<Tp> const& firstPoint,
+            Vector2<Tp> const& firstVersor,
+            Vector2<Tp> const& secondPoint,
+            Vector2<Tp> const& secondVersor) noexcept
+    {
+        if (auto matrix = invert(transpose(Matrix2f{firstVersor,
+            -secondVersor})))
+        {
+            Vector2<Tp> pos = *matrix * (secondPoint - firstPoint);
+            return firstPoint + firstVersor * pos[0];
+        }
+        return std::nullopt;
+    }
+
+    template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
     {
