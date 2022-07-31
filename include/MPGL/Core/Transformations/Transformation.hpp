@@ -87,4 +87,6 @@ namespace mpgl {
     typedef Transformation<dim::Dim2>           Transformation2D;
     typedef Transformation<dim::Dim3>           Transformation3D;
 
+    template class any::InputRange<Adapter2D>;
+
 }

@@ -66,7 +66,7 @@ namespace mpgl::any {
         InputRange const& inputRange)
     {
         // input range has to have the valid pointer
-        rangePointer = std::unique_ptr{
+        rangePointer = std::unique_ptr<RangeInterface>{
             inputRange.rangePointer->clone()};
         return *this;
     }
@@ -103,6 +103,85 @@ namespace mpgl::any {
         auto copy = *this;
         iterPtr->increment();
         return *this;
+    }
+
+    template <PureType Tp>
+    template <std::ranges::input_range Range>
+        requires (sizeof(Range) <= 15ul)
+    InputRange<Tp>::InlineMemory::InlineMemory(
+        Range&& range) noexcept
+    {
+        new (&memory) WrappedRange<Range>{std::forward<Range>(range)};
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::InlineMemory::InlineMemory(
+        InlineMemory const& inlineMemory) noexcept
+    {
+        inlineMemory->clone(memory.front());
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::InlineMemory::InlineMemory(
+        InlineMemory&& inlineMemory) noexcept
+            : memory{inlineMemory.memory}
+    {
+        inlineMemory.active = false;
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::InlineMemory&
+        InputRange<Tp>::InlineMemory::operator=(
+            InlineMemory const& inlineMemory) noexcept
+    {
+        this->~InlineMemory();
+        inlineMemory->clone(memory.front());
+        return *this;
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::InlineMemory&
+        InputRange<Tp>::InlineMemory::operator=(
+            InlineMemory&& inlineMemory) noexcept
+    {
+        this->~InlineMemory();
+        memory = inlineMemory.memory;
+        inlineMemory.active = false;
+        return *this;
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::RangeInterface const&
+        InputRange<Tp>::InlineMemory::operator* (void) const noexcept
+    {
+        return *reinterpret_cast<const RangeInterface*>(memory.data());
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::RangeInterface const*
+        InputRange<Tp>::InlineMemory::operator-> (void) const noexcept
+    {
+        return reinterpret_cast<const RangeInterface*>(memory.data());
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::RangeInterface&
+        InputRange<Tp>::InlineMemory::operator* (void) noexcept
+    {
+        return *reinterpret_cast<RangeInterface*>(memory.data());
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::RangeInterface*
+        InputRange<Tp>::InlineMemory::operator-> (void) noexcept
+    {
+        return reinterpret_cast<RangeInterface*>(memory.data());
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::InlineMemory::~InlineMemory(void) noexcept {
+        if (active)
+            (*this)->~RangeInterface();
     }
 
 }

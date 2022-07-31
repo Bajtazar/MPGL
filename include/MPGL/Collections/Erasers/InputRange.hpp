@@ -28,7 +28,9 @@
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <iterator>
+#include <variant>
 #include <memory>
+#include <array>
 
 namespace mpgl::any {
 
@@ -221,7 +223,14 @@ namespace mpgl::any {
              * @return the pointer to the cloned object
              */
             [[nodiscard]] constexpr virtual RangeInterface* clone(
-                void) = 0;
+                void) const = 0;
+
+            /**
+             * Pure virtual method. Has to be overloaded.
+             * Clones the range and allocates it in the given
+             * memory
+             */
+            constexpr virtual void clone(std::byte& memory) const = 0;
 
             /**
              * Virtual destructor. Destroys the Range Interface object
@@ -547,8 +556,16 @@ namespace mpgl::any {
              *
              * @return the pointer to the cloned object
              */
-            [[nodiscard]] constexpr RangeInterface* clone(void) final
-                { return new WrappedRange{*this}; }
+            [[nodiscard]] constexpr RangeInterface* clone(
+                void) const final
+                    { return new WrappedRange{*this}; }
+
+            /**
+             * Clones the range and allocates it in the given
+             * memory
+             */
+            constexpr virtual void clone(std::byte& memory) const final
+                { new (&memory) WrappedRange{*this}; }
 
             /**
              * Returns a unique pointer with the iterator pointing
@@ -570,6 +587,97 @@ namespace mpgl::any {
 
         typedef std::unique_ptr<
             RangeInterface>                 InterfacePtr;
+
+        /**
+         * Allocates the object on the stack if it is small enough
+         */
+        class InlineMemory {
+        public:
+            /**
+             * Constructs a new inline memory object
+             *
+             * @tparam Range the range's type
+             * @param inlineMemory the universal reference to the
+             * range object
+             */
+            template <std::ranges::input_range Range>
+                requires (sizeof(Range) <= 15ul)
+            explicit InlineMemory(Range&& range) noexcept;
+
+            /**
+             * Constructs a new inline memory object
+             *
+             * @param inlineMemory the constant reference to the
+             * other inline memory object
+             */
+            InlineMemory(
+                InlineMemory const& inlineMemory) noexcept;
+
+            /**
+             * Constructs a new inline memory object
+             *
+             * @param inlineMemory the rvalue reference to the
+             * other inline memory object
+             */
+            InlineMemory(
+                InlineMemory&& inlineMemory) noexcept;
+
+            /**
+             * Assigns the other inline memory to this object
+             *
+             * @param inlineMemory the constant reference to the
+             * other inline memory object
+             * @return the reference to this object
+             */
+            InlineMemory& operator=(
+                InlineMemory const& inlineMemory) noexcept;
+
+            /**
+             * Moves the other inline memory to this object
+             *
+             * @param inlineMemory the rvalue reference to the
+             * other inline memory object
+             * @return the reference to this object
+             */
+            InlineMemory& operator=(
+                InlineMemory&& inlineMemory) noexcept;
+
+            /**
+             * Returns a reference to the range interface
+             *
+             * @return the reference to the range interface
+             */
+            RangeInterface& operator* (void) noexcept;
+
+            /**
+             * Returns a pointer to the range interface
+             *
+             * @return the pointer to the range interface
+             */
+            RangeInterface* operator-> (void) noexcept;
+
+            /**
+             * Returns a constant reference to the range interface
+             *
+             * @return the constant reference to the range interface
+             */
+            RangeInterface const& operator* (void) const noexcept;
+
+            /**
+             * Returns a constant pointer to the range interface
+             *
+             * @return the constant pointer to the range interface
+             */
+            RangeInterface const* operator-> (void) const noexcept;
+
+            /**
+             * Destroys the Inline Memory object
+             */
+            ~InlineMemory(void) noexcept;
+        private:
+            std::array<std::byte, 15ul>     memory;
+            bool                            active = true;
+        };
 
         InterfacePtr                        rangePointer;
     };
