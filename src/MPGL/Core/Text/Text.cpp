@@ -442,18 +442,30 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    Text<IsColorable>::GlyphPosPair
+        Text<IsColorable>::findFirstGlyphBearing(void) const noexcept
+    {
+        auto&& [level, scale] = glyphCoefficients();
+        std::size_t id = 0;
+        for (auto iter = text.begin(); iter < text.end(); ++id) {
+            std::size_t seqLen = getUTF8SequenceLength(*iter);
+            uint16 index = fromUTF8(iter, std::next(iter, seqLen));
+            if (auto glyph = font(style)(index, level))
+                return {std::get<2>(getGlyphDimensions(*glyph, scale)),
+                    id};
+            std::advance(iter, seqLen);
+        }
+        return {};
+    }
+
+    template <bool IsColorable>
     [[nodiscard]] Vector2f
         Text<IsColorable>::getPosition(void) const noexcept
     {
         if (!glyphs.size())
             return positionSpace.getPosition();
-        uint16 index = fromUTF8(text.begin(), std::next(text.begin(),
-            getUTF8SequenceLength(text.front())));
-        // getter
-        auto&& [level, scale] = glyphCoefficients();
-        auto&& [width, height, bearing] = getGlyphDimensions(
-            *font(style)(index, level), scale);
-        return positionSpace.findOrigin({glyphs.front()[0]
+        auto&& [bearing, id] = findFirstGlyphBearing();
+        return positionSpace.findOrigin({glyphs.front()[id]
             & cast::position}, bearing);
     }
 
