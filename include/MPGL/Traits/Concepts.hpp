@@ -302,6 +302,8 @@ namespace mpgl {
         {
             range.reserve(size);
             range.resize(size, value);
+            range.push_back(value);
+            range.push_back(std::move(value));
         };
 
     /**
