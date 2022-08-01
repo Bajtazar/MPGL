@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformation.hpp>
+#include <MPGL/Core/Transformations/Fusable.hpp>
 
 namespace mpgl {
 
@@ -36,7 +37,10 @@ namespace mpgl {
      * @tparam Dim the transformed space's dimensions
      */
     template <Dimension Dim>
-    class Translation : public Transformation<Dim> {
+    class Translation :
+        public Transformation<Dim>,
+        public Fusable<Translation<Dim>>
+    {
     public:
         using VectorDf = Vector<float32, Dim::orthogonal_space_degree>;
         using TransformedType = Transformation<Dim>::TransformedType;
@@ -84,6 +88,14 @@ namespace mpgl {
          */
         void operator() (
             TransformedType& coord) const noexcept final;
+
+        /**
+         * Combines two translation operations into one
+         *
+         * @param other the constant reference to the other
+         * translation transformation object
+         */
+        void fuse(Translation const& other) noexcept final;
 
         /**
          * Returns a reference to the translation vector

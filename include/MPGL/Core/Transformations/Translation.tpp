@@ -54,4 +54,9 @@ namespace mpgl {
         coord = VectorDf(coord) + translation;
     }
 
+    template <Dimension Dim>
+    void Translation<Dim>::fuse(Translation const& other) noexcept {
+        translation += other.translation;
+    }
+
 }
