@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformation.hpp>
+#include <MPGL/Core/Transformations/Fusable.hpp>
 
 #include <vector>
 
@@ -37,7 +38,7 @@ namespace mpgl {
         using TransformedType = Transformation<Dim>::TransformedType;
 
         template <std::derived_from<Transformation<Dim>>... Args>
-        explicit ChainTransformation(Args&&... args);
+        explicit ChainTransformation(Args&&... args) noexcept;
 
         ChainTransformation(
             ChainTransformation const& transformation);
@@ -46,7 +47,7 @@ namespace mpgl {
             ChainTransformation&&) noexcept = default;
 
         ChainTransformation& operator=(
-            ChainTransformation const& transformation) noexcept;
+            ChainTransformation const& transformation);
 
         ChainTransformation& operator=(
             ChainTransformation&&) noexcept = default;
@@ -118,14 +119,33 @@ namespace mpgl {
         private:
             using Agregated = std::tuple<TArgs...>;
 
+            template <
+                size_t Index,
+                class CurrentTp,
+                class LastTp,
+                size_t... Indexes>
+            constexpr static decltype(auto) findFusionIndexesHelper(
+                std::index_sequence<Indexes...> indexes);
+
             template <size_t Index, size_t... Indexes>
             constexpr static decltype(auto) findFusionIndexes(
-                std::index_sequence<Indexes>... indexes);
+                std::index_sequence<Indexes...> indexes);
 
             constexpr static decltype(auto) findFusionIndexes(void);
 
+            template <class Tp, class Up>
+            struct IsFusable;
+
+            template <class Tp, class... Args>
+            struct IsFusable<Tp, Fusable<Args...>> {
+                constexpr static bool Value = (std::same_as<
+                    std::remove_cvref_t<Tp>, Args> || ...);
+            };
+
             static decltype(auto) constructFusedTuple(
                 Agregated&& tuple) noexcept;
+
+            static void fuseInstructions(Agregated& tuple) noexcept;
 
             using FusionIndexes = decltype(findFusionIndexes());
             using FusedTuple = decltype(constructFusedTuple(
@@ -134,7 +154,17 @@ namespace mpgl {
             FusedTuple                              transformations;
         };
 
-        std::unique_ptr<ClonableTransformation>     storage;
+        using Storage = std::unique_ptr<ClonableTransformation>;
+
+        Storage                                     storage;
     };
 
+    template class ChainTransformation<dim::Dim2>;
+    template class ChainTransformation<dim::Dim3>;
+
+    using ChainTransformation2D = ChainTransformation<dim::Dim2>;
+    using ChainTransformation3D = ChainTransformation<dim::Dim3>;
+
 }
+
+#include <MPGL/Core/Transformations/ChainTransformation.tpp>
