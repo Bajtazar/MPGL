@@ -52,4 +52,9 @@ namespace mpgl {
         coord = VectorDf(coord) * factor;
     }
 
+    template <Dimension Dim>
+    void Scaling<Dim>::fuse(Scaling const& other) noexcept {
+        factor *= other.factor;
+    }
+
 }
