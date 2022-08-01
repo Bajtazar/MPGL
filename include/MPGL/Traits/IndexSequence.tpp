@@ -43,13 +43,38 @@ namespace mpgl {
     }
 
     template <size_t... Indexes>
+        requires (sizeof...(Indexes) > 0)
     [[nodiscard]] consteval decltype(auto) splitIndexSequence(
         std::index_sequence<Indexes...> indexes) noexcept
     {
-        return [&indexes]<size_t... I>() {
-            return std::tuple{ makeIndexSequenceRange<
-                std::get<I>(indexes), std::get<I+1>(indexes)>{}... };
-        }(std::make_index_sequence<sizeof...(Indexes) - 1>{});
+        if constexpr (sizeof...(Indexes) == 1)
+            return std::tuple{indexes};
+        else
+            return [&indexes]<size_t... I>() {
+                return std::tuple{ makeIndexSequenceRange<
+                    getIndexSequenceElement<I>(indexes),
+                    getIndexSequenceElement<I+1>(indexes)
+                    >{}... };
+            }(std::make_index_sequence<sizeof...(Indexes) - 1>{});
+    }
+
+    template <size_t I, size_t N, size_t... Index>
+    [[nodiscard]] consteval size_t getIndexSequenceElementFn(
+        std::index_sequence<I, Index...>)
+    {
+        if constexpr (I == N)
+            return I;
+        else
+            return getIndexSequenceElementFn<I+1,N>(
+                std::index_sequence<Index...>{});
+    }
+
+    template <size_t I, size_t... Index>
+        requires (sizeof...(Index) > I && I > 0)
+    [[nodiscard]] consteval size_t getIndexSequenceElement(
+        std::index_sequence<I, Index...> sequence)
+    {
+        return getIndexSequenceElementFn<0,I>(sequence);
     }
 
 }
