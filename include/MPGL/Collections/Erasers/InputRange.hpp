@@ -55,10 +55,12 @@ namespace mpgl::any {
      * has to obey the std::input_range concept and be copy
      * constructible and assignable. Thus it can be used in places
      * when templates cannot be used but the type generalization is
-     * needed. Input range store an object within itself. It cannot be
-     * defaultly initialized. This class works heavely on virtual
-     * methods thus it should be used wisely where performance is
-     * important
+     * needed. Input range can be used as a wrapper to already
+     * existing range - to do this only a reference to the range is
+     * required; or it can store an object within itself - then the
+     * desired object has to be moved inside. It cannot be defaultly
+     * initialized. This class works heavely on virtual methods thus
+     * it should be used wisely where performance is important
      *
      * @tparam Tp the type of range's elements
      */
