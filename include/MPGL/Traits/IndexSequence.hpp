@@ -76,6 +76,7 @@ namespace mpgl {
      * @return a tuple containing subranges
      */
     template <size_t... Indexes>
+        requires (sizeof...(Indexes) > 0)
     [[nodiscard]] consteval decltype(auto) splitIndexSequence(
         std::index_sequence<Indexes...> indexes) noexcept;
 
@@ -88,6 +89,31 @@ namespace mpgl {
             splitIndexSequence(seq); }
     using SplitedIndexSequence = decltype(
         splitIndexSequence(std::declval<IndexSequence>()));
+
+    /**
+     * Helper function. Acquires the given index from the index
+     * sequence
+     *
+     * @tparam I the current recursive call number
+     * @tparam N the index of searched index
+     * @tparam Index the rest of indiecies
+     * @return the N-th index value
+     */
+    template <size_t I, size_t N, size_t... Index>
+    [[nodiscard]] consteval size_t getIndexSequenceElementFn(
+        std::index_sequence<I, Index...>);
+
+    /**
+     * Acquires the N-th index value from the index sequence
+     *
+     * @tparam I the looked index's index
+     * @tparam Index the rest of indiecies
+     * @return the N-th index value
+     */
+    template <size_t I, size_t... Index>
+        requires (sizeof...(Index) > I && I > 0)
+    [[nodiscard]] consteval size_t getIndexSequenceElement(
+        std::index_sequence<I, Index...> sequence);
 
 }
 
