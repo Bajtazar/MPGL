@@ -70,7 +70,8 @@ namespace mpgl {
             virtual void operator() (
                 TransformedType& coord) const noexcept = 0;
 
-            virtual ClonableTransformation* clone(void) const = 0;
+            [[nodiscard]] virtual ClonableTransformation* clone(
+                void) const = 0;
 
             virtual ~ClonableTransformation(void) noexcept = default;
         protected:
@@ -85,6 +86,55 @@ namespace mpgl {
                 ClonableTransformation&&) noexcept = default;
         };
 
+        template <std::derived_from<Transformation<Dim>>... TArgs>
+        class AgregatedTransformation :
+            public ClonableTransformation
+        {
+        public:
+            explicit AgregatedTransformation(
+                TArgs&&... transformations) noexcept;
+
+            AgregatedTransformation(
+                AgregatedTransformation const&) noexcept = default;
+            AgregatedTransformation(
+                AgregatedTransformation&&) noexcept = default;
+
+            AgregatedTransformation& operator=(
+                AgregatedTransformation const&) noexcept = default;
+            AgregatedTransformation& operator=(
+                AgregatedTransformation&&) noexcept = default;
+
+            void operator() (
+                any::InputRange<TransformedType>& coords
+                ) const noexcept final;
+
+            void operator() (
+                TransformedType& coord) const noexcept final;
+
+            [[nodiscard]] ClonableTransformation* clone(
+                void) const final;
+
+            ~AgregatedTransformation(void) noexcept = default;
+        private:
+            using Agregated = std::tuple<TArgs...>;
+
+            template <size_t Index, size_t... Indexes>
+            constexpr static decltype(auto) findFusionIndexes(
+                std::index_sequence<Indexes>... indexes);
+
+            constexpr static decltype(auto) findFusionIndexes(void);
+
+            static decltype(auto) constructFusedTuple(
+                Agregated&& tuple) noexcept;
+
+            using FusionIndexes = decltype(findFusionIndexes());
+            using FusedTuple = decltype(constructFusedTuple(
+                std::declval<Agregated>()));
+
+            FusedTuple                              transformations;
+        };
+
+        std::unique_ptr<ClonableTransformation>     storage;
     };
 
 }
