@@ -25,8 +25,6 @@
  */
 #pragma once
 
-#include <MPGL/Traits/Concepts.hpp>
-
 namespace mpgl {
 
     namespace details {
@@ -52,7 +50,7 @@ namespace mpgl {
              * @param other the constant reference to the other
              * object
              */
-            virtual void fuze(Tp const& other) noexcept = 0;
+            virtual void fuse(Tp const& other) noexcept = 0;
 
             /**
              * Virtual destructor. Destroys the fusable base object

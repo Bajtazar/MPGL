@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformation.hpp>
+#include <MPGL/Core/Transformations/Fusable.hpp>
 
 namespace mpgl {
 
@@ -35,7 +36,10 @@ namespace mpgl {
      * @tparam Dim the transformed space's dimensions
      */
     template <Dimension Dim>
-    class Scaling : public Transformation<Dim> {
+    class Scaling :
+        public Transformation<Dim>,
+        public Fusable<Scaling<Dim>>
+    {
     public:
         using VectorDf = Vector<float32, Dim::orthogonal_space_degree>;
         using TransformedType = Transformation<Dim>::TransformedType;
@@ -83,6 +87,14 @@ namespace mpgl {
          */
         void operator() (
             TransformedType& coord) const noexcept final;
+
+        /**
+         * Combines two scaling operations into one
+         *
+         * @param other the constant reference to the other
+         * scaling transformation object
+         */
+        void fuse(Scaling const& other) noexcept final;
 
         /**
          * Returns a reference to the scaling factor
