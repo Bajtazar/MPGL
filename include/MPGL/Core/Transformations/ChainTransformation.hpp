@@ -102,6 +102,14 @@ namespace mpgl {
         void operator() (TransformedType& coord) const noexcept final;
 
         /**
+         * Swaps two chain transfromation objects together
+         *
+         * @param other the reference to the other object
+         */
+        void swap(ChainTransformation& other) noexcept
+            { storage.swap(other.storage); }
+
+        /**
          * Destroys the chain transformation object
          */
         ~ChainTransformation(void) noexcept = default;
@@ -348,3 +356,22 @@ namespace mpgl {
 }
 
 #include <MPGL/Core/Transformations/ChainTransformation.tpp>
+
+namespace std {
+
+    /**
+     * Swaps two mpgl::ChainTransformation objects
+     *
+     * @tparam Dim the transformed space's dimensions
+     * @param left the reference to the left object
+     * @param right the reference to the right object
+     */
+    template <mpgl::Dimension Dim>
+    void swap(
+        mpgl::ChainTransformation<Dim>& left,
+        mpgl::ChainTransformation<Dim>& right) noexcept
+    {
+        left.swap(right);
+    }
+
+}
