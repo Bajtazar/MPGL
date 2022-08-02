@@ -30,7 +30,7 @@
 namespace mpgl {
 
     /**
-     * Adds the given number to the front of index sequence
+     * Adds the given number to the back of index sequence
      *
      * @tparam I the inserted number
      * @tparam Indexes the index sequence's indexes
@@ -38,7 +38,18 @@ namespace mpgl {
      */
     template <size_t I, size_t... Indexes>
     [[nodiscard]] consteval std::index_sequence<Indexes..., I>
-        addToIndexSequence(std::index_sequence<Indexes...>) noexcept;
+        pushBack(std::index_sequence<Indexes...>) noexcept;
+
+    /**
+     * Adds the given number to the front of index sequence
+     *
+     * @tparam I the inserted number
+     * @tparam Indexes the index sequence's indexes
+     * @return the index sequence with inserted number
+     */
+    template <size_t I, size_t... Indexes>
+    [[nodiscard]] consteval std::index_sequence<I, Indexes...>
+        pushFront(std::index_sequence<Indexes...>) noexcept;
 
     /**
      * Produces index sequence that holds only indexes between
@@ -96,12 +107,13 @@ namespace mpgl {
      *
      * @tparam I the current recursive call number
      * @tparam N the index of searched index
+     * @tparam C currenlty checked index
      * @tparam Index the rest of indiecies
      * @return the N-th index value
      */
-    template <size_t I, size_t N, size_t... Index>
-    [[nodiscard]] consteval size_t getIndexSequenceElementFn(
-        std::index_sequence<I, Index...>);
+    template <size_t I, size_t N, size_t C, size_t... Index>
+    [[nodiscard]] consteval size_t getFn(
+        std::index_sequence<C, Index...>);
 
     /**
      * Acquires the N-th index value from the index sequence
@@ -111,9 +123,9 @@ namespace mpgl {
      * @return the N-th index value
      */
     template <size_t I, size_t... Index>
-        requires (sizeof...(Index) > I && I > 0)
-    [[nodiscard]] consteval size_t getIndexSequenceElement(
-        std::index_sequence<I, Index...> sequence);
+        requires (sizeof...(Index) > I && sizeof...(Index) > 0)
+    [[nodiscard]] consteval size_t get(
+        std::index_sequence<Index...> sequence);
 
 }
 

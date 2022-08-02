@@ -29,8 +29,13 @@ namespace mpgl {
 
     template <size_t I, size_t... Indexes>
     [[nodiscard]] consteval std::index_sequence<Indexes..., I>
-        addToIndexSequence(std::index_sequence<Indexes...>) noexcept
+        pushBack(std::index_sequence<Indexes...>) noexcept
             { return std::index_sequence<Indexes..., I>{}; }
+
+    template <size_t I, size_t... Indexes>
+    [[nodiscard]] consteval std::index_sequence<I, Indexes...>
+        pushFront(std::index_sequence<Indexes...>) noexcept
+            { return std::index_sequence<I, Indexes...>{}; }
 
     template <size_t Index, size_t End, size_t... Indexes>
     [[nodiscard]] consteval decltype(auto) indexSequenceRange(
@@ -39,7 +44,8 @@ namespace mpgl {
         if constexpr (Index == End)
             return indexes;
         else
-            return addToIndexSequence<Index>(std::move(indexes));
+            return indexSequenceRange<Index + 1, End>(
+                pushBack<Index>(std::move(indexes)));
     }
 
     template <size_t... Indexes>
@@ -50,31 +56,29 @@ namespace mpgl {
         if constexpr (sizeof...(Indexes) == 1)
             return std::tuple{indexes};
         else
-            return [&indexes]<size_t... I>() {
+            return []<size_t... I>(std::index_sequence<I...>) {
+                constexpr std::index_sequence<Indexes...> indexes;
                 return std::tuple{ makeIndexSequenceRange<
-                    getIndexSequenceElement<I>(indexes),
-                    getIndexSequenceElement<I+1>(indexes)
-                    >{}... };
+                    get<I>(indexes), get<I+1>(indexes)>{}... };
             }(std::make_index_sequence<sizeof...(Indexes) - 1>{});
     }
 
-    template <size_t I, size_t N, size_t... Index>
-    [[nodiscard]] consteval size_t getIndexSequenceElementFn(
-        std::index_sequence<I, Index...>)
+    template <size_t I, size_t N, size_t C, size_t... Index>
+    [[nodiscard]] consteval size_t getFn(
+        std::index_sequence<C, Index...>)
     {
         if constexpr (I == N)
-            return I;
+            return C;
         else
-            return getIndexSequenceElementFn<I+1,N>(
-                std::index_sequence<Index...>{});
+            return getFn<I + 1, N>(std::index_sequence<Index...>{});
     }
 
     template <size_t I, size_t... Index>
-        requires (sizeof...(Index) > I && I > 0)
-    [[nodiscard]] consteval size_t getIndexSequenceElement(
-        std::index_sequence<I, Index...> sequence)
+        requires (sizeof...(Index) > I && sizeof...(Index) > 0)
+    [[nodiscard]] consteval size_t get(
+        std::index_sequence<Index...> sequence)
     {
-        return getIndexSequenceElementFn<0,I>(sequence);
+        return getFn<0, I>(sequence);
     }
 
 }
