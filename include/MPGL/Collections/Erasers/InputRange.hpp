@@ -230,8 +230,19 @@ namespace mpgl::any {
              * Pure virtual method. Has to be overloaded.
              * Clones the range and allocates it in the given
              * memory
+             *
+             * @param memory the reference to the first memory byte
              */
             constexpr virtual void clone(std::byte& memory) const = 0;
+
+            /**
+             * Pure virtual method. Has to be overloaded.
+             * Allocates a new object inside the given memory
+             * and moves this object inside the new one
+             *
+             * @param memory the reference to the first memory byte
+             */
+            constexpr virtual void move(std::byte& memory) = 0;
 
             /**
              * Virtual destructor. Destroys the Range Interface object
@@ -569,6 +580,15 @@ namespace mpgl::any {
                 { new (&memory) WrappedRange{*this}; }
 
             /**
+             * Allocates a new object inside the given memory
+             * and moves this object inside the new one
+             *
+             * @param memory the reference to the first memory byte
+             */
+            constexpr virtual void move(std::byte& memory)
+                { new (&memory) WrappedRange{std::move(*this)}; }
+
+            /**
              * Returns a unique pointer with the iterator pointing
              * begining of the range
              *
@@ -660,7 +680,6 @@ namespace mpgl::any {
             ~InlineMemory(void) noexcept;
         private:
             std::array<std::byte, 16ul>     memory;
-            bool                            active = true;
         };
 
         /**

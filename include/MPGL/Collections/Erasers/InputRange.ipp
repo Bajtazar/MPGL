@@ -152,9 +152,8 @@ namespace mpgl::any {
     template <PureType Tp>
     InputRange<Tp>::InlineMemory::InlineMemory(
         InlineMemory&& inlineMemory) noexcept
-            : memory{inlineMemory.memory}
     {
-        inlineMemory.active = false;
+        inlineMemory->move(memory.front());
     }
 
     template <PureType Tp>
@@ -173,8 +172,7 @@ namespace mpgl::any {
             InlineMemory&& inlineMemory) noexcept
     {
         this->~InlineMemory();
-        memory = inlineMemory.memory;
-        inlineMemory.active = false;
+        inlineMemory->move(memory.front());
         return *this;
     }
 
@@ -188,8 +186,7 @@ namespace mpgl::any {
 
     template <PureType Tp>
     InputRange<Tp>::InlineMemory::~InlineMemory(void) noexcept {
-        if (active)
-            (*this)->~RangeInterface();
+        (*this)->~RangeInterface();
     }
 
 }
