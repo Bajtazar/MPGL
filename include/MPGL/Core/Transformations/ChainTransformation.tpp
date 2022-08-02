@@ -27,14 +27,16 @@
 
 #include <MPGL/Traits/IndexSequence.hpp>
 
+#include <functional>
+
 namespace mpgl {
 
     template <Dimension Dim>
     template <std::derived_from<Transformation<Dim>>... Args>
     ChainTransformation<Dim>::ChainTransformation(
         Args&&... args) noexcept
-
-    {}
+            : storage{new AgregatedTransformation{
+                std::forward<Args>(args)...}} {}
 
     template <Dimension Dim>
     ChainTransformation<Dim>::ChainTransformation(
@@ -68,7 +70,7 @@ namespace mpgl {
     ChainTransformation<Dim>::AgregatedTransformation<TArgs...>::
         AgregatedTransformation(TArgs&&... transformations) noexcept
             : transformations{constructFusedTuple(
-                Agregated{std::forward(transformations)...})} {}
+                Agregated{std::forward<TArgs>(transformations)...})} {}
 
     template <Dimension Dim>
     template <std::derived_from<Transformation<Dim>>... TArgs>
@@ -131,15 +133,15 @@ namespace mpgl {
                 std::index_sequence<Indexes...> indexes)
     {
         if constexpr (!InstanceOf<CurrentTp, Fusable>) {
-            return fuzeIndexes<Index + 1>(
-                addToIndexSequence<Index>(indexes));
+            return findFusionIndexes<Index + 1>(
+                pushBack<Index>(indexes));
         } else if constexpr (!IsFusable<LastTp,
             typename CurrentTp::FusionBase>::Value)
         {
-            return fuzeIndexes<Index + 1>(
-                addToIndexSequence<Index>(indexes));
+            return findFusionIndexes<Index + 1>(
+                pushBack<Index>(indexes));
         } else
-            return fuzeIndexes<Index + 1>(std::move(indexes));
+            return findFusionIndexes<Index + 1>(std::move(indexes));
     }
 
     template <Dimension Dim>
@@ -148,7 +150,7 @@ namespace mpgl {
         ChainTransformation<Dim>::AgregatedTransformation<TArgs...>::
             findFusionIndexes(void)
     {
-        return findFusionIndexes<1>(std::make_index_sequence<1>{});
+        return findFusionIndexes<1>(std::index_sequence<0>{});
     }
 
     template <Dimension Dim>
@@ -169,17 +171,16 @@ namespace mpgl {
         ChainTransformation<Dim>::AgregatedTransformation<TArgs...>::
             fuseInstructions(Agregated& tuple) noexcept
     {
-        std::apply([&tuple]<size_t... I>(std::index_sequence<I...> seq)
-        {
-            if constexpr (sizeof...(I)) {
-                [&tuple]<size_t First, size_t... Index>(
-                    std::index_sequence<First, Index...>)
-                {
-                    (std::get<First>(tuple).fuse(
-                        std::get<Index>(tuple)), ...);
-                }(std::move(seq));
-            }
-        }, SplitedIndexSequence<FusionIndexes>{});
+        using FusionRange = decltype(pushBack<sizeof...(TArgs)>(
+            std::declval<FusionIndexes>()));
+
+        std::apply([&tuple](auto&&... sequences){
+            ([&tuple]<size_t F, size_t... I>(
+                std::index_sequence<F, I...>)
+            {
+                (std::get<F>(tuple).fuse(std::get<I>(tuple)), ...);
+            }(sequences), ...);
+        }, SplitedIndexSequence<FusionRange>{});
     }
 
 }
