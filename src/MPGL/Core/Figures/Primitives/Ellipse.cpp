@@ -69,12 +69,19 @@ namespace mpgl {
         setLocations();
     }
 
-    void Ellipse::actualizeMatrices(void) noexcept {
-        outlineTransform = *invert(transpose(
+    std::optional<Matrix2f> Ellipse::calculateNewOutline(
+        void) const noexcept
+    {
+        return invert(transpose(
             Matrix2f{Vector2f{get<"position">(vertices[1])}
                 - Vector2f{get<"position">(vertices[0])},
             Vector2f{get<"position">(vertices[3])}
                 - Vector2f{get<"position">(vertices[0])}}));
+    }
+
+    void Ellipse::actualizeMatrices(void) noexcept {
+        if (auto outline = calculateNewOutline())
+            outlineTransform = *outline;
     }
 
     [[nodiscard]] Vector2f Ellipse::getCenter(void) const noexcept {
@@ -95,45 +102,19 @@ namespace mpgl {
         Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
-        any::InputRange<Adapter<Vector2f>> positions{
+        any::InputRange<Adapter2D> positions{
             vertices | views::position};
         layout(positions, oldDimensions);
         actualizeMatrices();
         isModified = true;
     }
 
-    void Ellipse::translate(Vector2f const& shift) noexcept {
-        for (auto& position : vertices | views::position)
-            position = Vector2f(position) + shift;
-        actualizeMatrices();
-        isModified = true;
-    }
-
-    void Ellipse::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
+    void Ellipse::transform(
+        Transformation2D const& transformator) noexcept
     {
-        for (auto& position : vertices | views::position)
-            position = (static_cast<Vector2f>(position)
-                - center) * factor + center;
-        actualizeMatrices();
-        isModified = true;
-    }
-
-    void Ellipse::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    void Ellipse::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        for (auto& position : vertices | views::position)
-            position = rotation * (
-                Vector2f(position) - center) + center;
+        any::InputRange<Adapter2D> positions{
+            vertices | views::position};
+        transformator(positions);
         actualizeMatrices();
         isModified = true;
     }

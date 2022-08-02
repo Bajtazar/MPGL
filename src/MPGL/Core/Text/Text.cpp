@@ -24,6 +24,7 @@
  *  distribution
  */
 #include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
+#include <MPGL/Core/Transformations/Rotation.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 #include <MPGL/Core/Text/Text.hpp>
@@ -32,6 +33,136 @@ namespace mpgl {
 
     MonochromaticTextBase::MonochromaticTextBase(void)
         : colorLoc{new ShaderLocation} {}
+
+    template <bool IsColorable>
+    Text<IsColorable>::PositionHolder::PositionHolder(
+        Vector2f const& position) noexcept
+            : vertices{{
+                Adapter2D{position},
+                Adapter2D{position + 1._y},
+                Adapter2D{position + 1._x + 1._y}
+            }}, xVersor{1._x}, yVersor{1._y}, position{position} {}
+
+    template <bool IsColorable>
+    void Text<IsColorable>::PositionHolder::onScreenTransformation(
+        Layout& layout,
+        Vector2u const& oldDimensions) noexcept
+    {
+        any::InputRange<Adapter2D> positions{vertices};
+        layout(positions, oldDimensions);
+        actualize();
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::PositionHolder::transform(
+        Transformation2D const& transformator) noexcept
+    {
+        any::InputRange<Adapter2D> positions{vertices};
+        transformator(positions);
+        actualize();
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Vector2f
+        Text<IsColorable>::PositionHolder::getPosition(
+            void) const noexcept
+    {
+        return position;
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::PositionHolder::actualize(
+        void) noexcept
+    {
+        position = Vector2f{vertices[0]};
+        yVersor = Vector2f{vertices[1]} - position;
+        xVersor = Vector2f{vertices[2]} - Vector2f{vertices[1]};
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Vector2f
+        Text<IsColorable>::PositionHolder::changeSystem(
+            Vector2f const& position) const noexcept
+    {
+        return position[0] * xVersor + position[1] * yVersor;
+    }
+
+    template <bool IsColorable>
+    Vector2f Text<IsColorable>::PositionHolder::advance(
+        Vector2f const& advanceVector) noexcept
+    {
+        Vector2f const realAdvance = changeSystem(advanceVector);
+        for (Adapter2D& vertex : vertices)
+            vertex = Vector2f{vertex} + realAdvance;
+        actualize();
+        return realAdvance;
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Text<IsColorable>::VectorTuple
+        Text<IsColorable>::PositionHolder::calculatePositon(
+            Vector2f const& bearing,
+            float32 width,
+            float32 height) const noexcept
+    {
+        Vector2f const start = position + changeSystem(bearing);
+        Vector2f const vWidth = xVersor * width;
+        Vector2f const vHeight = yVersor * height;
+        return {
+            start,
+            start + vHeight,
+            start + vWidth + vHeight
+        };
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Text<IsColorable>::VectorTuple
+        Text<IsColorable>::PositionHolder::calculatePositon(
+            float32 midspan,
+            float32 halfspan) const noexcept
+    {
+        Vector2f const vMid = yVersor * midspan;
+        Vector2f const vHalf = yVersor * halfspan;
+        Vector2f const start = position + vMid - vHalf;
+        return {
+            start,
+            start + 2.f * vHalf,
+            start + 2.f * vHalf
+        };
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Text<IsColorable>::VectorTuple
+        Text<IsColorable>::PositionHolder::calculatePositon(
+            float32 span) const noexcept
+    {
+        return {
+            position - yVersor * span,
+            position,
+            position
+        };
+    }
+
+    template <bool IsColorable>
+    void Text<IsColorable>::PositionHolder::move(
+        Vector2f const& point) noexcept
+    {
+        Vector2f const shift = point - position;
+        for (Adapter2D& vertex : vertices)
+            vertex = Vector2f{vertex} + shift;
+        actualize();
+    }
+
+    template <bool IsColorable>
+    [[nodiscard]] Vector2f
+        Text<IsColorable>::PositionHolder::findOrigin(
+            Vector2f const& position,
+            Vector2f const& bearing) const noexcept
+    {
+        // versors cannot be parallel
+        return *intersectionOf(position - xVersor * bearing, yVersor,
+            this->position, xVersor);
+    }
 
     template <bool IsColorable>
     Text<IsColorable>::String const
@@ -51,31 +182,27 @@ namespace mpgl {
 
     template <bool IsColorable>
     Tetragon Text<IsColorable>::generateUnderline(
-        Vector2f position,
-        float32 angle,
+        PositionHolder const& positionSpace,
         SizeT textSize,
         Color const& color) noexcept
     {
         float span = 2 * std::ceil(0.05f * textSize);
-        Tetragon line{position - Vector2f{0.f,
-            span}, Vector2f{0.f, span}, color};
-        line.rotate(position, angle);
-        return line;
+        auto const& [firstVertex, secondVertex, thirdVertex]
+            = positionSpace.calculatePositon(span);
+        return Tetragon{firstVertex, secondVertex, thirdVertex, color};
     }
 
     template <bool IsColorable>
     Tetragon Text<IsColorable>::generateStrikethrough(
-        Vector2f position,
-        float32 angle,
+        PositionHolder const& positionSpace,
         SizeT textSize,
         Color const& color) noexcept
     {
-        float midspan = std::floor(textSize / 2.5);
-        float halfspan =  std::ceil(0.05f * textSize);
-        Tetragon line{position + Vector2f{0.f,
-            midspan - halfspan}, Vector2f{0.f, 2 * halfspan}, color};
-        line.rotate(position, angle);
-        return line;
+        float midspan = std::floor(textSize / 2.5f);
+        float halfspan = std::ceil(0.05f * textSize);
+        auto const& [firstVertex, secondVertex, thirdVertex]
+            = positionSpace.calculatePositon(midspan, halfspan);
+        return Tetragon{firstVertex, secondVertex, thirdVertex, color};
     }
 
     template <bool IsColorable>
@@ -94,14 +221,14 @@ namespace mpgl {
         Vector2f const& position,
         String const& text,
         TextOptions const& options) : Shadeable{shaderType(),
-            shaderExec}, text{text}, font{font}, underlines{
-                generateUnderline(position, options.angle, options.size,
+            shaderExec}, positionSpace{position}, text{text},
+            font{font}, underlines{
+                generateUnderline(positionSpace, options.size,
                 options.color)},
             strikethroughs{
-                generateStrikethrough(position, options.angle,
-                options.size, options.color)},
-            color{options.color}, position{position},
-            textSize{options.size}, angle{options.angle},
+                generateStrikethrough(positionSpace, options.size,
+                options.color)},
+            color{options.color}, textSize{options.size},
             style{options.style}, mods{options.mods}
     {
         loadGlyphs(parseString(text));
@@ -124,7 +251,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     void Text<IsColorable>::extendModifiers(
-        Vector2f advance) noexcept
+        Vector2f const& advance) noexcept
     {
         if (mods & Modifiers::Underline)
             extendUnderline(advance);
@@ -134,7 +261,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     void Text<IsColorable>::extendUnderline(
-        Vector2f advance) noexcept
+        Vector2f const& advance) noexcept
     {
         underlines.back()[2] & cast::position = advance
             + Vector2f{underlines.back()[2] & cast::position};
@@ -144,7 +271,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     void Text<IsColorable>::extendStrikethrough(
-        Vector2f advance) noexcept
+        Vector2f const& advance) noexcept
     {
         strikethroughs.back()[2] & cast::position = advance
             + Vector2f{strikethroughs.back()[2] & cast::position};
@@ -155,13 +282,13 @@ namespace mpgl {
     template <bool IsColorable>
     void Text<IsColorable>::emplaceUnderline(void) {
         underlines.push_back(generateUnderline(
-            position, angle, textSize, color));
+            positionSpace, textSize, color));
     }
 
     template <bool IsColorable>
     void Text<IsColorable>::emplaceStrikethrough(void) {
         strikethroughs.push_back(generateStrikethrough(
-            position, angle, textSize, color));
+           positionSpace, textSize, color));
     }
 
     template <bool IsColorable>
@@ -183,19 +310,15 @@ namespace mpgl {
         Text<IsColorable>::glyphCoefficients(void) const noexcept
     {
         uint8 level = getLevel();
-        return {
-            level,
-            (float32) textSize / (ShiftBase << level),
-            rotationMatrix<float32>(angle)
-        };
+        return {level, (float32) textSize / (ShiftBase << level)};
     }
 
     template <bool IsColorable>
     void Text<IsColorable>::loadGlyphs(IDArray const& indexes) {
         auto& subfont = font(style);
-        auto&& [level, scale, rotation] = glyphCoefficients();
+        auto&& [level, scale] = glyphCoefficients();
         for (uint16 const& index : indexes)
-            loadGlyph(subfont, level, scale, index, rotation);
+            loadGlyph(subfont, level, scale, index);
     }
 
     template <bool IsColorable>
@@ -203,17 +326,15 @@ namespace mpgl {
         Subfont& subfont,
         uint8 level,
         float32 scale,
-        uint16 index,
-        Matrix2f const& rotation)
+        uint16 index)
     {
         switch (index) {
-            case 10:
-                return loadNewline(subfont, level, scale, rotation);
-            case 9:
-                return loadTab(subfont, level, scale, rotation);
+            case Newline:
+                return loadNewline(subfont, level, scale);
+            case Tabulator:
+                return loadTab(subfont, level, scale);
             default:
-                return loadCharacter(
-                    subfont, level, scale, index, rotation);
+                return loadCharacter(subfont, level, scale, index);
         }
     }
 
@@ -221,46 +342,35 @@ namespace mpgl {
     void Text<IsColorable>::loadTab(
         Subfont& subfont,
         uint8 level,
-        float32 scale,
-        Matrix2f const& rotation)
+        float32 scale)
     {
         /// tab is 4 times longer than space
-        if (auto glyph = subfont(32, level)) {
-            Vector2f advance = rotation * Vector2f{
-                4 * float32(glyph->get().advance * scale), 0.f};
-            position += advance;
-            extendModifiers(advance);
-        }
+        if (auto glyph = subfont(32, level))
+            extendModifiers(positionSpace.advance({
+                4.f * float32(glyph->get().advance * scale), 0.f}));
     }
 
     template <bool IsColorable>
     void Text<IsColorable>::loadNewline(
         Subfont& subfont,
         uint8 level,
-        float32 scale,
-        Matrix2f const& rotation)
+        float32 scale)
     {
-        Vector2f position = getPosition();
-        Matrix2f rot = rotationMatrix<float32>(angle);
-        Vector2f yVersor = rot * 1._y;
-        this->position = position - 1.1f * textSize * yVersor;
+        positionSpace.move(getPosition());
+        positionSpace.advance({0.f, -1.1f * textSize});
         emplaceModifiers();
     }
 
     template <bool IsColorable>
-    Text<IsColorable>::VectorTuple
+    Text<IsColorable>::GlyphDimensions
         Text<IsColorable>::getGlyphDimensions(
             Subfont::GlyphRef glyph,
-            float32 scale,
-            Matrix2f const& rotation) const noexcept
+            float32 scale) const noexcept
     {
         return {
-            rotation * Vector2f{
-                float32(glyph.get().dimensions[0]), 0.f} * scale,
-            rotation * Vector2f{0.f,
-                float32(glyph.get().dimensions[1])} * scale,
-            rotation * vectorCast<float32>(
-                glyph.get().bearing) * scale
+            float32(glyph.get().dimensions[0]) * scale,
+            float32(glyph.get().dimensions[1]) * scale,
+            vectorCast<float32>(glyph.get().bearing) * scale
         };
     }
 
@@ -268,19 +378,18 @@ namespace mpgl {
     void Text<IsColorable>::emplaceGlyph(
         Texture const& texture,
         Subfont::GlyphRef glyph,
-        float32 scale,
-        Matrix2f const& rotation)
+        float32 scale)
     {
-        auto&& [xVersor, yVersor, bearing] = getGlyphDimensions(
-            glyph, scale, rotation);
+        auto&& [width, height, bearing] = getGlyphDimensions(
+            glyph, scale);
+        auto const& [firstVertex, secondVertex, thirdVertex]
+            = positionSpace.calculatePositon(bearing, width, height);
         if constexpr (IsColorable) {
-            glyphs.emplace_back(texture, position + bearing,
-                position + bearing + yVersor,
-                position + bearing + xVersor + yVersor, color);
+            glyphs.emplace_back(texture, firstVertex, secondVertex,
+                thirdVertex, color);
         } else {
-            glyphs.emplace_back(texture, position + bearing,
-                position + bearing + yVersor,
-                position + bearing + xVersor + yVersor);
+            glyphs.emplace_back(texture, firstVertex, secondVertex,
+                thirdVertex);
         }
     }
 
@@ -289,16 +398,13 @@ namespace mpgl {
         Subfont& subfont,
         uint8 level,
         float32 scale,
-        uint16 index,
-        Matrix2f const& rotation)
+        uint16 index)
     {
         if (auto glyph = subfont(index, level)) {
             if (auto texture = glyph->get().texture)
-                emplaceGlyph(*texture, *glyph, scale, rotation);
-            Vector2f advance = rotation * Vector2f{
-                float32(glyph->get().advance * scale), 0.f};
-            position += advance;
-            extendModifiers(advance);
+                emplaceGlyph(*texture, *glyph, scale);
+            extendModifiers(positionSpace.advance({
+                float32(glyph->get().advance * scale), 0.f}));
         }
     }
 
@@ -337,47 +443,31 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
+    Text<IsColorable>::GlyphPosPair
+        Text<IsColorable>::findFirstGlyphBearing(void) const noexcept
+    {
+        auto&& [level, scale] = glyphCoefficients();
+        std::size_t id = 0;
+        for (auto iter = text.begin(); iter < text.end(); ++id) {
+            std::size_t seqLen = getUTF8SequenceLength(*iter);
+            uint16 index = fromUTF8(iter, std::next(iter, seqLen));
+            if (auto glyph = font(style)(index, level))
+                return {std::get<2>(getGlyphDimensions(*glyph, scale)),
+                    id};
+            std::advance(iter, seqLen);
+        }
+        return {};
+    }
+
+    template <bool IsColorable>
     [[nodiscard]] Vector2f
         Text<IsColorable>::getPosition(void) const noexcept
     {
         if (!glyphs.size())
-            return position;
-        uint16 index = fromUTF8(text.begin(), std::next(text.begin(),
-            getUTF8SequenceLength(text.front())));
-        auto&& [level, scale, rotation] = glyphCoefficients();
-        auto const& glyph = font(style)(index, level);
-        Vector2f bearing = rotation * vectorCast<float32>(
-            glyph->get().bearing) * scale;
-        return Vector2f{cast::position(glyphs.front()[0])} - bearing;
-    }
-
-    template <bool IsColorable>
-    Vector2f Text<IsColorable>::intersectionOf(
-        Vector2f const& firstPoint,
-        Vector2f const& firstVersor,
-        Vector2f const& secondPoint,
-        Vector2f const& secondVersor) noexcept
-    {
-        Vector2f pos = *invert(transpose(Matrix2f{firstVersor,
-            -secondVersor})) * (secondPoint - firstPoint);
-        return firstPoint + firstVersor * pos[0];
-    }
-
-    template <bool IsColorable>
-    [[nodiscard]] Vector2f
-        Text<IsColorable>::getDimensions(void) const noexcept
-    {
-        if (!glyphs.size())
-            return {0.f, 0.f};
-        Matrix2f rot = rotationMatrix<float>(angle);
-        Vector2f intersec = intersectionOf(
-            glyphs.front()[1] & cast::position, rot * 1._y,
-            glyphs.back()[3] & cast::position, rot * 1._x);
-        float x = (Vector2f{glyphs.front()[0] & cast::position}
-            + rot * Vector2f{0.f, textSize} - intersec).length();
-        float y = (Vector2f{glyphs.back()[3] & cast::position}
-            - intersec).length();
-        return {y, x};
+            return positionSpace.getPosition();
+        auto&& [bearing, id] = findFirstGlyphBearing();
+        return positionSpace.findOrigin({glyphs.front()[id]
+            & cast::position}, bearing);
     }
 
     template <bool IsColorable>
@@ -391,7 +481,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     void Text<IsColorable>::clear(void) noexcept {
-        position = getPosition();
+        positionSpace.move(getPosition());
         text.clear();
         glyphs.clear();
         if (mods & Modifiers::Underline)
@@ -402,7 +492,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     void Text<IsColorable>::reloadGlyphs(void) {
-        position = getPosition();
+        positionSpace.move(getPosition());
         glyphs.clear();
         loadGlyphs(parseString(text));
     }
@@ -440,14 +530,11 @@ namespace mpgl {
     void  Text<IsColorable>::setColor(Color const& color) {
         this->color = color;
         if constexpr(IsColorable)
-            for (auto& vcolor : glyphs | std::views::join | views::color)
-                    vcolor = color;
+            setColorOnJoinableRange(glyphs, color);
         if (mods & Modifiers::Underline)
-            for (auto& vcolor : underlines | std::views::join | views::color)
-                    vcolor = color;
+            setColorOnJoinableRange(underlines, color);
         if (mods & Modifiers::Strikethrough)
-            for (auto& vcolor : strikethroughs | std::views::join | views::color)
-                    vcolor = color;
+            setColorOnJoinableRange(strikethroughs, color);
     }
 
     template <bool IsColorable>
@@ -469,54 +556,15 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void Text<IsColorable>::translate(
-        Vector2f const& shift) noexcept
+    void Text<IsColorable>::transform(
+        Transformation2D const& transformator) noexcept
     {
-        glyphs.translate(shift);
+        glyphs.transform(transformator);
         if (mods & Modifiers::Underline)
-            underlines.translate(shift);
+            underlines.transform(transformator);
         if (mods & Modifiers::Strikethrough)
-            strikethroughs.translate(shift);
-        position += shift;
-    }
-
-    template <bool IsColorable>
-    void Text<IsColorable>::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        rotate(center, rotationMatrix<float32>(angle));
-    }
-
-    template <bool IsColorable>
-    void Text<IsColorable>::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        glyphs.rotate(center, rotation);
-        if (mods & Modifiers::Underline)
-            underlines.rotate(center, rotation);
-        if (mods & Modifiers::Strikethrough)
-            strikethroughs.rotate(center, rotation);
-        position = rotation * (position - center) + center;
-        auto twoPi = std::numbers::pi_v<float32> * 2;
-        this->angle += twoPi - angle;
-        this->angle = angle > twoPi ? angle - twoPi : angle < 0.f ?
-            twoPi + angle : angle;
-    }
-
-    template <bool IsColorable>
-    void Text<IsColorable>::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        glyphs.scale(center, factor);
-        if (mods & Modifiers::Underline)
-            underlines.scale(center, factor);
-        if (mods & Modifiers::Strikethrough)
-            strikethroughs.scale(center, factor);
-        textSize *= factor;
-        position = (position - center) * factor + center;
+            strikethroughs.transform(transformator);
+        positionSpace.transform(transformator);
     }
 
     template <bool IsColorable>
@@ -529,6 +577,7 @@ namespace mpgl {
             underlines.onScreenTransformation(layout, oldDimensions);
         if (mods & Modifiers::Strikethrough)
             strikethroughs.onScreenTransformation(layout, oldDimensions);
+        positionSpace.onScreenTransformation(layout, oldDimensions);
     }
 
 }

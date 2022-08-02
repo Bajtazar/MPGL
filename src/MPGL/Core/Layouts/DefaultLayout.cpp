@@ -28,12 +28,12 @@
 namespace mpgl {
 
     void DefaultLayout::operator() (
-        any::InputRange<Adapter<Vector2f>>& range,
+        any::InputRange<Adapter2D>& range,
         Vector2u const& oldDimensions) const noexcept
     {
         Vector2f newDim{context.windowDimensions};
-        Vector2f oldDim{oldDimensions}; 
-        for (Adapter<Vector2f>& vertexPosition : range) {
+        Vector2f oldDim{oldDimensions};
+        for (Adapter2D& vertexPosition : range) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * oldDim / newDim - 1.f;
         }

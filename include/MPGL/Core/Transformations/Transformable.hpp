@@ -26,18 +26,66 @@
 #pragma once
 
 #include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
-#include <MPGL/Core/Dimensions.hpp>
+#include <MPGL/Core/Transformations/Transformation.hpp>
 
 namespace mpgl {
 
     /**
-     * Definision of the transformable class.
-     * The implementation differs depending on the
-     * number of dimensions
+     * Definision of the transformable class. Allows to the
+     * transform the objects with the transformations suitable
+     * for their dimensions
      *
-     * @tparam Dim the dimension tag type
+     * @tparam Dim the transformed space's dimensions
      */
     template <Dimension Dim>
-    struct Transformable;
+    class Transformable : public ScreenTransformationEvent {
+    public:
+        /**
+         * Constructs a new transformable object
+         */
+        explicit Transformable(void) noexcept = default;
+
+        /**
+         * Pure virtual method. Has to be overloaded. Performs
+         * transformation on this object
+         *
+         * @param transformator the constant reference to the object
+         * perfoming a transformation
+         */
+        virtual void transform(
+            Transformation<Dim> const& transformator) noexcept = 0;
+
+        /**
+         * Pure virtual function. Has to be overloaded.
+         * Transforms the figure during the screen
+         * transformation event
+         *
+         * @param layout the layout of the figure
+         * @param oldDimensions the old screen dimensions
+         */
+        virtual void onScreenTransformation(
+            Layout& layout,
+            Vector2u const& oldDimensions) noexcept = 0;
+
+        /**
+         * Virtual destructor. Destroys the transformable object
+         */
+        virtual ~Transformable(void) noexcept = default;
+    protected:
+        Transformable(
+            Transformable const&) noexcept = default;
+
+        Transformable(
+            Transformable&&) noexcept = default;
+
+        Transformable& operator=(
+            Transformable const&) noexcept = default;
+
+        Transformable& operator=(
+            Transformable&&) noexcept = default;
+    };
+
+    typedef Transformable<dim::Dim2>                Transformable2D;
+    typedef Transformable<dim::Dim3>                Transformable3D;
 
 }

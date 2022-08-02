@@ -28,7 +28,9 @@
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <iterator>
+#include <variant>
 #include <memory>
+#include <array>
 
 namespace mpgl::any {
 
@@ -79,7 +81,7 @@ namespace mpgl::any {
          * holds an object)
          */
         template <InputRangeCompatible<Tp> Range>
-        explicit InputRange(Range&& range);
+        constexpr explicit InputRange(Range&& range);
 
         /**
          * Constructs a new Input Range object. Creates a copy of
@@ -90,9 +92,9 @@ namespace mpgl::any {
          * @param inputRange the constant reference to the input
          * range object
          */
-        InputRange(InputRange const& inputRange);
+        constexpr InputRange(InputRange const& inputRange) = default;
 
-        InputRange(InputRange&&) = default;
+        constexpr InputRange(InputRange&&) = default;
 
         /**
          * Assigns an other Input Range object. Assigns a copy of
@@ -104,9 +106,10 @@ namespace mpgl::any {
          * range object
          * @return the reference to this object
          */
-        InputRange& operator=(InputRange const& inputRange);
+        constexpr InputRange& operator=(
+            InputRange const& inputRange) = default;
 
-        InputRange& operator=(InputRange&&) = default;
+        constexpr InputRange& operator=(InputRange&&) = default;
 
         /**
          * Assigns the given Input-Range-compatible range
@@ -119,7 +122,7 @@ namespace mpgl::any {
          * @return the reference to this object
          */
         template <InputRangeCompatible<Tp> Range>
-        InputRange& operator=(Range&& range);
+        constexpr InputRange& operator=(Range&& range);
     private:
         /**
          * An interface for the RangeWrapper. Allows to abstract
@@ -130,7 +133,8 @@ namespace mpgl::any {
             /**
              * Constructs a new Range Interface object
              */
-            explicit RangeInterface(void) noexcept = default;
+            constexpr explicit RangeInterface(
+                void) noexcept = default;
 
             /**
              * An interface for the RangeWrapper's iterator. Creates
@@ -142,7 +146,8 @@ namespace mpgl::any {
                 /**
                  * Constructs a new Iterator Interface object
                  */
-                explicit IteratorInterface(void) noexcept = default;
+                constexpr explicit IteratorInterface(
+                    void) noexcept = default;
 
                 using reference = Tp&;
 
@@ -152,14 +157,14 @@ namespace mpgl::any {
                  *
                  * @return if there is a next element in the iterator
                  */
-                [[nodiscard]] virtual bool hasNext(
+                [[nodiscard]] constexpr virtual bool hasNext(
                     void) const noexcept = 0;
 
                 /**
                  * Pure virtual method. Has to be overloaded.
                  * Increments an iterator
                  */
-                virtual void increment(void) noexcept = 0;
+                constexpr virtual void increment(void) noexcept = 0;
 
                 /**
                  * Pure virtual method. Has to be overloaded. Returns
@@ -167,7 +172,7 @@ namespace mpgl::any {
                  *
                  * @return the reference to the element in the range
                  */
-                [[nodiscard]] virtual reference get(
+                [[nodiscard]] constexpr virtual reference get(
                     void) const noexcept = 0;
 
                 /**
@@ -177,24 +182,24 @@ namespace mpgl::any {
                  *
                  * @return the pointer to the cloned object
                  */
-                [[nodiscard]] virtual IteratorInterface*
+                [[nodiscard]] constexpr virtual IteratorInterface*
                     clone(void) = 0;
 
                 /**
                  * Virtual destructor. Destroys the Iterator
                  * Interface object
                  */
-                virtual ~IteratorInterface(
+                constexpr virtual ~IteratorInterface(
                     void) noexcept = default;
             protected:
-                IteratorInterface(
+                constexpr IteratorInterface(
                     IteratorInterface const&) noexcept = default;
-                IteratorInterface(
+                constexpr IteratorInterface(
                     IteratorInterface&&) noexcept = default;
 
-                IteratorInterface& operator=(
+                constexpr IteratorInterface& operator=(
                     IteratorInterface const&) noexcept = default;
-                IteratorInterface& operator=(
+                constexpr IteratorInterface& operator=(
                     IteratorInterface&&) noexcept = default;
             };
 
@@ -208,7 +213,8 @@ namespace mpgl::any {
              * @return the unique pointer with the iterator pointing
              * begining of the range
              */
-            [[nodiscard]] virtual IterPtr iterator(void) noexcept = 0;
+            [[nodiscard]] constexpr virtual IterPtr iterator(
+                void) noexcept = 0;
 
             /**
              * Pure virtual method. Has to be overloaded. Clones
@@ -217,22 +223,42 @@ namespace mpgl::any {
              *
              * @return the pointer to the cloned object
              */
-            [[nodiscard]] virtual RangeInterface* clone(void) = 0;
+            [[nodiscard]] constexpr virtual RangeInterface* clone(
+                void) const = 0;
+
+            /**
+             * Pure virtual method. Has to be overloaded.
+             * Clones the range and allocates it in the given
+             * memory
+             *
+             * @param memory the reference to the first memory byte
+             */
+            constexpr virtual void clone(std::byte& memory) const = 0;
+
+            /**
+             * Pure virtual method. Has to be overloaded.
+             * Allocates a new object inside the given memory
+             * and moves this object inside the new one
+             *
+             * @param memory the reference to the first memory byte
+             */
+            constexpr virtual void move(std::byte& memory) = 0;
 
             /**
              * Virtual destructor. Destroys the Range Interface object
              */
-            virtual ~RangeInterface(void) noexcept = default;
+            constexpr virtual ~RangeInterface(void) noexcept = default;
         protected:
-            RangeInterface(
+            constexpr RangeInterface(
                 RangeInterface const&) noexcept = default;
 
-            RangeInterface(RangeInterface&&) noexcept = default;
+            constexpr RangeInterface(
+                RangeInterface&&) noexcept = default;
 
-            RangeInterface& operator=(
+            constexpr RangeInterface& operator=(
                 RangeInterface const&) noexcept = default;
 
-            RangeInterface& operator=(
+            constexpr RangeInterface& operator=(
                 RangeInterface&&) noexcept = default;
         };
     public:
@@ -268,13 +294,14 @@ namespace mpgl::any {
              * @param pointer the rvalue reference to the smart
              * pointer managing the erasured iterator
              */
-            explicit Iterator(UnderlyingPtr&& pointer) noexcept
-                : iterPtr{std::move(pointer)} {}
+            constexpr explicit Iterator(
+                UnderlyingPtr&& pointer) noexcept
+                    : iterPtr{std::move(pointer)} {}
 
             /**
              * Constructs a new Iterator object
              */
-            explicit Iterator(void) noexcept :
+            constexpr explicit Iterator(void) noexcept :
                 iterPtr{nullptr} {}
 
             /**
@@ -284,9 +311,9 @@ namespace mpgl::any {
              * @param iterator the constant reference to the
              * Iterator object
              */
-            Iterator(Iterator const& iterator);
+            constexpr Iterator(Iterator const& iterator);
 
-            Iterator(Iterator&&) noexcept = default;
+            constexpr Iterator(Iterator&&) noexcept = default;
 
             /**
              * Assigns an other Iterator object
@@ -295,32 +322,34 @@ namespace mpgl::any {
              * Iterator object
              * @return the reference to this object
              */
-            Iterator& operator=(Iterator const& iterator);
+            constexpr Iterator& operator=(Iterator const& iterator);
 
-            Iterator& operator=(Iterator&&) = default;
+            constexpr Iterator& operator=(Iterator&&) = default;
 
             /**
              * Returns the reference to the range's element
              *
              * @return the reference to the range's element
              */
-            [[nodiscard]] reference operator*(void) const noexcept
-                { return iterPtr->get(); }
+            [[nodiscard]] constexpr reference operator*(
+                void) const noexcept
+                    { return iterPtr->get(); }
 
             /**
              * Returns the pointer to the range's element
              *
              * @return the pointer to the range's element
              */
-            [[nodiscard]] pointer operator->(void) const noexcept
-                { return &(iterPtr->get()); }
+            [[nodiscard]] constexpr pointer operator->(
+                void) const noexcept
+                    { return &(iterPtr->get()); }
 
             /**
              * Pre-increments an iterator
              *
              * @return the reference to this object
              */
-            Iterator& operator++(void) noexcept
+            constexpr Iterator& operator++(void) noexcept
                 { iterPtr->increment(); return *this; }
 
             /**
@@ -328,7 +357,7 @@ namespace mpgl::any {
              *
              * @return a copy of the pre-incremented iterator
              */
-            [[nodiscard]] Iterator operator++(int);
+            [[nodiscard]] constexpr Iterator operator++(int);
 
             /**
              * Swaps two iterators toghether
@@ -336,7 +365,7 @@ namespace mpgl::any {
              * @param other the reference to the other iterator
              * object
              */
-            void swap(Iterator& other) noexcept
+            constexpr void swap(Iterator& other) noexcept
                 { iterPtr.swap(other.iterPtr); }
 
             /**
@@ -347,7 +376,7 @@ namespace mpgl::any {
              * @return true if the iterator has reached its end
              * otherwise returns false
              */
-            [[nodiscard]] friend bool operator==(
+            [[nodiscard]] friend constexpr bool operator==(
                 Iterator const& iter,
                 [[maybe_unused]] sentinel const& sent) noexcept
                     { return !iter.iterPtr || !iter.iterPtr->hasNext(); }
@@ -360,7 +389,7 @@ namespace mpgl::any {
              * @return true if the iterator has reached its end
              * otherwise returns false
              */
-            [[nodiscard]] friend bool operator==(
+            [[nodiscard]] friend constexpr bool operator==(
                 [[maybe_unused]] sentinel const& sent,
                 Iterator const& iter) noexcept
                     { return iter == sent; }
@@ -376,31 +405,31 @@ namespace mpgl::any {
          *
          * @return the iterator to the begining of the range
          */
-        [[nodiscard]] iterator begin(void)
-            { return iterator{rangePointer->iterator()}; }
+        [[nodiscard]] constexpr iterator begin(void)
+            { return iterator{rangePointer()->iterator()}; }
 
         /**
          * Returns a constant iterator to the begining of the range
          *
          * @return the constant iterator to the begining of the range
          */
-        [[nodiscard]] const_iterator begin(void) const
-            { return const_iterator{rangePointer->iterator()}; }
+        [[nodiscard]] constexpr const_iterator begin(void) const
+            { return const_iterator{rangePointer()->iterator()}; }
 
         /**
          * Returns a constant iterator to the begining of the range
          *
          * @return the constant iterator to the begining of the range
          */
-        [[nodiscard]] const_iterator cbegin(void) const
-            { return const_iterator{rangePointer->iterator()}; }
+        [[nodiscard]] constexpr const_iterator cbegin(void) const
+            { return const_iterator{rangePointer()->iterator()}; }
 
         /**
          * Returns the sentinel (signalizes end of the range)
          *
          * @return the sentinel
          */
-        [[nodiscard]] sentinel end(void) const noexcept
+        [[nodiscard]] constexpr sentinel end(void) const noexcept
             { return {}; }
 
         /**
@@ -408,7 +437,7 @@ namespace mpgl::any {
          *
          * @return the sentinel
          */
-        [[nodiscard]] sentinel cend(void) const noexcept
+        [[nodiscard]] constexpr sentinel cend(void) const noexcept
             { return {}; }
 
         /**
@@ -416,13 +445,13 @@ namespace mpgl::any {
          *
          * @param other the reference to the other object
          */
-        void swap(InputRange& other) noexcept
-            { rangePointer.swap(other.rangePointer); }
+        constexpr void swap(InputRange& other) noexcept
+            { storage.swap(other.storage); }
 
         /**
          * Destroys the Input Range object
          */
-        ~InputRange(void) noexcept = default;
+        constexpr ~InputRange(void) noexcept = default;
     private:
         /**
          * Wrapps the input range. Allows to use dynamic
@@ -439,15 +468,15 @@ namespace mpgl::any {
              * @param range the universal reference to the range
              * object
              */
-            explicit WrappedRange(Range&& range)
+            constexpr explicit WrappedRange(Range&& range)
                 : range{std::forward<Range>(range)} {}
 
-            WrappedRange(WrappedRange const&) = default;
-            WrappedRange(WrappedRange&&) = default;
+            constexpr WrappedRange(WrappedRange const&) = default;
+            constexpr WrappedRange(WrappedRange&&) = default;
 
-            WrappedRange& operator=(
+            constexpr WrappedRange& operator=(
                 WrappedRange const&) = default;
-            WrappedRange& operator=(
+            constexpr WrappedRange& operator=(
                 WrappedRange&&) = default;
 
             using IIter = RangeInterface::IteratorInterface;
@@ -472,7 +501,7 @@ namespace mpgl::any {
                  * @param sentinel the constant reference to the
                  * sentinel object
                  */
-                explicit Iterator(
+                constexpr explicit Iterator(
                     RangeIter const& iterator,
                     RangeSent const& sentinel)
                         : iter{iterator}, sent{sentinel} {}
@@ -480,13 +509,14 @@ namespace mpgl::any {
                 /**
                  * Constructs a new Iterator object
                  */
-                explicit Iterator(void) = default;
+                constexpr explicit Iterator(void) = default;
 
-                Iterator(Iterator const&) = default;
-                Iterator(Iterator&&) = default;
+                constexpr Iterator(Iterator const&) = default;
+                constexpr Iterator(Iterator&&) = default;
 
-                Iterator& operator=(Iterator const&) = default;
-                Iterator& operator=(Iterator&&) = default;
+                constexpr Iterator& operator=(
+                    Iterator const&) = default;
+                constexpr Iterator& operator=(Iterator&&) = default;
 
                 /**
                  * Checks whether there is a next element in the
@@ -494,14 +524,14 @@ namespace mpgl::any {
                  *
                  * @return if there is a next element in the iterator
                  */
-                [[nodiscard]] bool hasNext(
+                [[nodiscard]] constexpr bool hasNext(
                     void) const noexcept final
                         { return iter != sent; }
 
                 /**
                  * Increments an iterator
                  */
-                void increment(void) noexcept final
+                constexpr void increment(void) noexcept final
                     { ++iter; }
 
                 /**
@@ -509,8 +539,9 @@ namespace mpgl::any {
                  *
                  * @return the reference to the element in the range
                  */
-                [[nodiscard]] reference get(void) const noexcept
-                    { return *iter; }
+                [[nodiscard]] constexpr reference get(
+                    void) const noexcept
+                        { return *iter; }
 
                 /**
                  * Clones the iterator and returns a pointer to the
@@ -518,12 +549,12 @@ namespace mpgl::any {
                  *
                  * @return the pointer to the cloned object
                  */
-                [[nodiscard]] IIter* clone(void) final;
+                [[nodiscard]] constexpr IIter* clone(void) final;
 
                 /**
                  * Destroys the Iterator object
                  */
-                ~Iterator(void) noexcept = default;
+                constexpr ~Iterator(void) noexcept = default;
             private:
                 RangeIter                       iter;
                 RangeSent                       sent;
@@ -537,8 +568,25 @@ namespace mpgl::any {
              *
              * @return the pointer to the cloned object
              */
-            [[nodiscard]] RangeInterface* clone(void) final
-                { return new WrappedRange{*this}; }
+            [[nodiscard]] constexpr RangeInterface* clone(
+                void) const final
+                    { return new WrappedRange{*this}; }
+
+            /**
+             * Clones the range and allocates it in the given
+             * memory
+             */
+            constexpr virtual void clone(std::byte& memory) const final
+                { new (&memory) WrappedRange{*this}; }
+
+            /**
+             * Allocates a new object inside the given memory
+             * and moves this object inside the new one
+             *
+             * @param memory the reference to the first memory byte
+             */
+            constexpr virtual void move(std::byte& memory)
+                { new (&memory) WrappedRange{std::move(*this)}; }
 
             /**
              * Returns a unique pointer with the iterator pointing
@@ -547,20 +595,161 @@ namespace mpgl::any {
              * @return the unique pointer with the iterator pointing
              * begining of the range
              */
-            [[nodiscard]] IterPtr iterator(void) noexcept final;
+            [[nodiscard]] constexpr IterPtr iterator(
+                void) noexcept final;
 
             /**
              * Destroys the Wrapped Range object
              */
-            ~WrappedRange(void) noexcept = default;
+            constexpr ~WrappedRange(void) noexcept = default;
         private:
             Range                           range;
         };
 
-        typedef std::unique_ptr<
-            RangeInterface>                 InterfacePtr;
+        /**
+         * Allocates the object on the stack if it is small enough
+         */
+        class InlineMemory {
+        public:
+            /**
+             * Constructs a new inline memory object
+             *
+             * @tparam Range the range's type
+             * @param inlineMemory the universal reference to the
+             * range object
+             */
+            template <InputRangeCompatible<Tp> Range>
+            explicit InlineMemory(Range&& range) noexcept;
 
-        InterfacePtr                        rangePointer;
+            /**
+             * Constructs a new inline memory object
+             *
+             * @param inlineMemory the constant reference to the
+             * other inline memory object
+             */
+            InlineMemory(
+                InlineMemory const& inlineMemory) noexcept;
+
+            /**
+             * Constructs a new inline memory object
+             *
+             * @param inlineMemory the rvalue reference to the
+             * other inline memory object
+             */
+            InlineMemory(
+                InlineMemory&& inlineMemory) noexcept;
+
+            /**
+             * Assigns the other inline memory to this object
+             *
+             * @param inlineMemory the constant reference to the
+             * other inline memory object
+             * @return the reference to this object
+             */
+            InlineMemory& operator=(
+                InlineMemory const& inlineMemory) noexcept;
+
+            /**
+             * Moves the other inline memory to this object
+             *
+             * @param inlineMemory the rvalue reference to the
+             * other inline memory object
+             * @return the reference to this object
+             */
+            InlineMemory& operator=(
+                InlineMemory&& inlineMemory) noexcept;
+
+            /**
+             * Returns a pointer to the range interface
+             *
+             * @return the pointer to the range interface
+             */
+            RangeInterface* get(void) const noexcept;
+
+            /**
+             * Returns a pointer to the range interface
+             *
+             * @return the pointer to the range interface
+             */
+            RangeInterface* operator-> (void) const noexcept
+                { return get(); }
+
+            /**
+             * Destroys the Inline Memory object
+             */
+            ~InlineMemory(void) noexcept;
+        private:
+            std::array<std::byte, 16ul>     memory;
+        };
+
+        /**
+         * Special modification of std::unique_ptr that clones the
+         * inner range interface whenever it is being copied
+         *
+         */
+        class InterfacePtr : public std::unique_ptr<RangeInterface> {
+        public:
+            /**
+             * Constructs a new interface ptr object
+             *
+             * @tparam Range the range's type
+             * @param range the universal reference to the range
+             */
+            template <InputRangeCompatible<Tp> Range>
+            explicit InterfacePtr(Range&& range);
+
+            /**
+             * Constructs a new interface ptr object and clones
+             * the other's range interface
+             *
+             * @param interfacePtr the constant reference to the
+             * interface pointer
+             */
+            InterfacePtr(InterfacePtr const& interfacePtr);
+
+            InterfacePtr(
+                InterfacePtr&& interfacePtr) noexcept = default;
+
+            /**
+             * Assigns the other's object and clones it's range
+             * interface
+             *
+             * @param interfacePtr the constant reference to the
+             * interface pointer
+             * @return the reference to this object
+             */
+            InterfacePtr& operator=(InterfacePtr const& interfacePtr);
+
+            InterfacePtr& operator=(
+                InterfacePtr&& interfacePtr) noexcept = default;
+
+            /**
+             * Destroys the interface ptr object
+             */
+            ~InterfacePtr(void) noexcept = default;
+        };
+
+        typedef std::variant<InterfacePtr,
+            InlineMemory>                   Memory;
+
+        Memory                              storage;
+
+        /**
+         * Returns a pointer to the range interface
+         *
+         * @return the pointer to the range interface
+         */
+        RangeInterface* rangePointer(void) const noexcept;
+
+        /**
+         * Chooses the type of storage for the given range
+         *
+         * @tparam Range the range's type
+         * @param range the universal reference to the range object
+         * @return the std::variant with the choosen storage
+         */
+        template <InputRangeCompatible<Tp> Range>
+        static constexpr Memory createStorage(Range&& range);
     };
 
 }
@@ -575,7 +764,7 @@ namespace std {
      * @param right the reference to the right object
      */
     template <mpgl::PureType Tp>
-    void swap(
+    constexpr void swap(
         mpgl::any::InputRange<Tp>& left,
         mpgl::any::InputRange<Tp>& right) noexcept
     {
@@ -590,7 +779,7 @@ namespace std {
      * @param right the reference to the right object
      */
     template <mpgl::PureType Tp>
-    void swap(
+    constexpr void swap(
         typename mpgl::any::InputRange<Tp>::iterator& left,
         typename mpgl::any::InputRange<Tp>::iterator& right
         ) noexcept
@@ -606,7 +795,7 @@ namespace std {
      * @param right the reference to the right object
      */
     template <mpgl::PureType Tp>
-    void swap(
+    constexpr void swap(
         typename mpgl::any::InputRange<Tp>::const_iterator& left,
         typename mpgl::any::InputRange<Tp>::const_iterator& right
         ) noexcept
@@ -616,4 +805,4 @@ namespace std {
 
 }
 
-#include <MPGL/Collections/Erasers/InputRange.tpp>
+#include <MPGL/Collections/Erasers/InputRange.ipp>

@@ -171,7 +171,7 @@ namespace mpgl {
     [[nodiscard]] bool Sprite<IsColorable>::contains(
         Vector2f const& position) const noexcept
     {
-        Vector2d normalized = Adapter<Vector2f>{position}.get();
+        Vector2d normalized = Adapter2D{position}.get();
         bool first = insideSubtriangle(
             normalized, get<"position">(this->vertices[0]).get(),
             get<"position">(this->vertices[1]).get(),

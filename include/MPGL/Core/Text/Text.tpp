@@ -25,43 +25,15 @@
  */
 #pragma once
 
-#include <MPGL/Traits/Concepts.hpp>
-
 namespace mpgl {
 
-    namespace dim {
-
-        /**
-         * Dimension tags class
-         *
-         * @tparam Degree the degree of the orthogonal space
-         * represented by this tag
-         */
-        template <std::size_t Degree>
-        struct Dimension {
-
-            constexpr static std::size_t const orthogonal_space_degree
-                = Degree;
-
-        };
-
-        /// The 2D tag
-        typedef Dimension<2>                            Dim2;
-
-        /// The 3D tag
-        typedef Dimension<3>                            Dim3;
-
+    template <bool IsColorable>
+    void Text<IsColorable>::setColorOnJoinableRange(
+        std::ranges::forward_range auto&& range,
+        Color const& color) noexcept
+    {
+        for (auto& vcolor : range | std::views::join | views::color)
+            vcolor = color;
     }
-
-    /**
-     * Checks wheter the given type is the dimension tag
-     *
-     * @tparam Tp the checked type
-     */
-    template <class Tp>
-    concept Dimension = requires {
-        Tp::orthogonal_space_degree;
-    } && std::same_as<decltype(Tp::orthogonal_space_degree),
-            std::size_t const> && Tp::orthogonal_space_degree > 1u;
 
 }
