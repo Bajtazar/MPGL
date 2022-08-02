@@ -81,6 +81,24 @@ namespace mpgl {
         Vector<Tp, Size> const& checked) noexcept;
 
     /**
+     * Returns an intersection of two lines. REturns an empty optional
+     * if lines are parallel
+     *
+     * @param firstPoint the point on the first line
+     * @param firstVersor the versor of the first line
+     * @param secondPoint the point on the second line
+     * @param secondVersor the versor of the second line
+     * @return the intersection point of the two lines
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr std::optional<Vector2<Tp>>
+        intersectionOf(
+            Vector2<Tp> const& firstPoint,
+            Vector2<Tp> const& firstVersor,
+            Vector2<Tp> const& secondPoint,
+            Vector2<Tp> const& secondVersor) noexcept;
+
+    /**
      * Transform the given vector from the cartesian coordinate
      * system to the polar coordinate system. The x-axis represents
      * the radius and the y-axis represents the angle in the

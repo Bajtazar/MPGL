@@ -34,6 +34,8 @@
 #include <MPGL/Core/Text/GlyphSprite.hpp>
 #include <MPGL/Core/Text/Font.hpp>
 
+#include <array>
+
 namespace mpgl {
 
     /**
@@ -54,7 +56,6 @@ namespace mpgl {
         typedef std::conditional_t<IsConst,
             Color const, Color>                     value_type;
         typedef value_type&                         reference;
-        typedef Color const&                        const_reference;
 
         /**
          * Constructs a new Text Glyph View object from a reference
@@ -80,17 +81,6 @@ namespace mpgl {
          * @return the reference to the glyph sprite vertex's color
          */
         [[nodiscard]] reference operator[] (
-            SizeT index) noexcept requires (!IsConst)
-                { return ref.get()[index] & cast::color; }
-
-        /**
-         * Returns a constant reference to the glyph sprite
-         * vertex's color
-         *
-         * @return the constant reference to the glyph sprite
-         * vertex's color
-         */
-        [[nodiscard]] const_reference operator[] (
             SizeT index) const noexcept
                 { return ref.get()[index] & cast::color; }
 
@@ -309,7 +299,6 @@ namespace mpgl {
         [[nodiscard]] iterator end(void) noexcept requires (!IsConst)
             { return iterator{ ref.get().end()}; }
 
-
         /**
          * Returns the constant iterator to the begining
          * of the vertices
@@ -439,6 +428,7 @@ namespace mpgl {
             typename GlyphsVector::iterator>        GlyphIter;
         typedef TextGlyphView<IsConst>              value_type;
         typedef std::ptrdiff_t                      difference_type;
+        typedef std::output_iterator_tag            iterator_category;
 
         using compare =
             std::compare_three_way_result_t<GlyphIter, GlyphIter>;
@@ -632,8 +622,6 @@ namespace mpgl {
         Style                                   style = Style::Regular;
         /// The modifiers of the text
         Modifiers                               mods = Modifiers::None;
-        /// The counterclockwise angle between x-axis and text base
-        float32                                 angle = 0.f;
     };
 
     class MonochromaticTextBase {
@@ -687,6 +675,14 @@ namespace mpgl {
         Text& operator= (Text&& text) = default;
 
         /**
+         * Adds the given string to the text
+         *
+         * @param left the constant reference to the string
+         * @return the reference to this object
+         */
+        Text& operator+= (String const& left);
+
+        /**
          * Displays the given string information
          *
          * @param text the constant reference to the string
@@ -709,6 +705,15 @@ namespace mpgl {
          */
         [[nodiscard]] operator String() const& noexcept
             { return text; }
+
+        /**
+         * Returns the size of the text [number of the nonwhite
+         * characters]
+         *
+         * @return the size of the text
+         */
+        [[nodiscard]] SizeT size(void) const noexcept
+            { return glyphs.size(); }
 
         /**
          * Sets the font used by this text object
@@ -744,6 +749,14 @@ namespace mpgl {
          * @param size the new size of the text
          */
         void setSize(SizeT size);
+
+        /**
+         * Sets the given string
+         *
+         * @param text the constant reference to the
+         * new string object
+         */
+        void setString(String const& text);
 
         /**
          * Returns the font used by the text
@@ -786,27 +799,6 @@ namespace mpgl {
             { return mods; }
 
         /**
-         * Removes string displayed by the text
-         */
-        void clear(void) noexcept;
-
-        /**
-         * Adds the given string to the text
-         *
-         * @param left the constant reference to the string
-         * @return the reference to this object
-         */
-        Text& operator+= (String const& left);
-
-        /**
-         * Sets the given string
-         *
-         * @param text the constant reference to the
-         * new string object
-         */
-        void setString(String const& text);
-
-        /**
          * Returns the string handled by the text object
          *
          * @return the constant reference to the string object
@@ -816,13 +808,6 @@ namespace mpgl {
                 { return text; }
 
         /**
-         * Returns the text's dimensions
-         *
-         * @return the text's dimensions
-         */
-        [[nodiscard]] Vector2f getDimensions(void) const noexcept;
-
-        /**
          * Returns the text's position
          *
          * @return the text's position
@@ -830,13 +815,9 @@ namespace mpgl {
         [[nodiscard]] Vector2f getPosition(void) const noexcept;
 
         /**
-         * Returns a counterclockwise angle between text base
-         * and x-axis
-         *
-         * @return the angle between text base and x-axis
+         * Removes string displayed by the text
          */
-        [[nodiscard]] float32 getAngle(void) const noexcept
-            { return angle; }
+        void clear(void) noexcept;
 
         /**
          * Transforms the text during the screen
@@ -850,44 +831,13 @@ namespace mpgl {
             Vector2u const& oldDimensions) noexcept final;
 
         /**
-         * Translates the text by the given shift vector
+         * Performs transformation on the figure
          *
-         * @param shift the shift vector
+         * @param transformator the constant reference to the
+         * transforming object
          */
-        void translate(Vector2f const& shift) noexcept final;
-
-        /**
-         * Scales the text around given center by
-         * the given factor
-         *
-         * @param center the scale center
-         * @param factor the scale factor
-         */
-        void scale(
-            Vector2f const& center,
-            float32 factor) noexcept final;
-
-        /**
-         * Rotates the text around given point by
-         * the given angle counter clockwise
-         *
-         * @param center the rotation point
-         * @param angle the rotation angle [in rads]
-         */
-        void rotate(
-            Vector2f const& center,
-            float32 angle) noexcept final;
-
-        /**
-         * Rotates the text around given point using
-         * given matrix
-         *
-         * @param center the rotation point
-         * @param rotation the rotation matrix
-         */
-        void rotate(
-            Vector2f const& center,
-            Matrix2f const& rotation) noexcept final;
+        void transform(
+            Transformation2D const& transformator) noexcept final;
 
         /**
          * Sets the given shader program
@@ -914,15 +864,6 @@ namespace mpgl {
          * @param name the name of the shader program
          */
         void setShader(String const& name) final override;
-
-        /**
-         * Returns the size of the text [number of the nonwhite
-         * characters]
-         *
-         * @return the size of the text
-         */
-        [[nodiscard]] SizeT size(void) const noexcept
-            { return glyphs.size(); }
 
         /**
          * Draws the text on the screen
@@ -1070,10 +1011,12 @@ namespace mpgl {
     private:
         typedef std::vector<uint16>                 IDArray;
         typedef DrawableCollection<Tetragon>        Lines;
-        typedef std::tuple<uint8, float32,
-            Matrix2f>                               ArgTuple;
+        typedef std::pair<uint8, float32>           ArgTuple;
         typedef std::tuple<Vector2f, Vector2f,
             Vector2f>                               VectorTuple;
+        typedef std::tuple<float32, float32,
+            Vector2f>                               GlyphDimensions;
+        typedef std::pair<Vector2f, std::size_t>    GlyphPosPair;
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
         typedef typename ShadersContext::Executable Executable;
 
@@ -1081,16 +1024,161 @@ namespace mpgl {
             = Subfont::shiftBase;
         static constexpr SizeT                      ShiftValue
             = log2N<SizeT, ShiftBase>();
+        static constexpr uint16_t const             Newline = 10u;
+        static constexpr uint16_t const             Tabulator = 9u;
 
+        /**
+         * Holds the special space that is used to determine a new
+         * position of glyphs / modifiers in text. Rememberes all
+         * of the linear transformations performed on it
+         */
+        class PositionHolder : public Transformable2D {
+        public:
+            /**
+             * Constructs a new Position Holder object
+             *
+             * @param position the constant reference to the
+             * text's initial position vector object
+             */
+            explicit PositionHolder(Vector2f const& position) noexcept;
+
+            PositionHolder(PositionHolder const&) noexcept = default;
+            PositionHolder(PositionHolder&&) noexcept = default;
+
+            PositionHolder& operator=(
+                PositionHolder const&) noexcept = default;
+            PositionHolder& operator=(
+                PositionHolder&&) noexcept = default;
+
+            /**
+             * Transforms the space during the screen
+             * transformation event
+             *
+             * @param layout the layout of the space
+             * @param oldDimensions the old screen dimensions
+             */
+            void onScreenTransformation(
+                Layout& layout,
+                Vector2u const& oldDimensions) noexcept final;
+
+            /**
+             * Performs transformation on the space
+             *
+             * @param transformator the constant reference to the
+             * transforming object
+             */
+            void transform(
+                Transformation2D const& transformator) noexcept final;
+
+            /**
+             * Advances space according to the advance vector
+             *
+             * @param advanceVector the constant reference to the
+             * advance vector
+             * @return the real advancement
+             */
+            Vector2f advance(Vector2f const& advanceVector) noexcept;
+
+            /**
+             * Calculates the position of the glyph sprite according
+             * to the inner space
+             *
+             * @param bearing the constant reference to the glyph's
+             * bearing
+             * @param width the glyph's width
+             * @param height the glyph's height
+             * @return the glyph's position
+             */
+            [[nodiscard]] VectorTuple calculatePositon(
+                Vector2f const& bearing,
+                float32 width,
+                float32 height) const noexcept;
+
+            /**
+             * Calculates the position of the strikethrough according
+             * to the inner space
+             *
+             * @param midspan the strikethrough's midsppan
+             * @param halfspan the strikethrough's halfspan
+             * @return the strikethrough's position
+             */
+            [[nodiscard]] VectorTuple calculatePositon(
+                float32 midspan,
+                float32 halfspan) const noexcept;
+
+            /**
+             * Calculates the position of the underline according
+             * to the inner space
+             *
+             * @param span the underline's span
+             * @return the underline's position
+             */
+            [[nodiscard]] VectorTuple calculatePositon(
+                float32 span) const noexcept;
+
+            /**
+             * Moves inner space to the given point
+             *
+             * @param vector the point
+             */
+            void move(Vector2f const& point) noexcept;
+
+            /**
+             * Returns the inner space's position vector
+             *
+             * @return the inner space's positon versor
+             */
+            [[nodiscard]] Vector2f getPosition(void) const noexcept;
+
+            /**
+             * Calculates the position of text based on the first
+             * glyph
+             *
+             * @param position the constant reference to the first
+             * glyph's position
+             * @param bearing the constant reference to the glyph's
+             * bearing
+             * @return the original's position
+             */
+            [[nodiscard]] Vector2f findOrigin(
+                Vector2f const& position,
+                Vector2f const& bearing) const noexcept;
+
+            /**
+             * Destroys the Position Holder object
+             */
+            ~PositionHolder(void) noexcept = default;
+        private:
+            typedef std::array<Adapter2D, 3>        Vertices;
+
+            Vertices                                vertices;
+            Vector2f                                xVersor;
+            Vector2f                                yVersor;
+            Vector2f                                position;
+
+            /**
+             * Actualizes the inner versors and position
+             */
+            void actualize(void) noexcept;
+
+            /**
+             * Transforms the position to the inner linear system
+             *
+             * @param position the position in euclidean system
+             * @return the position in the inner system
+             */
+            [[nodiscard]] Vector2f changeSystem(
+                Vector2f const& position) const noexcept;
+        };
+
+        PositionHolder                              positionSpace;
         String                                      text;
         GlyphsVector                                glyphs;
         Font                                        font;
         Lines                                       underlines;
         Lines                                       strikethroughs;
         Color                                       color;
-        Vector2f                                    position;
         SizeT                                       textSize;
-        float32                                     angle;
         Style                                       style;
         Modifiers                                   mods;
 
@@ -1110,14 +1198,12 @@ namespace mpgl {
          * @param level the projection level
          * @param scale the text's scale factor
          * @param index the glyph index
-         * @param rotation the rotation matrix
          */
         void loadGlyph(
             Subfont& subfont,
             uint8 level,
             float32 scale,
-            uint16 index,
-            Matrix2f const& rotation);
+            uint16 index);
 
         /**
          * Loads the nonwhite character into the memory
@@ -1126,14 +1212,12 @@ namespace mpgl {
          * @param level the projection level
          * @param scale the text's scale factor
          * @param index the glyph index
-         * @param rotation the rotation matrix
          */
         void loadCharacter(
             Subfont& subfont,
             uint8 level,
             float32 scale,
-            uint16 index,
-            Matrix2f const& rotation);
+            uint16 index);
 
         /**
          * Loads the tabulator into the memory
@@ -1141,13 +1225,11 @@ namespace mpgl {
          * @param subfont the reference to the subfont object
          * @param level the projection level
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          */
         void loadTab(
             Subfont& subfont,
             uint8 level,
-            float32 scale,
-            Matrix2f const& rotation);
+            float32 scale);
 
         /**
          * Loads the newline into the memory
@@ -1155,26 +1237,22 @@ namespace mpgl {
          * @param subfont the reference to the subfont object
          * @param level the projection level
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          */
         void loadNewline(
             Subfont& subfont,
             uint8 level,
-            float32 scale,
-            Matrix2f const& rotation);
+            float32 scale);
 
         /**
          * Returns the dimensions of the glyph
          *
          * @param glyph the reference wrapper to the glyph object
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          * @return the tuple with glyph dimensions
          */
-        VectorTuple getGlyphDimensions(
+        GlyphDimensions getGlyphDimensions(
             Subfont::GlyphRef glyph,
-            float32 scale,
-            Matrix2f const& rotation) const noexcept;
+            float32 scale) const noexcept;
 
         /**
          * Emplaces glyph into the memory
@@ -1182,13 +1260,11 @@ namespace mpgl {
          * @param texture the glyph's texture
          * @param glpyh the reference wrapper to the glyph object
          * @param scale the text's scale factor
-         * @param rotation the rotation matrix
          */
         void emplaceGlyph(
             Texture const& texture,
             Subfont::GlyphRef glpyh,
-            float32 scale,
-            Matrix2f const& rotation);
+            float32 scale);
 
         /**
          * Extends text modifiers
@@ -1196,7 +1272,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendModifiers(
-            Vector2f advance) noexcept;
+            Vector2f const& advance) noexcept;
 
         /**
          * Extends text underline
@@ -1204,7 +1280,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendUnderline(
-            Vector2f advance) noexcept;
+            Vector2f const& advance) noexcept;
 
         /**
          * Extends text strikethrough
@@ -1212,7 +1288,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendStrikethrough(
-            Vector2f advance) noexcept;
+           Vector2f const& advance) noexcept;
 
         /**
          * Emplaces modifiers into memory
@@ -1253,6 +1329,13 @@ namespace mpgl {
          */
         void setLocations(void);
 
+        /**
+         * Finds the first glyph that has an outline in the text
+         * and returns its bearing and it's number
+         *
+         * @return the glyph's bearing and it's number
+         */
+        GlyphPosPair findFirstGlyphBearing(void) const noexcept;
 
         /**
          * Parses unicode string into IDs array
@@ -1261,21 +1344,6 @@ namespace mpgl {
          * @return the array containing glyphs IDs
          */
         static IDArray parseString(String const& string);
-
-        /**
-         * Returns an intersection of two vectorized lines
-         *
-         * @param firstPoint the point on the first line
-         * @param firstVersor the versor of the first line
-         * @param secondPoint the point on the second line
-         * @param secondVersor the versor of the second line
-         * @return the intersection point of the two lines
-         */
-        static Vector2f intersectionOf(
-            Vector2f const& firstPoint,
-            Vector2f const& firstVersor,
-            Vector2f const& secondPoint,
-            Vector2f const& secondVersor) noexcept;
 
         /**
          * Returns a type of shader used by the text
@@ -1287,31 +1355,38 @@ namespace mpgl {
         /**
          * Generates the underline tetragon
          *
-         * @param position the position of the line
-         * @param angle the rotation angle [in rads]
+         * @param positionSpace the position holder of the text
          * @param textSize the size of the text
          * @param color the color of the text
          * @return the underline tetragon
          */
         static Tetragon generateUnderline(
-            Vector2f position,
-            float32 angle,
+            PositionHolder const& positionSpace,
             SizeT textSize,
             Color const& color) noexcept;
 
         /**
          * Generates the strikethrough tetragon
          *
-         * @param position the position of the line
-         * @param angle the rotation angle [in rads]
+         * @param positionSpace the position holder of the text
          * @param textSize the size of the text
          * @param color the color of the text
          * @return the strikethrough tetragon
          */
         static Tetragon generateStrikethrough(
-            Vector2f position,
-            float32 angle,
+            PositionHolder const& positionSpace,
             SizeT textSize,
+            Color const& color) noexcept;
+
+        /**
+         * Sets the color on the joinable ranges
+         *
+         * @tparam Range the range type
+         * @param range the universal reference to the range object
+         * @param color the constant reference to the color
+         */
+        static void setColorOnJoinableRange(
+            std::ranges::forward_range auto&& range,
             Color const& color) noexcept;
     };
 
@@ -1332,3 +1407,4 @@ namespace mpgl {
 }
 
 #include <MPGL/Core/Text/Text.ipp>
+#include <MPGL/Core/Text/Text.tpp>

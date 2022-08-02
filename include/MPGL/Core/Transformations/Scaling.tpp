@@ -27,36 +27,34 @@
 
 namespace mpgl {
 
-    template <class... Types>
-    template <typename Fn, typename... Args>
-        requires std::conjunction_v<std::is_invocable<
-            Fn, Types&, Args...>...>
-    decltype(auto) Polymorpher<Types...>::invoke(
-        Fn&& invocable, Args&&... args)
+    template <Dimension Dim>
+    Scaling<Dim>::Scaling(
+        VectorDf const& factor) noexcept
+            : factor{factor} {}
+
+    template <Dimension Dim>
+    Scaling<Dim>::Scaling(
+        VectorDf&& factor) noexcept
+            : factor{std::move(factor)} {}
+
+    template <Dimension Dim>
+    void Scaling<Dim>::operator() (
+        any::InputRange<TransformedType>& coords) const noexcept
     {
-        return std::visit(variant,
-            [&invocable, ...args=std::forward<Args>(args)]
-            (auto&& base) {
-                return std::invoke(invocable, base,
-                    std::forward<Args>(args)...);
-            }
-        );
+        for (auto& coord : coords)
+            (*this)(coord);
     }
 
-    template <class... Types>
-    template <typename Fn, typename... Args>
-        requires std::conjunction_v<std::is_invocable<Fn,
-            Types const&, Args...>...>
-    decltype(auto) Polymorpher<Types...>::invoke(
-        Fn&& invocable, Args&&... args) const
+    template <Dimension Dim>
+    void Scaling<Dim>::operator() (
+        TransformedType& coord) const noexcept
     {
-        return std::visit(variant,
-            [&invocable, ...args=std::forward<Args>(args)]
-            (auto&& base) {
-                return std::invoke(invocable, base,
-                    std::forward<Args>(args)...);
-            }
-        );
+        coord = VectorDf(coord) * factor;
+    }
+
+    template <Dimension Dim>
+    void Scaling<Dim>::fuse(Scaling const& other) noexcept {
+        factor *= other.factor;
     }
 
 }

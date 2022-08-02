@@ -27,34 +27,32 @@
 
 namespace mpgl {
 
-    template <Adaptable Tp>
-    Adapter<Tp>::Adapter(Tp const& range) noexcept
-        : range{range / static_cast<Tp>(context.windowDimensions)
-            * value_type{2} - value_type{1}} {}
+    template <std::size_t Size>
+        requires (Size > 1u)
+    constexpr Adapter<Size>::Adapter(const_reference value) noexcept
+        : value{value} {}
 
-    template <Adaptable Tp>
-    Adapter<Tp>::Adapter(Tp&& range) noexcept
-        : range{std::move(range) / static_cast<Tp>(context.windowDimensions)
-            * value_type{2} - value_type{1}} {}
+    template <std::size_t Size>
+        requires (Size > 1u)
+    constexpr Adapter<Size>::Adapter(value_type&& value) noexcept
+        : value{std::move(value)} {}
 
-    template <Adaptable Tp>
-    void Adapter<Tp>::operator= (Tp const& factor) noexcept {
-        range = factor
-            / static_cast<Tp>(context.windowDimensions)
-                * value_type{2} - value_type{1};
+    template <std::size_t Size>
+        requires (Size > 1u)
+    constexpr Adapter<Size>& Adapter<Size>::operator=(
+        const_reference value) noexcept
+    {
+        this->value = value;
+        return *this;
     }
 
-    template <Adaptable Tp>
-    void Adapter<Tp>::operator= (Tp&& factor) noexcept {
-        range = std::move(factor)
-            / static_cast<Tp>(context.windowDimensions)
-                * value_type{2} - value_type{1};
-    }
-
-    template <Adaptable Tp>
-    Adapter<Tp>::operator Tp() const noexcept {
-        return (range + value_type{1})
-            * static_cast<Tp>(context.windowDimensions) / value_type{2};
+    template <std::size_t Size>
+        requires (Size > 1u)
+    constexpr Adapter<Size>& Adapter<Size>::operator=(
+        value_type&& value) noexcept
+    {
+        this->value = std::move(value);
+        return *this;
     }
 
 }

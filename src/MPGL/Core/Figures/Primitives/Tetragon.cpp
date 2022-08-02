@@ -100,7 +100,7 @@ namespace mpgl {
     [[nodiscard]] bool Tetragon::contains(
         Vector2f const& position) const noexcept
     {
-        Vector2d normalized = Adapter<Vector2f>{position}.get();
+        Vector2d normalized = Adapter2D{position}.get();
         bool first = insideSubtriangle(
             normalized, get<"position">(vertices[0]).get(),
             get<"position">(vertices[1]).get(),

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(MPGL VERSION 0.4 LANGUAGES CXX DESCRIPTION "Modern and Precise Graphics Library")
+project(mpgl VERSION 0.4 LANGUAGES CXX DESCRIPTION "Modern and Precise Graphics Library")
 
 include(GNUInstallDirs)
 
@@ -16,12 +16,14 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Collections/Image.cpp
     ${MPGL_SOURCES}/Mathematics/FFT.cpp
     ${MPGL_SOURCES}/Mathematics/FastFunctions.cpp
+    ${MPGL_SOURCES}/Utility/Adapter.cpp
     ${MPGL_SOURCES}/Utility/StringAlgorithm.cpp
     ${MPGL_SOURCES}/IO/FileIO.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/JPEGLoader.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/ImageLoader.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/BMPLoader.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/PNGLoader.cpp
+    ${MPGL_SOURCES}/Core/Transformations/Rotation.cpp
     ${MPGL_SOURCES}/Core/Figures/Angular.cpp
     ${MPGL_SOURCES}/Core/Figures/ResizableAngular.cpp
     ${MPGL_SOURCES}/Core/Figures/Elliptic.cpp

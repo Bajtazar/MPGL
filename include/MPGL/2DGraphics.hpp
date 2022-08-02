@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Primitives/LineStrip.hpp>
+#include <MPGL/Core/Transformations/Translation.hpp>
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
 #include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
@@ -35,7 +36,9 @@
 #include <MPGL/Core/Figures/Primitives/Points.hpp>
 #include <MPGL/Mathematics/ConvolutionKernels.hpp>
 #include <MPGL/Core/Windows/RenderingAdapter.hpp>
+#include <MPGL/Core/Transformations/Rotation.hpp>
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
+#include <MPGL/Core/Transformations/Scaling.hpp>
 #include <MPGL/Core/Figures/Primitives/Ring.hpp>
 #include <MPGL/Core/Textures/EllipseSprite.hpp>
 #include <MPGL/Core/Textures/TextureLoader.hpp>

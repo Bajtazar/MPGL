@@ -50,7 +50,7 @@ namespace mpgl {
     [[nodiscard]] bool Triangle::contains(
         Vector2f const& position) const noexcept
     {
-        Vector2d v = Adapter<Vector2f>{position}.get();
+        Vector2d v = Adapter2D{position}.get();
         Vector2d v0 = get<"position">(vertices[0]).get();
         Vector2d v1 = Vector2d{get<"position">(vertices[1]).get()} - v0;
         Vector2d v2 = Vector2d{get<"position">(vertices[2]).get()} - v0;

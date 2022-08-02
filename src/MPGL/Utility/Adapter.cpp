@@ -23,45 +23,38 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#pragma once
-
-#include <MPGL/Traits/Concepts.hpp>
+#include <MPGL/Utility/Adapter.hpp>
 
 namespace mpgl {
 
-    namespace dim {
+    Adapter<2>::Adapter(const_reference value) noexcept
+        : value{value / static_cast<Vector2f>(context.windowDimensions)
+            * 2.f - 1.f} {}
 
-        /**
-         * Dimension tags class
-         *
-         * @tparam Degree the degree of the orthogonal space
-         * represented by this tag
-         */
-        template <std::size_t Degree>
-        struct Dimension {
+    Adapter<2>::Adapter(value_type&& value) noexcept
+        : value{std::move(value)
+            / static_cast<Vector2f>(context.windowDimensions)
+                * 2.f - 1.f} {}
 
-            constexpr static std::size_t const orthogonal_space_degree
-                = Degree;
-
-        };
-
-        /// The 2D tag
-        typedef Dimension<2>                            Dim2;
-
-        /// The 3D tag
-        typedef Dimension<3>                            Dim3;
-
+    Adapter<2>& Adapter<2>::operator= (
+        const_reference factor) noexcept
+    {
+        value = factor
+            / static_cast<Vector2f>(context.windowDimensions)
+                * 2.f - 1.f;
+        return *this;
     }
 
-    /**
-     * Checks wheter the given type is the dimension tag
-     *
-     * @tparam Tp the checked type
-     */
-    template <class Tp>
-    concept Dimension = requires {
-        Tp::orthogonal_space_degree;
-    } && std::same_as<decltype(Tp::orthogonal_space_degree),
-            std::size_t const> && Tp::orthogonal_space_degree > 1u;
+    Adapter<2>& Adapter<2>::operator= (value_type&& factor) noexcept {
+        value = std::move(factor)
+            / static_cast<Vector2f>(context.windowDimensions)
+                * 2.f - 1.f;
+        return *this;
+    }
+
+    [[nodiscard]] Adapter<2>::operator value_type() const noexcept {
+        return (value + 1.f)
+            * static_cast<Vector2f>(context.windowDimensions) / 2.f;
+    }
 
 }

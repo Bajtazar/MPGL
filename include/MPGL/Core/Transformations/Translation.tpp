@@ -25,43 +25,38 @@
  */
 #pragma once
 
-#include <MPGL/Traits/Concepts.hpp>
+#include <algorithm>
 
 namespace mpgl {
 
-    namespace dim {
+    template <Dimension Dim>
+    Translation<Dim>::Translation(
+        VectorDf const& translation) noexcept
+            : translation{translation} {}
 
-        /**
-         * Dimension tags class
-         *
-         * @tparam Degree the degree of the orthogonal space
-         * represented by this tag
-         */
-        template <std::size_t Degree>
-        struct Dimension {
+    template <Dimension Dim>
+    Translation<Dim>::Translation(
+        VectorDf&& translation) noexcept
+            : translation{std::move(translation)} {}
 
-            constexpr static std::size_t const orthogonal_space_degree
-                = Degree;
-
-        };
-
-        /// The 2D tag
-        typedef Dimension<2>                            Dim2;
-
-        /// The 3D tag
-        typedef Dimension<3>                            Dim3;
-
+    template <Dimension Dim>
+    void Translation<Dim>::operator() (
+        any::InputRange<TransformedType>& coords) const noexcept
+    {
+        for (auto& coord : coords)
+            (*this)(coord);
     }
 
-    /**
-     * Checks wheter the given type is the dimension tag
-     *
-     * @tparam Tp the checked type
-     */
-    template <class Tp>
-    concept Dimension = requires {
-        Tp::orthogonal_space_degree;
-    } && std::same_as<decltype(Tp::orthogonal_space_degree),
-            std::size_t const> && Tp::orthogonal_space_degree > 1u;
+    template <Dimension Dim>
+    void Translation<Dim>::operator() (
+        TransformedType& coord) const noexcept
+    {
+        coord = VectorDf(coord) + translation;
+    }
+
+    template <Dimension Dim>
+    void Translation<Dim>::fuse(Translation const& other) noexcept {
+        translation += other.translation;
+    }
 
 }

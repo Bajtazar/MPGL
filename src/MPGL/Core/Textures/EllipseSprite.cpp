@@ -108,12 +108,21 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void EllipseSprite<IsColorable>::actualizeMatrices(void) noexcept {
-        outline = *invert(transpose(
+    std::optional<Matrix2f>
+        EllipseSprite<IsColorable>::calculateNewOutline(
+            void) const noexcept
+    {
+        return invert(transpose(
             Matrix2f{Vector2f{get<"position">(this->vertices[1])}
                 - Vector2f{get<"position">(this->vertices[0])},
             Vector2f{get<"position">(this->vertices[3])}
                 - Vector2f{get<"position">(this->vertices[0])}}));
+    }
+
+    template <bool IsColorable>
+    void EllipseSprite<IsColorable>::actualizeMatrices(void) noexcept {
+        if (auto outline = calculateNewOutline())
+            this->outline = *outline;
     }
 
     template <bool IsColorable>
@@ -147,37 +156,10 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void EllipseSprite<IsColorable>::translate(
-        Vector2f const& shift) noexcept
+    void EllipseSprite<IsColorable>::transform(
+        Transformation2D const& transformator) noexcept
     {
-        EllipticSprite<IsColorable>::translate(shift);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void EllipseSprite<IsColorable>::scale(
-        Vector2f const& center,
-        float32 factor) noexcept
-    {
-        EllipticSprite<IsColorable>::scale(center, factor);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void EllipseSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        float32 angle) noexcept
-    {
-        EllipticSprite<IsColorable>::rotate(center, angle);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
-    void EllipseSprite<IsColorable>::rotate(
-        Vector2f const& center,
-        Matrix2f const& rotation) noexcept
-    {
-        EllipticSprite<IsColorable>::rotate(center, rotation);
+        EllipticSprite<IsColorable>::transform(transformator);
         actualizeMatrices();
     }
 

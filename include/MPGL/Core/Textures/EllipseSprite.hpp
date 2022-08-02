@@ -130,44 +130,14 @@ namespace mpgl {
             Vector2u const& oldDimensions) noexcept override final;
 
         /**
-         * Translates the figure by the given shift vector
+         * Performs transformation on the figure
          *
-         * @param shift the shift vector
+         * @param transformator the constant reference to the
+         * transforming object
          */
-        void translate(Vector2f const& shift) noexcept override final;
-
-        /**
-         * Scales the figure around given center by
-         * the given factor
-         *
-         * @param center the scale center
-         * @param factor the scale factor
-         */
-        void scale(
-            Vector2f const& center,
-            float32 factor) noexcept override final;
-
-        /**
-         * Rotates the figure around given point by
-         * the given angle counter clockwise
-         *
-         * @param center the rotation point
-         * @param angle the rotation angle [in rads]
-         */
-        void rotate(
-            Vector2f const& center,
-            float32 angle) noexcept override final;
-
-        /**
-         * Rotates the figure around given point using
-         * given matrix
-         *
-         * @param center the rotation point
-         * @param rotation the rotation matrix
-         */
-        void rotate(
-            Vector2f const& center,
-            Matrix2f const& rotation) noexcept override final;
+        void transform(
+            Transformation2D const& transformator
+            ) noexcept override final;
 
         /**
          * Sets the given shader program
@@ -256,6 +226,14 @@ namespace mpgl {
          * Actualizes the matrices responsible for the outline
          */
         void actualizeMatrices(void) noexcept final;
+
+        /**
+         * Calculates the new outline transformation matrix
+         *
+         * @return the optional with the matrix. If the matrix does not
+         * exist then returns std::nullopt
+         */
+        std::optional<Matrix2f> calculateNewOutline(void) const noexcept;
 
         /**
          * Returns the shader name used by sprite implementation

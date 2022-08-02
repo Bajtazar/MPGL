@@ -75,7 +75,7 @@ namespace mpgl {
     [[nodiscard]] bool Polygon::contains(
         Vector2f const& position) const noexcept
     {
-        Vector2d normalized = Adapter<Vector2f>{position}.get();
+        Vector2d normalized = Adapter2D{position}.get();
         for (std::size_t i = 2; i < size(); ++i)
             if (insideSubtriangle(normalized,
                 get<"position">(vertices[0]).get(),
