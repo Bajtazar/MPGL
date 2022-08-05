@@ -27,7 +27,7 @@
 
 namespace mpgl {
 
-   template <IFCT::size_type Size>
+    template <IFCT::size_type Size>
     IFCT::FixedSizeKernel<Size>::ComplexArray const
         IFCT::FixedSizeKernel<Size>::lookupTable
             = generateLookupTable();
@@ -63,7 +63,7 @@ namespace mpgl {
     {
         ComplexArray lookup;
         lookup[0] = Complex{std::sqrt(1. / Size), 0.};
-          for (size_type i = 1; i != Size; ++i)
+          for (int64 i = 1; i != Size; ++i)
             lookup[i] = std::polar(std::sqrt(2. / Size),
                 -i * std::numbers::pi / (2. * Size));
         return lookup;
