@@ -167,7 +167,7 @@ namespace mpgl {
         [[nodiscard]] friend constexpr bool operator== (
             LittleEndianInputBitIter const& left,
             LittleEndianInputBitIter const& right) noexcept
-                { return left.iter == right.iter; }
+                { return left.equal(right); }
 
         /**
          * Returns a number of bits in byte
@@ -199,6 +199,15 @@ namespace mpgl {
         [[nodiscard]] constexpr uint8 position(void) const noexcept
             { return bitIter; }
     private:
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param other the reference to the other iterator
+         * @return if iterators are equal
+         */
+        [[nodiscard]] constexpr bool equal(
+            LittleEndianInputBitIter const& other) const noexcept;
+
         Iter                            iter;
         uint8                           bitIter;
     };
@@ -291,7 +300,7 @@ namespace mpgl {
         [[nodiscard]] friend constexpr bool operator== (
             LittleEndianOutputBitIter const& left,
             LittleEndianOutputBitIter const& right) noexcept
-                { return left.iter == right.iter; }
+                { return left.equal(right); }
 
         /**
          * Returns a number of bits in byte
@@ -322,6 +331,15 @@ namespace mpgl {
         [[nodiscard]] constexpr uint8 position(void) const noexcept
             { return bitIter; }
     private:
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param other the reference to the other iterator
+         * @return if iterators are equal
+         */
+        [[nodiscard]] constexpr bool equal(
+            LittleEndianOutputBitIter const& other) const noexcept;
+
         Iter                            iter;
         uint8                           temporary;
         uint8                           bitIter;
@@ -403,7 +421,7 @@ namespace mpgl {
         [[nodiscard]] friend constexpr bool operator== (
             BigEndianInputBitIter const& left,
             BigEndianInputBitIter const& right) noexcept
-                { return left.iter == right.iter; }
+                { return left.equal(right); }
 
         /**
          * Returns a number of bits in byte
@@ -435,6 +453,15 @@ namespace mpgl {
         [[nodiscard]] constexpr uint8 position(void) const noexcept
             { return bitIter; }
     private:
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param other the reference to the other iterator
+         * @return if iterators are equal
+         */
+        [[nodiscard]] constexpr bool equal(
+            BigEndianInputBitIter const& other) const noexcept;
+
         Iter                            iter;
         uint8                           bitIter;
     };
@@ -527,7 +554,7 @@ namespace mpgl {
         [[nodiscard]] friend constexpr bool operator== (
             BigEndianOutputBitIter const& left,
             BigEndianOutputBitIter const& right) noexcept
-                { return left.iter == right.iter; }
+                { return left.equal(right); }
 
         /**
          * Returns a number of bits in byte
@@ -558,6 +585,15 @@ namespace mpgl {
         [[nodiscard]] constexpr uint8 position(void) const noexcept
             { return bitIter; }
     private:
+        /**
+         * Checks whether two iterators are equal
+         *
+         * @param other the reference to the other iterator
+         * @return if iterators are equal
+         */
+        [[nodiscard]] constexpr bool equal(
+            BigEndianOutputBitIter const& other) const noexcept;
+
         Iter                            iter;
         uint8                           temporary;
         uint8                           bitIter;

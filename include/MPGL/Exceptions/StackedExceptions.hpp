@@ -170,8 +170,8 @@ namespace mpgl {
         Iter const& iter,
         Sent const& sent)
     {
-        return {"There is " + std::to_string(
-            std::distance(iter, sent)) + " gathered exceptions\n"};
+        return "There is " + std::to_string(
+            std::distance(iter, sent)) + " gathered exceptions\n";
     }
 
 }

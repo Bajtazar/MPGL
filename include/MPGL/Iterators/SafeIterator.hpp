@@ -167,7 +167,7 @@ namespace mpgl {
          * @return if the iterator is in the safe range
          */
         [[nodiscard]] constexpr bool isSafe(void) const noexcept
-            { return iter > sentinel && iter <= begin; }
+            { return iter < sentinel && iter >= begin; }
 
         /**
          * Adds given distance to an iterator
