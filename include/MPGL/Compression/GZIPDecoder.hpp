@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/InflateInvalidHeaderException.hpp>
+#include <MPGL/Exceptions/Inflate/InflateInvalidHeaderException.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
 #include <MPGL/Compression/Checksums/CRC32.hpp>
 #include <MPGL/Compression/Inflate.hpp>

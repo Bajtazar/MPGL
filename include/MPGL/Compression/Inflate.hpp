@@ -25,8 +25,8 @@
  */
 #pragma once
 
+#include <MPGL/Exceptions/Inflate/InflateDataCorruptionException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
-#include <MPGL/Exceptions/InflateDataCorruptionException.hpp>
 #include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Compression/HuffmanTree.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>

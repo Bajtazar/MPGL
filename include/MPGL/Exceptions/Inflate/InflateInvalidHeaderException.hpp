@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/InflateException.hpp>
+#include <MPGL/Exceptions/Inflate/InflateException.hpp>
 
 namespace mpgl {
 
