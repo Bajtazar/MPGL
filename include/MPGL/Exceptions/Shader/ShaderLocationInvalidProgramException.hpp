@@ -25,49 +25,40 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/ShaderLocationException.hpp>
-
-#include <string>
+#include <MPGL/Exceptions/Shader/ShaderLocationException.hpp>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that the uniform with the given name
-     * does not exist
+     * Exception indicating that the given shader program is not
+     * ready to work with
      */
-    class ShaderLocationUniformException
+    struct ShaderLocationInvalidProgramException
         : public ShaderLocationException
     {
-    public:
         /**
-         * Constructs a new Shader Location Uniform
+         * Constructs a new Shader Location Invalid Program
          * Exception object
-         *
-         * @param name the uniform's name
          */
-        explicit ShaderLocationUniformException(
-            std::string const& name) noexcept
-                : message{"The unifrom with name {"
-                    + name + "} does not exist!"} {}
+        constexpr explicit ShaderLocationInvalidProgramException(
+            void) noexcept = default;
 
         /**
-         * Returns the message informing that the uniform with
-         * the given name does not exist
+         * Returns the message informing that the given shader program
+         * is not ready to work with
          *
          * @return the exception description
          */
-        [[nodiscard]] const char* what(
+        [[nodiscard]] constexpr const char* what(
             void) const noexcept final
-                { return message.c_str(); }
+                { return "The given shader program is not linked or not exist"; }
 
         /**
-         * Destroys the Shader Location Uniform
+         * Destroys the Shader Location Invalid Program
          * Exception object
          */
-        ~ShaderLocationUniformException(
+        constexpr ~ShaderLocationInvalidProgramException(
             void) noexcept = default;
-    private:
-        std::string                                 message;
     };
 
 }

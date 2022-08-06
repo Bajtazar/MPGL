@@ -21,43 +21,37 @@
  *  and must not be misrepresented as being the original software.
  *
  *  3. This notice may not be removed or altered from any source
- *  dist
+ *  distribution
  */
 #pragma once
 
-#include <MPGL/Exceptions/ShaderLocationException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderException.hpp>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that the given shader program is not
-     * ready to work with
+     * Base exception for all shader location exceptions
      */
-    struct ShaderLocationInvalidProgramException
-        : public ShaderLocationException
-    {
+    struct ShaderLocationException : public ShaderException {
         /**
-         * Constructs a new Shader Location Invalid Program
-         * Exception object
+         * Constructs a new Shader Location object
          */
-        constexpr explicit ShaderLocationInvalidProgramException(
+        constexpr explicit ShaderLocationException(
             void) noexcept = default;
 
         /**
-         * Returns the message informing that the given shader program
-         * is not ready to work with
+         * Pure virtual function that has to be implemented by
+         * derived classes
          *
-         * @return the exception description
+         * @return message associated with an exception
          */
-        [[nodiscard]] constexpr const char* what(
-            void) const noexcept final
-                { return "The given shader program is not linked or not exist"; }
+        [[nodiscard]] constexpr virtual const char* what(
+            void) const noexcept = 0;
 
         /**
-         * Destroys the Shader Location Invalid Program
-         * Exception object
+         * Vrtual destructor. Destroys the Shader Location Exception
          */
-        constexpr ~ShaderLocationInvalidProgramException(
+        constexpr virtual ~ShaderLocationException(
             void) noexcept = default;
     };
 

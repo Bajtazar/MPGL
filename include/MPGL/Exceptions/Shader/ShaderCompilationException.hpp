@@ -25,44 +25,40 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/MPGLException.hpp>
-
-#include <vector>
+#include <MPGL/Exceptions/Shader/ShaderException.hpp>
 #include <string>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that an error occurs during shader
-     * program linking
+     * Exception indicating that the shader program compilation failed
      */
-    class ShaderProgramLinkingException : public MPGLException {
+    class ShaderCompilationException : public ShaderException {
     public:
         /**
-         * Constructs a new Shader Program Linking Exception object
-         * and attaches a shader program linking log
+         * Constructs a new Shader Compilation Exception object
+         * and attaches a shader log
          *
-         * @param infoLog the constant reference to the shader
-         * program linking log
+         * @param shaderLog the constant reference to the shader log
          */
-        explicit ShaderProgramLinkingException(
-            std::string const& infoLog) noexcept
-                : message{std::string{"The shader program linker has"}
-                    + " occured an unexpected error. Additional data: "
-                    + infoLog} {}
+        explicit ShaderCompilationException(
+            std::string const& shaderLog) noexcept
+            : message{std::string{"The shader compiler has occured an"}
+                + " error in shader compilation. Additional data: "
+                + shaderLog} {}
 
         /**
          * Returns the message informing what happened during
-         * shader program linking
+         * shader compilation
          *
          * @return the exception description
          */
-        [[nodiscard]] const char* what (void) const noexcept
+        [[nodiscard]] const char* what (void) const noexcept final
             { return message.c_str(); }
 
         /**
          * Returns the message informing what happened during
-         * shader program linking
+         * shader compilation
          *
          * @return the exception description
          */
@@ -71,9 +67,9 @@ namespace mpgl {
                 { return message; }
 
         /**
-         * Destroys the Shader Program Linking Exception object
+         * Destroys the Shader Compilation Exception object
          */
-        ~ShaderProgramLinkingException(void) noexcept = default;
+        ~ShaderCompilationException(void) noexcept = default;
     private:
         std::string                                 message;
     };

@@ -30,14 +30,13 @@
 namespace mpgl {
 
     /**
-     * Base exception for all shader location exceptions
+     * Base exception for all shaders related exceptions
      */
-    struct ShaderLocationException : public MPGLException {
+    struct ShaderException : public MPGLException {
         /**
-         * Constructs a new Shader Location object
+         * Constructs a new Shader Exception object
          */
-        constexpr explicit ShaderLocationException(
-            void) noexcept = default;
+        constexpr explicit ShaderException(void) noexcept = default;
 
         /**
          * Pure virtual function that has to be implemented by
@@ -49,10 +48,9 @@ namespace mpgl {
             void) const noexcept = 0;
 
         /**
-         * Vrtual destructor. Destroys the Shader Location Exception
+         * Vrtual destructor. Destroys the Shader Exception
          */
-        constexpr virtual ~ShaderLocationException(
-            void) noexcept = default;
+        constexpr virtual ~ShaderException(void) noexcept = default;
     };
 
 }

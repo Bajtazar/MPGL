@@ -21,55 +21,51 @@
  *  and must not be misrepresented as being the original software.
  *
  *  3. This notice may not be removed or altered from any source
- *  distribution
+ *  dist
  */
 #pragma once
 
-#include <MPGL/Exceptions/MPGLException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderLocationException.hpp>
+
 #include <string>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that the shader program compilation failed
+     * Exception indicating that the uniform with the given name
+     * does not exist
      */
-    class ShaderCompilationException : public MPGLException {
+    class ShaderLocationUniformException
+        : public ShaderLocationException
+    {
     public:
         /**
-         * Constructs a new Shader Compilation Exception object
-         * and attaches a shader log
+         * Constructs a new Shader Location Uniform
+         * Exception object
          *
-         * @param shaderLog the constant reference to the shader log
+         * @param name the uniform's name
          */
-        explicit ShaderCompilationException(
-            std::string const& shaderLog) noexcept
-            : message{std::string{"The shader compiler has occured an"}
-                + " error in shader compilation. Additional data: "
-                + shaderLog} {}
+        explicit ShaderLocationUniformException(
+            std::string const& name) noexcept
+                : message{"The unifrom with name {"
+                    + name + "} does not exist!"} {}
 
         /**
-         * Returns the message informing what happened during
-         * shader compilation
-         *
-         * @return the exception description
-         */
-        [[nodiscard]] const char* what (void) const noexcept final
-            { return message.c_str(); }
-
-        /**
-         * Returns the message informing what happened during
-         * shader compilation
+         * Returns the message informing that the uniform with
+         * the given name does not exist
          *
          * @return the exception description
          */
-        [[nodiscard]] std::string const& getMessage(
-            void) const noexcept
-                { return message; }
+        [[nodiscard]] const char* what(
+            void) const noexcept final
+                { return message.c_str(); }
 
         /**
-         * Destroys the Shader Compilation Exception object
+         * Destroys the Shader Location Uniform
+         * Exception object
          */
-        ~ShaderCompilationException(void) noexcept = default;
+        ~ShaderLocationUniformException(
+            void) noexcept = default;
     private:
         std::string                                 message;
     };

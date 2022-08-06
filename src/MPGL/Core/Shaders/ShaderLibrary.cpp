@@ -23,9 +23,8 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ShaderLibraryInvalidShadersException.hpp>
-
-#include <MPGL/Exceptions/ShaderProgramLinkingException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderLibraryInvalidShadersException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderProgramLinkingException.hpp>
 #include <MPGL/Core/Shaders/ShaderLibrary.hpp>
 #include <MPGL/IO/FileIO.hpp>
 

@@ -23,8 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ShaderProgramLinkingException.hpp>
-
+#include <MPGL/Exceptions/Shader/ShaderProgramLinkingException.hpp>
 #include <MPGL/Core/Shaders/ShaderProgram.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 

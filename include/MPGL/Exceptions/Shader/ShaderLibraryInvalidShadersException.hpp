@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/MPGLException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderException.hpp>
 
 #include <vector>
 #include <string>
@@ -39,7 +39,7 @@ namespace mpgl {
      * or vice versa]
      */
     class ShaderLibraryInvalidShadersException
-        : public MPGLException
+        : public ShaderException
     {
     public:
         typedef std::vector<std::string>            Paths;

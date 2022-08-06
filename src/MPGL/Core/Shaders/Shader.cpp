@@ -23,7 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ShaderCompilationException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderCompilationException.hpp>
 
 #include <MPGL/Core/Shaders/Shader.hpp>
 #include <MPGL/Utility/Ranges.hpp>
