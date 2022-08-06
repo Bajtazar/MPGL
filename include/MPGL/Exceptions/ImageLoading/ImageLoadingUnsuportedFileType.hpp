@@ -25,32 +25,32 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/ImageLoadingException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingException.hpp>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that a loaded image file is
-     * invalid
+     * Exception indicating that a loaded image file type is not
+     * supported
      */
-    struct ImageLoadingInvalidTypeException
+    struct ImageLoadingUnsuportedFileType
         : public ImageLoadingException
     {
         /**
-         * Constructs a new Image Loading Invalid Type Exception
-         * object with a file name
+         * Constructs a new Image Loading Unsuported File Type object
+         * with a given file name
          *
          * @param fileName the constant reference to the file name
          */
-        explicit ImageLoadingInvalidTypeException(
+        explicit ImageLoadingUnsuportedFileType(
             std::string const& fileName) noexcept
-                : ImageLoadingException{fileName,
-                    "File " + fileName + " contains invalid data"} {}
+                : ImageLoadingException{fileName, "File " + fileName
+                    + " cannot be oppened - unsuported type"} {}
 
         /**
-         * Destroys the Image Loading Invalid Type Exception object
+         * Destroys the Image Loading Unsuported File Type object
          */
-        ~ImageLoadingInvalidTypeException(void) noexcept = default;
+        ~ImageLoadingUnsuportedFileType(void) noexcept = default;
     };
 
 }

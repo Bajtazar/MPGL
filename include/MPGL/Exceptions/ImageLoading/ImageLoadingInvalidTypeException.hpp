@@ -25,32 +25,32 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/ImageLoadingException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingException.hpp>
 
 namespace mpgl {
 
     /**
      * Exception indicating that a loaded image file is
-     * corrupted
+     * invalid
      */
-    struct ImageLoadingFileCorruptionException :
-        public ImageLoadingException
+    struct ImageLoadingInvalidTypeException
+        : public ImageLoadingException
     {
         /**
-         * Constructs a new Image Loading File Corruption
-         * Exception object with a file name
+         * Constructs a new Image Loading Invalid Type Exception
+         * object with a file name
          *
          * @param fileName the constant reference to the file name
          */
-        explicit ImageLoadingFileCorruptionException(
+        explicit ImageLoadingInvalidTypeException(
             std::string const& fileName) noexcept
                 : ImageLoadingException{fileName,
-                    "File " + fileName + " is corrupted\n"} {}
+                    "File " + fileName + " contains invalid data"} {}
 
         /**
-         * Destroys the Image Loading Exception object
+         * Destroys the Image Loading Invalid Type Exception object
          */
-        ~ImageLoadingFileCorruptionException(void) noexcept = default;
+        ~ImageLoadingInvalidTypeException(void) noexcept = default;
     };
 
 }

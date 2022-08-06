@@ -23,8 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ImageLoadingUnsuportedFileType.hpp>
-
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingUnsuportedFileType.hpp>
 #include <MPGL/IO/ImageLoading/ImageLoader.hpp>
 #include <MPGL/IO/ImageLoading/JPEGLoader.hpp>
 #include <MPGL/IO/ImageLoading/BMPLoader.hpp>
