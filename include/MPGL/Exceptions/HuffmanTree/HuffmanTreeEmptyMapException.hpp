@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/HuffmanTreeException.hpp>
+#include <MPGL/Exceptions/HuffmanTree/HuffmanTreeException.hpp>
 
 namespace mpgl {
 
