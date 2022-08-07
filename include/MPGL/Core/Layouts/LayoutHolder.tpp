@@ -25,44 +25,27 @@
  */
 #pragma once
 
-#include <MPGL/Core/Transformations/Transformation.hpp>
-
 namespace mpgl {
 
-    /**
-     * Holds the type of the layout and the rest of arguments
-     * needed for creation of the layout object
-     *
-     * @tparam Tp the layout's type
-     * @tparam Args the rest of the layout argument types
-     */
     template <InstanceOf<Transformation> Tp, class... Args>
-        requires std::constructible_from<Tp, Vector2u const&, Args...>
-    struct LayoutTag {
-        using Layout = Tp;
+    void LayoutHolder::Layout<Tp, Args...>::operator() (
+        Transformable2D& transformable,
+        Vector2u const& dimensions) const noexcept
+    {
+        if constexpr (sizeof...(Args)) {
+            std::apply(layoutTag.args, [&](auto&&... args) {
+                transformable.transform(
+                    Tp{dimensions, std::forward(args)...}); });
+        } else {
+            transformable.transform(Tp{dimensions});
+        }
+    }
 
-        /**
-         * Constructs a new layout tag object
-         *
-         * @param args a universal reference to the rest
-         * of the layout constructor's arguments
-         */
-        explicit LayoutTag(Args&&... args)
-            : args{std::forward(args...)} {}
-
-        std::tuple<Args>                                args;
-    };
-
-    /**
-     * Specialization of the layout tag class when the layout
-     * does not require any aditional constructor arguments
-     *
-     * @tparam Tp the layout's type
-     */
-    template <InstanceOf<Transformation> Tp>
-        requires std::constructible_from<Tp, Vector2u const&>
-    struct LayoutTag<Tp> {
-        using Layout = Tp;
-    };
+    template <InstanceOf<Transformation> Tp, class... Args>
+    void LayoutHolder::Layout<Tp, Args...>::move(
+        std::byte& memory) noexcept
+    {
+        new (&memory) Layout{std::move(*this)};
+    }
 
 }
