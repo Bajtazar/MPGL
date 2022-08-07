@@ -61,4 +61,10 @@ namespace mpgl {
         return std::get<InlineMemory>(storage).get();
     }
 
+    void LayoutHolder::onScreenTransformation(
+        Vector2u const& oldDimensions) noexcept
+    {
+        (*pointer())(*transformable, oldDimensions);
+    }
+
 }

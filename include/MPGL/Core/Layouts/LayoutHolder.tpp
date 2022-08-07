@@ -67,4 +67,11 @@ namespace mpgl {
         }
     }
 
+    template <InstanceOf<Transformation> Tp, class... Args>
+    LayoutHolder::LayoutHolder(
+        TransformablePtr pointer,
+        LayoutTag<Tp, Args...>&& layoutTag)
+            : storage{createStorage(std::move(layoutTag))},
+            transformable{std::move(pointer)} {}
+
 }

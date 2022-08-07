@@ -34,10 +34,50 @@
 
 namespace mpgl {
 
+    /**
+     * Holds layout and the transformable object. Applies layout
+     * to the object during the screen transformation event
+     */
     class LayoutHolder : public ScreenTransformationEvent {
     public:
         using TransformablePtr = std::shared_ptr<Transformable2D>;
 
+        /**
+         * Constructs a new layout holder object
+         *
+         * @tparam Tp the type of the layout's transformer
+         * @tparam Args the rest of layout's transformer
+         * constructor argument types
+         * @param pointer the shared pointer to the
+         * transformable object
+         * @param layoutTag the rvalue reference to the
+         * layout tag object
+         */
+        template <InstanceOf<Transformation> Tp, class... Args>
+        explicit LayoutHolder(
+            TransformablePtr pointer,
+            LayoutTag<Tp, Args...>&& layoutTag);
+
+        LayoutHolder(LayoutHolder const&) = delete;
+        LayoutHolder(LayoutHolder&&) noexcept = default;
+
+        LayoutHolder& operator=(LayoutHolder const&) = delete;
+        LayoutHolder& operator=(LayoutHolder&&) noexcept = default;
+
+        /**
+         * Performs the layout operation on the underlying
+         * transformable object
+         *
+         * @param oldDimensions a constant reference to the
+         * old window dimensions vector
+         */
+        void onScreenTransformation(
+            Vector2u const& oldDimensions) noexcept final;
+
+        /**
+         * Destroys the layout holder object
+         */
+        ~LayoutHolder(void) noexcept = default;
     private:
         /**
          * An interface for the layout class. Creates layout
@@ -160,7 +200,7 @@ namespace mpgl {
              * @tparam Tp the type of the layout's transformer
              * @tparam Args the rest of layout's transformer
              * constructor argument types
-             * @param tag the universal reference to the
+             * @param tag the rvalue reference to the
              * layout tag object
              */
             template <InstanceOf<Transformation> Tp, class... Args>
