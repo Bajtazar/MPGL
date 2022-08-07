@@ -25,37 +25,31 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/MPGLException.hpp>
+#include <MPGL/Exceptions/Window/WindowException.hpp>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that framebuffer was not compiled
-     * properly
+     * Exception indicating that the window has been given
+     * an invalid arguments
      */
-    class FramedWindowCompileException : public MPGLException {
-    public:
+    struct WindowInvalidArgsException : public WindowException {
         /**
-         * Construct a new Framed Window Compile Exception object
-         */
-        constexpr explicit FramedWindowCompileException(
-            void) noexcept = default;
-
-        /**
-         * Returns the message informing that the framebuffer is
-         * incomplete
+         * Constructs a new Window Invalid Args Exception
+         * object with the given title
          *
-         * @return the exception description
+         * @param title the window title
          */
-        [[nodiscard]] constexpr const char* what(
-            void) const noexcept final
-                { return "Framebuffer is incomplete\n"; }
+        explicit WindowInvalidArgsException(
+            std::string title) noexcept
+                : WindowException{title,
+                    "Invalid arguments at RenderWindow '"
+                    + windowName + "'\n"} {}
 
         /**
-         * Destroy the Framed Window Compile Exception object
+         * Destroys the Window Invalid Args Exception object
          */
-        constexpr ~FramedWindowCompileException(
-            void) noexcept = default;
+        ~WindowInvalidArgsException(void) noexcept = default;
     };
 
 }

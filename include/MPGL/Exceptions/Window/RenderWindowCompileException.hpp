@@ -25,29 +25,37 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/WindowException.hpp>
+#include <MPGL/Exceptions/MPGLException.hpp>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that the GLAD has not been loaded
+     * Exception indicating that framebuffer was not compiled
+     * properly
      */
-    struct WindowGladException : public WindowException {
+    class RenderWindowCompileException : public MPGLException {
+    public:
         /**
-         * Constructs a new Window Glad Exception object with
-         * the given window title
-         *
-         * @param title the window title
+         * Constructs a new Render Window Compile Exception object
          */
-        explicit WindowGladException(std::string title) noexcept
-            : WindowException{title,
-                "Cannot initialize GLAD when window '"
-                + title +"' is being initialized"} {}
+        constexpr explicit RenderWindowCompileException(
+            void) noexcept = default;
 
         /**
-         * Destroys the Window Glad Exception object
+         * Returns the message informing that the framebuffer is
+         * incomplete
+         *
+         * @return the exception description
          */
-        ~WindowGladException(void) noexcept = default;
+        [[nodiscard]] constexpr const char* what(
+            void) const noexcept final
+                { return "Framebuffer is incomplete\n"; }
+
+        /**
+         * Destroys the Render Window Compile Exception object
+         */
+        constexpr ~RenderWindowCompileException(
+            void) noexcept = default;
     };
 
 }

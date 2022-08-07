@@ -23,9 +23,8 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/WindowInvalidArgsException.hpp>
-
-#include <MPGL/Exceptions/WindowGladException.hpp>
+#include <MPGL/Exceptions/Window/WindowInvalidArgsException.hpp>
+#include <MPGL/Exceptions/Window/WindowGladException.hpp>
 #include <MPGL/Core/Windows/WindowPlatform.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 

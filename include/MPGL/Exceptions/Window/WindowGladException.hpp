@@ -25,31 +25,29 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/WindowException.hpp>
+#include <MPGL/Exceptions/Window/WindowException.hpp>
 
 namespace mpgl {
 
     /**
-     * Exception indicating that the window has been given
-     * an invalid arguments
+     * Exception indicating that the GLAD has not been loaded
      */
-    struct WindowInvalidArgsException : public WindowException {
+    struct WindowGladException : public WindowException {
         /**
-         * Constructs a new Window Invalid Args Exception
-         * object with the given title
+         * Constructs a new Window Glad Exception object with
+         * the given window title
          *
          * @param title the window title
          */
-        explicit WindowInvalidArgsException(
-            std::string title) noexcept
-                : WindowException{title,
-                    "Invalid arguments at RenderWindow '"
-                    + windowName + "'\n"} {}
+        explicit WindowGladException(std::string title) noexcept
+            : WindowException{title,
+                "Cannot initialize GLAD when window '"
+                + title +"' is being initialized"} {}
 
         /**
-         * Destroys the Window Invalid Args Exception object
+         * Destroys the Window Glad Exception object
          */
-        ~WindowInvalidArgsException(void) noexcept = default;
+        ~WindowGladException(void) noexcept = default;
     };
 
 }
