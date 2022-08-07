@@ -40,11 +40,18 @@ namespace mpgl {
     /**
      * The GZSL file format parser
      */
-    template <security::SecurityPolicy Policy>
+    template <security::SecurityPolicy Policy = Secured>
     class GZSLLoader {
     public:
         using Buffer = std::vector<char>;
         using ShaderMap = std::map<std::string, Buffer>;
+
+        /**
+         * Constructs a new GZSLLoader object
+         *
+         * @param token the security policy token
+         */
+        explicit GZSLLoader(Policy token = {}) noexcept {}
 
         /**
          * Parses the GZSL file format and returns a map containing
