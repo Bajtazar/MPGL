@@ -25,9 +25,14 @@
  */
 #pragma once
 
+#include <MPGL/Utility/Tokens/Security.hpp>
+#include <MPGL/Iterators/SafeIterator.hpp>
 #include <MPGL/Traits/Types.hpp>
 
 #include <string>
+#include <vector>
+#include <tuple>
+#include <list>
 #include <map>
 
 namespace mpgl {
@@ -35,7 +40,12 @@ namespace mpgl {
     /**
      * The GZSL file format parser
      */
-    struct GZSLLoader {
+    template <security::SecurityPolicy Policy>
+    class GZSLLoader {
+    public:
+        using Buffer = std::vector<char>;
+        using ShaderMap = std::map<std::string, Buffer>;
+
         /**
          * Parses the GZSL file format and returns a map containing
          * the shader names and their codes
@@ -44,10 +54,61 @@ namespace mpgl {
          * @return the map containing
          * the shader names and their codes
          */
-        [[nodiscard]] std::map<std::string, std::string>
-            operator() (std::string const& path) const;
+        [[nodiscard]] ShaderMap operator() (
+            std::string const& path) const;
+    private:
+        using Record = std::tuple<uint32, uint32, std::string>;
+        using Records = std::list<Record>;
+        using BufferIter = typename Buffer::const_iterator;
+        using Iter = std::conditional_t<security::isSecurePolicy<
+            Policy>, SafeIterator<BufferIter>, BufferIter>;
+
+        /**
+         * Returns an iterator to the buffer
+         *
+         * @param iter the iterator to the begining of the range
+         * @param end the iterator to the end of the range
+         * @return an iterator to the buffer
+         */
+        [[nodiscard]] Iter getIterator(
+            BufferIter const& iter,
+            [[maybe_unused]] BufferIter const& end) const noexcept;
+
+        /**
+         * Removes a subrange from the buffer. The begining of
+         * the buffer is also the begining of the subrange
+         *
+         * @param iterator the iterator to the end of the subrange
+         * @param buffer the reference to the buffer object
+         */
+        void remove(
+            Iter const& iterator,
+            Buffer& buffer) const noexcept;
+
+        /**
+         * Parses the GZSL's file header
+         *
+         * @param iterator the reference to the file's iterator
+         * @return the records contained within the header
+         */
+        [[nodiscard]] Records parseHeader(Iter& iterator) const;
+
+        /**
+         * Builds the shader map according to the header records
+         * and the decompressed shaders
+         *
+         * @param records the constant reference to the records
+         * @param buffer the constant reference to the decompressed
+         * shaders
+         * @return the shader map
+         */
+        [[nodiscard]] ShaderMap buildMap(
+            Records const& records,
+            Buffer const& buffer) const;
+
+        static constexpr size_t const OFFSET = 1ul;
     };
 
-    constexpr inline GZSLLoader                         gzslLoader;
-
 }
+
+#include <MPGL/Core/Shaders/GZSLLoader.tpp>
