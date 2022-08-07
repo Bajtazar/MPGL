@@ -25,7 +25,6 @@
  */
 #pragma once
 
-#include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Core/Transformations/Transformation.hpp>
 
 namespace mpgl {
@@ -38,7 +37,7 @@ namespace mpgl {
      * @tparam Dim the transformed space's dimensions
      */
     template <Dimension Dim>
-    class Transformable : public ScreenTransformationEvent {
+    class Transformable {
     public:
         /**
          * Constructs a new transformable object
@@ -54,18 +53,6 @@ namespace mpgl {
          */
         virtual void transform(
             Transformation<Dim> const& transformator) noexcept = 0;
-
-        /**
-         * Pure virtual function. Has to be overloaded.
-         * Transforms the figure during the screen
-         * transformation event
-         *
-         * @param layout the layout of the figure
-         * @param oldDimensions the old screen dimensions
-         */
-        virtual void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept = 0;
 
         /**
          * Virtual destructor. Destroys the transformable object
