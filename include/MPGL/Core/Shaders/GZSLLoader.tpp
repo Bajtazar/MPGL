@@ -23,6 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Exceptions/GZSLFileCorruptionException.hpp>
 #include <MPGL/Core/Shaders/GZSLLoader.hpp>
 #include <MPGL/Compression/GZIPDecoder.hpp>
 #include <MPGL/IO/Readers.hpp>
@@ -67,9 +68,8 @@ namespace mpgl {
             remove(iter, *data);
             shaderMap = buildMap(table, GZIPDecoder<
                 Buffer, Policy>(std::move(*data))());
-        } else {
-            // throw
-        }
+        } else
+            throw GZSLFileCorruptionException{path};
         return shaderMap;
     }
 

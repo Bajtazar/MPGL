@@ -50,6 +50,8 @@ namespace mpgl {
          * Parses the GZSL file format and returns a map containing
          * the shader names and their codes
          *
+         * @throws GZSLFileCorruptionException if file does not
+         * exist or is corrupted
          * @param path a path to the GZSL file
          * @return the map containing
          * the shader names and their codes
