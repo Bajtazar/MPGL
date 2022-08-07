@@ -53,7 +53,7 @@ namespace mpgl {
          * @param layoutTag the rvalue reference to the
          * layout tag object
          */
-        template <InstanceOf<Transformation> Tp, class... Args>
+        template <std::derived_from<mpgl::Layout> Tp, class... Args>
         explicit LayoutHolder(
             TransformablePtr pointer,
             LayoutTag<Tp, Args...>&& layoutTag);
@@ -137,7 +137,7 @@ namespace mpgl {
          * @tparam Args the rest of layout's transformer constructor
          * argument types
          */
-        template <InstanceOf<Transformation> Tp, class... Args>
+        template <std::derived_from<mpgl::Layout> Tp, class... Args>
         class Layout {
         public:
             using Tag = LayoutTag<Tp, Args...>;
@@ -203,7 +203,7 @@ namespace mpgl {
              * @param tag the rvalue reference to the
              * layout tag object
              */
-            template <InstanceOf<Transformation> Tp, class... Args>
+            template <std::derived_from<mpgl::Layout> Tp, class... Args>
             explicit InlineMemory(
                 LayoutTag<Tp, Args...>&& tag) noexcept;
 
@@ -271,7 +271,7 @@ namespace mpgl {
          * @param tag a rvalue reference to the layout tag object
          * @return the storage object with the layout
          */
-        template <InstanceOf<Transformation> Tp, class... Args>
+        template <std::derived_from<mpgl::Layout> Tp, class... Args>
         static Storage createStorage(
             LayoutTag<Tp, Args...>&& tag);
     };

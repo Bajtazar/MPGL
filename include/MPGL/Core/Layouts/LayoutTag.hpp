@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Transformations/Transformation.hpp>
+#include <MPGL/Core/Layouts/Layout.hpp>
 
 namespace mpgl {
 
@@ -36,7 +36,7 @@ namespace mpgl {
      * @tparam Tp the layout's type
      * @tparam Args the rest of the layout argument types
      */
-    template <InstanceOf<Transformation> Tp, class... Args>
+    template <std::derived_from<Layout> Tp, class... Args>
         requires std::constructible_from<Tp, Vector2u const&, Args...>
     struct LayoutTag {
         using Layout = Tp;
@@ -59,7 +59,7 @@ namespace mpgl {
      *
      * @tparam Tp the layout's type
      */
-    template <InstanceOf<Transformation> Tp>
+    template <std::derived_from<Layout> Tp>
         requires std::constructible_from<Tp, Vector2u const&>
     struct LayoutTag<Tp> {
         using Layout = Tp;

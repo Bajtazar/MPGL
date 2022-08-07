@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Transformations/Transformation.hpp>
+#include <MPGL/Core/Layouts/Layout.hpp>
 
 #include <memory>
 
@@ -39,10 +39,7 @@ namespace mpgl {
      * of the screen) during the screen transformation event (
      * object's scale will be intanct as in default layout)
      */
-    class AnchoredLayout :
-        public Transformation2D,
-        private GraphicalObject
-    {
+    class AnchoredLayout : public Layout {
     public:
         /**
          * Constructs a new anchored layout object

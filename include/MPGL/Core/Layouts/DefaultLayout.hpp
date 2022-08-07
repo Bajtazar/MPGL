@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Transformations/Transformation.hpp>
+#include <MPGL/Core/Layouts/Layout.hpp>
 
 namespace mpgl {
 
@@ -34,10 +34,7 @@ namespace mpgl {
      * that the object will be intact by the screen transformation
      * event
      */
-    class DefaultLayout :
-        public Transformation2D,
-        private GraphicalObject
-    {
+    class DefaultLayout : public Layout {
     public:
         /**
          * Constructs a new Default Layout object

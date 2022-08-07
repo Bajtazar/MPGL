@@ -27,7 +27,7 @@
 
 namespace mpgl {
 
-    template <InstanceOf<Transformation> Tp, class... Args>
+    template <std::derived_from<mpgl::Layout> Tp, class... Args>
     void LayoutHolder::Layout<Tp, Args...>::operator() (
         Transformable2D& transformable,
         Vector2u const& dimensions) const noexcept
@@ -41,21 +41,21 @@ namespace mpgl {
         }
     }
 
-    template <InstanceOf<Transformation> Tp, class... Args>
+    template <std::derived_from<mpgl::Layout> Tp, class... Args>
     void LayoutHolder::Layout<Tp, Args...>::move(
         std::byte& memory) noexcept
     {
         new (&memory) Layout<Tp, Args...>{std::move(*this)};
     }
 
-    template <InstanceOf<Transformation> Tp, class... Args>
+    template <std::derived_from<mpgl::Layout> Tp, class... Args>
     LayoutHolder::InlineMemory::InlineMemory(
         LayoutTag<Tp, Args...>&& tag) noexcept
     {
         new (&memory) Layout{std::move(tag)};
     }
 
-    template <InstanceOf<Transformation> Tp, class... Args>
+    template <std::derived_from<mpgl::Layout> Tp, class... Args>
     LayoutHolder::Storage LayoutHolder::createStorage(
         LayoutTag<Tp, Args...>&& tag)
     {
@@ -67,7 +67,7 @@ namespace mpgl {
         }
     }
 
-    template <InstanceOf<Transformation> Tp, class... Args>
+    template <std::derived_from<mpgl::Layout> Tp, class... Args>
     LayoutHolder::LayoutHolder(
         TransformablePtr pointer,
         LayoutTag<Tp, Args...>&& layoutTag)
