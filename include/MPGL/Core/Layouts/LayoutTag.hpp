@@ -50,7 +50,7 @@ namespace mpgl {
         explicit LayoutTag(Args&&... args)
             : args{std::forward(args...)} {}
 
-        std::tuple<Args>                                args;
+        std::tuple<Args...>                                 args;
     };
 
     /**

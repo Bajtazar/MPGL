@@ -138,7 +138,7 @@ namespace mpgl {
          * argument types
          */
         template <std::derived_from<mpgl::Layout> Tp, class... Args>
-        class Layout {
+        class Layout : public LayoutInterface {
         public:
             using Tag = LayoutTag<Tp, Args...>;
 

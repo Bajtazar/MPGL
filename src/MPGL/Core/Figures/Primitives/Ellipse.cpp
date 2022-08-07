@@ -98,17 +98,6 @@ namespace mpgl {
         };
     }
 
-    void Ellipse::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        any::InputRange<Adapter2D> positions{
-            vertices | views::position};
-        layout(positions, oldDimensions);
-        actualizeMatrices();
-        isModified = true;
-    }
-
     void Ellipse::transform(
         Transformation2D const& transformator) noexcept
     {

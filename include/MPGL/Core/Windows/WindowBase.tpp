@@ -45,7 +45,7 @@ namespace mpgl {
         requires std::constructible_from<Tp, Args...>
     void WindowBase::emplaceDrawable(Args&&... args) {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
-        eventManager->push(ptr);
+        addEventIfDerived(ptr);
         addDefaultLayoutIfTransformable(ptr);
         drawables.push_back(std::move(ptr));
     }
@@ -63,7 +63,7 @@ namespace mpgl {
         Args&&... args)
     {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
-        eventManager->push(ptr);
+        addEventIfDerived(ptr);
         addLayout(ptr, std::move(layout));
         drawables.push_back(std::move(ptr));
     }
@@ -72,7 +72,7 @@ namespace mpgl {
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp> const& drawable)
     {
-        eventManager->push(drawable);
+        addEventIfDerived(drawable);
         addDefaultLayoutIfTransformable(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             drawable));
@@ -87,7 +87,7 @@ namespace mpgl {
         std::shared_ptr<Tp> const& drawable,
         LayoutTag<Lp, Args...>&& tag)
     {
-        eventManager->push(drawable);
+        addEventIfDerived(drawable);
         addLayout(drawable, std::move(tag));
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             drawable));
@@ -97,7 +97,7 @@ namespace mpgl {
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp>&& drawable)
     {
-        eventManager->push(drawable);
+        addEventIfDerived(drawable);
         addDefaultLayoutIfTransformable(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             std::move(drawable)));
@@ -112,7 +112,7 @@ namespace mpgl {
         std::shared_ptr<Tp>&& drawable,
         LayoutTag<Lp, Args...>&& tag)
     {
-        eventManager->push(drawable);
+        addEventIfDerived(drawable);
         addLayout(drawable, std::move(tag));
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             std::move(drawable)));
@@ -120,7 +120,7 @@ namespace mpgl {
 
     template <typename Tp>
     void WindowBase::addDefaultLayoutIfTransformable(
-        std::shared_ptr<Tp>& pointer)
+        std::shared_ptr<Tp> const& pointer)
     {
         if constexpr (std::derived_from<Tp, Transformable2D>)
             addLayout(pointer, LayoutTag<DefaultLayout>{});
@@ -128,12 +128,21 @@ namespace mpgl {
 
     template <typename Tp, typename Lp, typename... Args>
     void WindowBase::addLayout(
-        std::shared_ptr<Tp>& pointer,
+        std::shared_ptr<Tp> const& pointer,
         LayoutTag<Lp, Args...>&& tag)
     {
-        eventManager->push(std::shared_ptr{new LayoutHolder{
-            std::static_pointer_cast<Transformable2D>(ptr),
-            std::move(tag)}})
+        eventManager->push(std::shared_ptr<LayoutHolder>{
+            new LayoutHolder{
+            std::static_pointer_cast<Transformable2D>(pointer),
+            std::move(tag)}});
+    }
+
+    template <typename Tp>
+    void WindowBase::addEventIfDerived(
+        std::shared_ptr<Tp> const& pointer)
+    {
+        if constexpr (Event<Tp>)
+            eventManager->push(pointer);
     }
 
 }

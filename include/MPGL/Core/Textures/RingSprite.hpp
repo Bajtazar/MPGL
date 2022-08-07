@@ -81,17 +81,6 @@ namespace mpgl {
                 InnerEllipse&& ellipse) noexcept = default;
 
             /**
-             * Transforms the figure during the screen
-             * transformation event
-             *
-             * @param layout the layout of the figure
-             * @param oldDimensions the old screen dimensions
-             */
-            void onScreenTransformation(
-                Layout& layout,
-                Vector2u const& oldDimensions) noexcept final;
-
-            /**
              * Performs transformation on the figure
              *
              * @param transformator the constant reference to the
@@ -327,17 +316,6 @@ namespace mpgl {
          * Draws the ring sprite on the screen
          */
         void draw(void) const noexcept final;
-
-        /**
-         * Transforms the figure during the screen
-         * transformation event
-         *
-         * @param layout the layout of the figure
-         * @param oldDimensions the old screen dimensions
-         */
-        void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept override final;
 
         /**
          * Performs transformation on the figure

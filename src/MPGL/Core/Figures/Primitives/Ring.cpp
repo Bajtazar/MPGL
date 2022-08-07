@@ -104,15 +104,6 @@ namespace mpgl {
         };
     }
 
-    void Ring::InnerEllipse::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        any::InputRange<Adapter2D> positions{vertices};
-        layout(positions, oldDimensions);
-        actualizeMatrices();
-    }
-
     void Ring::InnerEllipse::transform(
         Transformation2D const& transformator) noexcept
     {
@@ -216,18 +207,6 @@ namespace mpgl {
             (Vector2f{get<"position">(vertices[3])}
                 - Vector2f{get<"position">(vertices[0])}).length()
         };
-    }
-
-    void Ring::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        innerEllipse.onScreenTransformation(layout, oldDimensions);
-        any::InputRange<Adapter2D> positions{
-            vertices | views::position};
-        layout(positions, oldDimensions);
-        actualizeMatrices();
-        isModified = true;
     }
 
     void Ring::transform(

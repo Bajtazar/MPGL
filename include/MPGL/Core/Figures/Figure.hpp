@@ -67,18 +67,6 @@ namespace mpgl {
             Transformation2D const& transformator) noexcept = 0;
 
         /**
-         * Pure virtual function. Has to be overloaded.
-         * Transforms the figure during the screen
-         * transformation event
-         *
-         * @param layout the layout of the figure
-         * @param oldDimensions the old screen dimensions
-         */
-        virtual void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept = 0;
-
-        /**
          * Destroy the Figure object
          */
         virtual ~Figure(void) noexcept = default;

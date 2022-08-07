@@ -64,17 +64,6 @@ namespace mpgl {
             Vector2f const& position) const noexcept = 0;
 
         /**
-         * Transforms the figure during the screen
-         * transformation event
-         *
-         * @param layout the layout of the figure
-         * @param oldDimensions the old screen dimensions
-         */
-        void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept final;
-
-        /**
          * Performs transformation on the figure
          *
          * @param transformator the constant reference to the

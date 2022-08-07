@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Events/Management/BasicWindowEventManager.hpp>
+#include <MPGL/Core/Transformations/Transformable.hpp>
 #include <MPGL/Core/Layouts/LayoutTag.hpp>
 #include <MPGL/Collections/Image.hpp>
 #include <MPGL/Events/EventBus.hpp>
@@ -214,12 +215,12 @@ namespace mpgl {
          * is transformable
          *
          * @tparam Tp the type of the drawable object
-         * @param pointer a reference to the shared pointer with
-         * the drawable object
+         * @param pointer a constant reference to the shared pointer
+         * with the drawable object
          */
         template <typename Tp>
         void addDefaultLayoutIfTransformable(
-            std::shared_ptr<Tp>& pointer);
+            std::shared_ptr<Tp> const& pointer);
 
         /**
          * Attaches layout to the drawable object
@@ -228,14 +229,25 @@ namespace mpgl {
          * @tparam Lp the type of the layout
          * @tparam Args the rest of layout constructor's argument
          * types
-         * @param pointer a reference to the shared pointer with
-         * the drawable object
+         * @param pointer a constant reference to the shared pointer
+         * with the drawable object
          * @param tag a rvalue reference to the layout tag
          */
         template <typename Tp, typename Lp, typename... Args>
         void addLayout(
-            std::shared_ptr<Tp>& pointer,
+            std::shared_ptr<Tp> const& pointer,
             LayoutTag<Lp, Args...>&& tag);
+
+        /**
+         * Adds drawable to the events manager if it derives
+         * from any event
+         *
+         * @tparam Tp the type of the drawable object
+         * @param pointer a constant reference to the shared pointer
+         * with the drawable object
+         */
+        template <typename Tp>
+        void addEventIfDerived(std::shared_ptr<Tp> const& pointer);
     };
 
 }
