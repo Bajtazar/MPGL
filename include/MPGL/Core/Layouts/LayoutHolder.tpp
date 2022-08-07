@@ -45,7 +45,26 @@ namespace mpgl {
     void LayoutHolder::Layout<Tp, Args...>::move(
         std::byte& memory) noexcept
     {
-        new (&memory) Layout{std::move(*this)};
+        new (&memory) Layout<Tp, Args...>{std::move(*this)};
+    }
+
+    template <InstanceOf<Transformation> Tp, class... Args>
+    LayoutHolder::InlineMemory::InlineMemory(
+        LayoutTag<Tp, Args...>&& tag) noexcept
+    {
+        new (&memory) Layout{std::move(tag)};
+    }
+
+    template <InstanceOf<Transformation> Tp, class... Args>
+    LayoutHolder::Storage LayoutHolder::createStorage(
+        LayoutTag<Tp, Args...>&& tag)
+    {
+        if constexpr (sizeof(Layout<Tp, Args...>) > InlineSize) {
+            return { std::make_unique<Layout<Tp, Args...>>(
+                std::move(tag)) };
+        } else {
+            return { InlineMemory{std::move(tag)} };
+        }
     }
 
 }

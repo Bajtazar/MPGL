@@ -29,12 +29,14 @@
 #include <MPGL/Core/Transformations/Transformable.hpp>
 #include <MPGL/Core/Layouts/LayoutTag.hpp>
 
+#include <variant>
 #include <memory>
 
 namespace mpgl {
 
     class LayoutHolder : public ScreenTransformationEvent {
     public:
+        using TransformablePtr = std::shared_ptr<Transformable2D>;
 
     private:
         /**
@@ -144,7 +146,94 @@ namespace mpgl {
             [[no_unique_address]] Tag                   layoutTag;
         };
 
-        std::shared_ptr<Transformable2D>                transformable;
+        constexpr static size_t                         InlineSize
+            = 16ul;
+
+        /**
+         * Allocates the object on the stack if it is small enough
+         */
+        class InlineMemory {
+        public:
+            /**
+             * Constructs a new inline memory object
+             *
+             * @tparam Tp the type of the layout's transformer
+             * @tparam Args the rest of layout's transformer
+             * constructor argument types
+             * @param tag the universal reference to the
+             * layout tag object
+             */
+            template <InstanceOf<Transformation> Tp, class... Args>
+            explicit InlineMemory(
+                LayoutTag<Tp, Args...>&& tag) noexcept;
+
+            /**
+             * Constructs a new inline memory object
+             *
+             * @param inlineMemory the rvalue reference to the
+             * other inline memory object
+             */
+            InlineMemory(
+                InlineMemory&& inlineMemory) noexcept;
+
+            /**
+             * Moves the other inline memory to this object
+             *
+             * @param inlineMemory the rvalue reference to the
+             * other inline memory object
+             * @return the reference to this object
+             */
+            InlineMemory& operator=(
+                InlineMemory&& inlineMemory) noexcept;
+
+            /**
+             * Returns a pointer to the range interface
+             *
+             * @return the pointer to the range interface
+             */
+            LayoutInterface* get(void) const noexcept;
+
+            /**
+             * Returns a pointer to the range interface
+             *
+             * @return the pointer to the range interface
+             */
+            LayoutInterface* operator-> (void) const noexcept
+                { return get(); }
+
+            /**
+             * Destroys the Inline Memory object
+             */
+            ~InlineMemory(void) noexcept;
+        private:
+            std::array<std::byte, InlineSize>           memory;
+        };
+
+        using LayoutPtr = std::unique_ptr<LayoutInterface>;
+        using Storage = std::variant<InlineMemory, LayoutPtr>;
+
+        Storage                                         storage;
+        TransformablePtr                                transformable;
+
+        /**
+         * Returns a pointer to the layout interface
+         *
+         * @return the pointer to the layout interface
+         */
+        LayoutInterface* pointer(void) const noexcept;
+
+        /**
+         * Chooses the type of storage for the given tag
+         *
+         * @tparam Tp the type of the layout's transformer
+         * @tparam Args the rest of layout's transformer constructor
+         * argument types
+         * @param tag a rvalue reference to the layout tag object
+         * @return the storage object with the layout
+         */
+        template <InstanceOf<Transformation> Tp, class... Args>
+        static Storage createStorage(
+            LayoutTag<Tp, Args...>&& tag);
     };
 
 }
