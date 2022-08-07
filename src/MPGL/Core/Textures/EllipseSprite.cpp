@@ -146,16 +146,6 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void EllipseSprite<IsColorable>::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        EllipticSprite<IsColorable>::onScreenTransformation(
-            layout, oldDimensions);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
     void EllipseSprite<IsColorable>::transform(
         Transformation2D const& transformator) noexcept
     {

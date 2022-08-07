@@ -23,12 +23,12 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ImageLoadingFileCorruptionException.hpp>
-#include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileCorruptionException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileOpenException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
-#include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
+#include <MPGL/Exceptions/Inflate/InflateException.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
-#include <MPGL/Exceptions/InflateException.hpp>
 #include <MPGL/Compression/Checksums/CRC32.hpp>
 #include <MPGL/IO/ImageLoading/PNGLoader.hpp>
 #include <MPGL/Compression/ZlibDecoder.hpp>

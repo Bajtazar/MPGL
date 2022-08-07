@@ -153,25 +153,6 @@ namespace mpgl {
             Sent const& sent);
     };
 
-    template <std::input_iterator Iter, std::sentinel_for<Iter> Sent>
-            requires SameIterType<Iter, std::exception_ptr>
-    StackedExceptions::StackedExceptions(Iter iter, Sent const& sent)
-        : exceptions{iter, sent},
-        message{createMessageFromExceptions(iter, sent)} {}
-
-    template <std::ranges::input_range Range>
-        requires SameRangeType<Range, std::exception_ptr>
-    StackedExceptions::StackedExceptions(Range&& range)
-        : StackedExceptions{std::ranges::begin(range),
-            std::ranges::end(range)} {}
-
-    template <std::input_iterator Iter, std::sentinel_for<Iter> Sent>
-    std::string StackedExceptions::createMessageFromExceptions(
-        Iter const& iter,
-        Sent const& sent)
-    {
-        return {"There is " + std::to_string(
-            std::distance(iter, sent)) + " gathered exceptions\n"};
-    }
-
 }
+
+#include <MPGL/Exceptions/StackedExceptions.tpp>

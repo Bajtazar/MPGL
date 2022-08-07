@@ -48,6 +48,8 @@ namespace mpgl {
     {
         namespace fs = std::filesystem;
 
+        if (!fs::exists(dirPath))
+            return {};
         std::vector<std::string> files;
         for (auto& entry : fs::recursive_directory_iterator(dirPath))
             if (!fs::is_directory(entry))

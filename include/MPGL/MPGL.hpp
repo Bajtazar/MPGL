@@ -24,56 +24,54 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/ShaderLocationInvalidProgramException.hpp>
-#include <MPGL/Exceptions/ShaderLibraryInvalidShadersException.hpp>
-#include <MPGL/Exceptions/ImageLoadingFileCorruptionException.hpp>
-#include <MPGL/Exceptions/TTFLoaderFileCorruptionException.hpp>
-#include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
-#include <MPGL/Exceptions/ExecusionUnknownPolicyException.hpp>
-#include <MPGL/Exceptions/ShaderLocationUniformException.hpp>
-#include <MPGL/Exceptions/ImageLoadingUnsuportedFileType.hpp>
-#include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
-#include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
-#include <MPGL/Core/Transformations/ChainTransformation.hpp>
-#include <MPGL/Exceptions/ShaderProgramLinkingException.hpp>
-#include <MPGL/Exceptions/FramedWindowCompileException.hpp>
-#include <MPGL/Exceptions/ShaderCompilationException.hpp>
-#include <MPGL/Exceptions/WindowInvalidArgsException.hpp>
-#include <MPGL/Core/Figures/Primitives/LineStrip.hpp>
-#include <MPGL/Exceptions/FontNoRegularException.hpp>
-#include <MPGL/Core/Figures/Primitives/Triangle.hpp>
-#include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
-#include <MPGL/Core/Transformations/Translation.hpp>
-#include <MPGL/Core/Figures/Primitives/Polygon.hpp>
-#include <MPGL/Core/Figures/Primitives/Ellipse.hpp>
-#include <MPGL/Exceptions/WindowGladException.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Core/Figures/Primitives/Points.hpp>
-#include <MPGL/Mathematics/ConvolutionKernels.hpp>
-#include <MPGL/Core/Windows/RenderingAdapter.hpp>
-#include <MPGL/Core/Transformations/Rotation.hpp>
-#include <MPGL/Core/Figures/Primitives/Line.hpp>
-#include <MPGL/Exceptions/StackedExceptions.hpp>
-#include <MPGL/Core/Transformations/Scaling.hpp>
-#include <MPGL/Core/Context/Buffers/Helpers.hpp>
-#include <MPGL/Core/Figures/Primitives/Ring.hpp>
-#include <MPGL/Core/Textures/TextureLoader.hpp>
-#include <MPGL/Core/Layouts/AnchoredLayout.hpp>
-#include <MPGL/IO/ImageLoading/ZigZacRange.hpp>
-#include <MPGL/Core/Textures/EllipseSprite.hpp>
-#include <MPGL/IO/ImageLoading/JPEGLoader.hpp>
-#include <MPGL/IO/ImageLoading/PNGLoader.hpp>
-#include <MPGL/IO/ImageLoading/BMPLoader.hpp>
-#include <MPGL/Core/Textures/RingSprite.hpp>
-#include <MPGL/Core/Text/FontRasterizer.hpp>
-#include <MPGL/Compression/ZlibDecoder.hpp>
-#include <MPGL/Compression/GZIPDecoder.hpp>
-#include <MPGL/Utility/StringAlgorithm.hpp>
-#include <MPGL/Core/Textures/Sprite.hpp>
-#include <MPGL/Core/Windows/Window.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
-#include <MPGL/Mathematics/IFCT.hpp>
-#include <MPGL/Core/Text/UTF-8.hpp>
-#include <MPGL/IO/MathTypesIO.hpp>
-#include <MPGL/Core/Text/Text.hpp>
-
+#include<MPGL/Exceptions/ImageLoading/ImageLoadingFileCorruptionException.hpp>
+#include<MPGL/Exceptions/ImageLoading/ImageLoadingInvalidTypeException.hpp>
+#include<MPGL/Exceptions/Shader/ShaderLocationInvalidProgramException.hpp>
+#include<MPGL/Exceptions/Shader/ShaderLibraryInvalidShadersException.hpp>
+#include<MPGL/Exceptions/ImageLoading/ImageLoadingUnsuportedFileType.hpp>
+#include<MPGL/Exceptions/ImageLoading/ImageLoadingFileOpenException.hpp>
+#include<MPGL/Exceptions/Shader/ShaderLocationUniformException.hpp>
+#include<MPGL/Exceptions/Shader/ShaderProgramLinkingException.hpp>
+#include<MPGL/Exceptions/Window/RenderWindowCompileException.hpp>
+#include<MPGL/Exceptions/Shader/ShaderCompilationException.hpp>
+#include<MPGL/Exceptions/Window/WindowInvalidArgsException.hpp>
+#include<MPGL/Exceptions/TTFLoaderFileCorruptionException.hpp>
+#include<MPGL/Exceptions/ExecusionUnknownPolicyException.hpp>
+#include<MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
+#include<MPGL/Core/Transformations/ChainTransformation.hpp>
+#include<MPGL/Exceptions/Window/WindowGladException.hpp>
+#include<MPGL/Exceptions/FontNoRegularException.hpp>
+#include<MPGL/Core/Figures/Primitives/LineStrip.hpp>
+#include<MPGL/Core/Transformations/Translation.hpp>
+#include<MPGL/Core/Figures/Primitives/Triangle.hpp>
+#include<MPGL/Core/Figures/Primitives/LineLoop.hpp>
+#include<MPGL/Core/Figures/Primitives/Ellipse.hpp>
+#include<MPGL/Core/Figures/Primitives/Polygon.hpp>
+#include<MPGL/Core/Figures/Primitives/Points.hpp>
+#include<MPGL/Mathematics/ConvolutionKernels.hpp>
+#include<MPGL/Core/Context/Buffers/BindGuard.hpp>
+#include<MPGL/Core/Transformations/Rotation.hpp>
+#include<MPGL/Core/Windows/RenderingAdapter.hpp>
+#include<MPGL/Exceptions/StackedExceptions.hpp>
+#include<MPGL/Core/Transformations/Scaling.hpp>
+#include<MPGL/Core/Figures/Primitives/Ring.hpp>
+#include<MPGL/Core/Figures/Primitives/Line.hpp>
+#include<MPGL/Core/Context/Buffers/Helpers.hpp>
+#include<MPGL/Core/Textures/TextureLoader.hpp>
+#include<MPGL/Core/Textures/EllipseSprite.hpp>
+#include<MPGL/IO/ImageLoading/ZigZacRange.hpp>
+#include<MPGL/Core/Layouts/AnchoredLayout.hpp>
+#include<MPGL/IO/ImageLoading/JPEGLoader.hpp>
+#include<MPGL/IO/ImageLoading/BMPLoader.hpp>
+#include<MPGL/IO/ImageLoading/PNGLoader.hpp>
+#include<MPGL/Core/Textures/RingSprite.hpp>
+#include<MPGL/Core/Text/FontRasterizer.hpp>
+#include<MPGL/Utility/StringAlgorithm.hpp>
+#include<MPGL/Compression/ZlibDecoder.hpp>
+#include<MPGL/Core/Textures/Sprite.hpp>
+#include<MPGL/Core/Windows/Window.hpp>
+#include<MPGL/Core/Figures/Views.hpp>
+#include<MPGL/Mathematics/IFCT.hpp>
+#include<MPGL/Core/Text/UTF-8.hpp>
+#include<MPGL/IO/MathTypesIO.hpp>
+#include<MPGL/Core/Text/Text.hpp>

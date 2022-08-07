@@ -25,7 +25,6 @@
  */
 #pragma once
 
-#include <MPGL/Events/Registers/ScreenTransformationRegister.hpp>
 #include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Events/Registers/UniversalRegister.hpp>
 #include <MPGL/Events/Registers/RegistersHolder.hpp>
@@ -40,6 +39,10 @@
 #include <MPGL/Events/Types/ScrollEvent.hpp>
 
 namespace mpgl {
+
+    /// The screen transformation event register
+    typedef UniversalRegister<ScreenTransformationEvent, void(ScreenTransformationEvent::*)(Vector2u const&),
+        &ScreenTransformationEvent::onScreenTransformation> ScreenTransformationRegister;
 
     /// The mouse release event register
     typedef UniversalRegister<MouseReleaseEvent, void(MouseReleaseEvent::*)(MouseButton const&),

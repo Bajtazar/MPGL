@@ -25,113 +25,124 @@
  */
 #pragma once
 
+#include <MPGL/Core/Layouts/DefaultLayout.hpp>
+#include <MPGL/Core/Layouts/LayoutHolder.hpp>
+
 namespace mpgl {
 
     template <Event Tp>
-        requires (!std::derived_from<Tp, WindowBase::STEvent>)
     void WindowBase::pushEvent(std::shared_ptr<Tp> const& event) {
         eventManager->push(event);
-    }
-
-    template <std::derived_from<WindowBase::STEvent> Tp>
-    void WindowBase::pushEvent(
-        std::shared_ptr<Tp> const& event,
-        LayoutPtr layout)
-    {
-        eventManager->push(event);
-        layouts.push_back(std::move(layout));
     }
 
     template <Event Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
     void WindowBase::emplaceEvent(Args&&... args) {
         eventManager->emplace(std::forward(args)...);
-        if constexpr (std::derived_from<Tp, STEvent>)
-            layouts.push_back(std::make_unique<DefaultLayout>());
-    }
-
-    template <std::derived_from<WindowBase::STEvent> Tp,
-        typename... Args>
-            requires std::constructible_from<Tp, Args...>
-    void WindowBase::emplaceEventWithLayout(
-        LayoutPtr&& layout,
-        Args&&... args)
-    {
-        eventManager->emplace(std::forward(args)...);
-        layouts.push_back(std::move(layout));
     }
 
     template <std::derived_from<Drawable2D> Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
     void WindowBase::emplaceDrawable(Args&&... args) {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
-        if constexpr (Event<Tp>)
-            eventManager->push(ptr);
+        addEventIfDerived(ptr);
+        addDefaultLayoutIfTransformable(ptr);
         drawables.push_back(std::move(ptr));
-        if constexpr (std::derived_from<Tp, STEvent>)
-            layouts.push_back(std::make_unique<DefaultLayout>());
     }
 
-    template <std::derived_from<Drawable2D> Tp, typename... Args>
-        requires (std::constructible_from<Tp, Args...>
-            && std::derived_from<Tp, WindowBase::STEvent>)
+    template <
+        std::derived_from<Drawable2D> Tp,
+        std::derived_from<Layout> Lp,
+        typename... Args,
+        typename... LArgs>
+            requires (
+                std::constructible_from<Tp, Args...>
+                && std::derived_from<Tp, Transformable2D>)
     void WindowBase::emplaceDrawableWithLayout(
-        LayoutPtr&& layout,
+        LayoutTag<Lp, LArgs...>&& layout,
         Args&&... args)
     {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
-        if constexpr (Event<Tp>)
-            eventManager->push(ptr);
+        addEventIfDerived(ptr);
+        addLayout(ptr, std::move(layout));
         drawables.push_back(std::move(ptr));
-        layouts.push_back(std::move(layout));
     }
 
     template <std::derived_from<Drawable2D> Tp>
-        requires (!std::derived_from<Tp, WindowBase::STEvent>)
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp> const& drawable)
     {
-        if constexpr (Event<Tp>)
-            eventManager->push(drawable);
+        addEventIfDerived(drawable);
+        addDefaultLayoutIfTransformable(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             drawable));
     }
 
-    template <std::derived_from<Drawable2D> Tp>
-        requires std::derived_from<Tp, WindowBase::STEvent>
+    template <
+        std::derived_from<Drawable2D> Tp,
+        std::derived_from<Layout> Lp,
+        typename... Args>
+            requires std::derived_from<Tp, Transformable2D>
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp> const& drawable,
-        LayoutPtr layout)
+        LayoutTag<Lp, Args...>&& tag)
     {
-        if constexpr (Event<Tp>)
-            eventManager->push(drawable);
+        addEventIfDerived(drawable);
+        addLayout(drawable, std::move(tag));
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             drawable));
-        layouts.push_back(std::move(layout));
     }
 
     template <std::derived_from<Drawable2D> Tp>
-        requires (!std::derived_from<Tp, WindowBase::STEvent>)
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp>&& drawable)
     {
-        if constexpr (Event<Tp>)
-            eventManager->push(drawable);
+        addEventIfDerived(drawable);
+        addDefaultLayoutIfTransformable(drawable);
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             std::move(drawable)));
     }
 
-    template <std::derived_from<Drawable2D> Tp>
-        requires std::derived_from<Tp, WindowBase::STEvent>
+    template <
+        std::derived_from<Drawable2D> Tp,
+        std::derived_from<Layout> Lp,
+        typename... Args>
+            requires std::derived_from<Tp, Transformable2D>
     void WindowBase::pushDrawable(
         std::shared_ptr<Tp>&& drawable,
-        LayoutPtr layout)
+        LayoutTag<Lp, Args...>&& tag)
     {
-        if constexpr (Event<Tp>)
-            eventManager->push(drawable);
+        addEventIfDerived(drawable);
+        addLayout(drawable, std::move(tag));
         drawables.push_back(std::static_pointer_cast<Drawable2D>(
             std::move(drawable)));
-        layouts.push_back(std::move(layout));
+    }
+
+    template <typename Tp>
+    void WindowBase::addDefaultLayoutIfTransformable(
+        std::shared_ptr<Tp> const& pointer)
+    {
+        if constexpr (std::derived_from<Tp, Transformable2D>)
+            addLayout(pointer, LayoutTag<DefaultLayout>{});
+    }
+
+    template <typename Tp, typename Lp, typename... Args>
+    void WindowBase::addLayout(
+        std::shared_ptr<Tp> const& pointer,
+        LayoutTag<Lp, Args...>&& tag)
+    {
+        eventManager->push(std::shared_ptr<LayoutHolder>{
+            new LayoutHolder{
+            std::static_pointer_cast<Transformable2D>(pointer),
+            std::move(tag)}});
+    }
+
+    template <typename Tp>
+    void WindowBase::addEventIfDerived(
+        std::shared_ptr<Tp> const& pointer)
+    {
+        if constexpr (Event<Tp>)
+            eventManager->push(pointer);
     }
 
 }

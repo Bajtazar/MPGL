@@ -84,6 +84,27 @@ namespace mpgl {
         constexpr explicit SafeIterator(void) noexcept = default;
 
         /**
+         * Returns an underlying iterator
+         */
+        [[nodiscard]] constexpr iterator_type getIter(
+            void) const noexcept
+                { return iter; }
+
+        /**
+         * Returns an underlying iterator to the begining of the range
+         */
+        [[nodiscard]] constexpr iterator_type getBegin(
+            void) const noexcept
+                { return begin; }
+
+        /**
+         * Returns an underlying iterator to the end of the range
+         */
+        [[nodiscard]] constexpr sentinel_type getSent(
+            void) const noexcept
+                { return sentinel; }
+
+        /**
          * Increments iterator by one
          *
          * @return reference to this object
@@ -167,7 +188,7 @@ namespace mpgl {
          * @return if the iterator is in the safe range
          */
         [[nodiscard]] constexpr bool isSafe(void) const noexcept
-            { return iter > sentinel && iter <= begin; }
+            { return iter < sentinel && iter >= begin; }
 
         /**
          * Adds given distance to an iterator
@@ -282,6 +303,20 @@ namespace mpgl {
          * Constructs a new safe iterator object
          */
         constexpr explicit SafeIterator(void) noexcept = default;
+
+        /**
+         * Returns an underlying iterator
+         */
+        [[nodiscard]] constexpr iterator_type getIter(
+            void) const noexcept
+                { return iter; }
+
+        /**
+         * Returns an underlying iterator to the end of the range
+         */
+        [[nodiscard]] constexpr sentinel_type getSent(
+            void) const noexcept
+                { return sentinel; }
 
         /**
          * Increments iterator by one

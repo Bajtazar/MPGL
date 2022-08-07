@@ -45,34 +45,6 @@ namespace mpgl {
             (*this)[i].draw();
     }
 
-    template <details::ScreenExtDrawable Base,
-        std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::draw(void) const noexcept {
-        std::ranges::for_each(*this,
-            [](auto const& drawable){ drawable.draw(); });
-    }
-
-    template <details::ScreenExtDrawable Base,
-        std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::draw(
-        std::size_t begin,
-        std::size_t end) const noexcept
-            requires std::ranges::random_access_range<Range>
-    {
-        for (std::size_t i = begin; i < end; ++i)
-            (*this)[i].draw();
-    }
-
-    template <details::ScreenExtDrawable Base,
-        std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        for (auto& drawable : *this)
-            drawable.onScreenTransformation(layout, oldDimensions);
-    }
-
     template <details::Trans2DDrawable Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::draw(void) const noexcept {
@@ -89,16 +61,6 @@ namespace mpgl {
     {
         for (std::size_t i = begin; i < end; ++i)
             (*this)[i].draw();
-    }
-
-    template <details::Trans2DDrawable Base,
-        std::ranges::input_range Range>
-    void DrawableCollection<Base, Range>::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        for (auto& drawable : *this)
-            drawable.onScreenTransformation(layout, oldDimensions);
     }
 
     template <details::Trans2DDrawable Base,

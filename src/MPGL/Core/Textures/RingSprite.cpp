@@ -132,16 +132,6 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void RingSprite<IsColorable>::InnerEllipse::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        any::InputRange<Adapter2D> positions{vertices};
-        layout(positions, oldDimensions);
-        actualizeMatrices();
-    }
-
-    template <bool IsColorable>
     void RingSprite<IsColorable>::InnerEllipse::transform(
         Transformation2D const& transformator) noexcept
     {
@@ -307,17 +297,6 @@ namespace mpgl {
             (Vector2f{get<"position">(this->vertices[3])}
                 - Vector2f{get<"position">(this->vertices[0])}).length()
         };
-    }
-
-    template <bool IsColorable>
-    void RingSprite<IsColorable>::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        EllipticSprite<IsColorable>::onScreenTransformation(
-            layout, oldDimensions);
-        actualizeMatrices();
-        innerEllipse.onScreenTransformation(layout, oldDimensions);
     }
 
     template <bool IsColorable>

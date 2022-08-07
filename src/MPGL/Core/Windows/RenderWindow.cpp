@@ -23,8 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/FramedWindowCompileException.hpp>
-
+#include <MPGL/Exceptions/Window/RenderWindowCompileException.hpp>
 #include <MPGL/Core/Windows/RenderWindow.hpp>
 
 namespace mpgl {
@@ -46,7 +45,7 @@ namespace mpgl {
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER)
             != GL_FRAMEBUFFER_COMPLETE)
-                throw FramedWindowCompileException{};
+                throw RenderWindowCompileException{};
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -132,14 +131,7 @@ namespace mpgl {
     void RenderWindow::onScreenTransformation(
         Vector2u const& oldDimensions) noexcept
     {
-        eventManager->onScreenTransformation(layouts, oldDimensions);
-    }
-
-    void RenderWindow::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        eventManager->onScreenTransformation(layout, oldDimensions);
+        eventManager->onScreenTransformation(oldDimensions);
     }
 
     void RenderWindow::onMouseRelease(

@@ -113,17 +113,6 @@ namespace mpgl {
             Vector2u const& oldDimensions) noexcept;
 
         /**
-         * Perform screen transformation on the inside
-         * drawable objects using the given layout
-         *
-         * @param layout the layout of the figure
-         * @param oldDimensions the old dimensions of the window
-         */
-        void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept final;
-
-        /**
          * Informs contained objects that mouse button has been
          * released
          *

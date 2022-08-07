@@ -30,6 +30,13 @@ namespace mpgl {
     TexturePack::TexturePack(Value const& defaultTexture)
         : defaultValue{defaultTexture} {}
 
+    TexturePack& TexturePack::operator=(TexturePack&& other) noexcept {
+        textureMap = std::move(other.textureMap);
+        const_cast<Value&>(defaultValue) = std::move(
+            other.defaultValue);
+        return *this;
+    }
+
     TexturePack::Value const&
         TexturePack::operator[] (Key const& key) const noexcept
     {

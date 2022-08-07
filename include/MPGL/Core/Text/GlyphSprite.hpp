@@ -165,17 +165,6 @@ namespace mpgl {
          */
         void draw(void) const noexcept;
 
-/**
-         * Transforms the figure during the screen
-         * transformation event
-         *
-         * @param layout the layout of the figure
-         * @param oldDimensions the old screen dimensions
-         */
-        virtual void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept;
-
         /**
          * Performs transformation on the figure
          *

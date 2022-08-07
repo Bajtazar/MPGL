@@ -74,16 +74,6 @@ namespace mpgl {
         return *this;
     }
 
-    void Angular::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        any::InputRange<Adapter2D> positions{
-            vertices | views::position};
-        layout(positions, oldDimensions);
-        isModified = true;
-    }
-
     void Angular::transform(
         Transformation2D const& transformator) noexcept
     {

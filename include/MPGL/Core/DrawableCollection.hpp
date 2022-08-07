@@ -25,26 +25,16 @@
  */
 #pragma once
 
-#include <vector>
-#include <algorithm>
-
 #include <MPGL/Core/Transformations/Transformable.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/DrawableTraits.hpp>
 
+#include <algorithm>
+#include <vector>
+
 namespace mpgl {
 
     namespace details {
-
-        /**
-         * Checks whether the screen transformation event extension
-         * can be applied to the given type drawable collection
-         *
-         * @tparam Base the checked type
-         */
-        template <typename Base>
-        concept ScreenExtDrawable = InstanceOf<Base, Drawable> &&
-            std::derived_from<Base, ScreenTransformationEvent>;
 
         /**
          * Checks whether the transformation 2D event extension
@@ -53,7 +43,7 @@ namespace mpgl {
          * @tparam Base the checked type
          */
         template <typename Base>
-        concept Trans2DDrawable = ScreenExtDrawable<Base> &&
+        concept Trans2DDrawable = InstanceOf<Base, Drawable> &&
             std::derived_from<Base, Transformable2D>;
     }
 
@@ -122,81 +112,6 @@ namespace mpgl {
      * The container that simplifies the common operations
      * on the drawable type. Allows to use the desired
      * collection underneath. Extends the default usage by
-     * providing an aditional Screen Transformation Event
-     * support
-     *
-     * @tparam Base the drawable type
-     * @tparam Range the collection type
-     */
-    template <details::ScreenExtDrawable Base,
-        std::ranges::input_range Range>
-    struct DrawableCollection<Base, Range> :
-        public Drawable<DrawableDimensionT<Base>>,
-        public Range,
-        public virtual ScreenTransformationEvent
-    {
-        using Range::Range;
-
-        DrawableCollection(
-            DrawableCollection const& base) noexcept = default;
-        DrawableCollection(
-            DrawableCollection&& base) noexcept = default;
-
-        DrawableCollection& operator=(
-            DrawableCollection const& base) noexcept = default;
-        DrawableCollection& operator=(
-            DrawableCollection&& base) noexcept = default;
-
-        using iterator
-            = typename Range::iterator;
-        using const_iterator
-            = typename Range::const_iterator;
-        using reverse_iterator
-            = typename Range::reverse_iterator;
-        using const_reverse_iterator
-            = typename Range::const_reverse_iterator;
-
-        using value_type = typename Range::value_type;
-        using size_type = typename Range::size_type;
-
-        /**
-         * Draws all of the contained drawables on the screen
-         */
-        void draw(void) const noexcept final;
-
-        /**
-         * Draws all of the contained drawables on the screen
-         * with the indexes between the given range
-         *
-         * @param begin the first index
-         * @param end the last index
-         */
-        void draw(
-            std::size_t begin,
-            std::size_t end) const noexcept
-                requires std::ranges::random_access_range<Range>;
-
-        /**
-         * Transforms the contained drawables during the screen
-         * transformation event
-         *
-         * @param layout the layout of the object
-         * @param oldDimensions the old screen dimensions
-         */
-        void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept final;
-
-        /**
-         * Destroys the Drawable Collection object
-         */
-        ~DrawableCollection(void) noexcept = default;
-    };
-
-    /**
-     * The container that simplifies the common operations
-     * on the drawable type. Allows to use the desired
-     * collection underneath. Extends the default usage by
      * providing an aditional Transformable 2D support
      *
      * @tparam Base the drawable type
@@ -249,17 +164,6 @@ namespace mpgl {
             std::size_t begin,
             std::size_t end) const noexcept
                 requires std::ranges::random_access_range<Range>;
-
-        /**
-         * Transforms the contained drawables during the screen
-         * transformation event
-         *
-         * @param layout the layout of the object
-         * @param oldDimensions the old screen dimensions
-         */
-        void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept final;
 
         /**
          * Performes transforation on the contained drawables

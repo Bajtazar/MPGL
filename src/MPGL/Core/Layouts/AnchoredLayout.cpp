@@ -28,27 +28,40 @@
 namespace mpgl {
 
     AnchoredLayout::AnchoredLayout(
+        Vector2u const& oldDimensions,
         Vector2f const& hook) noexcept
-            : hook{hook} {}
+            : dimensions{oldDimensions}, hook{hook} {}
 
     AnchoredLayout::AnchoredLayout(
+        Vector2u const& oldDimensions,
         Vector2u const& hook) noexcept
-            : hook{vectorCast<float32>(hook)
+            : dimensions{oldDimensions},
+            hook{vectorCast<float32>(hook)
                 / vectorCast<float32>(
                     context.windowDimensions)} {}
 
     void AnchoredLayout::operator() (
-        any::InputRange<Adapter2D>& range,
-        Vector2u const& oldDimensions) const noexcept
+        any::InputRange<Adapter2D>& range) const noexcept
     {
         Vector2f newDim{context.windowDimensions};
-        Vector2f oldDim{oldDimensions};
+        Vector2f oldDim{dimensions.get()};
         auto translation = 2.f * hook * (1.f - oldDim / newDim);
         for (Adapter2D& vertexPosition : range) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * oldDim / newDim - 1.f
                 + translation;
         }
+    }
+
+    void AnchoredLayout::operator() (
+        Adapter2D& coordinate) const noexcept
+    {
+        Vector2f newDim{context.windowDimensions};
+        Vector2f oldDim{dimensions.get()};
+        auto translation = 2.f * hook * (1.f - oldDim / newDim);
+        Vector2f& position = coordinate.get();
+        position = (position + 1.f) * oldDim / newDim - 1.f
+            + translation;
     }
 
 }

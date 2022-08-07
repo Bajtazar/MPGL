@@ -210,17 +210,6 @@ namespace mpgl {
     }
 
     template <bool IsColorable>
-    void GlyphSprite<IsColorable>::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        any::InputRange<Adapter2D> positions{
-            vertices | views::position};
-        layout(positions, oldDimensions);
-        isModified = true;
-    }
-
-    template <bool IsColorable>
     void GlyphSprite<IsColorable>::transform(
         Transformation2D const& transformator) noexcept
     {

@@ -44,16 +44,6 @@ namespace mpgl {
             }}, xVersor{1._x}, yVersor{1._y}, position{position} {}
 
     template <bool IsColorable>
-    void Text<IsColorable>::PositionHolder::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        any::InputRange<Adapter2D> positions{vertices};
-        layout(positions, oldDimensions);
-        actualize();
-    }
-
-    template <bool IsColorable>
     void Text<IsColorable>::PositionHolder::transform(
         Transformation2D const& transformator) noexcept
     {
@@ -565,19 +555,6 @@ namespace mpgl {
         if (mods & Modifiers::Strikethrough)
             strikethroughs.transform(transformator);
         positionSpace.transform(transformator);
-    }
-
-    template <bool IsColorable>
-    void Text<IsColorable>::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        glyphs.onScreenTransformation(layout, oldDimensions);
-        if (mods & Modifiers::Underline)
-            underlines.onScreenTransformation(layout, oldDimensions);
-        if (mods & Modifiers::Strikethrough)
-            strikethroughs.onScreenTransformation(layout, oldDimensions);
-        positionSpace.onScreenTransformation(layout, oldDimensions);
     }
 
 }

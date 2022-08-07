@@ -820,17 +820,6 @@ namespace mpgl {
         void clear(void) noexcept;
 
         /**
-         * Transforms the text during the screen
-         * transformation event
-         *
-         * @param layout the layout of the text
-         * @param oldDimensions the old screen dimensions
-         */
-        void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept final;
-
-        /**
          * Performs transformation on the figure
          *
          * @param transformator the constant reference to the
@@ -1049,17 +1038,6 @@ namespace mpgl {
                 PositionHolder const&) noexcept = default;
             PositionHolder& operator=(
                 PositionHolder&&) noexcept = default;
-
-            /**
-             * Transforms the space during the screen
-             * transformation event
-             *
-             * @param layout the layout of the space
-             * @param oldDimensions the old screen dimensions
-             */
-            void onScreenTransformation(
-                Layout& layout,
-                Vector2u const& oldDimensions) noexcept final;
 
             /**
              * Performs transformation on the space

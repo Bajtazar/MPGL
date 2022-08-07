@@ -23,9 +23,8 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/WindowInvalidArgsException.hpp>
-
-#include <MPGL/Exceptions/WindowGladException.hpp>
+#include <MPGL/Exceptions/Window/WindowInvalidArgsException.hpp>
+#include <MPGL/Exceptions/Window/WindowGladException.hpp>
 #include <MPGL/Core/Windows/WindowPlatform.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 
@@ -70,8 +69,7 @@ namespace mpgl {
         Vector2u oldDimensions = render->dimensions;
         render->setDimensions(vectorCast<uint32>(
             Vector2i{width, height}));
-        render->eventManager->onScreenTransformation(
-            render->layouts, oldDimensions);
+        render->eventManager->onScreenTransformation(oldDimensions);
     }
 
     void keyCallback(GLFWwindow* window, int32 key,

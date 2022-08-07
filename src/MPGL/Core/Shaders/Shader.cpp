@@ -23,7 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ShaderCompilationException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderCompilationException.hpp>
 
 #include <MPGL/Core/Shaders/Shader.hpp>
 #include <MPGL/Utility/Ranges.hpp>
@@ -36,19 +36,7 @@
 namespace mpgl {
 
     template <bool ShaderType>
-    constexpr auto Shader<ShaderType>::shaderType(
-        void) const noexcept
-    {
-        if constexpr (ShaderType)
-            return GL_VERTEX_SHADER;
-        else
-            return GL_FRAGMENT_SHADER;
-    }
-
-    template <bool ShaderType>
-    void Shader<ShaderType>::verifyCompilationStatus(
-        std::string const& filePath) const
-    {
+    void Shader<ShaderType>::verifyCompilationStatus(void) const {
         int32 status = 0;
         glGetProgramiv(shaderID, GL_COMPILE_STATUS, &status);
         if (!status) {
@@ -57,8 +45,7 @@ namespace mpgl {
             glGetProgramInfoLog(shaderID, 512, nullptr, info.data());
             if (!accumulate(info, 0u))
                 return;
-            throw ShaderCompilationException{
-                "[" + filePath + "]\t" + info};
+            throw ShaderCompilationException{info};
         }
     }
 
@@ -66,13 +53,9 @@ namespace mpgl {
     Shader<ShaderType>::Shader(std::string shaderPath)
         : shaderID{glCreateShader(shaderType())}
     {
-        if (auto shaderCode = FileIO::readFile(shaderPath)) {
-            std::string stream = std::move(shaderCode->str());
-            const char* codePointer = stream.c_str();
-            glShaderSource(shaderID, 1, &codePointer, nullptr);
-            glCompileShader(shaderID);
-            verifyCompilationStatus(shaderPath);
-        } else
+        if (auto shaderCode = FileIO::readFileToVec(shaderPath))
+            loadShader((shaderCode->push_back(0), *shaderCode));
+        else
             throw ShaderCompilationException{
                 "Shader cannot be loaded from a file"};
     }

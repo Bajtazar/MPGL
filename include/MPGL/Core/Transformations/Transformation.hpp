@@ -25,7 +25,6 @@
  */
 #pragma once
 
-#include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Collections/Erasers/InputRange.hpp>
 #include <MPGL/Utility/Adapter.hpp>
 #include <MPGL/Core/Dimensions.hpp>

@@ -251,14 +251,6 @@ namespace mpgl {
              * Destroys the SOSChunk object
              */
             ~SOSChunk(void) noexcept = default;
-        private:
-            /**
-             * Returns whether the iterator is in the safe range
-             *
-             * @param data the reference to the file's iterator
-             * @return if the iterator is in the safe range
-             */
-            bool iterable(FileIter& data) const noexcept;
         };
 
        /**

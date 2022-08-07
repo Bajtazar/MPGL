@@ -28,7 +28,6 @@
 namespace mpgl {
 
     void RenderingAdapter::onScreenTransformation(
-        [[maybe_unused]] Layout& layout,
         Vector2u const& oldDimensions) noexcept
     {
         reference.get().onScreenTransformation(oldDimensions);

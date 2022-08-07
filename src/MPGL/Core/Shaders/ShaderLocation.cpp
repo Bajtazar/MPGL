@@ -23,10 +23,9 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Exceptions/Shader/ShaderLocationInvalidProgramException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderLocationUniformException.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
-
-#include <MPGL/Exceptions/ShaderLocationInvalidProgramException.hpp>
-#include <MPGL/Exceptions/ShaderLocationUniformException.hpp>
 
 namespace mpgl {
 
