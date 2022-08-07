@@ -35,7 +35,7 @@ namespace mpgl {
     Shader<ShaderType>::Shader(Range&& range)
         : shaderID{glCreateShader(shaderType())}
     {
-        if (!*(std::ranges::end(range) - 1))
+        if (*(std::ranges::end(range) - 1))
             throw ShaderMissingSentinelException{};
         loadShader(std::forward<Range>(range));
     }
