@@ -36,10 +36,11 @@ namespace mpgl {
      * @tparam Tp the layout's type
      * @tparam Args the rest of the layout argument types
      */
-    template <std::derived_from<Layout> Tp, class... Args>
+    template <std::derived_from<Layout> Tp, typename... Args>
         requires std::constructible_from<Tp, Vector2u const&, Args...>
     struct LayoutTag {
         using Layout = Tp;
+        using Tuple = std::tuple<Args...>;
 
         /**
          * Constructs a new layout tag object
@@ -48,9 +49,9 @@ namespace mpgl {
          * of the layout constructor's arguments
          */
         explicit LayoutTag(Args&&... args)
-            : args{std::forward(args...)} {}
+            : args{std::forward<Args>(args)...} {}
 
-        std::tuple<Args...>                                 args;
+        Tuple                                           args;
     };
 
     /**

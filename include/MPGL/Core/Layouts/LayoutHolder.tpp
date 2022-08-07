@@ -33,9 +33,10 @@ namespace mpgl {
         Vector2u const& dimensions) const noexcept
     {
         if constexpr (sizeof...(Args)) {
-            std::apply(layoutTag.args, [&](auto&&... args) {
+            std::apply([&]<typename... Inner>(Inner&&... args) {
                 transformable.transform(
-                    Tp{dimensions, std::forward(args)...}); });
+                    Tp{dimensions, std::forward<Inner>(args)...});
+            }, layoutTag.args);
         } else {
             transformable.transform(Tp{dimensions});
         }
