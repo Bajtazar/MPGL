@@ -25,7 +25,9 @@
  */
 #pragma once
 
-#include <MPGL/Core/Layouts/Layout.hpp>
+#include <MPGL/Core/Transformations/Transformation.hpp>
+
+#include <memory>
 
 namespace mpgl {
 
@@ -37,24 +39,33 @@ namespace mpgl {
      * of the screen) during the screen transformation event (
      * object's scale will be intanct as in default layout)
      */
-    class AnchoredLayout : public Layout {
+    class AnchoredLayout :
+        public Transformation2D,
+        private GraphicalObject
+    {
     public:
         /**
          * Constructs a new anchored layout object
          *
+         * @param oldDimensions the dimensions of the window
+         * before screen transformation event
          * @param hook the layout's hook (in the [0, 1]^2
          * coordinate space)
          */
         explicit AnchoredLayout(
+            Vector2u const& oldDimensions,
             Vector2f const& hook = {0.f, 0.f}) noexcept;
 
         /**
          * Constructs a new anchored layout object
          *
+         * @param oldDimensions the dimensions of the window
+         * before screen transformation event
          * @param hook the layout's hook (in the screen pixels
          * coordinate space)
          */
         explicit AnchoredLayout(
+            Vector2u const& oldDimensions,
             Vector2u const& hook) noexcept;
 
         AnchoredLayout(AnchoredLayout const&) noexcept = default;
@@ -82,22 +93,32 @@ namespace mpgl {
             { return hook; }
 
         /**
-         * Ensures that the object will be shifted acording to the
+         * Ensures that the range will be shifted acording to the
          * hook's translation also omitting stretching
          *
          * @param range the reference to the position range object
-         * @param oldDimensions the constant reference to the old
-         * window dimensions
          */
         void operator() (
-            any::InputRange<Adapter2D>& range,
-            Vector2u const& oldDimensions) const noexcept final;
+            any::InputRange<Adapter2D>& range) const noexcept final;
+
+        /**
+         * Ensures that the coordinate will be shifted acording to the
+         * hook's translation also omitting stretching
+         *
+         * @param coordinate the reference to the coordinate
+         * object
+         */
+        void operator() (
+           Adapter2D& coordinate) const noexcept final;
 
         /**
          * Destroys the anchored layout object
          */
         ~AnchoredLayout(void) noexcept = default;
     private:
+        using Vector2uR = std::reference_wrapper<Vector2u const>;
+
+        Vector2uR                               dimensions;
         Vector2f                                hook;
     };
 
