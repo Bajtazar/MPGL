@@ -23,14 +23,18 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#version 330 core
-layout (location = 0) in vec2 position;
-layout (location = 1) in vec2 inTextureCoords;
+#pragma once
 
-out vec2 textureCoords;
+namespace mpgl {
 
-void main()
-{
-    gl_Position = vec4(position.xy, 0.0, 1.0);
-    textureCoords = inTextureCoords;
+    template <bool ShaderType>
+    constexpr auto Shader<ShaderType>::shaderType(
+        void) const noexcept
+    {
+        if constexpr (ShaderType)
+            return GL_VERTEX_SHADER;
+        else
+            return GL_FRAGMENT_SHADER;
+    }
+
 }

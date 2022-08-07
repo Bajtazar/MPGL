@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Shaders/ShaderProgram.hpp>
+#include <MPGL/Core/Shaders/GZSLLoader.hpp>
 
 #include <string>
 #include <vector>
@@ -48,7 +49,7 @@ namespace mpgl {
          * Raises exception when shaders are invalid
          *
          * @param locations a constant reference to the vector
-         * containing looked directories
+         * containing looked directories or gzsl packages
          * @throw ShaderLibraryInvalidShadersException when there
          * are shaders without pair
          * @throw ShaderCompilationException when there is an error
@@ -154,6 +155,8 @@ namespace mpgl {
             std::string const& name) const
                 { return programs.at(name); }
     private:
+        using ShaderMap = typename GZSLLoader<>::ShaderMap;
+
         ProgramMap                                      programs;
 
         /**
@@ -164,6 +167,31 @@ namespace mpgl {
          * @return the vector with shader names
          */
         Paths getShaderList(Path const& path) const;
+
+        /**
+         * Returns a vector with shader names
+         *
+         * @param path a constant reference to a map with
+         * shaders
+         * @return the vector with shader names
+         */
+        Paths getShaderList(ShaderMap const& map) const;
+
+        /**
+         * Loads shaders from the given directory
+         *
+         * @param path a constant reference to a string with
+         * the looked directory path
+         */
+        void loadShaderDirectory(Path const& path);
+
+        /**
+         * Loads shaders from the given GZLS package
+         *
+         * @param path a constant reference to a string with
+         * the looked GZLS package path
+         */
+        void loadPackage(Path const& path);
 
         /**
          * Returns whether both vectors contains same shaders names
@@ -197,6 +225,14 @@ namespace mpgl {
          * directory
          */
         static Path fragmentShaders(Path const& path);
+
+        /**
+         * Checks whether the given path is the GZSL's package
+         *
+         * @param path the path
+         * @return if the given path is the GZSL's package
+         */
+        static bool isPackage(Path const& path) noexcept;
     };
 
 }

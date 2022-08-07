@@ -144,4 +144,5 @@ namespace mpgl {
 
 }
 
+#include <MPGL/Core/Shaders/Shader.ipp>
 #include <MPGL/Core/Shaders/Shader.tpp>

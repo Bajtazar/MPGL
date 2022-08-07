@@ -24,10 +24,9 @@
  *  distribution
  */
 #include <MPGL/Exceptions/Shader/ShaderLibraryInvalidShadersException.hpp>
-#include <MPGL/Exceptions/Shader/ShaderProgramLinkingException.hpp>
 #include <MPGL/Core/Shaders/ShaderLibrary.hpp>
-#include <MPGL/IO/FileIO.hpp>
 
+#include <filesystem>
 #include <algorithm>
 
 namespace mpgl {
@@ -35,25 +34,52 @@ namespace mpgl {
     ShaderLibrary::Path ShaderLibrary::vertexShaders(
         Path const& path)
     {
-        return path + "/Vertex";
+        return path.size() ? path + "/Vertex" : "Vertex";
     }
 
     ShaderLibrary::Path ShaderLibrary::fragmentShaders(
         Path const& path)
     {
-        return path + "/Fragment";
+        return path.size() ? path + "/Fragment" : "Fragment";
     }
 
     ShaderLibrary::ShaderLibrary(Paths const& locations) {
+        namespace fs = std::filesystem;
+
         for (Path const& path : locations) {
-            for (std::string const& shader : getShaderList(path)) {
-                VertexShader vertex{vertexShaders(path) + "/" + shader};
-                FragmentShader fragment{fragmentShaders(path) + "/" + shader};
-                ShaderProgram program{vertex, fragment};
-                program.link(shader);
-                programs.emplace(shader.substr(0,
-                    shader.find_last_of('.')), std::move(program));
-            }
+            if (isPackage(path) && fs::exists(path))
+                loadPackage(path);
+            else
+                loadShaderDirectory(path);
+        }
+    }
+
+    bool ShaderLibrary::isPackage(Path const& path) noexcept {
+        auto size = path.size();
+        return size > 5 && path[size - 5] == '.' &&
+            path[size - 4] == 'g' && path[size - 3] == 'z' &&
+            path[size - 2] == 's' && path[size - 1] == 'l';
+    }
+
+    void ShaderLibrary::loadShaderDirectory(Path const& path) {
+        for (std::string const& shader : getShaderList(path)) {
+            VertexShader vertex{vertexShaders(path) + "/" + shader};
+            FragmentShader fragment{fragmentShaders(path) + "/" + shader};
+            ShaderProgram program{vertex, fragment};
+            program.link(shader);
+            programs.emplace(shader.substr(0,
+                shader.find_last_of('.')), std::move(program));
+        }
+    }
+
+    void ShaderLibrary::loadPackage(Path const& path) {
+        auto shaderMap = GZSLLoader{security::secured}(path);
+        for (std::string const& shader : getShaderList(shaderMap)) {
+            VertexShader vertex{shaderMap["Vertex/" + shader]};
+            FragmentShader fragment{shaderMap["Fragment/" + shader]};
+            ShaderProgram program{vertex, fragment};
+            program.link(shader);
+            programs.emplace(shader, std::move(program));
         }
     }
 
@@ -83,6 +109,25 @@ namespace mpgl {
         std::ranges::transform(vertex, std::back_inserter(shaders),
             [dir=path](auto const& path)
                 { return path.substr(vertexShaders(dir).size() + 1); });
+        return shaders;
+    }
+
+    ShaderLibrary::Paths ShaderLibrary::getShaderList(
+        ShaderMap const& map) const
+    {
+        Paths vertex, fragment;
+        for (auto const& [shader, _] : map) {
+            if (shader[0] == 'V')
+                vertex.push_back(shader);
+            else
+                fragment.push_back(shader);
+        }
+        if (!sameShaders(vertex, fragment, ""))
+            throw ShaderLibraryInvalidShadersException{vertex, fragment};
+        Paths shaders;
+        std::ranges::transform(vertex, std::back_inserter(shaders),
+            [](auto const& path)
+                { return path.substr(vertexShaders("").size() + 1); });
         return shaders;
     }
 

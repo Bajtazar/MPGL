@@ -36,16 +36,6 @@
 namespace mpgl {
 
     template <bool ShaderType>
-    constexpr auto Shader<ShaderType>::shaderType(
-        void) const noexcept
-    {
-        if constexpr (ShaderType)
-            return GL_VERTEX_SHADER;
-        else
-            return GL_FRAGMENT_SHADER;
-    }
-
-    template <bool ShaderType>
     void Shader<ShaderType>::verifyCompilationStatus(void) const {
         int32 status = 0;
         glGetProgramiv(shaderID, GL_COMPILE_STATUS, &status);

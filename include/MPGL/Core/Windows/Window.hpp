@@ -48,8 +48,8 @@ namespace mpgl {
          * @param options the options which determins different
          * behaviours of window
          * @param eventManager the event manager used by the window
-         * @param shaderDirectories a list of paths checked during
-         * shader loading phase
+         * @param shaderDirectories a list of paths or gzsl packages
+         * checked during shader loading phase
          */
         explicit Window(
             Vector2u const& dimensions,
