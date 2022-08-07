@@ -30,50 +30,59 @@
 
 #include <algorithm>
 
-#ifndef MPGL_SOURCE_DIR
-#define MPGL_SOURCE_DIR "."
-#endif
-
 namespace mpgl {
 
-    std::string const ShaderLibrary::vertexShadersPath
-        = std::string(MPGL_SOURCE_DIR) + "/shaders/Vertex";
+    ShaderLibrary::Path ShaderLibrary::vertexShaders(
+        Path const& path)
+    {
+        return path + "/Vertex";
+    }
 
-    std::string const ShaderLibrary::fragmentShadersPath
-        = std::string(MPGL_SOURCE_DIR) + "/shaders/Fragment";
+    ShaderLibrary::Path ShaderLibrary::fragmentShaders(
+        Path const& path)
+    {
+        return path + "/Fragment";
+    }
 
-    ShaderLibrary::ShaderLibrary(void) {
-        for (std::string const& shader : getShaderList()) {
-            VertexShader vertex{vertexShadersPath + "/" + shader};
-            FragmentShader fragment{fragmentShadersPath + "/" + shader};
-            ShaderProgram program{vertex, fragment};
-            program.link(shader);
-            programs.emplace(shader.substr(0,
-                shader.find_last_of('.')), std::move(program));
+    ShaderLibrary::ShaderLibrary(Paths const& locations) {
+        for (Path const& path : locations) {
+            for (std::string const& shader : getShaderList(path)) {
+                VertexShader vertex{vertexShaders(path) + "/" + shader};
+                FragmentShader fragment{fragmentShaders(path) + "/" + shader};
+                ShaderProgram program{vertex, fragment};
+                program.link(shader);
+                programs.emplace(shader.substr(0,
+                    shader.find_last_of('.')), std::move(program));
+            }
         }
     }
 
     bool ShaderLibrary::sameShaders(
-        Paths const& vertexShaders,
-        Paths const& fragmentShaders) noexcept
+        Paths const& vertexShadersPaths,
+        Paths const& fragmentShadersPaths,
+        Path const& path) noexcept
     {
-        auto compare = [](auto const& left, auto const& right) -> bool {
-            return left.substr(vertexShadersPath.size() + 1)
-                == right.substr(fragmentShadersPath.size() + 1);
+        auto compare = [&path](auto const& left,
+            auto const& right) -> bool
+        {
+            return left.substr(vertexShaders(path).size() + 1)
+                == right.substr(fragmentShaders(path).size() + 1);
         };
-        return std::ranges::equal(vertexShaders, fragmentShaders,
-            compare);
+        return std::ranges::equal(vertexShadersPaths,
+            fragmentShadersPaths, compare);
     }
 
-    ShaderLibrary::Paths ShaderLibrary::getShaderList(void) const {
-        auto vertex = FileIO::getRecursiveDirFiles(vertexShadersPath);
-        auto fragment = FileIO::getRecursiveDirFiles(fragmentShadersPath);
-        if (!sameShaders(vertex, fragment))
+    ShaderLibrary::Paths ShaderLibrary::getShaderList(
+        Path const& path) const
+    {
+        auto vertex = FileIO::getRecursiveDirFiles(vertexShaders(path));
+        auto fragment = FileIO::getRecursiveDirFiles(fragmentShaders(path));
+        if (!sameShaders(vertex, fragment, path))
             throw ShaderLibraryInvalidShadersException{vertex, fragment};
         Paths shaders;
         std::ranges::transform(vertex, std::back_inserter(shaders),
-            [](auto const& path)
-                { return path.substr(vertexShadersPath.size() + 1); });
+            [dir=path](auto const& path)
+                { return path.substr(vertexShaders(dir).size() + 1); });
         return shaders;
     }
 

@@ -40,11 +40,15 @@ namespace mpgl {
     class ShaderLibrary {
     public:
         typedef std::map<std::string, ShaderProgram>    ProgramMap;
+        typedef std::string                             Path;
+        typedef std::vector<std::string>                Paths;
 
         /**
          * Initializes and saves all of the found shader programs.
          * Raises exception when shaders are invalid
          *
+         * @param locations a constant reference to the vector
+         * containing looked directories
          * @throw ShaderLibraryInvalidShadersException when there
          * are shaders without pair
          * @throw ShaderCompilationException when there is an error
@@ -53,7 +57,7 @@ namespace mpgl {
          * in shader program linking
          * @throw std::filesystem errors during file IO
          */
-        explicit ShaderLibrary(void);
+        explicit ShaderLibrary(Paths const& locations);
 
         using const_iterator = typename ProgramMap::const_iterator;
         using const_reverse_iterator
@@ -150,31 +154,49 @@ namespace mpgl {
             std::string const& name) const
                 { return programs.at(name); }
     private:
-        typedef std::vector<std::string>                Paths;
-
         ProgramMap                                      programs;
 
         /**
          * Returns a vector with shader names
          *
+         * @param path a constant reference to a string with
+         * the looked directory
          * @return the vector with shader names
          */
-        Paths getShaderList(void) const;
+        Paths getShaderList(Path const& path) const;
 
         /**
          * Returns whether both vectors contains same shaders names
          *
-         * @param vertexShaders the vertex shaders list
-         * @param fragmentShaders the fragment shaders list
+         * @param vertexShadersPaths the vertex shaders list
+         * @param fragmentShadersPaths the fragment shaders list
+         * @param path path to the shader's directory
          * @return if both vectors contains same shaders names
          */
         static bool sameShaders(
-            Paths const& vertexShaders,
-            Paths const& fragmentShaders) noexcept;
+            Paths const& vertexShadersPaths,
+            Paths const& fragmentShadersPaths,
+            Path const& path) noexcept;
 
-        static std::string const                        vertexShadersPath;
+        /**
+         * Returns a path to the vertex shaders in the given
+         * directory
+         *
+         * @param path the path to the directory
+         * @return the path to the vertex shaders in the given
+         * directory
+         */
+        static Path vertexShaders(Path const& path);
 
-        static std::string const                        fragmentShadersPath;
+        /**
+         * Returns a path to the fragment shaders in the given
+         * directory
+         *
+         * @param path the path to the directory
+         * @return the path to the fragment shaders in the given
+         * directory
+         */
+        static Path fragmentShaders(Path const& path);
     };
 
 }

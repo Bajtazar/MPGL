@@ -36,6 +36,9 @@ namespace mpgl {
      */
     class Window : public WindowPlatform {
     public:
+        using String = std::string;
+        using Paths = std::vector<String>;
+
         /**
          * Creates a new window with given dimensions, title
          * and options
@@ -45,13 +48,15 @@ namespace mpgl {
          * @param options the options which determins different
          * behaviours of window
          * @param eventManager the event manager used by the window
+         * @param shaderDirectories a list of paths checked during
+         * shader loading phase
          */
         explicit Window(
             Vector2u const& dimensions,
-            std::string const& title,
+            String const& title,
             Options const& options = Options{},
-            EventManagerPtr eventManager
-                = std::make_unique<BasicWindowEventManager>());
+            EventManagerPtr eventManager = defaultManager(),
+            Paths const& shaderDirectories = defaultShaderDirs());
 
         Window(Window const& window) noexcept = delete;
         Window(Window&& window) noexcept = delete;
@@ -85,7 +90,8 @@ namespace mpgl {
          *
          * @param background the background color
          */
-        void windowLoop(Color const& background = Color::Black) noexcept;
+        void windowLoop(
+            Color const& background = Color::Black) noexcept;
 
         /**
          * Returns a reference to the shader library object
@@ -129,6 +135,21 @@ namespace mpgl {
         ShaderLibrary                               shaders;
         Duration                                    sleepTime;
         TimePoint                                   lastTime;
+
+        /**
+         * Returns the default event manager for the window
+         * (BasicWindowEventManager)
+         *
+         * @return the default event manager for the window
+         */
+        static EventManagerPtr defaultManager(void) noexcept;
+
+        /**
+         * Returns the default shader directories
+         *
+         * @return the default shader directories
+         */
+        static Paths defaultShaderDirs(void) noexcept;
     };
 
 

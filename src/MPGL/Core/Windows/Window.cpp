@@ -25,17 +25,34 @@
  */
 #include <MPGL/Core/Windows/Window.hpp>
 
+#ifndef MPGL_SOURCE_DIR
+#define MPGL_SOURCE_DIR "."
+#endif
+
 namespace mpgl {
 
     using std::operator""us;
 
+    Window::EventManagerPtr Window::defaultManager(void) noexcept {
+        return std::make_unique<BasicWindowEventManager>();
+    }
+
+    Window::Paths Window::defaultShaderDirs(void) noexcept {
+        return {
+            "shaders",
+            String(MPGL_SOURCE_DIR) + "/shaders"
+        };
+    }
+
     Window::Window(
         Vector2u const& dimensions,
-        std::string const& title,
+        String const& title,
         Options const& options,
-        EventManagerPtr eventManager)
+        EventManagerPtr eventManager,
+        Paths const& shaderDirectories)
             : WindowPlatform{dimensions, title, options,
-                std::move(eventManager)}, sleepTime{0us}, lastTime{0us}
+                std::move(eventManager)},
+            shaders{shaderDirectories}, sleepTime{0us}, lastTime{0us}
     {
         glEnable(GL_BLEND);
         glEnable(GL_MULTISAMPLE);
