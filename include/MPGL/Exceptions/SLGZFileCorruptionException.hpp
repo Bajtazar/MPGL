@@ -31,18 +31,18 @@
 namespace mpgl {
 
     /**
-     * Exception indicating that an indicated GZSL file does not
+     * Exception indicating that an indicated SLGZ file does not
      * exist or it is corrupted
      */
-    class GZSLFileCorruptionException : public MPGLException {
+    class SLGZFileCorruptionException : public MPGLException {
     public:
         /**
-         * Constructs a new GZSL File Corruption Exception object with
+         * Constructs a new SLGZ File Corruption Exception object with
          * given file name
          *
          * @param fileName the gzls's file name
          */
-        explicit GZSLFileCorruptionException(
+        explicit SLGZFileCorruptionException(
             std::string const& fileName) noexcept
                 : message{fileName +
                     " - gzls file is corrupted"} {}
@@ -57,9 +57,9 @@ namespace mpgl {
             { return message.c_str(); }
 
         /**
-         * Destroys the GZSL File Corruption Exception object
+         * Destroys the SLGZ File Corruption Exception object
          */
-        ~GZSLFileCorruptionException(void) noexcept = default;
+        ~SLGZFileCorruptionException(void) noexcept = default;
     private:
         std::string                                 message;
     };

@@ -40,8 +40,8 @@ namespace mpgl {
     Window::Paths Window::defaultShaderDirs(void) noexcept {
         return {
             "shaders",
-            "shaders.gzsl",
-            String(MPGL_SOURCE_DIR) + "/shaders.gzsl"
+            "shaders.sl.gz",
+            String(MPGL_SOURCE_DIR) + "/shaders.sl.gz"
         };
     }
 

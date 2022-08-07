@@ -38,28 +38,28 @@
 namespace mpgl {
 
     /**
-     * The GZSL file format parser
+     * The SLGZ file format parser
      */
     template <security::SecurityPolicy Policy = Secured>
-    class GZSLLoader {
+    class SLGZLoader {
     public:
         using Buffer = std::vector<char>;
         using ShaderMap = std::map<std::string, Buffer>;
 
         /**
-         * Constructs a new GZSLLoader object
+         * Constructs a new SLGZLoader object
          *
          * @param token the security policy token
          */
-        explicit GZSLLoader(Policy token = {}) noexcept {}
+        explicit SLGZLoader(Policy token = {}) noexcept {}
 
         /**
-         * Parses the GZSL file format and returns a map containing
+         * Parses the SLGZ file format and returns a map containing
          * the shader names and their codes
          *
-         * @throws GZSLFileCorruptionException if file does not
+         * @throws SLGZFileCorruptionException if file does not
          * exist or is corrupted
-         * @param path a path to the GZSL file
+         * @param path a path to the SLGZ file
          * @return the map containing
          * the shader names and their codes
          */
@@ -95,7 +95,7 @@ namespace mpgl {
             Buffer& buffer) const noexcept;
 
         /**
-         * Parses the GZSL's file header
+         * Parses the SLGZ's file header
          *
          * @param iterator the reference to the file's iterator
          * @return the records contained within the header
@@ -120,4 +120,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Core/Shaders/GZSLLoader.tpp>
+#include <MPGL/Core/Shaders/SLGZLoader.tpp>

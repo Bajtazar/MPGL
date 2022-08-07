@@ -23,8 +23,8 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/GZSLFileCorruptionException.hpp>
-#include <MPGL/Core/Shaders/GZSLLoader.hpp>
+#include <MPGL/Exceptions/SLGZFileCorruptionException.hpp>
+#include <MPGL/Core/Shaders/SLGZLoader.hpp>
 #include <MPGL/Compression/GZIPDecoder.hpp>
 #include <MPGL/IO/Readers.hpp>
 #include <MPGL/IO/FileIO.hpp>
@@ -32,8 +32,8 @@
 namespace mpgl {
 
     template <security::SecurityPolicy Policy>
-    [[nodiscard]] GZSLLoader<Policy>::Iter
-        GZSLLoader<Policy>::getIterator(
+    [[nodiscard]] SLGZLoader<Policy>::Iter
+        SLGZLoader<Policy>::getIterator(
             BufferIter const& iter,
             [[maybe_unused]] BufferIter const& end) const noexcept
     {
@@ -45,7 +45,7 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    void GZSLLoader<Policy>::remove(
+    void SLGZLoader<Policy>::remove(
         Iter const& iterator,
         Buffer& buffer) const noexcept
     {
@@ -57,25 +57,26 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    [[nodiscard]] GZSLLoader<Policy>::ShaderMap
-        GZSLLoader<Policy>::operator() (
+    [[nodiscard]] SLGZLoader<Policy>::ShaderMap
+        SLGZLoader<Policy>::operator() (
             std::string const& path) const
     {
         std::map<std::string, Buffer> shaderMap;
-        if (auto data = FileIO::readFileToVec(path)) {
-            auto iter = getIterator(data->begin(), data->end());
+        if (auto file = FileIO::readFileToVec(path)) {
+            auto data = GZIPDecoder<
+                Buffer, Policy>(std::move(*file))();
+            auto iter = getIterator(data.begin(), data.end());
             auto table = parseHeader(iter);
-            remove(iter, *data);
-            shaderMap = buildMap(table, GZIPDecoder<
-                Buffer, Policy>(std::move(*data))());
+            remove(iter, data);
+            shaderMap = buildMap(table, data);
         } else
-            throw GZSLFileCorruptionException{path};
+            throw SLGZFileCorruptionException{path};
         return shaderMap;
     }
 
     template <security::SecurityPolicy Policy>
-    [[nodiscard]] GZSLLoader<Policy>::Records
-        GZSLLoader<Policy>::parseHeader(Iter& iterator) const
+    [[nodiscard]] SLGZLoader<Policy>::Records
+        SLGZLoader<Policy>::parseHeader(Iter& iterator) const
     {
         Records records;
         while (uint32 offset = readType<uint32>(iterator)) {
@@ -89,8 +90,8 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    [[nodiscard]] GZSLLoader<Policy>::ShaderMap
-        GZSLLoader<Policy>::buildMap(
+    [[nodiscard]] SLGZLoader<Policy>::ShaderMap
+        SLGZLoader<Policy>::buildMap(
             Records const& records,
             Buffer const& buffer) const
     {

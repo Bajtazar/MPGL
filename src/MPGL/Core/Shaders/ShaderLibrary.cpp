@@ -56,9 +56,10 @@ namespace mpgl {
 
     bool ShaderLibrary::isPackage(Path const& path) noexcept {
         auto size = path.size();
-        return size > 5 && path[size - 5] == '.' &&
-            path[size - 4] == 'g' && path[size - 3] == 'z' &&
-            path[size - 2] == 's' && path[size - 1] == 'l';
+        return size > 6 && path[size - 6] == '.' &&
+            path[size - 5] == 's' && path[size - 4] == 'l' &&
+            path[size - 3] == '.' && path[size - 2] == 'g' &&
+            path[size - 1] == 'z';
     }
 
     void ShaderLibrary::loadShaderDirectory(Path const& path) {
@@ -73,7 +74,7 @@ namespace mpgl {
     }
 
     void ShaderLibrary::loadPackage(Path const& path) {
-        auto shaderMap = GZSLLoader{security::secured}(path);
+        auto shaderMap = SLGZLoader{security::secured}(path);
         for (std::string const& shader : getShaderList(shaderMap)) {
             VertexShader vertex{shaderMap["Vertex/" + shader]};
             FragmentShader fragment{shaderMap["Fragment/" + shader]};

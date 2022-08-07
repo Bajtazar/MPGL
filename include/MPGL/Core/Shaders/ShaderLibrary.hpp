@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Shaders/ShaderProgram.hpp>
-#include <MPGL/Core/Shaders/GZSLLoader.hpp>
+#include <MPGL/Core/Shaders/SLGZLoader.hpp>
 
 #include <string>
 #include <vector>
@@ -49,7 +49,7 @@ namespace mpgl {
          * Raises exception when shaders are invalid
          *
          * @param locations a constant reference to the vector
-         * containing looked directories or gzsl packages
+         * containing looked directories or slgz packages
          * @throw ShaderLibraryInvalidShadersException when there
          * are shaders without pair
          * @throw ShaderCompilationException when there is an error
@@ -155,7 +155,7 @@ namespace mpgl {
             std::string const& name) const
                 { return programs.at(name); }
     private:
-        using ShaderMap = typename GZSLLoader<>::ShaderMap;
+        using ShaderMap = typename SLGZLoader<>::ShaderMap;
 
         ProgramMap                                      programs;
 
@@ -227,10 +227,10 @@ namespace mpgl {
         static Path fragmentShaders(Path const& path);
 
         /**
-         * Checks whether the given path is the GZSL's package
+         * Checks whether the given path is the SLGZ's package
          *
          * @param path the path
-         * @return if the given path is the GZSL's package
+         * @return if the given path is the SLGZ's package
          */
         static bool isPackage(Path const& path) noexcept;
     };

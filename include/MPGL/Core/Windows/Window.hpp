@@ -48,7 +48,7 @@ namespace mpgl {
          * @param options the options which determins different
          * behaviours of window
          * @param eventManager the event manager used by the window
-         * @param shaderDirectories a list of paths or gzsl packages
+         * @param shaderDirectories a list of paths or slgz packages
          * checked during shader loading phase
          */
         explicit Window(
