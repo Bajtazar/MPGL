@@ -25,11 +25,13 @@
  */
 #pragma once
 
+#include <MPGL/Exceptions/SafeIteratorOutOfRangeException.hpp>
+#include <MPGL/Utility/Tokens/Security.hpp>
+#include <MPGL/Traits/Concepts.hpp>
+
 #include <algorithm>
 #include <iterator>
 #include <compare>
-
-#include <MPGL/Exceptions/SafeIteratorOutOfRangeException.hpp>
 
 namespace mpgl {
 
@@ -364,6 +366,134 @@ namespace mpgl {
         iterator_type                               iter;
         sentinel_type                               sentinel;
     };
+
+    /**
+     * Creates an iterator suitable for the given policy. If the
+     * policy is secure then returns the safe iterator, otherwise
+     * returns range's iterator
+     *
+     * @tparam Policy the security policy type
+     * @tparam Range the range type
+     * @param range the universal reference to the range object
+     * @return the iterator suitable for the given policy
+     */
+    template <
+        security::SecurityPolicy Policy,
+        std::ranges::random_access_range Range>
+    [[nodiscard]] constexpr auto makeIterator(Range&& range) noexcept;
+
+    /**
+     * Creates an iterator suitable for the given policy. If the
+     * policy is secure then returns the safe iterator, otherwise
+     * returns unmodified iterator
+     *
+     * @tparam Policy the security policy type
+     * @tparam Iter the iterator's type
+     * @tparam Sent the sentinel's type
+     * @param iter the constant reference to the iterator object
+     * @param sent the constant reference to the sentinel object
+     * @return the iterator suitable for the given policy
+     */
+    template <
+        security::SecurityPolicy Policy,
+        std::random_access_iterator Iter,
+        std::sentinel_for<Iter> Sent>
+    [[nodiscard]] constexpr auto makeIterator(
+        Iter const& iter,
+        [[maybe_unused]] Sent const& sent) noexcept;
+
+    /**
+     * Creates an iterator suitable for the given policy. If the
+     * policy is secure then returns the safe iterator, otherwise
+     * returns unmodified iterator
+     *
+     * @tparam Policy the security policy type
+     * @param iter the constant reference to the iterator object
+     * @param sent the constant reference to the sentinel object
+     * @return the iterator suitable for the given policy
+     */
+    template <security::SecurityPolicy Policy>
+    [[nodiscard]] auto makeIterator(
+        std::istreambuf_iterator<char> const& iter,
+        [[maybe_unused]] std::istreambuf_iterator<char> const& sent
+        ) noexcept;
+
+    /**
+     * Defines an iterator suitable for the given security policy
+     *
+     * @tparam Policy the security policy type
+     * @tparam Iter the iterator's type
+     * @tparam Sent the sentinel's type
+     */
+    template <
+        security::SecurityPolicy Policy,
+        typename Iter,
+        typename Sent>
+    using PolicyIterIT = decltype(makeIterator<Policy>(
+        std::declval<Iter>(), std::declval<Sent>()));
+
+    /**
+     * Defines an iterator suitable for the given security policy
+     *
+     * @tparam Policy the security policy type
+     * @tparam Range the range's type
+     */
+    template <
+        security::SecurityPolicy Policy,
+        std::ranges::random_access_range Range>
+    using PolicyIterRT = decltype(makeIterator<Policy>(
+        std::declval<Range>()));
+
+    /**
+     * Defines a safe iterator suitable for the given range
+     *
+     * @tparam Range the range's type
+     */
+    template <std::ranges::range Range>
+        requires (std::random_access_iterator<
+                std::ranges::iterator_t<Range>> ||
+            std::same_as<std::istreambuf_iterator<char>,
+                std::ranges::iterator_t<Range>>)
+    using RangeSafeIter = SafeIterator<
+        std::ranges::iterator_t<Range>,
+        std::ranges::sentinel_t<Range>>;
+
+    /**
+     * Erases the subrange indicated by the iterators from the given
+     * range
+     *
+     * @tparam Range the range's type
+     * @param range an universal reference to the range object
+     * @param begin a constant reference to the begining of the
+     * erased subrange
+     * @param end a constant reference to the end of the
+     * erased subrange
+     */
+    template <ErasableRange Range>
+    void erase(
+        Range&& range,
+        RangeSafeIter<Range> const& begin,
+        RangeSafeIter<Range> const& end);
+
+    /**
+     * Erases the subrange indicated by the iterators from the given
+     * range
+     *
+     * @tparam Policy the iterator's policy type
+     * @tparam Range the range's type
+     * @param range an universal reference to the range object
+     * @param begin a constant reference to the begining of the
+     * erased subrange
+     * @param end a constant reference to the end of the
+     * erased subrange
+     */
+    template <
+        security::SecurityPolicy Policy,
+        ErasableRange Range>
+    void erase(
+        Range&& range,
+        PolicyIterRT<Policy, Range> const& begin,
+        PolicyIterRT<Policy, Range> const& end);
 
 }
 

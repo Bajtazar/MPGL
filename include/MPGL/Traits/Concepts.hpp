@@ -598,4 +598,14 @@ namespace mpgl {
         std::declval<Pointer>()->clone())>>
     && requires (Pointer const& ptr) { bool(ptr); };
 
+    /**
+     * Checks whether the given range can be erased
+     *
+     * @tparam Range the checked range type
+     */
+    template <class Range>
+    concept ErasableRange = std::ranges::range<Range> &&
+        requires (Range range, std::ranges::iterator_t<Range> iter)
+            { range.erase(iter, iter); };
+
 }
