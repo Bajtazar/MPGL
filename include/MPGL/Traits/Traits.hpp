@@ -36,17 +36,17 @@ namespace mpgl {
 
     /**
      * Helper metastruct. Provides information whether the given
-     * type can be constructed at the compilation time
+     * type can be constructed and destroied at the compilation time
      *
      * @tparam Tp the checked type
      * @tparam Args the constructor's arguments types
      */
     template <typename Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
-    class IsConstexprConstructible {
+    class IsConstevalType {
         /**
          * Method choosen by the compiler when the given type
-         * can be construced at the compilation time
+         * can be construced and destroied at the compilation time
          *
          * @tparam Invocable the lambda expression containing
          * object construction
@@ -58,7 +58,8 @@ namespace mpgl {
 
         /**
          * Method choosen by the compiler when the given type
-         * cannot be constructed at the compilation tine
+         * cannot be constructed and destroied at the compilation
+         * time
          *
          * @param ... whichever type
          * @return std::false_type
@@ -66,8 +67,8 @@ namespace mpgl {
         static constexpr auto helper(...) -> std::false_type;
     public:
         /**
-         * Returns whether the given type can be constructed at
-         * compilation time
+         * Returns whether the given type can be constructed and
+         * destroied at compilation time
          */
         static constexpr bool value = std::same_as<
             decltype(helper([]{ Tp{std::declval<Args>()...}; })),
@@ -75,15 +76,15 @@ namespace mpgl {
     };
 
     /**
-     * The convenient shortcut for the IsConstexprConstructible value
+     * The convenient shortcut for the IsConstevalType value
      *
      * @tparam Tp the checked type
      * @tparam Args the constructor's arguments types
      */
     template <typename Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
-    constexpr bool IsConstexprConstructibleV =
-        IsConstexprConstructible<Tp, Args...>::value;
+    constexpr bool IsConstevalTypeV =
+        IsConstevalType<Tp, Args...>::value;
 
     /**
      * Helper metastruct. Provides information whether the given

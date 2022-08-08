@@ -268,14 +268,15 @@ namespace mpgl {
     concept PureType = !std::is_reference_v<Tp>;
 
     /**
-     * Checks whether the given type is a constexpr constructible
+     * Checks whether the given type can be constructed and
+     * destroied at compilation time
      *
      * @tparam Tp the type to check
      * @tparam Args the constructor arguments types
      */
     template <typename Tp, typename... Args>
-    concept ConstexprConstructible =
-        IsConstexprConstructibleV<Tp, Args...>;
+    concept ConstevalType =
+        IsConstevalType<Tp, Args...>::value;
 
     /**
      * Checks whether the given type is an instance of the given
