@@ -24,7 +24,6 @@
  *  distribution
  */
 #include <MPGL/Exceptions/TTFLoaderFileCorruptionException.hpp>
-
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
 #include <MPGL/Core/Text/TTFLoader.hpp>
 
@@ -58,12 +57,7 @@ namespace mpgl {
     TTFLoader<Policy>::Iter
         TTFLoader<Policy>::getIterator(void) const
     {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return Iter{buffer.begin(), buffer.end()};
-        else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return buffer.begin();
-        else
-            throw SecurityUnknownPolicyException{};
+        return makeIterator<Policy>(buffer);
     }
 
     template <security::SecurityPolicy Policy>

@@ -525,7 +525,7 @@ namespace mpgl {
     template <security::SecurityPolicy Policy>
     [[nodiscard]] auto makeIterator(
         std::istreambuf_iterator<char> const& iter,
-        [[maybe_unused]] std::istreambuf_iterator<char> const& sent);
+        [[maybe_unused]] std::istreambuf_iterator<char> const& sent = {});
 
     /**
      * Defines an iterator suitable for the given security policy
@@ -537,7 +537,7 @@ namespace mpgl {
     template <
         security::SecurityPolicy Policy,
         typename Iter,
-        typename Sent>
+        typename Sent = Iter>
     using PolicyIterIT = decltype(makeIterator<Policy>(
         std::declval<Iter>(), std::declval<Sent>()));
 

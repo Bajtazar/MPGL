@@ -52,7 +52,7 @@ namespace mpgl {
     {
         if (auto file = FileIO::readFileToVec(this->filePath)) {
             try {
-                setPolicy(*file);
+                parseChunks(makeIterator<Policy>(file->cbegin(), file->cend()));
                 decodeImage();
             } catch (std::out_of_range const&) {
                 throw ImageLoadingFileCorruptionException{this->filePath};
@@ -66,16 +66,6 @@ namespace mpgl {
     template <security::SecurityPolicy Policy>
     JPEGLoader<Policy>::JPEGLoader(Path const& filePath)
         : JPEGLoader{Policy{}, filePath} {}
-
-    template <security::SecurityPolicy Policy>
-    void JPEGLoader<Policy>::setPolicy(FileBuffer const& file) {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return parseChunks(FileIter{file.begin(), file.end()});
-        else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return parseChunks(FileIter{file.begin()});
-        else
-            throw SecurityUnknownPolicyException{};
-    }
 
     template <security::SecurityPolicy Policy>
     void JPEGLoader<Policy>::parseNextChunk(
@@ -145,18 +135,8 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    JPEGLoader<Policy>::Iter JPEGLoader<Policy>::getDecodeIterator(
-        void) noexcept
-    {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return Iter{SafeIter{imageData.begin(), imageData.end()}};
-        else
-            return Iter{SafeIter{imageData.begin()}};
-    }
-
-    template <security::SecurityPolicy Policy>
     void JPEGLoader<Policy>::decodeImage(void) {
-        Iter iter{getDecodeIterator()};
+        Iter iter{makeIterator<Policy>(imageData.cbegin(), imageData.cend())};
         Channels channels;
         channels.resize(componentsTable.size(), 0);
         for (size_type i = 0; i < getBoundry(pixels.getWidth()); ++i) {

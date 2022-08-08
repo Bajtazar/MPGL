@@ -43,9 +43,7 @@ namespace mpgl {
     class TTFLoader {
     private:
         typedef std::string::const_iterator                 BuffIter;
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<BuffIter>, BuffIter>               Iter;
+        typedef PolicyIterIT<Policy, BuffIter>              Iter;
         typedef std::string                                 FileName;
     public:
         /**
