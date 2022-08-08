@@ -31,12 +31,7 @@ namespace mpgl {
     GZIPDecoder<Range, Policy>::Iterator
         GZIPDecoder<Range, Policy>::getIterator(void)
     {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return Iterator{range.begin(), range.end() - 8};
-        else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return range.begin();
-        else
-            throw SecurityUnknownPolicyException{};
+        return makeIterator<Policy>(range.begin(), range.end() - 8);
     }
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>
@@ -117,7 +112,7 @@ namespace mpgl {
     [[nodiscard]] Range
         GZIPDecoder<Range, Policy>::operator()(void)
     {
-        auto distance = rangeIterator - getIterator();
+        auto distance = rangeIterator - range.begin();
         range.erase(range.begin(), range.begin() + distance);
         uint32 checksum = getChecksum();
         auto decompressed = Inflate{std::move(range), policy}();
