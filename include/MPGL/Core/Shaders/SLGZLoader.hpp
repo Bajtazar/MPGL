@@ -25,9 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>
-#include <MPGL/Traits/Types.hpp>
 
 #include <string>
 #include <vector>
@@ -69,30 +67,7 @@ namespace mpgl {
         using Record = std::tuple<uint32, uint32, std::string>;
         using Records = std::list<Record>;
         using BufferIter = typename Buffer::const_iterator;
-        using Iter = std::conditional_t<security::isSecurePolicy<
-            Policy>, SafeIterator<BufferIter>, BufferIter>;
-
-        /**
-         * Returns an iterator to the buffer
-         *
-         * @param iter the iterator to the begining of the range
-         * @param end the iterator to the end of the range
-         * @return an iterator to the buffer
-         */
-        [[nodiscard]] Iter getIterator(
-            BufferIter const& iter,
-            [[maybe_unused]] BufferIter const& end) const noexcept;
-
-        /**
-         * Removes a subrange from the buffer. The begining of
-         * the buffer is also the begining of the subrange
-         *
-         * @param iterator the iterator to the end of the subrange
-         * @param buffer the reference to the buffer object
-         */
-        void remove(
-            Iter const& iterator,
-            Buffer& buffer) const noexcept;
+        using Iter = PolicyIterRT<Policy, Buffer>;
 
         /**
          * Parses the SLGZ's file header
