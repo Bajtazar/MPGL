@@ -253,20 +253,20 @@ namespace mpgl {
     void Text<IsColorable>::extendUnderline(
         Vector2f const& advance) noexcept
     {
-        underlines.back()[2] & cast::position = advance
-            + Vector2f{underlines.back()[2] & cast::position};
-        underlines.back()[3] & cast::position = advance
-            + Vector2f{underlines.back()[3] & cast::position};
+        underlines.back()[2] | cast::position = advance
+            + Vector2f{underlines.back()[2] | cast::position};
+        underlines.back()[3] | cast::position = advance
+            + Vector2f{underlines.back()[3] | cast::position};
     }
 
     template <bool IsColorable>
     void Text<IsColorable>::extendStrikethrough(
         Vector2f const& advance) noexcept
     {
-        strikethroughs.back()[2] & cast::position = advance
-            + Vector2f{strikethroughs.back()[2] & cast::position};
-        strikethroughs.back()[3] & cast::position = advance
-            + Vector2f{strikethroughs.back()[3] & cast::position};
+        strikethroughs.back()[2] | cast::position = advance
+            + Vector2f{strikethroughs.back()[2] | cast::position};
+        strikethroughs.back()[3] | cast::position = advance
+            + Vector2f{strikethroughs.back()[3] | cast::position};
     }
 
     template <bool IsColorable>
@@ -457,7 +457,7 @@ namespace mpgl {
             return positionSpace.getPosition();
         auto&& [bearing, id] = findFirstGlyphBearing();
         return positionSpace.findOrigin({glyphs.front()[id]
-            & cast::position}, bearing);
+            | cast::position}, bearing);
     }
 
     template <bool IsColorable>

@@ -29,7 +29,7 @@ namespace mpgl::cast {
 
     template <TemplateString Field, VertexComponents... Components>
     [[nodiscard]] VertexElementT<Field, Vertex<Components...>>&
-        operator& (
+        operator| (
             Vertex<Components...>& vertex,
             VertexCast<Field> const& cast) noexcept
     {
@@ -38,7 +38,7 @@ namespace mpgl::cast {
 
     template <TemplateString Field, VertexComponents... Components>
     [[nodiscard]] VertexElementT<Field, Vertex<Components...>> const&
-        operator& (
+        operator| (
             Vertex<Components...> const& vertex,
             VertexCast<Field> const& cast) noexcept
     {

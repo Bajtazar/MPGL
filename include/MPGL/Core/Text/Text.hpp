@@ -82,7 +82,7 @@ namespace mpgl {
          */
         [[nodiscard]] reference operator[] (
             SizeT index) const noexcept
-                { return ref.get()[index] & cast::color; }
+                { return ref.get()[index] | cast::color; }
 
         /**
          * Iterator that returns only the color of the underlying
@@ -158,7 +158,7 @@ namespace mpgl {
              * color
              */
             [[nodiscard]] reference operator*(void) const noexcept
-                { return *iter & cast::color; }
+                { return *iter | cast::color; }
 
             /**
              * Returns a pointer to the glyph sprite vertex's
@@ -168,7 +168,7 @@ namespace mpgl {
              * color
              */
             [[nodiscard]] pointer operator->(void) const noexcept
-                { return &(*iter & cast::color); }
+                { return &(*iter | cast::color); }
 
             /**
              * Increments iterator by the given distance
@@ -198,7 +198,7 @@ namespace mpgl {
              */
             [[nodiscard]] reference operator[] (
                 difference_type offset) noexcept
-                    { return *(iter + offset) & cast::color; }
+                    { return *(iter + offset) | cast::color; }
 
             /**
              * Adds given distance to an iterator
