@@ -740,6 +740,18 @@ namespace mpgl {
         Vector<Tp, Size> vector);
 
     /**
+     * Normalizes vector
+     *
+     * @tparam Tp the vector's type
+     * @tparam Size the vector's type
+     * @param vector the constant reference to the vector
+     * @return the normalized vector
+     */
+    template <std::floating_point Tp, std::size_t Size>
+    [[nodiscard]] constexpr Vector<Tp, Size> normalize(
+        Vector<Tp, Size> const& vector);
+
+    /**
      * Adds two vectors together
      *
      * @tparam Tp the vector's value type

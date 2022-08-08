@@ -147,6 +147,13 @@ namespace mpgl {
         return vector;
     }
 
+    template <std::floating_point Tp, std::size_t Size>
+    [[nodiscard]] constexpr Vector<Tp, Size> normalize(
+        Vector<Tp, Size> const& vector)
+    {
+        return vector / vector.length();
+    }
+
     template <Arithmetic Tp, std::size_t Size>
     constexpr Vector<Tp, Size>& Vector<Tp, Size>::operator +=(
         Vector<Tp, Size> const& right)

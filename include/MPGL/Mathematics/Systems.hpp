@@ -151,6 +151,46 @@ namespace mpgl {
             Matrix<std::complex<float64>, Rows, Cols> const& matrix
             ) noexcept;
 
+    /**
+     * Calculates the perspective projection matrix
+     *
+     * @param fov the fov
+     * @param aspect the view port's aspect ratio
+     * @param zAxis the z-axis depth [near, far]
+     * @return the perspective projection matrix
+     */
+    [[nodiscard]] constexpr Matrix4f perspectiveMatrix(
+        float32 fov,
+        float32 aspect,
+        Vector2f zAxis) noexcept;
+
+    /**
+     * Calculates the frustum projection matrix
+     *
+     * @param xAxis the x-axis depth [left, right]
+     * @param yAxis the y-axis depth [bottom, top]
+     * @param zAxis the z-axis depth [near, far]
+     * @return the frustum projection matrix
+     */
+    [[nodiscard]] constexpr Matrix4f frustumMatrix(
+        Vector2f xAxis,
+        Vector2f yAxis,
+        Vector2f zAxis) noexcept;
+
+    /**
+     * Calculates the orthographic projection matrix
+     *
+     * @param xAxis the x-axis depth [left, right]
+     * @param yAxis the y-axis depth [bottom, top]
+     * @param zAxis the z-axis depth [near, far]
+     * @return the frustum orthographic matrix
+     */
+    [[nodiscard]] constexpr Matrix4f orthographicMatrix(
+        Vector2f xAxis,
+        Vector2f yAxis,
+        Vector2f zAxis) noexcept;
+
 }
 
+#include <MPGL/Mathematics/Systems.ipp>
 #include <MPGL/Mathematics/Systems.tpp>
