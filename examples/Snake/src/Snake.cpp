@@ -109,11 +109,10 @@ void Snake::onKeyPress(Key const& key) noexcept {
     }
 }
 
-void Snake::onScreenTransformation(
-    Layout& layout,
-    Vector2u const& oldDimensions) noexcept
+void Snake::transform(
+    Transformation2D const& transformator) noexcept
 {
-    snakeModules.onScreenTransformation(layout, oldDimensions);
+    snakeModules.transform(transformator);
 }
 
 void Snake::draw(void) const noexcept {

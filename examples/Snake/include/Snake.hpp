@@ -33,7 +33,7 @@
 #include <list>
 
 class Snake :
-    public mpgl::ScreenTransformationEvent,
+    public mpgl::Transformable2D,
     public mpgl::KeyPressEvent,
     public mpgl::Drawable2D,
     public mpgl::TickEvent
@@ -43,9 +43,8 @@ public:
 
     virtual void onKeyPress(mpgl::Key const& key) noexcept;
 
-    virtual void onScreenTransformation(
-        mpgl::Layout& layout,
-        mpgl::Vector2u const& oldDimensions) noexcept;
+    virtual void transform(
+        Transformation2D const& transformator) noexcept;
 
     virtual void draw(void) const noexcept;
 

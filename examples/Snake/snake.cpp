@@ -23,7 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/2DGraphics.hpp>
+#include <MPGL/MPGL.hpp>
 
 #include <Snake.hpp>
 
