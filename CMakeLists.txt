@@ -14,8 +14,8 @@ set(MPGL_SOURCES ${PROJECT_SOURCE_DIR}/src/MPGL)
 add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Exceptions/ShaderLibraryInvalidShadersException.cpp
     ${MPGL_SOURCES}/Collections/Image.cpp
-    ${MPGL_SOURCES}/Mathematics/FFT.cpp
     ${MPGL_SOURCES}/Mathematics/FastFunctions.cpp
+    ${MPGL_SOURCES}/Mathematics/Transforms/FFT.cpp
     ${MPGL_SOURCES}/Utility/Adapter.cpp
     ${MPGL_SOURCES}/Utility/StringAlgorithm.cpp
     ${MPGL_SOURCES}/IO/FileIO.cpp

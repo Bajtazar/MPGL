@@ -30,8 +30,8 @@
 #include <MPGL/Utility/Deferred/DeferredConstructor.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
 #include <MPGL/IO/ImageLoading/ZigZacRange.hpp>
+#include <MPGL/Mathematics/Transforms/IFCT.hpp>
 #include <MPGL/IO/ImageLoading/JPEGLoader.hpp>
-#include <MPGL/Mathematics/IFCT.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 #include <MPGL/IO/FileIO.hpp>
 
