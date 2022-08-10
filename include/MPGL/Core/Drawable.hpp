@@ -64,41 +64,6 @@ namespace mpgl {
         Drawable& operator=(Drawable&&) = default;
     };
 
-    /**
-     * Specialization of drawable class for the 3D objects. Allows
-     * to pass aditional information during the drawing stage -
-     * the mixed view and projection matrix
-     */
-    template <>
-    class Drawable<dim::Dim3> : virtual protected GraphicalObject {
-    public:
-        /**
-         * Constructs a new Drawable object
-         */
-        explicit Drawable(void) noexcept = default;
-
-        /**
-         * Pure virtual function. Has to be overloaded.
-         * Allows to draw an object on the screen
-         *
-         * @param viewProjectionMatrix the view-projection matrix
-         * used by the 3D drawables
-         */
-        virtual void draw(
-            Matrix4f const& viewProjectionMatrix) const noexcept = 0;
-
-        /**
-         * Destroys the Drawable object
-         */
-        virtual ~Drawable(void) noexcept = default;
-    protected:
-        Drawable(Drawable const&) = default;
-        Drawable(Drawable&&) = default;
-
-        Drawable& operator=(Drawable const&) = default;
-        Drawable& operator=(Drawable&&) = default;
-    };
-
     typedef Drawable<dim::Dim2>                     StackedDrawable;
     typedef Drawable<dim::Dim3>                     VolumetricDrawable;
 
