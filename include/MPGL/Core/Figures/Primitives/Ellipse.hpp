@@ -127,13 +127,13 @@ namespace mpgl {
         [[nodiscard]] Vector2f getSemiAxis(void) const noexcept;
 
         /**
-         * Checks whether the given point is located inside the ellipse
+         * Checks whether the given pixel is located inside the ellipse
          *
          * @param position the point position [pixel position]
          * @return if the given point is inside the ellipse
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+            Vector2u const& position) const noexcept final;
 
         /**
          * Destroys the Ellipse object

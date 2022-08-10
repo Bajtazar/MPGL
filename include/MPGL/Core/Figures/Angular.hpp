@@ -52,16 +52,17 @@ namespace mpgl {
         virtual void draw(void) const noexcept = 0;
 
         /**
-         * Pure virtual function. Has to be overloaded.
-         * Checks whether given point position is located
+         * Pure virtual method. Has to be overloaded.
+         * Checks whether the given pixel is located
          * inside of the figure [boundry is concidered
-         * as a part of the figure]
+         * as a part of the figure, the 3D figures are
+         * projected onto screen and then checked]
          *
-         * @param position the point position
+         * @param position the pixel's position
          * @return if point is inside figure
          */
         [[nodiscard]] virtual bool contains(
-            Vector2f const& position) const noexcept = 0;
+            Vector2u const& position) const noexcept = 0;
 
         /**
          * Performs transformation on the figure

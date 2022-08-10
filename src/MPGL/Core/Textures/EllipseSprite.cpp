@@ -213,9 +213,10 @@ namespace mpgl {
 
     template <bool IsColorable>
     [[nodiscard]] bool EllipseSprite<IsColorable>::contains(
-        Vector2f const& position) const noexcept
+        Vector2u const& position) const noexcept
     {
-        Vector2f local = outline * (position -
+        Vector2f local = outline * (
+            vectorCast<float32>(position) -
             Vector2f{get<"position">(this->vertices.front())});
         return (local - 0.5f).length() <= 0.5f;
     }

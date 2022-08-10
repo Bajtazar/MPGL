@@ -82,13 +82,13 @@ namespace mpgl {
         void draw(void) const noexcept;
 
         /**
-         * Checks whether the given point is located inside the polygon
+         * Checks whether the given pixel is located inside the polygon
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is inside the polygon
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+            Vector2u const& position) const noexcept final;
 
         /**
          * Destroy the Polygon object

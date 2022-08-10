@@ -134,13 +134,13 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether the given point is located inside the sprite
+         * Checks whether the given pixel is located inside the sprite
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is inside the sprite
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+            Vector2u const& position) const noexcept final;
 
         /**
          * Returns the reference to vertex with the given index

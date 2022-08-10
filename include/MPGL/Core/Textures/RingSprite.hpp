@@ -304,13 +304,13 @@ namespace mpgl {
         RingSprite& operator=(RingSprite&& sprite) noexcept = default;
 
         /**
-         * Checks whether the given point is located inside the ring
+         * Checks whether the given pixel is located inside the ring
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is inside the ring
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+            Vector2u const& position) const noexcept final;
 
         /**
          * Draws the ring sprite on the screen

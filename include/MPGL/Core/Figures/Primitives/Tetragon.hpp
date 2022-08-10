@@ -89,13 +89,14 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether the given point is located inside the tetragon
+         * Checks whether the given pixel is located inside
+         * the tetragon
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is inside the tetragon
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+            Vector2u const& position) const noexcept final;
 
         /**
          * Destroy the Tetragon object

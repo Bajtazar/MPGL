@@ -53,7 +53,7 @@ namespace mpgl {
     }
 
     [[nodiscard]] bool Line::contains(
-        Vector2f const& position) const noexcept
+        Vector2u const& position) const noexcept
     {
         Vector2f normalized = Adapter2D{position}.get();
         Vector2f begin = get<"position">(vertices.front()).get();

@@ -169,7 +169,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     [[nodiscard]] bool Sprite<IsColorable>::contains(
-        Vector2f const& position) const noexcept
+        Vector2u const& position) const noexcept
     {
         Vector2d normalized = Adapter2D{position}.get();
         bool first = insideSubtriangle(

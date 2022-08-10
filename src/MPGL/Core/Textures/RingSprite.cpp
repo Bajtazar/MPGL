@@ -386,7 +386,7 @@ namespace mpgl {
 
     template <bool IsColorable>
     [[nodiscard]] bool RingSprite<IsColorable>::contains(
-        Vector2f const& position) const noexcept
+        Vector2u const& position) const noexcept
     {
         bool outring = insideSystem(position,
             get<"position">(this->vertices.front()), this->outline);

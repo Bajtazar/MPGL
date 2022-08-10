@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformable.hpp>
+#include <MPGL/Core/Figures/Clickable.hpp>
 #include <MPGL/Core/Shaders/Shadeable.hpp>
 #include <MPGL/Core/Shape.hpp>
 
@@ -34,8 +35,11 @@ namespace mpgl {
     /**
      * Base class for the two-dimensional figures
      */
-    class Figure : public virtual Shape, public Shadeable,
-        public virtual Transformable2D
+    class Figure :
+        public virtual Shape,
+        public Shadeable,
+        public virtual Transformable2D,
+        public Clickable
     {
     public:
         /**
@@ -45,7 +49,7 @@ namespace mpgl {
         virtual void draw(void) const noexcept = 0;
 
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Checks whether given point position is located
          * inside of the figure [boundry is concidered
          * as a part of the figure]
@@ -54,7 +58,7 @@ namespace mpgl {
          * @return if point is inside figure
          */
         [[nodiscard]] virtual bool contains(
-            Vector2f const& position) const noexcept = 0;
+            Vector2u const& position) const noexcept = 0;
 
         /**
          * Pure virtual method. Has to be overloaded.

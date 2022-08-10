@@ -134,9 +134,10 @@ namespace mpgl {
     }
 
     [[nodiscard]] bool Ellipse::contains(
-        Vector2f const& position) const noexcept
+        Vector2u const& position) const noexcept
     {
-        Vector2f local = outlineTransform * (position -
+        Vector2f local = outlineTransform * (
+            vectorCast<float32>(position) -
             Vector2f{get<"position">(vertices.front())});
         return (local - 0.5f).length() <= 0.5f;
     }

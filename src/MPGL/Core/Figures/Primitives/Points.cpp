@@ -43,7 +43,7 @@ namespace mpgl {
     }
 
     [[nodiscard]] bool Points::contains(
-        Vector2f const& position) const noexcept
+        Vector2u const& position) const noexcept
     {
         Vector2f normalized = Adapter2D{position}.get();
         for (auto const& pointPos : vertices | views::position)

@@ -79,13 +79,13 @@ namespace mpgl {
         void draw(void) const noexcept final;
 
         /**
-         * Checks whether the given point is located on the line strip
+         * Checks whether the given pixel is located on the line strip
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is on the line strip
          */
         [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+            Vector2u const& position) const noexcept final;
 
         /**
          * Destroy the Line Strip object

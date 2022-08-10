@@ -266,7 +266,7 @@ namespace mpgl {
     }
 
     [[nodiscard]] bool Ring::contains(
-        Vector2f const& position) const noexcept
+        Vector2u const& position) const noexcept
     {
         bool outring = insideSystem(position,
             get<"position">(vertices.front()), this->outline);
