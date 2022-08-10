@@ -93,7 +93,7 @@ namespace mpgl {
 
     template <FloatConvertible Tp>
     [[nodiscard]] Matrix2<Tp> rotationMatrix(
-        float32 angle) noexcept
+        Tp angle) noexcept
     {
         return {Vector2<Tp>{std::cos(angle), -std::sin(angle)},
             Vector2<Tp>{std::sin(angle), std::cos(angle)}};

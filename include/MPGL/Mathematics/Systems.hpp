@@ -134,7 +134,7 @@ namespace mpgl {
      * @return the rotation matrix
      */
     template <FloatConvertible Tp>
-    [[nodiscard]] Matrix2<Tp> rotationMatrix(float32 angle) noexcept;
+    [[nodiscard]] Matrix2<Tp> rotationMatrix(Tp angle) noexcept;
 
     /**
      * Calculates the hermitian transpose of the given matrix
