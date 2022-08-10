@@ -42,7 +42,7 @@ namespace mpgl {
         Shape& operator=(Shape const& shape) = delete;
 
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;

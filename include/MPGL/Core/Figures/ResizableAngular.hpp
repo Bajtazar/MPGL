@@ -40,7 +40,7 @@ namespace mpgl {
         typedef std::optional<Vector2f>     OptionalVec2f;
 
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;

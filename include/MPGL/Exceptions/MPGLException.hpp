@@ -42,7 +42,7 @@ namespace mpgl {
             MPGLException&&) = default;
 
         /**
-         * Pure virtual function that has to be implemented by
+         * Pure virtual method that has to be implemented by
          * derived classes
          *
          * @return message associated with an exception

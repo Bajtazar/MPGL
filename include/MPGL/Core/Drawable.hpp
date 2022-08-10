@@ -47,7 +47,7 @@ namespace mpgl {
         explicit Drawable(void) noexcept = default;
 
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object on the screen
          */
         virtual void draw(void) const noexcept = 0;
