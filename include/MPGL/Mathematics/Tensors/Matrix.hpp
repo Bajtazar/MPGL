@@ -1492,14 +1492,13 @@ namespace mpgl {
      * Returns the identity matrix of the given size
      *
      * @tparam Tp the type of the matrix element
-     * @tparam Rows the number of matrix rows
-     * @tparam Cols the number of matrix columns
+     * @tparam Rows the number of matrix rows and columns
      * @param diagonal the diagonal values
      * @return the identity matrix
      */
-    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        requires (Rows == Cols && Rows > 1)
-    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols> identityMatrix(
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Rows> identityMatrix(
         Tp diagonal = {1}) noexcept;
 
     /**

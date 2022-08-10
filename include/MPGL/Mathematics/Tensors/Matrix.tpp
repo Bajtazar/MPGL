@@ -972,12 +972,12 @@ namespace mpgl {
         return std::ranges::subrange(columnBegin(), columnEnd());
     }
 
-    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        requires (Rows == Cols && Rows > 1)
-    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols> identityMatrix(
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Rows> identityMatrix(
         Tp diagonal) noexcept
     {
-        Matrix<Tp, Rows, Cols> identity;
+        Matrix<Tp, Rows, Rows> identity;
         for (std::size_t i = 0; i < Rows; ++i)
             identity[i][i] = diagonal;
         return identity;
@@ -1096,7 +1096,7 @@ namespace mpgl {
     {
         Matrix<Up, Rows, Rows> luMatrix = matrix;
         if (auto permutations = lupDecomposition(luMatrix)) {
-            auto inverseMatrix = identityMatrix<Up, Rows, Rows>();
+            auto inverseMatrix = identityMatrix<Up, Rows>();
             for (auto& column : inverseMatrix.columnsRange())
                 column = lupSolve(luMatrix, *permutations, column);
             return { inverseMatrix };

@@ -110,5 +110,24 @@ namespace mpgl {
         return output;
     }
 
+    template <class Tp>
+        requires std::convertible_to<int32, Tp>
+    [[nodiscard]] constexpr Matrix4<Tp> extend(
+        Matrix3<Tp> const& matrix) noexcept
+    {
+        Matrix4<Tp> result = static_cast<Matrix4<Tp>>(matrix);
+        result[3][3] = static_cast<Tp>(1);
+        return result;
+    }
+
+    template <class Tp>
+        requires std::convertible_to<int32, Tp>
+    [[nodiscard]] constexpr Vector4<Tp> extend(
+        Vector3<Tp> const& vector) noexcept
+    {
+        Vector4<Tp> result = static_cast<Vector4<Tp>>(vector);
+        result[3] = static_cast<Tp>(1);
+        return result;
+    }
 
 }

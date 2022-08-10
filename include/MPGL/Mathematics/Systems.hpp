@@ -190,6 +190,34 @@ namespace mpgl {
         Vector2f yAxis,
         Vector2f zAxis) noexcept;
 
+    /**
+     * Extends the 3D matrix to the 4-th dimension by
+     * adding 1 at the 4-th row and 4-th column and
+     * zeros at the rest of added fields
+     *
+     * @tparam Tp the matrix element's type
+     * @param matrix the constant reference to the matrix
+     * @return the extended matrix
+     */
+    template <class Tp>
+        requires std::convertible_to<int32, Tp>
+    [[nodiscard]] constexpr Matrix4<Tp> extend(
+        Matrix3<Tp> const& matrix) noexcept;
+
+    /**
+     * Extends the 3D vector by adding 1 at the newly created
+     * cell
+     *
+     * @tparam Tp the vector element's type
+     * @param vector the constant reference to the vector
+     * @return the extended vector
+     */
+    template <class Tp>
+        requires std::convertible_to<int32, Tp>
+    [[nodiscard]] constexpr Vector4<Tp> extend(
+        Vector3<Tp> const& vector) noexcept;
+
+
 }
 
 #include <MPGL/Mathematics/Systems.ipp>
