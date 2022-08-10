@@ -110,6 +110,11 @@ namespace mpgl {
         [[nodiscard]] constexpr Up length(void) const noexcept;
 
         /**
+         * Normalizes vector
+         */
+        constexpr Vector& normalize(void) noexcept;
+
+        /**
          * Adds the elements of this vector with
          * the given vector elements
          *
@@ -689,6 +694,19 @@ namespace mpgl {
     [[nodiscard]] constexpr Tp cross(
         Vector<Tp, 2> const& left,
         Vector<Tp, 2> const& right) noexcept;
+
+    /**
+     * Returns the cross product of two three-dimensional vectors
+     *
+     * @tparam Tp the vector's value type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right vector
+     * @return the cross product
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Vector<Tp, 3> cross(
+        Vector<Tp, 3> const& left,
+        Vector<Tp, 3> const& right) noexcept;
 
     /**
      * Casts the vector elements to the given type

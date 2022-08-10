@@ -270,6 +270,20 @@ namespace mpgl {
     template <std::floating_point Tp>
     [[nodiscard]] Tp fromRadians(Tp angle) noexcept;
 
+    /**
+     * Calculates the view matrix of a camera looking at the given
+     * target
+     *
+     * @param position the position of the camera
+     * @param target the position of the target
+     * @param up the y axis versor
+     * @return the 'look at' matrix
+     */
+    [[nodiscard]] constexpr Matrix4f lookAt(
+        Vector3f const& position,
+        Vector3f const& target,
+        Vector3f const& up = {0.f, 1.f, 0.f}) noexcept;
+
 }
 
 #include <MPGL/Mathematics/Systems.ipp>

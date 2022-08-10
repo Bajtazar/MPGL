@@ -67,4 +67,19 @@ namespace mpgl {
         return matrix;
     }
 
+    [[nodiscard]] constexpr Matrix4f lookAt(
+        Vector3f const& position,
+        Vector3f const& target,
+        Vector3f const& up) noexcept
+    {
+        Vector3f const forward = (target - position).normalize();
+        Vector3f const right = (cross(forward, up)).normalize();
+        Vector3f const top = (cross(right, forward)).normalize();
+        Matrix4f lookAt = extend(Matrix3f{right, top, -forward});
+        lookAt[0][3] = -dot(right, position);
+        lookAt[1][3] = -dot(top, position);
+        lookAt[2][3] = -dot(forward, position);
+        return lookAt;
+    }
+
 }
