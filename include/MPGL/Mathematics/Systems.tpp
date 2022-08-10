@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <numbers>
+
 namespace mpgl {
 
     template <std::signed_integral Tp>
@@ -75,14 +77,14 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
+    [[nodiscard]] Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
     {
         return { norm(vector), std::atan2(vector[1], vector[0]) };
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Vector2<Tp> polarToCartesian(
+    [[nodiscard]] Vector2<Tp> polarToCartesian(
         Vector2<Tp> const& vector) noexcept
     {
         return { vector[0] * std::cos(vector[1]),
@@ -90,7 +92,7 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Matrix2<Tp> rotationMatrix(
+    [[nodiscard]] Matrix2<Tp> rotationMatrix(
         float32 angle) noexcept
     {
         return {Vector2<Tp>{std::cos(angle), -std::sin(angle)},
@@ -128,6 +130,40 @@ namespace mpgl {
         Vector4<Tp> result = static_cast<Vector4<Tp>>(vector);
         result[3] = static_cast<Tp>(1);
         return result;
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Matrix3<Tp> rotationMatrix(
+        Tp yaw,
+        Tp pitch,
+        Tp roll) noexcept
+    {
+        auto cy = std::cos(yaw), cp = std::cos(pitch), cr = std::cos(roll);
+        auto sy = std::sin(yaw), sp = std::sin(pitch), sr = std::sin(roll);
+        return {
+            Vector3<Tp>{ cp*cr, sy*sp*cr - cy*sr, cy*sp*cr + sy*sr },
+            Vector3<Tp>{ cp*sr, sy*sp*sr + cy*cr, cy*sp*sr - sy*cr },
+            Vector3<Tp>{ -sp, sy*cp, cy*cp }
+        };
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Matrix3<Tp> rotationMatrix(
+        Vector3<Tp> const& angles) noexcept
+    {
+        return rotationMatrix(angles[0], angles[1], angles[2]);
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Tp toRadians(Tp angle) noexcept {
+        return std::numbers::pi_v<Tp> * angle /
+            static_cast<Tp>(180.);
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Tp fromRadians(Tp angle) noexcept {
+        return static_cast<Tp>(180.) * angle /
+            std::numbers::pi_v<Tp>;
     }
 
 }

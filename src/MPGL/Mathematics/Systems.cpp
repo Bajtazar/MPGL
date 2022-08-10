@@ -23,47 +23,24 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#pragma once
+#include <MPGL/Mathematics/Systems.hpp>
 
 #include <math.h>
 
 namespace mpgl {
 
-    [[nodiscard]] constexpr Matrix4f frustumMatrix(
-        Vector2f xAxis,
-        Vector2f yAxis,
+    [[nodiscard]] Matrix4f perspectiveMatrix(
+        float32 fov,
+        float32 aspect,
         Vector2f zAxis) noexcept
     {
         Matrix4f matrix;
-        float32 const ndepth = zAxis[0] - zAxis[1];
-        float32 const nheight = yAxis[0] - yAxis[1];
-        float32 const nwidth = xAxis[0] - xAxis[1];
-        matrix[0][0] = -2.f * zAxis[0] / nwidth;
-        matrix[1][1] = -2.f * zAxis[0] / nheight;
+        float32 ndepth = zAxis[0] - zAxis[1];
+        matrix[1][1] = 1.f / std::tan(fov / 2.f);
+        matrix[0][0] = matrix[1][1] / aspect;
         matrix[2][2] = (zAxis[0] + zAxis[1]) / ndepth;
         matrix[3][2] = -1.f;
-        matrix[0][3] = zAxis[0] * (xAxis[0] + xAxis[1]) / nwidth;
-        matrix[1][3] = zAxis[0] * (yAxis[0] + yAxis[1]) / nheight;
         matrix[2][3] = 2.f * zAxis[0] * zAxis[1] / ndepth;
-        return matrix;
-    }
-
-    [[nodiscard]] constexpr Matrix4f orthographicMatrix(
-        Vector2f xAxis,
-        Vector2f yAxis,
-        Vector2f zAxis) noexcept
-    {
-        Matrix4f matrix;
-        float32 const ndepth = zAxis[0] - zAxis[1];
-        float32 const nheight = yAxis[0] - yAxis[1];
-        float32 const nwidth = xAxis[0] - xAxis[1];
-        matrix[0][0] = -2.f / nwidth;
-        matrix[1][1] = -2.f / nheight;
-        matrix[2][2] = 2.f / ndepth;
-        matrix[0][3] = (xAxis[0] + xAxis[1]) / nwidth;
-        matrix[1][3] = (yAxis[0] + yAxis[1]) / nheight;
-        matrix[2][3] = (zAxis[0] + zAxis[1]) / ndepth;
-        matrix[3][3] = 1.f;
         return matrix;
     }
 

@@ -109,7 +109,7 @@ namespace mpgl {
      * @return the vector in polar coordinate system
      */
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
+    [[nodiscard]] Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept;
 
     /**
@@ -121,7 +121,7 @@ namespace mpgl {
      * @return the vector in cartesian coordinate system
      */
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Vector2<Tp> polarToCartesian(
+    [[nodiscard]] Vector2<Tp> polarToCartesian(
         Vector2<Tp> const& vector) noexcept;
 
     /**
@@ -134,8 +134,7 @@ namespace mpgl {
      * @return the rotation matrix
      */
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Matrix2<Tp> rotationMatrix(
-        float32 angle) noexcept;
+    [[nodiscard]] Matrix2<Tp> rotationMatrix(float32 angle) noexcept;
 
     /**
      * Calculates the hermitian transpose of the given matrix
@@ -159,7 +158,7 @@ namespace mpgl {
      * @param zAxis the z-axis depth [near, far]
      * @return the perspective projection matrix
      */
-    [[nodiscard]] constexpr Matrix4f perspectiveMatrix(
+    [[nodiscard]] Matrix4f perspectiveMatrix(
         float32 fov,
         float32 aspect,
         Vector2f zAxis) noexcept;
@@ -217,6 +216,59 @@ namespace mpgl {
     [[nodiscard]] constexpr Vector4<Tp> extend(
         Vector3<Tp> const& vector) noexcept;
 
+    /**
+     * Calculates the rotation matrix representing an extrinsic
+     * rotation whose Euler angles are yaw, pitch, and roll about
+     * axes x, y and z
+     *
+     * @tparam Tp the matrix element's type
+     * @param yaw the angle of rotation around the x axis [in Rads]
+     * @param pitch the angle of rotation around the y axis [in Rads]
+     * @param roll the angle of rotation around the z axis [in Rads]
+     * @return the rotation matrix
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] Matrix3<Tp> rotationMatrix(
+        Tp yaw,
+        Tp pitch,
+        Tp roll) noexcept;
+
+    /**
+     * Calculates the rotation matrix representing an extrinsic
+     * rotation whose Euler angles are yaw, pitch, and roll about
+     * axes x, y and z. The first element of vector is concidered to
+     * be the yaw angle, the second element is concidered to be the
+     * pitch angle and the last element is concidered to be the roll
+     * angle
+     *
+     * @tparam Tp the matrix element's type
+     * @param angles a constant reference to the vector object
+     * containing angles
+     * @return the rotation matrix
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] Matrix3<Tp> rotationMatrix(
+        Vector3<Tp> const& angles) noexcept;
+
+    /**
+     * Converts angle from the [0, 360] range to radians
+     *
+     * @tparam Tp the angle's type
+     * @param angle an angle in the [0, 360] range
+     * @return angle in radians
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] Tp toRadians(Tp angle) noexcept;
+
+    /**
+     * Converts angle from the radians to the [0, 360] range
+     *
+     * @tparam Tp the angle's type
+     * @param angle the angle in the radians system
+     * @return angle in degrees
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] Tp fromRadians(Tp angle) noexcept;
 
 }
 
