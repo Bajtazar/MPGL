@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Context/ShadersContext.hpp>
-#include <MPGL/Mathematics/Tensors/Vector.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 #include <MPGL/Core/Context/Options.hpp>
 
 #include <glad/glad.h>
@@ -40,18 +40,52 @@ namespace mpgl {
     /**
      * Represents an OpenGL context
      */
-    struct Context {
+    class Context {
+    public:
         /**
          * Initializes OpenGL context
          */
         explicit Context(void) noexcept;
 
+        Context(Context const&) = delete;
+        Context(Context&&) = delete;
+
+        Context& operator=(Context const&) = delete;
+        Context& operator=(Context&&) = delete;
+
         /// Current context window shaders
-        ShadersContext                              shaders;
+        ShadersContext                          shaders;
         /// Current context window dimensions
-        Vector2u                                    windowDimensions;
+        Vector2u                                windowDimensions;
         /// Current context window options
-        Options                                     windowOptions;
+        Options                                 windowOptions;
+        /// Current context projection matrix
+        Matrix4f                                projection;
+
+        /**
+         * Ckecks whether the view-projection matrix has changed
+         *
+         * @return if the view-projection matrix has changed
+         */
+        [[nodiscard]] bool hasVPChanges(void) const noexcept
+            { return hasViewChanged; }
+
+        /**
+         * Sets the view-projection matrix. Saves whether the matrix
+         * has been modified
+         *
+         * @param matrix a constant reference to the view-projection
+         * matrix
+         */
+        void setViewProjection(Matrix4f const& matrix) noexcept;
+
+        /**
+         * Returns a constant reference to the view-projection matrix
+         *
+         * @return the constant reference to the view-projection matrix
+         */
+        [[nodiscard]] Matrix4f const& getViewProjection(
+            void) const noexcept;
 
         /**
          * Prints message in the console in case of the GLFW
@@ -60,18 +94,22 @@ namespace mpgl {
          * @param error the GLFW error code
          * @param message the GLFW error message
          */
-        friend void errorCallback(int32 error,
+        friend void errorCallback(
+            int32 error,
             char const* message) noexcept;
 
         /**
          * Destroys an OpenGL context
          */
         ~Context(void) noexcept;
+    private:
+        Matrix4f                                viewProjection{};
+        bool                                    hasViewChanged = true;
     };
 
     struct GraphicalObject {
         /// The OpenGL context shared by all graphical objects
-        static Context                              context;
+        static Context                          context;
 
         /// Forces context initialization before any other object
         static_assert(((void)context, true));

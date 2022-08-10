@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <ranges>
 
 namespace mpgl {
 
@@ -45,6 +46,19 @@ namespace mpgl {
 
     Context::~Context(void) noexcept {
         glfwTerminate();
+    }
+
+    void Context::setViewProjection(Matrix4f const& matrix) noexcept {
+        hasViewChanged = std::ranges::equal(
+            matrix | std::views::join,
+            viewProjection | std::views::join);
+        viewProjection = matrix;
+    }
+
+    [[nodiscard]] Matrix4f const& Context::getViewProjection(
+        void) const noexcept
+    {
+        return viewProjection;
     }
 
 }
