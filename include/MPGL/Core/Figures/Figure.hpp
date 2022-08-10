@@ -33,17 +33,26 @@
 namespace mpgl {
 
     /**
+     * Base class for figures
+     *
+     * @tparam Dim the dimension of the space
+     */
+    template <Dimension Dim>
+    class Figure;
+
+    /**
      * Base class for the two-dimensional figures
      */
-    class Figure :
+    template <>
+    class Figure<dim::Dim2> :
         public virtual Shape,
-        public Shadeable,
         public virtual Transformable2D,
+        public Shadeable,
         public Clickable
     {
     public:
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;
@@ -71,7 +80,7 @@ namespace mpgl {
             Transformation2D const& transformator) noexcept = 0;
 
         /**
-         * Destroy the Figure object
+         * Destroys the Figure object
          */
         virtual ~Figure(void) noexcept = default;
     protected:
@@ -84,7 +93,7 @@ namespace mpgl {
         explicit Figure(std::string const& programName);
 
         /**
-         * Construct a new Figure object. Loads the given
+         * Constructs a new Figure object. Loads the given
          * shaders
          *
          * @param programName the given shader name
@@ -94,7 +103,7 @@ namespace mpgl {
             Executable exec);
 
         /**
-         *  Construct a new Figure object
+         *  Constructs a new Figure object
          */
         explicit Figure(void) noexcept = default;
 
@@ -126,5 +135,115 @@ namespace mpgl {
          */
         Figure& operator=(Figure&& shape) noexcept;
     };
+
+    /**
+     * Base class for the three-dimensional figures
+     */
+    template <>
+    class Figure<dim::Dim3> :
+        public virtual Shape,
+        public virtual Transformable3D,
+        public Shadeable
+    {
+    public:
+        /**
+         * Pure virtual method. Has to be overloaded.
+         * Allows to draw an object
+         */
+        virtual void draw(void) const noexcept = 0;
+
+        /**
+         * Sets the inner figure system model. Matrix has to exist
+         * along the figure otherwise using the draw method will
+         * result in undefined behaviour
+         *
+         * @param model a constant reference to the model matrix
+         */
+        virtual void setModel(Matrix4f const& model) noexcept;
+
+        /**
+         * Returns a reference to the inner system model matrix
+         *
+         * @return the reference to the inner system model matrix
+         */
+        [[nodiscard]] Matrix4f const& getModel(void) const noexcept
+            { return model; }
+
+        /**
+         * Pure virtual method. Has to be overloaded.
+         * Performs transformation on the figure
+         *
+         * @param transformator the constant reference to the
+         * transforming object
+         */
+        virtual void transform(
+            Transformation3D const& transformator) noexcept = 0;
+
+        /**
+         * Destroys the Figure object
+         */
+        virtual ~Figure(void) noexcept = default;
+    protected:
+        /**
+         * Construct a new Figure object. Loads the given
+         * shaders
+         *
+         * @param programName the given shader name
+         */
+        explicit Figure(std::string const& programName);
+
+        /**
+         * Constructs a new Figure object. Loads the given
+         * shaders
+         *
+         * @param programName the given shader name
+         * @param exec the shader's executable
+         */
+        explicit Figure(std::string const& programName,
+            Executable exec);
+
+        /**
+         *  Constructs a new Figure object
+         */
+        explicit Figure(void) noexcept = default;
+
+        /**
+         * Construct a new Figure object from the given
+         * constant reference
+         *
+         * @param shape the given shape constant reference
+         */
+        explicit Figure(Figure const& shape);
+
+        explicit Figure(Figure&& shape) noexcept = default;
+
+        /**
+         * Assigns the given constant reference to the object
+         *
+         * @param shape the given figure constant reference
+         * @return the reference to this object
+         */
+        Figure& operator=(Figure const& shape);
+
+        /**
+         * Assigns the given rvalue reference to the object
+         *
+         * @note Wvirtual-move-assign warning workaround
+         *
+         * @param shape the given figure rvalue reference
+         * @return the reference to this object
+         */
+        Figure& operator=(Figure&& shape) noexcept;
+
+        using Matrix4fCRef = std::reference_wrapper<Matrix4f const>;
+
+        static Matrix4f const                   defaultModel;
+
+        Matrix4fCRef                            model = defaultModel;
+        bool                                    hasModelChanged = false;
+    };
+
+    typedef Figure<dim::Dim2>                   Figure2D;
+    typedef Figure<dim::Dim3>                   Figure3D;
 
 }

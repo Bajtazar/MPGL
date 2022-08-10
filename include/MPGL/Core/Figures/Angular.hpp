@@ -35,7 +35,7 @@ namespace mpgl {
     /**
      * Base class for all angular shapes
      */
-    class Angular : public Figure {
+    class Angular : public Figure2D {
     public:
         /// The vertex used by all angular shapes
         using Vertex = mpgl::Vertex<

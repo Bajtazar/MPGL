@@ -37,8 +37,9 @@ namespace mpgl {
      * should contain information about color
      */
     template <bool IsColorable>
-    class ShadeableSprite : public Texturable,
-        public Figure
+    class ShadeableSprite :
+        public Texturable,
+        public Figure2D
     {
     private:
         /// The default texturable vertex

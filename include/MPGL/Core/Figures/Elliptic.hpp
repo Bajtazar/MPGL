@@ -35,7 +35,7 @@ namespace mpgl {
     /**
      * Base class for all elliptic shapes
      */
-    class Elliptic : public Figure {
+    class Elliptic : public Figure2D {
     public:
         /// The vertex used by all elliptic shapes
         using Vertex = mpgl::Vertex<
