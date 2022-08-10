@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Windows/WindowPlatform.hpp>
+#include <MPGL/Core/Camera/StaticCamera.hpp>
 
 namespace mpgl {
 
@@ -86,12 +87,32 @@ namespace mpgl {
         void setTickrate(std::size_t ticks) noexcept;
 
         /**
-         * Draw frames until the window has to be closed
+         * Draws frames until the window has to be closed. Draws
+         * only 2D drawables
          *
-         * @param background the background color
+         * @param background a background color
          */
         void windowLoop(
             Color const& background = Color::Black) noexcept;
+
+        /**
+         * Draws frames until the window has to be closed. Draws
+         * 3D drawables first and switches to the 2D mode. Adds
+         * camera to the event registers if it derives from any
+         *
+         * @tparam CameraTp the type of the camera
+         * @param projection a constant reference to the projection
+         * matrix
+         * @param background a background color
+         * @param cameraPtr a shared pointer to the camera object
+         * (StaticCamera by default)
+         */
+        template <std::derived_from<Camera> CameraTp = StaticCamera>
+        void windowLoop(
+            Matrix4f const& projection,
+            Color const& background = Color::Black,
+            std::shared_ptr<CameraTp> cameraPtr = defaultCamera()
+            ) noexcept;
 
         /**
          * Returns a reference to the shader library object
@@ -116,11 +137,18 @@ namespace mpgl {
         typedef std::chrono::microseconds           Duration;
         typedef std::chrono::steady_clock           ThreadClock;
         typedef ThreadClock::time_point             TimePoint;
+        typedef std::shared_ptr<StaticCamera>       StaticCameraPtr;
+        typedef std::shared_ptr<Camera>             CameraPtr;
 
         /**
-         * Draws drawables on the screen
+         * Draws 2D drawables on the screen
          */
-        void drawDrawables(void) const noexcept;
+        void draw2DDrawables(void) const noexcept;
+
+        /**
+         * Draws 3D drawables on the screen
+         */
+        void draw3DDrawables(void) const noexcept;
 
         /**
          * Draws the frame in the window
@@ -131,6 +159,26 @@ namespace mpgl {
          * Clears the screen in the window
          */
         void clear(Color const&) noexcept;
+
+        /**
+         * Sets the constext's view-projection matrix
+         *
+         * @param cameraPtr a constant reference to the camera
+         * shared pointer
+         */
+        void setVPMatrix(CameraPtr const& cameraPtr) noexcept;
+
+        /**
+         * Adds camera to the event registers if camera derives
+         * from them
+         *
+         * @tparam CameraTp the type of the camera
+         * @param camera a constant reference to the camera shared
+         * pointer
+         */
+        template <std::derived_from<Camera> CameraTp>
+        void addCameraEventIfDerived(
+            std::shared_ptr<CameraTp> const& camera) noexcept;
 
         ShaderLibrary                               shaders;
         Duration                                    sleepTime;
@@ -150,7 +198,15 @@ namespace mpgl {
          * @return the default shader directories
          */
         static Paths defaultShaderDirs(void) noexcept;
+
+        /**
+         * Returns the default camera (StaticCamera)
+         *
+         * @return the default camera
+         */
+        static StaticCameraPtr defaultCamera(void) noexcept;
     };
 
-
 }
+
+#include <MPGL/Core/Windows/Window.tpp>
