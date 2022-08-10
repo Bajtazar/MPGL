@@ -123,7 +123,7 @@ namespace mpgl {
         Color const& color) noexcept
     {
         bind(cleaning, color);
-        std::ranges::for_each(drawables,
+        std::ranges::for_each(drawables2D,
             [](auto const& drawable){ drawable->draw(); });
         unbind();
     }

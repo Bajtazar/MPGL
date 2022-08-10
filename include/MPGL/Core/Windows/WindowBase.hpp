@@ -37,17 +37,18 @@
 namespace mpgl {
 
     /**
-     * Base class for windows. Allows to insert drawables into
-     * the window object and automatically separates drawables
+     * Base class for windows. Allows to insert Drawables2D into
+     * the window object and automatically separates Drawables2D
      * into event registers they derive from
      */
     class WindowBase : protected GraphicalObject {
     public:
-        typedef std::shared_ptr<Drawable2D>         DrawablePtr;
+        typedef std::shared_ptr<Drawable2D>         Drawable2DPtr;
+        typedef std::shared_ptr<Drawable3D>         Drawable3DPtr;
         typedef std::unique_ptr<WindowEventManager> EventManagerPtr;
-        typedef std::vector<DrawablePtr>            Drawables;
+        typedef std::vector<Drawable2DPtr>          Drawables2D;
+        typedef std::vector<Drawable3DPtr>          Drawables3D;
         typedef std::size_t                         size_type;
-
         typedef ScreenTransformationEvent           STEvent;
 
         WindowBase(WindowBase&&) = delete;
@@ -91,6 +92,16 @@ namespace mpgl {
 
         /**
          * Pushes drawable into drawable vector and adds drawable
+         * to event registers it derives from
+         *
+         * @tparam Tp the type of the drawable
+         * @param drawable the drawable shared pointer object
+         */
+        template <std::derived_from<Drawable3D> Tp>
+        void pushDrawable(std::shared_ptr<Tp> const& drawable);
+
+        /**
+         * Pushes drawable into drawable vector and adds drawable
          * to event registers it derives from. Attaches the layout
          * to the drawable
          *
@@ -123,6 +134,16 @@ namespace mpgl {
 
         /**
          * Moves drawable into drawable vector and adds drawable
+         * to event registers it derives from
+         *
+         * @tparam Tp the type of the drawable
+         * @param drawable the drawable shared pointer object
+         */
+        template <std::derived_from<Drawable3D> Tp>
+        void pushDrawable(std::shared_ptr<Tp>&& drawable);
+
+        /**
+         * Moves drawable into drawable vector and adds drawable
          * to event registers it derives from. Attaches the layout
          * to the drawable
          *
@@ -143,7 +164,7 @@ namespace mpgl {
             LayoutTag<Lp, Args...>&& tag);
 
         /**
-         * Emplaces drawable into drawables vector and adds
+         * Emplaces drawable into Drawables2D vector and adds
          * drawable to event registers it derives from. Attaches
          * default layout to the drawable if it is transformable
          *
@@ -159,7 +180,22 @@ namespace mpgl {
         void emplaceDrawable(Args&&... args);
 
         /**
-         * Emplaces drawable into drawables vector and adds
+         * Emplaces drawable into Drawables3D vector and adds
+         * drawable to event registers it derives from
+         *
+         * @tparam Tp the type of the drawable
+         * @tparam Args the type of arguments passed into the
+         * drawable constructor
+         * @param args the arguments passed into the drawable
+         * constructor
+         */
+        template <std::derived_from<Drawable3D> Tp,
+            typename... Args>
+                requires std::constructible_from<Tp, Args...>
+        void emplaceDrawable(Args&&... args);
+
+        /**
+         * Emplaces drawable into Drawables2D vector and adds
          * drawable to event registers it derives from. Attaches
          * layout to the drawable if it is transformable
          *
@@ -208,7 +244,8 @@ namespace mpgl {
             : eventManager{std::move(eventManager)} {}
 
         EventManagerPtr                             eventManager;
-        Drawables                                   drawables;
+        Drawables2D                                 drawables2D;
+        Drawables3D                                 drawables3D;
     private:
         /**
          * Attaches default layout to the drawable object if it

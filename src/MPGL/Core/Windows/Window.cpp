@@ -68,7 +68,7 @@ namespace mpgl {
     }
 
     void Window::drawDrawables(void) const noexcept {
-        std::ranges::for_each(drawables, [](const auto& drawable)
+        std::ranges::for_each(drawables2D, [](const auto& drawable)
             { drawable->draw(); });
     }
 
