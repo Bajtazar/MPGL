@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Mathematics/Vector.hpp>
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
 #include <MPGL/Mathematics/Ranges.hpp>
 
 #include <optional>
@@ -2298,4 +2298,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Mathematics/Matrix.tpp>
+#include <MPGL/Mathematics/Tensors/Matrix.tpp>

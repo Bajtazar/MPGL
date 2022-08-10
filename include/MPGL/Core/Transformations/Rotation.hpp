@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformation.hpp>
-#include <MPGL/Mathematics/Matrix.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 
 namespace mpgl {
 

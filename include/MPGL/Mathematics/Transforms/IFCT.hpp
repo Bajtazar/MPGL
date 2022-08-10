@@ -26,9 +26,9 @@
 #pragma once
 
 #include <MPGL/Mathematics/Transforms/FFT.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 #include <MPGL/Utility/BitReversion.hpp>
 #include <MPGL/Utility/FixedRange.hpp>
-#include <MPGL/Mathematics/Matrix.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <climits>

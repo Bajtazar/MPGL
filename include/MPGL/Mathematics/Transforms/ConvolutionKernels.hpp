@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Mathematics/Matrix.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 
 namespace mpgl {
 

@@ -26,8 +26,8 @@
 #pragma once
 
 #include <MPGL/Core/Context/ShadersContext.hpp>
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
 #include <MPGL/Core/Context/Options.hpp>
-#include <MPGL/Mathematics/Vector.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

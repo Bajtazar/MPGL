@@ -1268,7 +1268,7 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Mathematics/Vector.tpp>
+#include <MPGL/Mathematics/Tensors/Vector.tpp>
 
 namespace std {
 

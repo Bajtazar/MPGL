@@ -26,10 +26,10 @@
 #pragma once
 
 #include <MPGL/IO/ImageLoading/LoaderInterface.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 #include <MPGL/Compression/HuffmanTree.hpp>
 #include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>
-#include <MPGL/Mathematics/Matrix.hpp>
 
 #include <functional>
 #include <memory>
