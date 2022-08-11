@@ -556,7 +556,7 @@ namespace mpgl {
             details::VertexComponentViewAdaptor<"texCoords">        texCoords;
         /// The adapter to screen position view
         inline constexpr
-            details::ProjectedPositionViewAdaptor                   projection;
+            details::ProjectedPositionViewAdaptor                   project;
 
     }
 

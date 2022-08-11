@@ -24,8 +24,8 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
-
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
+#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
@@ -78,6 +78,20 @@ namespace mpgl {
         actualizeLocations();
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawArrays(VertexArray::DrawMode::Triangles, 3);
+    }
+
+    [[nodiscard]] bool Triangle<dim::Dim3>::contains(
+        Vector2u const& position) const noexcept
+    {
+        Vector2d v = Adapter2D{position}.get();
+        auto iter = (vertices | views::position | views::project(model)).begin();
+        Vector2d v0 = Adapter2D{*iter++}.get();
+        Vector2d v1 = Vector2d{Adapter2D{*iter++}.get()} - v0;
+        Vector2d v2 = Vector2d{Adapter2D{*iter++}.get()} - v0;
+        double base = cross(v1, v2);
+        double a = (cross(v, v2) - cross(v0, v2)) / base;
+        double b = (cross(v0, v1) - cross(v, v1)) / base;
+        return (a >= 0) && (b >= 0) && (a + b <= 1);
     }
 
 }

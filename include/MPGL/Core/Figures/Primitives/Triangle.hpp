@@ -95,7 +95,11 @@ namespace mpgl {
      * Represents a 3D triangle figure
      */
     template <>
-    struct Triangle<dim::Dim3> : public Angular3D {
+    class Triangle<dim::Dim3> :
+        public Angular3D,
+        public Clickable
+    {
+    public:
         /**
          * Constructs a new Triangle with given
          * vertices
@@ -128,6 +132,16 @@ namespace mpgl {
          * Draws the triangle on the screen
          */
         void draw(void) const noexcept final;
+
+        /**
+         * Checks whether the given pixel is located inside
+         * the triangle
+         *
+         * @param position the pixel's position
+         * @return if the given point is inside the triangle
+         */
+        [[nodiscard]] bool contains(
+            Vector2u const& position) const noexcept final;
 
         /**
          * Destroy the Triangle object
