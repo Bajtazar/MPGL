@@ -32,16 +32,84 @@
 
 namespace mpgl {
 
+    namespace details {
+
+        /**
+         * Contains informations about vertices of the given dimensions
+         * angluar shape
+         *
+         * @tparam Dim the dimension of the space
+         */
+        template <Dimension Dim>
+        struct AngluarVertices;
+
+        /**
+         * Contains informations about vertices of the 2D angular
+         */
+        template <>
+        struct AngluarVertices<dim::Dim2> {
+            using Vertex = mpgl::Vertex<
+                VertexComponent<
+                    "position",
+                    Adapter2D,
+                    DataType::Float32>,
+                VertexComponent<
+                    "color",
+                    Color,
+                    DataType::Float32>
+            >;
+
+            using Vector = Vector2f;
+            using Adapter = Adapter2D;
+
+            /**
+             * Returns a shader's name used by the angular
+             *
+             * @return the shader's name used by the angular
+             */
+            [[nodiscard]] static std::string shader(void) noexcept;
+        };
+
+        /**
+         * Contains informations about vertices of the 3D angular
+         */
+        template <>
+        struct AngluarVertices<dim::Dim3> {
+            using Vertex = mpgl::Vertex<
+                VertexComponent<
+                    "position",
+                    Adapter3D,
+                    DataType::Float32>,
+                VertexComponent<
+                    "color",
+                    Color,
+                    DataType::Float32>
+            >;
+
+            using Vector = Vector3f;
+            using Adapter = Adapter3D;
+
+            /**
+             * Returns a shader's name used by the angular
+             *
+             * @return the shader's name used by the angular
+             */
+            [[nodiscard]] static std::string shader(void) noexcept;
+        };
+
+    }
+
     /**
      * Base class for all angular shapes
+     *
+     * @tparam Dim the dimension of the space
      */
-    class Angular : public Figure2D {
+    template <Dimension Dim>
+    class Angular : public Figure<Dim> {
     public:
+        using VertexTraits = details::AngluarVertices<Dim>;
         /// The vertex used by all angular shapes
-        using Vertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter2D, DataType::Float32>,
-            VertexComponent<"color", Color, DataType::Float32>
-        >;
+        using Vertex = typename VertexTraits::Vertex;
 
         typedef std::vector<Vertex>         Vertices;
 
@@ -52,26 +120,13 @@ namespace mpgl {
         virtual void draw(void) const noexcept = 0;
 
         /**
-         * Pure virtual method. Has to be overloaded.
-         * Checks whether the given pixel is located
-         * inside of the figure [boundry is concidered
-         * as a part of the figure, the 3D figures are
-         * projected onto screen and then checked]
-         *
-         * @param position the pixel's position
-         * @return if point is inside figure
-         */
-        [[nodiscard]] virtual bool contains(
-            Vector2u const& position) const noexcept = 0;
-
-        /**
          * Performs transformation on the figure
          *
          * @param transformator the constant reference to the
          * transforming object
          */
         void transform(
-            Transformation2D const& transformator) noexcept final;
+            Transformation<Dim> const& transformator) noexcept final;
 
         /**
          * Returns the reference to vertex with the given index
@@ -79,9 +134,7 @@ namespace mpgl {
          * @param index the vertex's index
          * @return the reference to vertex with the given index
          */
-        [[nodiscard]] Vertex&
-            operator[] (std::size_t index) noexcept
-                { isModified = true; return vertices[index]; }
+        [[nodiscard]] Vertex& operator[] (std::size_t index) noexcept;
 
         /**
          * Returns the constant reference to vertex with
@@ -92,40 +145,35 @@ namespace mpgl {
          * the given index
          */
         [[nodiscard]] Vertex const&
-            operator[] (std::size_t index) const noexcept
-                { return vertices[index]; }
+            operator[] (std::size_t index) const noexcept;
 
         /**
          * Returns the reference to the front vertex
          *
          * @return the reference to the front vertex
          */
-        [[nodiscard]] Vertex& front(void) noexcept
-            { isModified = true; return vertices.front(); }
+        [[nodiscard]] Vertex& front(void) noexcept;
 
         /**
          * Returns the constant reference to the front vertex
          *
          * @return the constant reference to the front vertex
          */
-        [[nodiscard]] Vertex const& front(void) const noexcept
-            { return vertices.front(); }
+        [[nodiscard]] Vertex const& front(void) const noexcept;
 
         /**
          * Returns the reference to the back vertex
          *
          * @return the reference to the back vertex
          */
-        [[nodiscard]] Vertex& back(void) noexcept
-            { isModified = true; return vertices.back(); }
+        [[nodiscard]] Vertex& back(void) noexcept;
 
         /**
          * Returns the constant reference to the back vertex
          *
          * @return the constant reference to the back vertex
          */
-        [[nodiscard]] Vertex const& back(void) const noexcept
-            { return vertices.back(); }
+        [[nodiscard]] Vertex const& back(void) const noexcept;
 
         using iterator                    = Vertices::iterator;
         using const_iterator              = Vertices::const_iterator;
@@ -147,16 +195,14 @@ namespace mpgl {
          *
          * @return the iterator to the begining of the vertices
          */
-        [[nodiscard]] iterator begin(void) noexcept
-            { isModified = true; return vertices.begin(); }
+        [[nodiscard]] iterator begin(void) noexcept;
 
         /**
          * Returns the iterator to the end of the vertices
          *
          * @return the iterator to the end of the vertices
          */
-        [[nodiscard]] iterator end(void) noexcept
-            { isModified = true; return vertices.end(); }
+        [[nodiscard]] iterator end(void) noexcept;
 
         /**
          * Returns the constant iterator to the begining
@@ -165,8 +211,7 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the vertices
          */
-        [[nodiscard]] const_iterator begin(void) const noexcept
-            { return vertices.begin(); }
+        [[nodiscard]] const_iterator begin(void) const noexcept;
 
         /**
          * Returns the constant iterator to the end
@@ -175,8 +220,7 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the vertices
          */
-        [[nodiscard]] const_iterator end(void) const noexcept
-            { return vertices.end(); }
+        [[nodiscard]] const_iterator end(void) const noexcept;
 
         /**
          * Returns the constant iterator to the begining
@@ -185,8 +229,7 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the vertices
          */
-        [[nodiscard]] const_iterator cbegin(void) const noexcept
-            { return vertices.begin(); }
+        [[nodiscard]] const_iterator cbegin(void) const noexcept;
 
         /**
          * Returns the constant iterator to the end
@@ -195,8 +238,7 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the vertices
          */
-        [[nodiscard]] const_iterator cend(void) const noexcept
-            { return vertices.end(); }
+        [[nodiscard]] const_iterator cend(void) const noexcept;
 
         /**
          * Returns the reverse iterator to the end of
@@ -205,9 +247,7 @@ namespace mpgl {
          * @return the reverse iterator to the end of
          * the vertices
          */
-        [[nodiscard]] reverse_iterator
-            rbegin(void) noexcept
-                { isModified = true; return vertices.rbegin(); }
+        [[nodiscard]] reverse_iterator rbegin(void) noexcept;
 
         /**
          * Returns the reverse iterator to the begining of
@@ -216,9 +256,7 @@ namespace mpgl {
          * @return the reverse iterator to the begining of
          * the vertices
          */
-        [[nodiscard]] reverse_iterator
-            rend(void) noexcept
-                { isModified = true; return vertices.rend(); }
+        [[nodiscard]] reverse_iterator rend(void) noexcept;
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -227,9 +265,8 @@ namespace mpgl {
          * @return the constant reverse iterator to the end of
          * the vertices
          */
-        [[nodiscard]] const_reverse_iterator
-            rbegin(void) const noexcept
-                { return vertices.rbegin(); }
+        [[nodiscard]] const_reverse_iterator rbegin(
+            void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -238,9 +275,7 @@ namespace mpgl {
          * @return the constant reverse iterator to the begining of
          * the vertices
          */
-        [[nodiscard]] const_reverse_iterator
-            rend(void) const noexcept
-                { return vertices.rend(); }
+        [[nodiscard]] const_reverse_iterator rend(void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -249,9 +284,8 @@ namespace mpgl {
          * @return the constant reverse iterator to the end of
          * the vertices
          */
-        [[nodiscard]] const_reverse_iterator
-            crbegin(void) const noexcept
-                { return vertices.crbegin(); }
+        [[nodiscard]] const_reverse_iterator crbegin(
+            void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -260,9 +294,8 @@ namespace mpgl {
          * @return the constant reverse iterator to the begining of
          * the vertices
          */
-        [[nodiscard]] const_reverse_iterator
-            crend(void) const noexcept
-                { return vertices.crend(); }
+        [[nodiscard]] const_reverse_iterator crend(
+            void) const noexcept;
 
         /**
          * Virtual destructor. Destroy the Angular object
@@ -318,5 +351,11 @@ namespace mpgl {
 
         Vertices                            vertices;
     };
+
+    template class Angular<dim::Dim2>;
+    template class Angular<dim::Dim3>;
+
+    typedef Angular<dim::Dim2>              Angular2D;
+    typedef Angular<dim::Dim3>              Angular3D;
 
 }

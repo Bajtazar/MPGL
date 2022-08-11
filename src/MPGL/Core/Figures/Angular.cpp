@@ -30,57 +30,213 @@
 
 namespace mpgl {
 
-    void Angular::initializeBuffers(void) const noexcept {
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        BindGuard<VertexBuffer> vboGuard{vertexBuffer};
-        vertexBuffer.setBufferData(vertices);
-        vertexArray.setArrayData(vertices.front());
+    namespace details {
+
+        [[nodiscard]] std::string AngluarVertices<dim::Dim2>::shader(
+            void) noexcept
+        {
+            return "MPGL/2D/Default";
+        }
+
+        [[nodiscard]] std::string AngluarVertices<dim::Dim3>::shader(
+            void) noexcept
+        {
+            return "MPGL/3D/Default";
+        }
+
     }
 
-    Angular::Angular(size_t size, Color const& color)
-        : Figure{"MPGL/2D/Default"}, vertices{size,
-            Vertex{Vector2f{}, color}}
+    template <Dimension Dim>
+    void Angular<Dim>::initializeBuffers(void) const noexcept {
+        BindGuard<VertexArray> vaoGuard{this->vertexArray};
+        BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
+        this->vertexBuffer.setBufferData(vertices);
+        this->vertexArray.setArrayData(vertices.front());
+    }
+
+    template <Dimension Dim>
+    Angular<Dim>::Angular(size_t size, Color const& color)
+        : Figure<Dim>{VertexTraits::shader()}, vertices{size,
+            Vertex{typename VertexTraits::Vector{}, color}}
     {
         initializeBuffers();
     }
 
-    Angular::Angular(Vertices vertices) : Figure{"MPGL/2D/Default"},
+    template <Dimension Dim>
+    Angular<Dim>::Angular(Vertices vertices)
+        : Figure<Dim>{VertexTraits::shader()},
         vertices{std::move(vertices)}
     {
         initializeBuffers();
     }
 
-    Angular::Angular(Angular const& shape)
-        : Figure{shape}, vertices{shape.vertices}
+    template <Dimension Dim>
+    Angular<Dim>::Angular(Angular const& shape)
+        : Figure<Dim>{shape}, vertices{shape.vertices}
     {
         initializeBuffers();
     }
 
-    void Angular::actualizeBufferBeforeDraw(void) const noexcept {
-        if (isModified) {
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::Vertex&
+        Angular<Dim>::operator[] (std::size_t index) noexcept
+    {
+        this->isModified = true;
+        return vertices[index];
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::Vertex const&
+        Angular<Dim>::operator[] (std::size_t index) const noexcept
+    {
+        return vertices[index];
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::Vertex& Angular<Dim>::front(
+        void) noexcept
+    {
+        this->isModified = true;
+        return vertices.front();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::Vertex const& Angular<Dim>::front(
+        void) const noexcept
+    {
+        return vertices.front();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::Vertex& Angular<Dim>::back(
+        void) noexcept
+    {   this->isModified = true;
+        return vertices.back();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::Vertex const& Angular<Dim>::back(
+        void) const noexcept
+    {
+        return vertices.back();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::iterator Angular<Dim>::begin(
+        void) noexcept
+    {
+        this->isModified = true;
+        return vertices.begin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::iterator Angular<Dim>::end(
+        void) noexcept
+    {
+        this->isModified = true;
+        return vertices.end();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_iterator Angular<Dim>::begin(
+        void) const noexcept
+    {
+        return vertices.begin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_iterator Angular<Dim>::end(
+        void) const noexcept
+    {
+        return vertices.end();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_iterator Angular<Dim>::cbegin(
+        void) const noexcept
+    {
+        return vertices.begin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_iterator Angular<Dim>::cend(
+        void) const noexcept
+    {
+        return vertices.end();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::reverse_iterator
+        Angular<Dim>::rbegin(void) noexcept
+    {
+        this->isModified = true;
+        return vertices.rbegin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::reverse_iterator
+        Angular<Dim>::rend(void) noexcept
+    {
+        this->isModified = true;
+        return vertices.rend();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_reverse_iterator
+        Angular<Dim>::rbegin(void) const noexcept
+    {
+        return vertices.rbegin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_reverse_iterator
+        Angular<Dim>::rend(void) const noexcept
+    {
+        return vertices.rend();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_reverse_iterator
+        Angular<Dim>::crbegin(void) const noexcept
+    {
+        return vertices.crbegin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] Angular<Dim>::const_reverse_iterator
+        Angular<Dim>::crend(void) const noexcept
+    {
+        return vertices.crend();
+    }
+
+    template <Dimension Dim>
+    void Angular<Dim>::actualizeBufferBeforeDraw(void) const noexcept {
+        if (this->isModified) {
             {
-                BindGuard<VertexBuffer> vboGuard{vertexBuffer};
-                vertexBuffer.changeBufferData(vertices);
+                BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
+                this->vertexBuffer.changeBufferData(vertices);
             }
-            isModified = false;
+            this->isModified = false;
         }
     }
 
-    Angular& Angular::operator=(Angular const& shape) {
-        Figure::operator=(shape);
+    template <Dimension Dim>
+    Angular<Dim>& Angular<Dim>::operator=(Angular<Dim> const& shape) {
+        Figure<Dim>::operator=(shape);
         vertices.clear();
         vertices.reserve(shape.vertices.size());
         std::ranges::copy(shape.vertices, std::back_inserter(vertices));
         return *this;
     }
 
-    void Angular::transform(
-        Transformation2D const& transformator) noexcept
+    template <Dimension Dim>
+    void Angular<Dim>::transform(
+        Transformation<Dim> const& transformator) noexcept
     {
-        any::InputRange<Adapter2D> positions{
+        any::InputRange<typename VertexTraits::Adapter> positions{
             vertices | views::position};
         transformator(positions);
-        isModified = true;
+        this->isModified = true;
     }
 
 }

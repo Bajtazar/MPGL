@@ -33,7 +33,7 @@ namespace mpgl {
     /**
      * Represents a tetragon figure
      */
-    class Tetragon : public Angular {
+    class Tetragon : public Angular2D {
     public:
         /**
          * Construct a new Tetragon with given

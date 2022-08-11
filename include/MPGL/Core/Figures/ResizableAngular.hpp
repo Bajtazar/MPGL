@@ -34,7 +34,7 @@ namespace mpgl {
     /**
      * Base class for all resizable angular shapes
      */
-    class ResizableAngular : public Angular {
+    class ResizableAngular : public Angular2D {
     public:
         typedef std::size_t                 size_type;
         typedef std::optional<Vector2f>     OptionalVec2f;

@@ -32,7 +32,7 @@ namespace mpgl {
     /**
      * Represents a line figure
      */
-    struct Line : public Angular {
+    struct Line : public Angular2D {
         /**
          * Construct a new line with the begin
          * in the first vertex and the end in the

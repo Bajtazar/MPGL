@@ -32,7 +32,7 @@ namespace mpgl {
     /**
      * Represents a triangle figure
      */
-    struct Triangle : public Angular {
+    struct Triangle : public Angular2D {
         /**
          * Constructs a new Triangle with given
          * vertices
