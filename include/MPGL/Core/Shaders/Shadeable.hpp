@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Shaders/ShaderProgram.hpp>
-#include <MPGL/Core/Drawable.hpp>
+#include <MPGL/Core/Context/Context.hpp>
 
 namespace mpgl {
 
@@ -34,7 +34,7 @@ namespace mpgl {
      * Base class for all classes that contains shader program.
      * Simplifies the shader initialization process
      */
-    class Shadeable : virtual public Drawable2D {
+    class Shadeable : virtual protected GraphicalObject {
     public:
         typedef std::shared_ptr<ShaderProgram>      ProgramPtr;
 
@@ -74,12 +74,6 @@ namespace mpgl {
         [[nodiscard]] ShaderProgram const& getProgram(
             void) const noexcept
                 { return *shaderProgram; }
-
-        /**
-         * Pure virtual method. Has to be overloaded.
-         * Allows to draw an object
-         */
-        virtual void draw(void) const noexcept = 0;
 
         /**
          * Virtual destructor. Destroys the Shadeable object

@@ -31,8 +31,17 @@ namespace mpgl {
 
     /**
      * Represents a triangle figure
+     *
+     * @tparam Dim the dimension of the space
      */
-    struct Triangle : public Angular2D {
+    template <Dimension Dim>
+    struct Triangle;
+
+    /**
+     * Represents a 2D triangle figure
+     */
+    template <>
+    struct Triangle<dim::Dim2> : public Angular2D {
         /**
          * Constructs a new Triangle with given
          * vertices
@@ -81,5 +90,52 @@ namespace mpgl {
          */
         ~Triangle(void) noexcept = default;
     };
+
+    /**
+     * Represents a 3D triangle figure
+     */
+    template <>
+    struct Triangle<dim::Dim3> : public Angular3D {
+        /**
+         * Constructs a new Triangle with given
+         * vertices
+         *
+         * @param firstVertex the first vertex coord
+         * @param secondVertex the second vertex coord
+         * @param thirdVertex the third vertex coord
+         * @param color the color of the triangle
+         */
+        Triangle(Vector3f const& firstVertex,
+                Vector3f const& secondVertex,
+                Vector3f const& thirdVertex,
+                Color const& color = {});
+
+        /**
+         * Constructs a new Triangle with given
+         * color
+         *
+         * @param color the color of the triangle
+         */
+        Triangle(Color const& color = {});
+
+        Triangle(Triangle const& triangle) = default;
+        Triangle(Triangle&& triangle) noexcept = default;
+
+        Triangle& operator= (Triangle const& triangle) = default;
+        Triangle& operator= (Triangle&& triangle) noexcept = default;
+
+        /**
+         * Draws the triangle on the screen
+         */
+        void draw(void) const noexcept final;
+
+        /**
+         * Destroy the Triangle object
+         */
+        ~Triangle(void) noexcept = default;
+    };
+
+    typedef Triangle<dim::Dim2>                     Triangle2D;
+    typedef Triangle<dim::Dim3>                     Triangle3D;
 
 }

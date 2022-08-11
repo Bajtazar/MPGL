@@ -47,7 +47,7 @@ namespace mpgl {
      */
     template <>
     class Figure<dim::Dim2> :
-        public virtual Shape,
+        public virtual Shape2D,
         public virtual Transformable2D,
         public Shadeable,
         public Clickable
@@ -144,7 +144,7 @@ namespace mpgl {
      */
     template <>
     class Figure<dim::Dim3> :
-        public virtual Shape,
+        public virtual Shape3D,
         public virtual Transformable3D,
         public Shadeable
     {
@@ -240,22 +240,27 @@ namespace mpgl {
         Figure& operator=(Figure&& shape) noexcept;
 
         /**
-         * Sets the model's shader location
+         * Sets the shader locations
          */
-        void setModelLocation(void);
+        void setLocations(void);
 
         /**
-         * Actualizes model's shader location value
+         * Actualizes shader locations' values
          */
-        void actualizeModel(void) noexcept;
+        void actualizeLocations(void) const noexcept;
 
         using Matrix4fCRef = std::reference_wrapper<Matrix4f const>;
 
         static Matrix4f const                   defaultModel;
 
+        struct Locations {
+            ShaderLocation                      model;
+            ShaderLocation                      viewProjection;
+        };
+
         Matrix4fCRef                            model = defaultModel;
-        DelegatePointer<ShaderLocation>         modelLocation;
-        bool                                    hasModelChanged = false;
+        DelegatePointer<Locations>              locations;
+        bool mutable                            hasModelChanged = true;
     };
 
     typedef Figure<dim::Dim2>                   Figure2D;

@@ -49,7 +49,7 @@ namespace mpgl {
     }
 
     void Context::setViewProjection(Matrix4f const& matrix) noexcept {
-        hasViewChanged = std::ranges::equal(
+        hasViewChanged = !std::ranges::equal(
             matrix | std::views::join,
             viewProjection | std::views::join);
         viewProjection = matrix;

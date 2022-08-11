@@ -41,6 +41,7 @@ namespace mpgl {
         Color const& background,
         std::shared_ptr<CameraTp> cameraPtr) noexcept
     {
+        context.projection = projection;
         addCameraEventIfDerived(cameraPtr);
         openWindow();
         while (!shouldWindowClose()) {

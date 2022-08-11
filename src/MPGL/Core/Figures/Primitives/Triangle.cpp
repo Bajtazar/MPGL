@@ -29,25 +29,25 @@
 
 namespace mpgl {
 
-    Triangle::Triangle(Vector2f const& firstVertex,
+    Triangle<dim::Dim2>::Triangle(Vector2f const& firstVertex,
         Vector2f const& secondVertex,
         Vector2f const& thirdVertex,
         Color const& color)
-            : Angular{{Vertex{firstVertex, color},
+            : Angular<dim::Dim2>{{Vertex{firstVertex, color},
                 Vertex{secondVertex, color},
                 Vertex{thirdVertex, color}}} {}
 
-    Triangle::Triangle(Color const& color)
-        : Angular{3, color} {}
+    Triangle<dim::Dim2>::Triangle(Color const& color)
+        : Angular<dim::Dim2>{3, color} {}
 
-    void Triangle::draw(void) const noexcept {
+    void Triangle<dim::Dim2>::draw(void) const noexcept {
         actualizeBufferBeforeDraw();
         shaderProgram->use();
         BindGuard<VertexArray> vaoGuard{vertexArray};
         vertexArray.drawArrays(VertexArray::DrawMode::Triangles, 3);
     }
 
-    [[nodiscard]] bool Triangle::contains(
+    [[nodiscard]] bool Triangle<dim::Dim2>::contains(
         Vector2u const& position) const noexcept
     {
         Vector2d v = Adapter2D{position}.get();
@@ -58,6 +58,26 @@ namespace mpgl {
         double a = (cross(v, v2) - cross(v0, v2)) / base;
         double b = (cross(v0, v1) - cross(v, v1)) / base;
         return (a >= 0) && (b >= 0) && (a + b <= 1);
+    }
+
+    Triangle<dim::Dim3>::Triangle(
+        Vector3f const& firstVertex,
+        Vector3f const& secondVertex,
+        Vector3f const& thirdVertex,
+        Color const& color)
+            : Angular<dim::Dim3>{{Vertex{firstVertex, color},
+                Vertex{secondVertex, color},
+                Vertex{thirdVertex, color}}} {}
+
+    Triangle<dim::Dim3>::Triangle(Color const& color)
+        : Angular<dim::Dim3>{3, color} {}
+
+    void Triangle<dim::Dim3>::draw(void) const noexcept {
+        actualizeBufferBeforeDraw();
+        shaderProgram->use();
+        actualizeLocations();
+        BindGuard<VertexArray> vaoGuard{vertexArray};
+        vertexArray.drawArrays(VertexArray::DrawMode::Triangles, 3);
     }
 
 }

@@ -40,7 +40,7 @@ namespace mpgl {
         matrix[0][0] = matrix[1][1] / aspect;
         matrix[2][2] = (zAxis[0] + zAxis[1]) / ndepth;
         matrix[3][2] = -1.f;
-        matrix[2][3] = 2.f * zAxis[0] * zAxis[1] / ndepth;
+        matrix[2][3] = -2.f * zAxis[0] * zAxis[1] / ndepth;
         return matrix;
     }
 

@@ -125,7 +125,7 @@ namespace mpgl {
         std::shared_ptr<Tp>&& drawable)
     {
         addEventIfDerived(drawable);
-        drawables3D.push_back(std::static_pointer_cast<Drawable2D>(
+        drawables3D.push_back(std::static_pointer_cast<Drawable3D>(
             std::move(drawable)));
     }
 

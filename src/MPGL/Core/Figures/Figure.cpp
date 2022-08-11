@@ -62,28 +62,28 @@ namespace mpgl {
     Figure<dim::Dim3>::Figure(
         std::string const& programName)
             : Shadeable{programName},
-            modelLocation{new ShaderLocation}
+            locations{new Locations}
     {
-        setModelLocation();
+        setLocations();
     }
 
     Figure<dim::Dim3>::Figure(
         std::string const& programName,
         Executable exec)
             : Shadeable{programName, exec},
-            modelLocation{new ShaderLocation}
+            locations{new Locations}
     {
-        setModelLocation();
+        setLocations();
     }
 
     Figure<dim::Dim3>::Figure(Figure const& shape)
         : Shadeable{shape.shaderProgram},
-        modelLocation{shape.modelLocation} {}
+        locations{shape.locations} {}
 
     Figure<dim::Dim3>::Figure(void)
-        : modelLocation{new ShaderLocation}
+        : locations{new Locations}
     {
-        setModelLocation();
+        setLocations();
     }
 
     Figure<dim::Dim3>& Figure<dim::Dim3>::operator=(
@@ -91,7 +91,7 @@ namespace mpgl {
     {
         shaderProgram = shape.shaderProgram;
         model = shape.model;
-        modelLocation = shape.modelLocation;
+        locations = shape.locations;
         hasModelChanged = isModified = true;
         return *this;
     }
@@ -102,7 +102,7 @@ namespace mpgl {
         vertexArray = std::move(shape.vertexArray);
         vertexBuffer = std::move(shape.vertexBuffer);
         model = std::move(shape.model);
-        modelLocation = std::move(shape.modelLocation);
+        locations = std::move(shape.locations);
         isModified = std::move(shape.isModified);
         hasModelChanged = std::move(shape.hasModelChanged);
         return *this;
@@ -113,20 +113,24 @@ namespace mpgl {
         hasModelChanged = true;
     }
 
-    void Figure<dim::Dim3>::setModelLocation(void) {
+    void Figure<dim::Dim3>::setLocations(void) {
         Shadeable::setLocations(DeferredExecutionWrapper{
-            shaderProgram, modelLocation}(
-                [](auto program, auto location)
+            shaderProgram, locations}(
+                [](auto program, auto locations)
         {
-            *location = ShaderLocation{*program, "model"};
+            locations->model = ShaderLocation{*program, "model"};
+            locations->viewProjection = ShaderLocation{
+                *program, "viewProjection"};
         }));
     }
 
-    void Figure<dim::Dim3>::actualizeModel(void) noexcept {
+    void Figure<dim::Dim3>::actualizeLocations(void) const noexcept {
         if (hasModelChanged) {
-            (*modelLocation)(model.get());
+            locations->model(model.get());
             hasModelChanged = false;
         }
+        if (context.hasVPChanges())
+            locations->viewProjection(context.getViewProjection());
     }
 
 }

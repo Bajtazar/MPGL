@@ -642,7 +642,10 @@ namespace mpgl {
      * be colorable
      */
     template <bool IsColorable = false>
-    class Text : public Shadeable, public Transformable2D,
+    class Text :
+        public Shadeable,
+        public Transformable2D,
+        public Drawable2D,
         private TextBase<IsColorable>
     {
     public:

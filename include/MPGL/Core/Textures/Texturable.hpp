@@ -39,7 +39,7 @@ namespace mpgl {
     /**
      * Base class for texturable shapes
      */
-    class Texturable : public virtual Shape,
+    class Texturable : public virtual Shape2D,
         public virtual Transformable2D
     {
     public:
