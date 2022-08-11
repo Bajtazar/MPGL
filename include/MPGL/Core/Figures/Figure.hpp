@@ -26,6 +26,8 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformable.hpp>
+#include <MPGL/Utility/Deferred/DelegatePointer.hpp>
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Core/Figures/Clickable.hpp>
 #include <MPGL/Core/Shaders/Shadeable.hpp>
 #include <MPGL/Core/Shape.hpp>
@@ -99,7 +101,8 @@ namespace mpgl {
          * @param programName the given shader name
          * @param exec the shader's executable
          */
-        explicit Figure(std::string const& programName,
+        explicit Figure(
+            std::string const& programName,
             Executable exec);
 
         /**
@@ -199,13 +202,14 @@ namespace mpgl {
          * @param programName the given shader name
          * @param exec the shader's executable
          */
-        explicit Figure(std::string const& programName,
+        explicit Figure(
+            std::string const& programName,
             Executable exec);
 
         /**
          *  Constructs a new Figure object
          */
-        explicit Figure(void) noexcept = default;
+        explicit Figure(void);
 
         /**
          * Construct a new Figure object from the given
@@ -235,11 +239,22 @@ namespace mpgl {
          */
         Figure& operator=(Figure&& shape) noexcept;
 
+        /**
+         * Sets the model's shader location
+         */
+        void setModelLocation(void);
+
+        /**
+         * Actualizes model's shader location value
+         */
+        void actualizeModel(void) noexcept;
+
         using Matrix4fCRef = std::reference_wrapper<Matrix4f const>;
 
         static Matrix4f const                   defaultModel;
 
         Matrix4fCRef                            model = defaultModel;
+        DelegatePointer<ShaderLocation>         modelLocation;
         bool                                    hasModelChanged = false;
     };
 

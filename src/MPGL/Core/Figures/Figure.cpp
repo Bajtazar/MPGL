@@ -23,6 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Figures/Figure.hpp>
 
 namespace mpgl {
@@ -30,8 +31,10 @@ namespace mpgl {
     Figure<dim::Dim2>::Figure(std::string const& programName)
         : Shadeable{programName} {}
 
-    Figure<dim::Dim2>::Figure(std::string const& programName,
-        Executable exec) : Shadeable{programName, exec} {}
+    Figure<dim::Dim2>::Figure(
+        std::string const& programName,
+        Executable exec)
+            : Shadeable{programName, exec} {}
 
     Figure<dim::Dim2>::Figure(Figure const& shape)
         : Shadeable{shape.shaderProgram} {}
@@ -56,20 +59,39 @@ namespace mpgl {
     Matrix4f const Figure<dim::Dim3>::defaultModel =
         identityMatrix<float32, 4>();
 
-    Figure<dim::Dim3>::Figure(std::string const& programName)
-        : Shadeable{programName} {}
+    Figure<dim::Dim3>::Figure(
+        std::string const& programName)
+            : Shadeable{programName},
+            modelLocation{new ShaderLocation}
+    {
+        setModelLocation();
+    }
 
-    Figure<dim::Dim3>::Figure(std::string const& programName,
-        Executable exec) : Shadeable{programName, exec} {}
+    Figure<dim::Dim3>::Figure(
+        std::string const& programName,
+        Executable exec)
+            : Shadeable{programName, exec},
+            modelLocation{new ShaderLocation}
+    {
+        setModelLocation();
+    }
 
     Figure<dim::Dim3>::Figure(Figure const& shape)
-        : Shadeable{shape.shaderProgram} {}
+        : Shadeable{shape.shaderProgram},
+        modelLocation{shape.modelLocation} {}
+
+    Figure<dim::Dim3>::Figure(void)
+        : modelLocation{new ShaderLocation}
+    {
+        setModelLocation();
+    }
 
     Figure<dim::Dim3>& Figure<dim::Dim3>::operator=(
         Figure const& shape)
     {
         shaderProgram = shape.shaderProgram;
         model = shape.model;
+        modelLocation = shape.modelLocation;
         hasModelChanged = isModified = true;
         return *this;
     }
@@ -80,6 +102,7 @@ namespace mpgl {
         vertexArray = std::move(shape.vertexArray);
         vertexBuffer = std::move(shape.vertexBuffer);
         model = std::move(shape.model);
+        modelLocation = std::move(shape.modelLocation);
         isModified = std::move(shape.isModified);
         hasModelChanged = std::move(shape.hasModelChanged);
         return *this;
@@ -88,6 +111,22 @@ namespace mpgl {
     void Figure<dim::Dim3>::setModel(Matrix4f const& model) noexcept {
         this->model = model;
         hasModelChanged = true;
+    }
+
+    void Figure<dim::Dim3>::setModelLocation(void) {
+        Shadeable::setLocations(DeferredExecutionWrapper{
+            shaderProgram, modelLocation}(
+                [](auto program, auto location)
+        {
+            *location = ShaderLocation{*program, "model"};
+        }));
+    }
+
+    void Figure<dim::Dim3>::actualizeModel(void) noexcept {
+        if (hasModelChanged) {
+            (*modelLocation)(model.get());
+            hasModelChanged = false;
+        }
     }
 
 }
