@@ -25,6 +25,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/IO/ImageLoading/BMPLoader.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/PNGLoader.cpp
     ${MPGL_SOURCES}/Core/Transformations/Rotation.cpp
+    ${MPGL_SOURCES}/Core/Figures/Views.cpp
     ${MPGL_SOURCES}/Core/Figures/Angular.cpp
     ${MPGL_SOURCES}/Core/Figures/ResizableAngular.cpp
     ${MPGL_SOURCES}/Core/Figures/Elliptic.cpp

@@ -26,6 +26,10 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/VertexTraits.hpp>
+#include <MPGL/Core/Context/Context.hpp>
+#include <MPGL/Utility/Adapter.hpp>
+
+#include <memory>
 
 namespace mpgl {
 
@@ -186,6 +190,177 @@ namespace mpgl {
     VertexComponentView(Range&& base) ->
         VertexComponentView<Field, std::views::all_t<Range>>;
 
+    /**
+     * Casts the given 3D adapters range into their screen pixels
+     * positions
+     *
+     * @tparam Range the type of the adapters range
+     */
+    template <std::ranges::view Range>
+        requires (std::same_as<std::remove_cvref_t<
+            std::ranges::range_value_t<Range>>, Adapter3D>)
+    class ProjectedPositionView : public std::ranges::view_interface<
+        ProjectedPositionView<Range>>
+    {
+    public:
+        using value_type = Vector2f;
+
+        /**
+         * Construct a new projected position view object
+         *
+         * @param matrix a constant reference to the model
+         * transformation matrix
+         */
+        explicit ProjectedPositionView(
+            Matrix4f const& matrix) noexcept
+                : matrix{matrix} {}
+
+        /**
+         * Construct a new projected position view object
+         * from the given range object
+         *
+         * @param baseObj the given range object
+         * @param matrix a constant reference to the model
+         * transformation matrix
+         */
+        explicit ProjectedPositionView(
+            Range baseObj,
+            Matrix4f const& matrix)
+                : baseRange{baseObj}, matrix{matrix} {}
+
+        /**
+         * The inner view iterator
+         */
+        class iterator : private GraphicalObject {
+        public:
+            using inner_iter                  = std::ranges::iterator_t<Range>;
+            using value_type                  = Vector2f;
+            using iterator_category           = std::input_iterator_tag;
+            using difference_type             = std::ptrdiff_t;
+
+            /**
+             * Construct a new iterator object
+             */
+            explicit iterator(void) noexcept
+                : matrix{Default} {}
+
+            /**
+             * Construct a new iterator object from the given
+             * inner iter object
+             *
+             * @param iter the inner iter object
+             * @param matrix the model matrix
+             */
+            explicit iterator(
+                inner_iter const& iter,
+                Matrix4f const& matrix) noexcept
+                : iter{iter}, matrix{matrix} {}
+
+            /**
+             * Pre-increments the inner iterator by one
+             *
+             * @return the reference to object
+             */
+            iterator& operator++(void) noexcept
+                { ++iter; return *this; }
+
+            /**
+             * Post-increments the inner iterator by one
+             *
+             * @return the copy of the iterator
+             */
+            [[nodiscard]] iterator operator++(int) noexcept
+                { auto tmp = *this; ++iter; return tmp; }
+
+            /**
+             * Returns the casted position of the vertex
+             *
+             * @return the casted position of the vertex
+             */
+            [[nodiscard]] Vector2f operator*(void) const noexcept;
+
+            /**
+             * Returns whether two iterators are equal
+             *
+             * @param left the left iterator object
+             * @param right the right iterator object
+             * @return if the iterators are equal
+             */
+            [[nodiscard]] friend bool operator== (
+                iterator const& left,
+                iterator const& right) noexcept
+                    { return left.iter == right.iter; }
+        private:
+            using MatrixRef = std::reference_wrapper<Matrix4f const>;
+
+            inner_iter                          iter;
+            MatrixRef                           matrix;
+
+            static Matrix4f const               Default;
+        };
+
+        /**
+         * Returns the constant reference to the range held by
+         * the view
+         *
+         * @return the constant reference to the range
+         */
+        [[nodiscard]] Range const& base(void) const &
+            { return baseRange; }
+
+        /**
+         * Returns the constant reference to the matrix held by
+         * the view
+         *
+         * @return the constant reference to the matrix
+         */
+        [[nodiscard]] Matrix4f const& baseModel(void) const &
+            { return matrix; }
+
+        /**
+         * Returns the rvalue to the range held by
+         * the view
+         *
+         * @return the rvalue to the range
+         */
+        [[nodiscard]] Range&& base(void) &&
+            { return std::move(baseRange); }
+
+        /**
+         * Returns an iterator to the begining of the range
+         *
+         * @return the iterator to the begining of the range
+         */
+        [[nodiscard]] iterator begin(void) const
+            { return iterator{ std::ranges::begin(baseRange), matrix }; }
+
+        /**
+         * Returns an iterator to the end of the range
+         *
+         * @return the iterator to the end of the range
+         */
+        [[nodiscard]] iterator end(void) const
+            { return iterator{ std::ranges::end(baseRange), matrix }; }
+
+        /**
+         * Returns the size of the range
+         *
+         * @return the size of the range
+         */
+        [[nodiscard]] auto size(void) const noexcept
+            requires std::ranges::sized_range<Range>
+                { return std::ranges::size(baseRange); }
+    private:
+        using MatrixRef = std::reference_wrapper<Matrix4f const>;
+
+        Range                                   baseRange;
+        MatrixRef                               matrix;
+    };
+
+    template <class Range>
+    ProjectedPositionView(Range&& base) ->
+        ProjectedPositionView<std::views::all_t<Range>>;
+
     namespace details {
 
         /**
@@ -212,6 +387,37 @@ namespace mpgl {
             [[nodiscard]] constexpr auto operator() (
                 Range&& range) const noexcept;
 
+        };
+
+        /**
+         * The adaptor closure for the projected position view
+         */
+        class ProjectedPositionViewAdaptorClosure {
+        public:
+            /**
+             * Constructs the projected position view adaptor closure
+             */
+            ProjectedPositionViewAdaptorClosure(
+                Matrix4f const& matrix) noexcept
+                    : matrix{matrix} {}
+
+            /**
+             * Returns a view to the given range
+             *
+             * @tparam Range the range type
+             * @param range the vertices range
+             * @param matrix the model matrix
+             * @return the view of the range
+             */
+            template <std::ranges::viewable_range Range>
+            requires (std::same_as<std::remove_cvref_t<
+                std::ranges::range_value_t<Range>>, Adapter3D>)
+            [[nodiscard]] auto operator() (
+                Range&& range) const noexcept;
+        private:
+            using MatrixRef = std::reference_wrapper<Matrix4f const>;
+
+            MatrixRef                           matrix;
         };
 
         /**
@@ -243,6 +449,36 @@ namespace mpgl {
         };
 
         /**
+         * The adaptor for the projected position view
+         */
+        struct ProjectedPositionViewAdaptor {
+            /**
+             * Returns a view to the given range
+             *
+             * @tparam Range the range type
+             * @param range the vertices range
+             * @param matrix the model matrix
+             * @return the view of the range
+             */
+            template <std::ranges::viewable_range Range>
+            requires (std::same_as<std::remove_cvref_t<
+                std::ranges::range_value_t<Range>>, Adapter3D>)
+            [[nodiscard]] auto operator() (
+                Range&& range,
+                Matrix4f const& matrix) const noexcept;
+
+            /**
+             * Returns a closure for the given view
+             *
+             * @param matrix the model matrix
+             * @return the view closure
+             */
+            [[nodiscard]] ProjectedPositionViewAdaptorClosure
+                operator() (Matrix4f const& matrix) const noexcept;
+
+        };
+
+        /**
          * Connects the closure with the range
          *
          * @tparam Range the range type
@@ -256,6 +492,23 @@ namespace mpgl {
         [[nodiscard]] constexpr auto operator | (
             Range&& range,
             VertexComponentViewAdaptorClosure<Field> const& closure
+            ) noexcept;
+
+        /**
+         * Connects the closure with the range
+         *
+         * @tparam Range the range type
+         * @tparam Field the field name
+         * @param range the vertices range
+         * @param closure the view closure
+         * @return the view of the range
+         */
+        template <std::ranges::viewable_range Range>
+        requires (std::same_as<std::remove_cvref_t<
+            std::ranges::range_value_t<Range>>, Adapter3D>)
+        [[nodiscard]] auto operator | (
+            Range&& range,
+            ProjectedPositionViewAdaptorClosure const& closure
             ) noexcept;
 
         /**
@@ -273,6 +526,21 @@ namespace mpgl {
             Range&& range,
             VertexComponentViewAdaptor<Field> const& adaptor) noexcept;
 
+        /**
+         * Connects the adaptor with the range
+         *
+         * @tparam Range the range type
+         * @param range the vertices range
+         * @param adaptor the view adaptor
+         * @return the view of the range
+         */
+        template <std::ranges::viewable_range Range>
+        requires (std::same_as<std::remove_cvref_t<
+            std::ranges::range_value_t<Range>>, Adapter3D>)
+        [[nodiscard]] constexpr auto operator | (
+            Range&& range,
+            ProjectedPositionViewAdaptor const& adaptor) noexcept;
+
     }
 
     namespace views {
@@ -286,6 +554,9 @@ namespace mpgl {
         /// The texure position view
         inline constexpr
             details::VertexComponentViewAdaptor<"texCoords">        texCoords;
+        /// The adapter to screen position view
+        inline constexpr
+            details::ProjectedPositionViewAdaptor                   projection;
 
     }
 
