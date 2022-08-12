@@ -24,74 +24,34 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
-    Triangle<dim::Dim2>::Triangle(Vector2f const& firstVertex,
-        Vector2f const& secondVertex,
-        Vector2f const& thirdVertex,
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Triangle(
+        Vector const& firstVertex,
+        Vector const& secondVertex,
+        Vector const& thirdVertex,
         Color const& color)
-            : Angular<dim::Dim2>{{Vertex{firstVertex, color},
-                Vertex{secondVertex, color},
-                Vertex{thirdVertex, color}}} {}
+            : Angular<Dim, Spec>{{
+                VertexTraits::buildVertex(firstVertex, color),
+                VertexTraits::buildVertex(secondVertex, color),
+                VertexTraits::buildVertex(thirdVertex, color)}} {}
 
-    Triangle<dim::Dim2>::Triangle(Color const& color)
-        : Angular<dim::Dim2>{3, color} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Triangle(Color const& color)
+        : Angular<Dim, Spec>{3, color} {}
 
-    void Triangle<dim::Dim2>::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::Triangles, 3);
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void Triangle<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
     }
 
-    [[nodiscard]] bool Triangle<dim::Dim2>::contains(
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Triangle<Dim, Spec>::contains(
         Vector2u const& position) const noexcept
     {
-        Vector2d v = Adapter2D{position}.get();
-        Vector2d v0 = get<"position">(vertices[0]).get();
-        Vector2d v1 = Vector2d{get<"position">(vertices[1]).get()} - v0;
-        Vector2d v2 = Vector2d{get<"position">(vertices[2]).get()} - v0;
-        double base = cross(v1, v2);
-        double a = (cross(v, v2) - cross(v0, v2)) / base;
-        double b = (cross(v0, v1) - cross(v, v1)) / base;
-        return (a >= 0) && (b >= 0) && (a + b <= 1);
-    }
-
-    Triangle<dim::Dim3>::Triangle(
-        Vector3f const& firstVertex,
-        Vector3f const& secondVertex,
-        Vector3f const& thirdVertex,
-        Color const& color)
-            : Angular<dim::Dim3>{{Vertex{firstVertex, color},
-                Vertex{secondVertex, color},
-                Vertex{thirdVertex, color}}} {}
-
-    Triangle<dim::Dim3>::Triangle(Color const& color)
-        : Angular<dim::Dim3>{3, color} {}
-
-    void Triangle<dim::Dim3>::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::Triangles, 3);
-    }
-
-    [[nodiscard]] bool Triangle<dim::Dim3>::contains(
-        Vector2u const& position) const noexcept
-    {
-        Vector2d v = Adapter2D{position}.get();
-        auto iter = (vertices | views::position | views::project(model)).begin();
-        Vector2d v0 = Adapter2D{*iter++}.get();
-        Vector2d v1 = Vector2d{Adapter2D{*iter++}.get()} - v0;
-        Vector2d v2 = Vector2d{Adapter2D{*iter++}.get()} - v0;
-        double base = cross(v1, v2);
-        double a = (cross(v, v2) - cross(v0, v2)) / base;
-        double b = (cross(v0, v1) - cross(v, v1)) / base;
-        return (a >= 0) && (b >= 0) && (a + b <= 1);
+        return clicker(*this, position);
     }
 
 }

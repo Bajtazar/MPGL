@@ -77,6 +77,18 @@ namespace mpgl {
          */
         [[nodiscard]] static Vertex defaultVertex(
             Color const& color) noexcept;
+
+        /**
+         * Generates vertex
+         *
+         * @param position the constant reference to the position
+         * object
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex buildVertex(
+            Vector const& position,
+            Color const& color) noexcept;
     };
 
     /**
@@ -113,6 +125,18 @@ namespace mpgl {
          */
         [[nodiscard]] static Vertex defaultVertex(
             Color const& color) noexcept;
+
+        /**
+         * Generates vertex
+         *
+         * @param position the constant reference to the position
+         * object
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex buildVertex(
+            Vector const& position,
+            Color const& color) noexcept;
     };
 
     /**
@@ -124,13 +148,17 @@ namespace mpgl {
      */
     template <typename Tp, class Dim>
     concept AngularTraitSpecifier = Dimension<Dim> &&
-        requires (Color const& color) {
+        requires (
+            Color const& color,
+            Vector<float32, Dim::orthogonal_space_degree> vector)
+        {
             typename AngluarVertices<Dim, Tp>::Vertex;
             typename AngluarVertices<Dim, Tp>::Vector;
             typename AngluarVertices<Dim, Tp>::Adapter;
             { AngluarVertices<Dim, Tp>::shader() }
                 -> std::same_as<std::string>;
             AngluarVertices<Dim, Tp>::defaultVertex(color);
+            AngluarVertices<Dim, Tp>::buildVertex(vector, color);
     };
 
 }

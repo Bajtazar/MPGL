@@ -25,7 +25,8 @@
  */
 #pragma once
 
-#include <MPGL/Core/Figures/Angular.hpp>
+#include <MPGL/Core/Figures/Primitives/Helpers/TriangleHelpers.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
 
 namespace mpgl {
 
@@ -33,73 +34,17 @@ namespace mpgl {
      * Represents a triangle figure
      *
      * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    template <Dimension Dim>
-    struct Triangle;
-
-    /**
-     * Represents a 2D triangle figure
-     */
-    template <>
-    struct Triangle<dim::Dim2> : public Angular2D {
-        /**
-         * Constructs a new Triangle with given
-         * vertices
-         *
-         * @param firstVertex the first vertex coord
-         * @param secondVertex the second vertex coord
-         * @param thirdVertex the third vertex coord
-         * @param color the color of the triangle
-         */
-        Triangle(Vector2f const& firstVertex,
-                Vector2f const& secondVertex,
-                Vector2f const& thirdVertex,
-                Color const& color = {});
-
-        /**
-         * Constructs a new Triangle with given
-         * color
-         *
-         * @param color the color of the triangle
-         */
-        Triangle(Color const& color = {});
-
-        Triangle(Triangle const& triangle) = default;
-        Triangle(Triangle&& triangle) noexcept = default;
-
-        Triangle& operator= (Triangle const& triangle) = default;
-        Triangle& operator= (Triangle&& triangle) noexcept = default;
-
-        /**
-         * Draws the triangle on the screen
-         */
-        void draw(void) const noexcept final;
-
-        /**
-         * Checks whether the given pixel is located inside
-         * the triangle
-         *
-         * @param position the pixel's position
-         * @return if the given point is inside the triangle
-         */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
-
-        /**
-         * Destroy the Triangle object
-         */
-        ~Triangle(void) noexcept = default;
-    };
-
-    /**
-     * Represents a 3D triangle figure
-     */
-    template <>
-    class Triangle<dim::Dim3> :
-        public Angular3D,
-        public Clickable
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    class Triangle :
+        public Angular<Dim, Spec>,
+        public DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>
     {
     public:
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vector = VertexTraits::Vector;
+
         /**
          * Constructs a new Triangle with given
          * vertices
@@ -109,9 +54,9 @@ namespace mpgl {
          * @param thirdVertex the third vertex coord
          * @param color the color of the triangle
          */
-        Triangle(Vector3f const& firstVertex,
-                Vector3f const& secondVertex,
-                Vector3f const& thirdVertex,
+        Triangle(Vector const& firstVertex,
+                Vector const& secondVertex,
+                Vector const& thirdVertex,
                 Color const& color = {});
 
         /**
@@ -147,7 +92,19 @@ namespace mpgl {
          * Destroy the Triangle object
          */
         ~Triangle(void) noexcept = default;
+
+        friend class TriangleDrawer<Dim, Spec>;
+        friend class TriangleClickChecker<Dim, Spec>;
+    private:
+        using Drawer = TriangleDrawer<Dim, Spec>;
+        using Clicker = TriangleClickChecker<Dim, Spec>;
+
+        [[no_unique_address]] Drawer                drawer = {};
+        [[no_unique_address]] Clicker               clicker = {};
     };
+
+    template class Triangle<dim::Dim2>;
+    template class Triangle<dim::Dim3>;
 
     typedef Triangle<dim::Dim2>                     Triangle2D;
     typedef Triangle<dim::Dim3>                     Triangle3D;

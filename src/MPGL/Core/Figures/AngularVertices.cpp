@@ -53,4 +53,20 @@ namespace mpgl {
         return Vertex{Vector{}, color};
     }
 
+    [[nodiscard]] AngluarVertices<dim::Dim2, void>::Vertex
+        AngluarVertices<dim::Dim2, void>::buildVertex(
+            Vector const& position,
+            Color const& color) noexcept
+    {
+        return Vertex{position, color};
+    }
+
+    [[nodiscard]] AngluarVertices<dim::Dim3, void>::Vertex
+        AngluarVertices<dim::Dim3, void>::buildVertex(
+            Vector const& position,
+            Color const& color) noexcept
+    {
+        return Vertex{position, color};
+    }
+
 }
