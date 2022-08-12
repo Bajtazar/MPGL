@@ -78,7 +78,7 @@ namespace mpgl {
         elementBuffer.bind();
         elementBuffer.setBufferData(indexes);
         vertexBuffer.setBufferData(vertices);
-        vertexArray.setArrayData(vertices.front());
+        vertexArray.setArrayData(VertexArray::VertexTag<Vertex>{});
     }
 
     Elliptic& Elliptic::operator=(Elliptic const& shape) {

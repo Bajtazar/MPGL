@@ -35,7 +35,8 @@ namespace mpgl {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
         this->vertexBuffer.setBufferData(vertices);
-        this->vertexArray.setArrayData(vertices.front());
+        this->vertexArray.setArrayData(
+            VertexArray::VertexTag<Vertex>{});
     }
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
