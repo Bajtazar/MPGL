@@ -107,7 +107,7 @@ namespace mpgl {
      * @param firstVertex the first triangle vertex's position
      * @param secondVertex the second triangle vertex's position
      * @param thirdVertex the third triangle vertex's position
-     * @return if the given point is inside a triangle
+     * @return if the given point is inside the triangle
      */
     template <FloatConvertible Tp>
     [[nodiscard]] inline constexpr bool
@@ -116,6 +116,22 @@ namespace mpgl {
             Vector2<Tp> const& firstVertex,
             Vector2<Tp> const& secondVertex,
             Vector2<Tp> const& thirdVertex) noexcept;
+
+    /**
+     * Checks whether the given point is on a line
+     *
+     * @tparam Tp the vector's value type
+     * @param position the point's position
+     * @param firstVertex the first line vertex's position
+     * @param secondVertex the second line vertex's position
+     * @return if the given point is on the line
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr bool
+        isOnLine(
+            Vector2<Tp> const& position,
+            Vector2<Tp> const& firstVertex,
+            Vector2<Tp> const& secondVertex) noexcept;
 
     /**
      * Transform the given vector from the cartesian coordinate

@@ -26,6 +26,7 @@
 #pragma once
 
 #include <numbers>
+#include <limits>
 
 namespace mpgl {
 
@@ -90,6 +91,20 @@ namespace mpgl {
         Tp a = (cross(position, v2) - cross(firstVertex, v2)) / base;
         Tp b = (cross(firstVertex, v1) - cross(position, v1)) / base;
         return (a >= 0.f) && (b >= 0.f) && (a + b <= 1.f);
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr bool
+        isOnLine(
+            Vector2<Tp> const& position,
+            Vector2<Tp> const& firstVertex,
+            Vector2<Tp> const& secondVertex) noexcept
+    {
+        if (!between(firstVertex, secondVertex, position))
+            return false;
+        return std::fabs(cross(position - firstVertex,
+            secondVertex - firstVertex))
+                < std::numeric_limits<float>::epsilon();
     }
 
     template <FloatConvertible Tp>

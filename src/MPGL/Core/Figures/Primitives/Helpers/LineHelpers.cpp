@@ -25,9 +25,8 @@
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
+#include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
-
-#include <limits>
 
 namespace mpgl {
 
@@ -54,13 +53,9 @@ namespace mpgl {
         Line<dim::Dim2, void> const& line,
         Vector2u const& position) const noexcept
     {
-        Vector2f normalized = Adapter2D{position}.get();
-        Vector2f begin = get<"position">(line.vertices.front()).get();
-        Vector2f end = get<"position">(line.vertices.back()).get();
-        if (!between(begin, end, normalized))
-            return false;
-        return std::fabs(cross(normalized - begin, end - begin))
-            < std::numeric_limits<float>::epsilon();
+        return isOnLine(Adapter2D{position}.get(),
+            get<"position">(line.vertices.front()).get(),
+            get<"position">(line.vertices.back()).get());
     }
 
     [[nodiscard]] bool LineClickChecker<dim::Dim3, void>::operator() (
@@ -69,13 +64,9 @@ namespace mpgl {
     {
         auto iter = (line.vertices | views::position
             | views::project(line.model)).begin();
-        Vector2f normalized = Adapter2D{position}.get();
-        Vector2f begin = Adapter2D{*iter++}.get();
-        Vector2f end = Adapter2D{*iter++}.get();
-        if (!between(begin, end, normalized))
-            return false;
-        return std::fabs(cross(normalized - begin, end - begin))
-            < std::numeric_limits<float>::epsilon();
+        auto begin = Adapter2D{*iter++}.get();
+        auto end = Adapter2D{*iter++}.get();
+        return isOnLine(Adapter2D{position}.get(), begin, end);
     }
 
 }
