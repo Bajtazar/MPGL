@@ -53,7 +53,7 @@ public:
     ~World(void) noexcept = default;
 private:
     typedef mpgl::DrawableCollection<
-        mpgl::Line>                             Lines;
+        mpgl::Line2D>                           Lines;
     typedef std::pair<
         mpgl::Vector2f, mpgl::Tetragon>         AppleTuple;
 

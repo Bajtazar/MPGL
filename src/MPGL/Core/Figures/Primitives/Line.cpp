@@ -23,45 +23,41 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-
-#include <limits>
 
 namespace mpgl {
 
-    Line::Line(Vector2f const& firstVertex,
-        Vector2f const& secondVertex,
-        Color const& color) : Angular{
-            Vertices{Vertex{firstVertex, color},
-            Vertex{secondVertex, color}}} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Line<Dim, Spec>::Line(
+        Vector const& firstVertex,
+        Vector const& secondVertex,
+        Color const& color)
+            : Angular<Dim, Spec>{{
+                VertexTraits::buildVertex(firstVertex, color),
+                VertexTraits::buildVertex(secondVertex, color)}} {}
 
-    Line::Line(Color const& color) : Angular{2, color} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Line<Dim, Spec>::Line(Color const& color)
+        : Angular<Dim, Spec>{2, color} {}
 
-    [[nodiscard]] Vector2f Line::getLineCenter(void) const noexcept {
-        return (Vector2f{get<"position">(vertices[0])}
-            + Vector2f{get<"position">(vertices[1])}) / 2.f;
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Line<Dim, Spec>::Vector
+        Line<Dim, Spec>::getLineCenter(void) const noexcept
+    {
+        return (Vector{get<"position">(this->vertices[0])}
+            + Vector{get<"position">(this->vertices[1])}) / 2.f;
     }
 
-    void Line::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::Lines, 2);
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void Line<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
     }
 
-    [[nodiscard]] bool Line::contains(
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Line<Dim, Spec>::contains(
         Vector2u const& position) const noexcept
     {
-        Vector2f normalized = Adapter2D{position}.get();
-        Vector2f begin = get<"position">(vertices.front()).get();
-        Vector2f end = get<"position">(vertices.back()).get();
-        if (!between(begin, end, normalized))
-            return false;
-        return std::fabs(cross(normalized - begin, end - begin))
-            < std::numeric_limits<float>::epsilon();
+        return clicker(*this, position);
     }
 
 }
