@@ -81,9 +81,10 @@ namespace mpgl {
         Vector<Tp, Size> const& checked) noexcept;
 
     /**
-     * Returns an intersection of two lines. REturns an empty optional
+     * Returns an intersection of two lines. Returns an empty optional
      * if lines are parallel
      *
+     * @tparam Tp the vector's value type
      * @param firstPoint the point on the first line
      * @param firstVersor the versor of the first line
      * @param secondPoint the point on the second line
@@ -97,6 +98,24 @@ namespace mpgl {
             Vector2<Tp> const& firstVersor,
             Vector2<Tp> const& secondPoint,
             Vector2<Tp> const& secondVersor) noexcept;
+
+    /**
+     * Checks whether the given point is inside a triangle
+     *
+     * @tparam Tp the vector's value type
+     * @param position the point's position
+     * @param firstVertex the first triangle vertex's position
+     * @param secondVertex the second triangle vertex's position
+     * @param thirdVertex the third triangle vertex's position
+     * @return if the given point is inside a triangle
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr bool
+        isInsideTriangle(
+            Vector2<Tp> const& position,
+            Vector2<Tp> const& firstVertex,
+            Vector2<Tp> const& secondVertex,
+            Vector2<Tp> const& thirdVertex) noexcept;
 
     /**
      * Transform the given vector from the cartesian coordinate

@@ -77,6 +77,22 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr bool
+        isInsideTriangle(
+            Vector2<Tp> const& position,
+            Vector2<Tp> const& firstVertex,
+            Vector2<Tp> const& secondVertex,
+            Vector2<Tp> const& thirdVertex) noexcept
+    {
+        Vector2<Tp> v1 = secondVertex - firstVertex;
+        Vector2<Tp> v2 = thirdVertex - firstVertex;
+        Tp base = cross(v1, v2);
+        Tp a = (cross(position, v2) - cross(firstVertex, v2)) / base;
+        Tp b = (cross(firstVertex, v1) - cross(position, v1)) / base;
+        return (a >= 0.f) && (b >= 0.f) && (a + b <= 1.f);
+    }
+
+    template <FloatConvertible Tp>
     [[nodiscard]] Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
     {
