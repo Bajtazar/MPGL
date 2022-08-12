@@ -171,7 +171,7 @@ namespace mpgl {
         };
 
     template <bool IsColorable>
-    Tetragon Text<IsColorable>::generateUnderline(
+    Tetragon2D Text<IsColorable>::generateUnderline(
         PositionHolder const& positionSpace,
         SizeT textSize,
         Color const& color) noexcept
@@ -179,11 +179,11 @@ namespace mpgl {
         float span = 2 * std::ceil(0.05f * textSize);
         auto const& [firstVertex, secondVertex, thirdVertex]
             = positionSpace.calculatePositon(span);
-        return Tetragon{firstVertex, secondVertex, thirdVertex, color};
+        return Tetragon2D{firstVertex, secondVertex, thirdVertex, color};
     }
 
     template <bool IsColorable>
-    Tetragon Text<IsColorable>::generateStrikethrough(
+    Tetragon2D Text<IsColorable>::generateStrikethrough(
         PositionHolder const& positionSpace,
         SizeT textSize,
         Color const& color) noexcept
@@ -192,7 +192,7 @@ namespace mpgl {
         float halfspan = std::ceil(0.05f * textSize);
         auto const& [firstVertex, secondVertex, thirdVertex]
             = positionSpace.calculatePositon(midspan, halfspan);
-        return Tetragon{firstVertex, secondVertex, thirdVertex, color};
+        return Tetragon2D{firstVertex, secondVertex, thirdVertex, color};
     }
 
     template <bool IsColorable>

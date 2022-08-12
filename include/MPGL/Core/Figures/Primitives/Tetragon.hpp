@@ -25,52 +25,52 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/TetragonHelpers.hpp>
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
-#include <MPGL/Core/Figures/Angular.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
 
 namespace mpgl {
 
     /**
      * Represents a tetragon figure
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    class Tetragon : public Angular2D {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    class Tetragon :
+        public Angular<Dim, Spec>,
+        public DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>
+    {
     public:
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vector = VertexTraits::Vector;
+
         /**
-         * Construct a new Tetragon with given
+         * Constructs a new Tetragon with given
          * color
          *
-         * @param color the color of the tetragon
+         * @param color the color of the tetragon (optional)
          */
         Tetragon(Color const& color = {});
 
         /**
-         * Construct a new Parallelogram from a three
+         * Constructs a new Parallelogram from a three
          * given vertices [fourth is then calculated]
          *
          * @param firstVertex the first vertex coord
          * @param secondVertex the second vertex coord
          * @param thirdVertex the third vertex coord
-         * @param color the color of the tetragon
+         * @param color the color of the tetragon (optional)
          */
-        Tetragon(Vector2f const& firstVertex,
-                Vector2f const& secondVertex,
-                Vector2f const& thirdVertex,
-                Color const& color = {});
+        Tetragon(
+            Vector const& firstVertex,
+            Vector const& secondVertex,
+            Vector const& thirdVertex,
+            Color const& color = {});
 
         /**
-         * Construct a new Rectangle parallel to
-         * the x and y axis with the given color
-         *
-         * @param firstVertex the first vertex coord
-         * @param dimensions the rectangle dimensions
-         * @param color the color of the rectangle
-         */
-        Tetragon(Vector2f const& firstVertex,
-                Vector2f const& dimensions,
-                Color const& color = {});
-
-        /**
-         * Construct a new Tetragon object from the given
+         * Constructs a new Tetragon object from the given
          * constant reference to the other object
          *
          * @param tetragon the constant reference to the other
@@ -99,11 +99,16 @@ namespace mpgl {
             Vector2u const& position) const noexcept final;
 
         /**
-         * Destroy the Tetragon object
+         * Destroys the Tetragon object
          */
         ~Tetragon(void) noexcept = default;
+
+        friend class TetragonDrawer<Dim, Spec>;
+        friend class TetragonClickChecker<Dim, Spec>;
     private:
-        typedef std::array<uint32, 6>               Indexes;
+        using Drawer = TetragonDrawer<Dim, Spec>;
+        using Clicker = TetragonClickChecker<Dim, Spec>;
+        using Indexes = std::array<uint32, 6>;
 
         static constexpr const Indexes              indexes{
             0, 1, 2, 0, 3, 2};
@@ -113,22 +118,28 @@ namespace mpgl {
          */
         void initElementBuffer(void) const noexcept;
 
-        /**
-         * Calculates whether the given point is inside subtriangle
-         *
-         * @param position the point position
-         * @param firstVertex the first vertex position
-         * @param secondVertex the second vertex position
-         * @param thirdVertex the third vertex position
-         * @return if the given point is inside subtriangle
-         */
-        [[nodiscard]] bool insideSubtriangle(
-            Vector2d const& position,
-            Vector2d const& firstVertex,
-            Vector2d const& secondVertex,
-            Vector2d const& thirdVertex) const noexcept;
-
         ElementArrayBuffer                          elementBuffer;
+        [[no_unique_address]] Drawer                drawer = {};
+        [[no_unique_address]] Clicker               clicker = {};
     };
+
+    template class Tetragon<dim::Dim2>;
+    template class Tetragon<dim::Dim3>;
+
+    typedef Tetragon<dim::Dim2>                     Tetragon2D;
+    typedef Tetragon<dim::Dim3>                     Tetragon3D;
+
+    /**
+     * Constructs a new rectangle parallel to
+     * the x and y axis with the given color
+     *
+     * @param firstVertex the first vertex coord
+     * @param dimensions the rectangle dimensions
+     * @param color the color of the rectangle
+     */
+    [[nodiscard]] Tetragon2D makeTetragon(
+        Vector2f const& firstVertex,
+        Vector2f const& dimensions,
+        Color const& color = {});
 
 }

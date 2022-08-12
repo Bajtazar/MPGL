@@ -32,7 +32,7 @@
 using namespace mpgl;
 
 World::World(void)
-    : apple{Vector2f{}, Tetragon{Color::Red}}
+    : apple{Vector2f{}, Tetragon2D{Color::Red}}
 {
     generateTable();
     createNewApple();

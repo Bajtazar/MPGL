@@ -67,8 +67,8 @@ namespace mpgl {
         Tetragon<dim::Dim3, void> const& tetragon,
         Vector2u const& position) const noexcept
     {
-        auto iter = (line.vertices | views::position
-            | views::project(line.model)).begin();
+        auto iter = (tetragon.vertices | views::position
+            | views::project(tetragon.model)).begin();
         auto const p = Adapter2D{position}.get();
         auto const v0 = Adapter2D{*iter++}.get();
         auto const v1 = Adapter2D{*iter++}.get();

@@ -1002,7 +1002,7 @@ namespace mpgl {
         ~Text(void) noexcept = default;
     private:
         typedef std::vector<uint16>                 IDArray;
-        typedef DrawableCollection<Tetragon>        Lines;
+        typedef DrawableCollection<Tetragon2D>      Lines;
         typedef std::pair<uint8, float32>           ArgTuple;
         typedef std::tuple<Vector2f, Vector2f,
             Vector2f>                               VectorTuple;
@@ -1341,7 +1341,7 @@ namespace mpgl {
          * @param color the color of the text
          * @return the underline tetragon
          */
-        static Tetragon generateUnderline(
+        static Tetragon2D generateUnderline(
             PositionHolder const& positionSpace,
             SizeT textSize,
             Color const& color) noexcept;
@@ -1354,7 +1354,7 @@ namespace mpgl {
          * @param color the color of the text
          * @return the strikethrough tetragon
          */
-        static Tetragon generateStrikethrough(
+        static Tetragon2D generateStrikethrough(
             PositionHolder const& positionSpace,
             SizeT textSize,
             Color const& color) noexcept;

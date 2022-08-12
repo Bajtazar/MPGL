@@ -55,7 +55,7 @@ private:
     typedef mpgl::DrawableCollection<
         mpgl::Line2D>                           Lines;
     typedef std::pair<
-        mpgl::Vector2f, mpgl::Tetragon>         AppleTuple;
+        mpgl::Vector2f, mpgl::Tetragon2D>       AppleTuple;
 
     Lines                                       table;
     AppleTuple                                  apple;

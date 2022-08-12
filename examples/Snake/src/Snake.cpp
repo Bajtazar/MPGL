@@ -43,12 +43,12 @@ Snake::Snake(World& world)
     }
 }
 
-Tetragon Snake::returnModule(Vector2si const& vector) const noexcept {
-    return Tetragon{
+Tetragon2D Snake::returnModule(Vector2si const& vector) const noexcept {
+    return makeTetragon(
         {117 + 36 * vector[0], 36 * (vector[1] + 3) + 9},
         {18, 18},
         Color::Green
-    };
+    );
 }
 
 bool Snake::isFreeze(void) noexcept {

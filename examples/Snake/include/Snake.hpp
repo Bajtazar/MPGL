@@ -55,7 +55,8 @@ public:
 private:
     typedef std::list<mpgl::Vector2f>               Modules;
     typedef mpgl::DrawableCollection<
-        mpgl::Tetragon, std::list<mpgl::Tetragon>>  SnakeModules;
+        mpgl::Tetragon2D,
+        std::list<mpgl::Tetragon2D>>                SnakeModules;
 
     SnakeModules                                    snakeModules;
     Modules                                         modules;
@@ -67,6 +68,6 @@ private:
 
     bool onFreeze(void) noexcept;
 
-    mpgl::Tetragon returnModule(
+    mpgl::Tetragon2D returnModule(
         mpgl::Vector2si const& vector) const noexcept;
 };
