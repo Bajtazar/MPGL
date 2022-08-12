@@ -25,89 +25,23 @@
  */
 #pragma once
 
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
+#include <MPGL/Core/Figures/AngularVertices.hpp>
 #include <MPGL/Core/Figures/Figure.hpp>
-#include <MPGL/Utility/Adapter.hpp>
-#include <MPGL/Core/Color.hpp>
 
 namespace mpgl {
-
-    namespace details {
-
-        /**
-         * Contains informations about vertices of the given dimensions
-         * angluar shape
-         *
-         * @tparam Dim the dimension of the space
-         */
-        template <Dimension Dim>
-        struct AngluarVertices;
-
-        /**
-         * Contains informations about vertices of the 2D angular
-         */
-        template <>
-        struct AngluarVertices<dim::Dim2> {
-            using Vertex = mpgl::Vertex<
-                VertexComponent<
-                    "position",
-                    Adapter2D,
-                    DataType::Float32>,
-                VertexComponent<
-                    "color",
-                    Color,
-                    DataType::Float32>
-            >;
-
-            using Vector = Vector2f;
-            using Adapter = Adapter2D;
-
-            /**
-             * Returns a shader's name used by the angular
-             *
-             * @return the shader's name used by the angular
-             */
-            [[nodiscard]] static std::string shader(void) noexcept;
-        };
-
-        /**
-         * Contains informations about vertices of the 3D angular
-         */
-        template <>
-        struct AngluarVertices<dim::Dim3> {
-            using Vertex = mpgl::Vertex<
-                VertexComponent<
-                    "position",
-                    Adapter3D,
-                    DataType::Float32>,
-                VertexComponent<
-                    "color",
-                    Color,
-                    DataType::Float32>
-            >;
-
-            using Vector = Vector3f;
-            using Adapter = Adapter3D;
-
-            /**
-             * Returns a shader's name used by the angular
-             *
-             * @return the shader's name used by the angular
-             */
-            [[nodiscard]] static std::string shader(void) noexcept;
-        };
-
-    }
 
     /**
      * Base class for all angular shapes
      *
      * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <Dimension Dim>
+    template <
+        Dimension Dim,
+        AngularTraitSpecifier<Dim> Specifier = void>
     class Angular : public Figure<Dim> {
     public:
-        using VertexTraits = details::AngluarVertices<Dim>;
+        using VertexTraits = AngluarVertices<Dim, Specifier>;
         /// The vertex used by all angular shapes
         using Vertex = typename VertexTraits::Vertex;
 
