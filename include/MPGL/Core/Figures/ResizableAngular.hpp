@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Angular.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
 
 #include <optional>
 
@@ -33,11 +34,21 @@ namespace mpgl {
 
     /**
      * Base class for all resizable angular shapes
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    class ResizableAngular : public Angular2D {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec = void>
+    class ResizableAngular :
+        public Angular<Dim, Spec>,
+        public DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>
+    {
     public:
-        typedef std::size_t                 size_type;
-        typedef std::optional<Vector2f>     OptionalVec2f;
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vertex = VertexTraits::Vertex;
+        using Vector = VertexTraits::Vector;
+        using Optional = std::optional<Vector>;
+        using size_type = std::size_t;
 
         /**
          * Pure virtual method. Has to be overloaded.
@@ -86,7 +97,8 @@ namespace mpgl {
          * @param position the position of the vertex
          * @param color the color of the vertex
          */
-        void emplace(Vector2f const& position,
+        void emplace(
+            Vector const& position,
             Color const& color);
 
         /**
@@ -99,13 +111,15 @@ namespace mpgl {
          *
          * @return the vector containing center
          */
-        [[nodiscard]] OptionalVec2f getCenter(void) const noexcept;
+        [[nodiscard]] Optional getCenter(void) const noexcept;
 
         /**
          * Virtual Destructor. Destroys the Resizable Angular object
          */
         virtual ~ResizableAngular(void) noexcept = default;
     protected:
+        using Vertices = typename Angular<Dim, Spec>::Vertices;
+
         /**
          * Construct a new Resizable Angular object with the given
          * size vertices array
@@ -133,23 +147,24 @@ namespace mpgl {
          * vertices positions and their common color
          *
          * @tparam ColorTp the type of the color vector
-         * @tparam Args the parameter pack of 2D vectors
+         * @tparam Args the parameter pack of vectors
          * @param color the color of the vertices
          * @param positions the positions of the vertices
          */
-        template <class ColorTp, AllConvertible<Vector2f>... Args>
+        template <class ColorTp, AllConvertible<Vector>... Args>
             requires std::constructible_from<Color, ColorTp>
-        explicit ResizableAngular(ColorTp&& color,
+        explicit ResizableAngular(
+            ColorTp&& color,
             Args&&... positions);
 
         /**
          * Construct a new Resizable Angular object from the given
          * vertices positions
          *
-         * @tparam Args the parameter pack of 2D vectors
+         * @tparam Args the parameter pack of vectors
          * @param positions the positions of the vertices
          */
-        template <AllConvertible<Vector2f>... Args>
+        template <AllConvertible<Vector>... Args>
         explicit ResizableAngular(Args&&... positions);
 
         ResizableAngular& operator= (
@@ -171,8 +186,14 @@ namespace mpgl {
         void actualizeBufferBeforeDraw(
             void) const noexcept override final;
 
-        mutable bool                                    isExtended = false;
+        bool mutable                                isExtended = false;
     };
+
+    template class ResizableAngular<dim::Dim2>;
+    template class ResizableAngular<dim::Dim3>;
+
+    typedef ResizableAngular<dim::Dim2>             ResizableAngular2D;
+    typedef ResizableAngular<dim::Dim3>             ResizableAngular3D;
 
 }
 

@@ -32,7 +32,7 @@ namespace mpgl {
     /**
      * Represents a polygon figure
      */
-    class Polygon : public ResizableAngular {
+    class Polygon : public ResizableAngular2D {
     public:
         /**
          * Construct a new circle-like Polygon object with

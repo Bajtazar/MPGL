@@ -27,18 +27,27 @@
 
 namespace mpgl {
 
-    template <class ColorTp, AllConvertible<Vector2f>... Args>
-        requires std::constructible_from<Color, ColorTp>
-    ResizableAngular::ResizableAngular(ColorTp&& color,
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <
+        class ColorTp,
+        AllConvertible<
+            typename ResizableAngular<Dim, Spec>::Vector>... Args>
+                requires std::constructible_from<Color, ColorTp>
+    ResizableAngular<Dim, Spec>::ResizableAngular(
+        ColorTp&& color,
         Args&&... positions)
-            : Angular{Vertices{Vertex{Vector2f{
-                std::forward<Args>(positions)},
-                std::forward<ColorTp>(color)}...}} {}
+            : Angular<Dim, Spec>{{
+                VertexTraits::buildVertex(
+                    std::forward<Args>(positions),
+                    std::forward<ColorTp>(color))...}} {}
 
-    template <AllConvertible<Vector2f>... Args>
-    ResizableAngular::ResizableAngular(Args&&... positions)
-        : Angular{Vertices{Vertex{Vector2f{
-            std::forward<Args>(positions)}, Color{}}...}} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <
+        AllConvertible<
+            typename ResizableAngular<Dim, Spec>::Vector>... Args>
+    ResizableAngular<Dim, Spec>::ResizableAngular(Args&&... positions)
+        : Angular<Dim, Spec>{{VertexTraits::buildVertex(
+                std::forward<Args>(positions), Color{})...}} {}
 
 }
 

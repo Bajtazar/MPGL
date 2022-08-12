@@ -32,7 +32,7 @@ namespace mpgl {
     /**
      * Represents a line strip on the screen
      */
-    class LineStrip : public ResizableAngular {
+    class LineStrip : public ResizableAngular2D {
     public:
         /**
          * Construct a new Line Strip object and initializes the

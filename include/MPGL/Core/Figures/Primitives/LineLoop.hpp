@@ -32,7 +32,7 @@ namespace mpgl {
     /**
      * Represents a line strip loop on the screen
      */
-    struct LineLoop : public ResizableAngular {
+    struct LineLoop : public ResizableAngular2D {
         /**
          * Construct a new Line Loop object and initializes the
          * vertices with the given positions and color

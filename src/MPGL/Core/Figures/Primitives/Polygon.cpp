@@ -37,7 +37,7 @@ namespace mpgl {
     Polygon::Polygon(Vector2f const& center,
         float32 radius, std::size_t segments,
         Color const& color)
-            : ResizableAngular{segments + 1, color}
+            : ResizableAngular2D{segments + 1, color}
     {
         float32 increment = 2.f *
             std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;

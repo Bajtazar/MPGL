@@ -33,7 +33,7 @@
 namespace mpgl {
 
     LineLoop::LineLoop(std::size_t vertices,
-        Color const& color) : ResizableAngular{vertices, color} {}
+        Color const& color) : ResizableAngular2D{vertices, color} {}
 
     void LineLoop::draw(void) const noexcept {
         actualizeBufferBeforeDraw();

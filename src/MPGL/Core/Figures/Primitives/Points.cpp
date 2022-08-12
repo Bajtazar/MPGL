@@ -32,7 +32,7 @@
 namespace mpgl {
 
     Points::Points(std::size_t vertices, Color const& color)
-        : ResizableAngular{vertices, color} {}
+        : ResizableAngular2D{vertices, color} {}
 
     void Points::draw(void) const noexcept {
         actualizeBufferBeforeDraw();

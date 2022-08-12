@@ -34,7 +34,7 @@ namespace mpgl {
     /**
      * Represents a points on the screen
      */
-    struct Points : public ResizableAngular {
+    struct Points : public ResizableAngular2D {
         /**
          * Construct a new Points object with given number of points
          * and theirs color
