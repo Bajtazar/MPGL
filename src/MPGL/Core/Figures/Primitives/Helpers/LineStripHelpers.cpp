@@ -30,32 +30,28 @@
 
 namespace mpgl {
 
-    namespace details {
+    [[nodiscard]] auto
+        LineStripClickChecker<dim::Dim2, void>::Normalizer::operator() (
+            LineStrip<dim::Dim2, void> const& lineStrip
+                ) const noexcept
+    {
+        auto normalizer = [](Vector2f const& value) -> Vector2f {
+            return Adapter2D{value}.get();
+        };
+        return lineStrip | views::position
+            | std::views::transform(normalizer);
+    }
 
-        [[nodiscard]] auto
-            LineStripClickCheckerNormalizer<dim::Dim2>::operator() (
-                LineStrip<dim::Dim2, void> const& lineStrip
-                    ) const noexcept
-        {
-            auto normalizer = [](Vector2f const& value) -> Vector2f {
-                return Adapter2D{value}.get();
-            };
-            return lineStrip | views::position
-                | std::views::transform(normalizer);
-        }
-
-        [[nodiscard]] auto
-            LineStripClickCheckerNormalizer<dim::Dim3>::operator() (
-                LineStrip<dim::Dim3, void> const& lineStrip
-                    ) const noexcept
-        {
-            auto normalizer = [](Vector2u const& value) -> Vector2f {
-                return Adapter2D{value}.get();
-            };
-            return lineStrip | views::position | views::project(
-                lineStrip.model) | std::views::transform(normalizer);
-        }
-
+    [[nodiscard]] auto
+        LineStripClickChecker<dim::Dim3, void>::Normalizer::operator() (
+            LineStrip<dim::Dim3, void> const& lineStrip
+                ) const noexcept
+    {
+        auto normalizer = [](Vector2u const& value) -> Vector2f {
+            return Adapter2D{value}.get();
+        };
+        return lineStrip | views::position | views::project(
+            lineStrip.model) | std::views::transform(normalizer);
     }
 
     void LineStripDrawer<dim::Dim2, void>::operator() (

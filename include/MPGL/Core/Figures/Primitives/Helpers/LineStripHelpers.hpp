@@ -77,59 +77,6 @@ namespace mpgl {
             LineStrip<dim::Dim3, void> const& lineStrip) const noexcept;
     };
 
-    namespace details {
-
-        /**
-         * Functor responsible for normalizing the vertices range
-         * inside the line strip click checker functor
-         *
-         * @tparam Dim the dimension of the space
-         */
-        template <Dimension Dim>
-        struct LineStripClickCheckerNormalizer;
-
-        /**
-         * Functor responsible for normalizing the vertices range
-         * inside the 2D line strip click checker functor
-         */
-        template <>
-        struct LineStripClickCheckerNormalizer<dim::Dim2> {
-            /**
-             * Normalizes the line strip's vertex positions and returns
-             * a view to it
-             *
-             * @param lineStrip a constant reference to the line strip
-             * object
-             * @return the view to normalized line strip's vertex
-             * positions
-             */
-            [[nodiscard]] auto operator() (
-                LineStrip<dim::Dim2, void> const& lineStrip
-                ) const noexcept;
-        };
-
-        /**
-         * Functor responsible for normalizing the vertices range
-         * inside the 3D line strip click checker functor
-         */
-        template <>
-        struct LineStripClickCheckerNormalizer<dim::Dim3> {
-            /**
-             * Normalizes the line strip's projected vertex positions
-             * and returns a view to it
-             *
-             * @param lineStrip a constant reference to the line strip
-             * object
-             * @return the view to normalized line strip's projected
-             * vertex positions
-             */
-            [[nodiscard]] auto operator() (
-                LineStrip<dim::Dim3, void> const& lineStrip
-                ) const noexcept;
-        };
-
-    }
-
     /**
      * Functor responsible for checking whether given point is
      * inside a line strip
@@ -150,6 +97,12 @@ namespace mpgl {
     class LineStripClickChecker<Dim, void> {
     public:
         /**
+         * Functor responsible for normalizing the vertices range
+         * inside the line strip click checker functor
+         */
+        struct Normalizer;
+
+        /**
          * Checks whether the given point is inside a default line
          * strip
          *
@@ -162,10 +115,47 @@ namespace mpgl {
             LineStrip<Dim, void> const& lineStrip,
             Vector2u const& position) const noexcept;
     private:
-        using Normalizer
-            = details::LineStripClickCheckerNormalizer<Dim>;
-
         [[no_unique_address]] Normalizer                normalizer = {};
+    };
+
+    /**
+     * Functor responsible for normalizing the vertices range
+     * inside the 2D line strip click checker functor
+     */
+    template <>
+    struct LineStripClickChecker<dim::Dim2, void>::Normalizer {
+        /**
+         * Normalizes the line strip's vertex positions and returns
+         * a view to it
+         *
+         * @param lineStrip a constant reference to the line strip
+         * object
+         * @return the view to normalized line strip's vertex
+         * positions
+         */
+        [[nodiscard]] auto operator() (
+            LineStrip<dim::Dim2, void> const& lineStrip
+            ) const noexcept;
+    };
+
+    /**
+     * Functor responsible for normalizing the vertices range
+     * inside the 3D line strip click checker functor
+     */
+    template <>
+    struct LineStripClickChecker<dim::Dim3, void>::Normalizer {
+        /**
+         * Normalizes the line strip's projected vertex positions
+         * and returns a view to it
+         *
+         * @param lineStrip a constant reference to the line strip
+         * object
+         * @return the view to normalized line strip's projected
+         * vertex positions
+         */
+        [[nodiscard]] auto operator() (
+            LineStrip<dim::Dim3, void> const& lineStrip
+            ) const noexcept;
     };
 
     template class LineStripClickChecker<dim::Dim2, void>;
