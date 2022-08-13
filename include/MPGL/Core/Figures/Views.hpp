@@ -74,9 +74,14 @@ namespace mpgl {
             using value_type                  = ValueType;
             using reference                   = value_type&;
             using pointer                     = value_type*;
-            using iterator_category           = std::input_iterator_tag;
+            using iterator_category           = inner_iter::iterator_category;
             using difference_type             = std::ptrdiff_t;
-
+        private:
+            static constexpr bool               Bidirectional
+                = std::bidirectional_iterator<inner_iter>;
+            static constexpr bool               RandomAccess
+                = std::random_access_iterator<inner_iter>;
+        public:
             /**
              * Construct a new iterator object
              */
@@ -108,6 +113,23 @@ namespace mpgl {
                 { auto tmp = *this; ++iter; return tmp; }
 
             /**
+             * Pre-decrements the inner iterator by one
+             *
+             * @return the reference to object
+             */
+            iterator& operator--(void) noexcept requires Bidirectional
+                { --iter; return *this; }
+
+            /**
+             * Post-decrements the inner iterator by one
+             *
+             * @return the copy of the iterator
+             */
+            [[nodiscard]] iterator operator--(
+                int) noexcept requires Bidirectional
+                    { auto tmp = *this; --iter; return tmp; }
+
+            /**
              * Returns the iterator's value
              *
              * @return the iterator's value
@@ -124,6 +146,98 @@ namespace mpgl {
             [[nodiscard]] auto operator->(void) const noexcept
                 -> decltype(&get<Field>(*std::declval<inner_iter>()))
                     { return &get<Field>(*iter); }
+
+            /**
+             * Increments iterator by the given distance
+             *
+             * @param offset the incremented distance
+             * @return reference to this object
+             */
+            iterator& operator+=(difference_type offset
+                ) noexcept requires RandomAccess
+                    { iter += offset; return *this; }
+
+            /**
+             * Decrements iterator by the given distance
+             *
+             * @param offset the decremented distance
+             * @return reference to this object
+             */
+            iterator& operator-=(difference_type offset
+                ) noexcept requires RandomAccess
+                    { iter -= offset; return *this; }
+
+            /**
+             * Returns an iterator's value from further position
+             * designated by given offset
+             *
+             * @param offset the incremented distance
+             * @return the iterator's value from further position
+             */
+            [[nodiscard]] decltype(*std::declval<iterator>())
+                operator[](difference_type offset
+                    ) const noexcept requires RandomAccess
+                        { return get<Field>(iter[offset]); }
+
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend iterator operator+ (
+                iterator const& left,
+                difference_type right) noexcept requires RandomAccess
+                    { auto temp = left; temp += right; return temp; }
+
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the distance
+             * @param right the iterator
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend iterator operator+ (
+                difference_type left,
+                iterator const& right) noexcept requires RandomAccess
+                    { auto temp = right; temp += left; return temp; }
+
+            /**
+             * Subtracts given distance from iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted operator
+             */
+            [[nodiscard]] friend iterator operator- (
+                iterator const& left,
+                difference_type right) noexcept requires RandomAccess
+                    { auto temp = left; temp -= right; return temp; }
+
+            /**
+             * Returns distance between iterators
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return difference_type
+             */
+            [[nodiscard]] friend difference_type operator- (
+                iterator const& left,
+                iterator const& right) noexcept requires RandomAccess
+                    { return left.iter - right.iter; }
+
+            /**
+             * Compares two iterators to each other
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return the result of compare
+             */
+            [[nodiscard]] friend auto operator<=> (
+                iterator const& left,
+                iterator const& right) noexcept requires RandomAccess
+                    { return left.iter <=> right.iter; }
 
             /**
              * Returns whether two iterators are equal
