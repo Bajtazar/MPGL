@@ -1,0 +1,155 @@
+/**
+ *  MPGL - Modern and Precise Graphics Library
+ *
+ *  Copyright (c) 2021-2022
+ *      Grzegorz Czarnecki (grzegorz.czarnecki.2021@gmail.com)
+ *
+ *  This software is provided 'as-is', without any express or
+ *  implied warranty. In no event will the authors be held liable
+ *  for any damages arising from the use of this software.
+ *
+ *  Permission is granted to anyone to use this software for any
+ *  purpose, including commercial applications, and to alter it and
+ *  redistribute it freely, subject to the following restrictions:
+ *
+ *  1. The origin of this software must not be misrepresented;
+ *  you must not claim that you wrote the original software.
+ *  If you use this software in a product, an acknowledgment in the
+ *  product documentation would be appreciated but is not required.
+ *
+ *  2. Altered source versions must be plainly marked as such,
+ *  and must not be misrepresented as being the original software.
+ *
+ *  3. This notice may not be removed or altered from any source
+ *  distribution
+ */
+#pragma once
+
+#include <MPGL/Core/Figures/Angular.hpp>
+
+namespace mpgl {
+
+    /**
+     * Represents a line strip
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
+     */
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec = void>
+    class LineStrip;
+
+    /**
+     * Functor responsible for drawing line strip on the screen
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
+     */
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    struct LineStripDrawer;
+
+    /**
+     * Functor responsible for drawing 2D line strip on the screen
+     */
+    template <>
+    struct LineStripDrawer<dim::Dim2, void> {
+        /**
+         * Draws 2D line strip on the screen
+         *
+         * @param lineStrip a constant reference to the
+         * line strip object
+         */
+        void operator() (
+            LineStrip<dim::Dim2, void> const& lineStrip) const noexcept;
+    };
+
+    /**
+     * Functor responsible for drawing 3D line strip on the screen
+     */
+    template <>
+    struct LineStripDrawer<dim::Dim3, void> {
+        /**
+         * Draws 3D line strip on the screen
+         *
+         * @param lineStrip a constant reference to the line strip
+         * object
+         */
+        void operator() (
+            LineStrip<dim::Dim3, void> const& lineStrip) const noexcept;
+    };
+
+    /**
+     * Functor responsible for checking whether given point is
+     * inside a line strip
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
+     */
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    struct LineStripClickChecker;
+
+    /**
+     * Functor responsible for checking whether given point is
+     * inside a 2D line strip
+     */
+    template <>
+    class LineStripClickChecker<dim::Dim2, void> {
+    public:
+        /**
+         * Checks whether the given point is inside a 2D line strip
+         *
+         * @param lineStrip a constant reference to the line strip
+         * object
+         * @param position a constant reference to the position object
+         * @return if the given point is inside a 2D line strip
+         */
+        [[nodiscard]] bool operator() (
+            LineStrip<dim::Dim2, void> const& lineStrip,
+            Vector2u const& position) const noexcept;
+    private:
+        /**
+         * Normalizes the line strip's vertex positions and returns
+         * a view to it
+         *
+         * @param lineStrip a constant reference to the line strip
+         * object
+         * @return the view to normalized line strip's vertex positions
+         */
+        [[nodiscard]] static auto normalized(
+            LineStrip<dim::Dim2, void> const& lineStrip) noexcept;
+    };
+
+    /**
+     * Functor responsible for checking whether given point is
+     * inside a 3D line strip's projection
+     */
+    template <>
+    class LineStripClickChecker<dim::Dim3, void> {
+    public:
+        /**
+         * Checks whether the given point is inside a 3D line strip's
+         * projection
+         *
+         * @param lineStrip a constant reference to the line strip
+         * object
+         * @param position a constant reference to the position object
+         * @return if the given point is inside a 3D line strip's
+         * projection
+         */
+        [[nodiscard]] bool operator() (
+            LineStrip<dim::Dim3, void> const& lineStrip,
+            Vector2u const& position) const noexcept;
+    private:
+        /**
+         * Normalizes the line strip's projected vertex positions and
+         * returns a view to it
+         *
+         * @param lineStrip a constant reference to the line strip
+         * object
+         * @return the view to normalized line strip's projected
+         * vertex positions
+         */
+        [[nodiscard]] static auto normalized(
+            LineStrip<dim::Dim3, void> const& lineStrip) noexcept;
+    };
+
+}
