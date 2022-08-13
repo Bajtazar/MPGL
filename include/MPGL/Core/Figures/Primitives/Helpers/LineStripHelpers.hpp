@@ -77,6 +77,59 @@ namespace mpgl {
             LineStrip<dim::Dim3, void> const& lineStrip) const noexcept;
     };
 
+    namespace details {
+
+        /**
+         * Functor responsible for normalizing the vertices range
+         * inside the line strip click checker functor
+         *
+         * @tparam Dim the dimension of the space
+         */
+        template <Dimension Dim>
+        struct LineStripClickCheckerNormalizer;
+
+        /**
+         * Functor responsible for normalizing the vertices range
+         * inside the 2D line strip click checker functor
+         */
+        template <>
+        struct LineStripClickCheckerNormalizer<dim::Dim2> {
+            /**
+             * Normalizes the line strip's vertex positions and returns
+             * a view to it
+             *
+             * @param lineStrip a constant reference to the line strip
+             * object
+             * @return the view to normalized line strip's vertex
+             * positions
+             */
+            [[nodiscard]] auto operator() (
+                LineStrip<dim::Dim2, void> const& lineStrip
+                ) const noexcept;
+        };
+
+        /**
+         * Functor responsible for normalizing the vertices range
+         * inside the 3D line strip click checker functor
+         */
+        template <>
+        struct LineStripClickCheckerNormalizer<dim::Dim3> {
+            /**
+             * Normalizes the line strip's projected vertex positions
+             * and returns a view to it
+             *
+             * @param lineStrip a constant reference to the line strip
+             * object
+             * @return the view to normalized line strip's projected
+             * vertex positions
+             */
+            [[nodiscard]] auto operator() (
+                LineStrip<dim::Dim3, void> const& lineStrip
+                ) const noexcept;
+        };
+
+    }
+
     /**
      * Functor responsible for checking whether given point is
      * inside a line strip
@@ -89,67 +142,33 @@ namespace mpgl {
 
     /**
      * Functor responsible for checking whether given point is
-     * inside a 2D line strip
+     * inside a default line strip
+     *
+     * @tparam Dim the dimension of the space
      */
-    template <>
-    class LineStripClickChecker<dim::Dim2, void> {
+    template <Dimension Dim>
+    class LineStripClickChecker<Dim, void> {
     public:
         /**
-         * Checks whether the given point is inside a 2D line strip
+         * Checks whether the given point is inside a default line
+         * strip
          *
          * @param lineStrip a constant reference to the line strip
          * object
          * @param position a constant reference to the position object
-         * @return if the given point is inside a 2D line strip
+         * @return if the given point is inside a default line strip
          */
         [[nodiscard]] bool operator() (
-            LineStrip<dim::Dim2, void> const& lineStrip,
+            LineStrip<Dim, void> const& lineStrip,
             Vector2u const& position) const noexcept;
     private:
-        /**
-         * Normalizes the line strip's vertex positions and returns
-         * a view to it
-         *
-         * @param lineStrip a constant reference to the line strip
-         * object
-         * @return the view to normalized line strip's vertex positions
-         */
-        [[nodiscard]] static auto normalized(
-            LineStrip<dim::Dim2, void> const& lineStrip) noexcept;
+        using Normalizer
+            = details::LineStripClickCheckerNormalizer<Dim>;
+
+        [[no_unique_address]] Normalizer                normalizer = {};
     };
 
-    /**
-     * Functor responsible for checking whether given point is
-     * inside a 3D line strip's projection
-     */
-    template <>
-    class LineStripClickChecker<dim::Dim3, void> {
-    public:
-        /**
-         * Checks whether the given point is inside a 3D line strip's
-         * projection
-         *
-         * @param lineStrip a constant reference to the line strip
-         * object
-         * @param position a constant reference to the position object
-         * @return if the given point is inside a 3D line strip's
-         * projection
-         */
-        [[nodiscard]] bool operator() (
-            LineStrip<dim::Dim3, void> const& lineStrip,
-            Vector2u const& position) const noexcept;
-    private:
-        /**
-         * Normalizes the line strip's projected vertex positions and
-         * returns a view to it
-         *
-         * @param lineStrip a constant reference to the line strip
-         * object
-         * @return the view to normalized line strip's projected
-         * vertex positions
-         */
-        [[nodiscard]] static auto normalized(
-            LineStrip<dim::Dim3, void> const& lineStrip) noexcept;
-    };
+    template class LineStripClickChecker<dim::Dim2, void>;
+    template class LineStripClickChecker<dim::Dim3, void>;
 
 }

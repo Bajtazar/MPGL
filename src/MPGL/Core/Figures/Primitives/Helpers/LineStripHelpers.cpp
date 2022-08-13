@@ -30,6 +30,34 @@
 
 namespace mpgl {
 
+    namespace details {
+
+        [[nodiscard]] auto
+            LineStripClickCheckerNormalizer<dim::Dim2>::operator() (
+                LineStrip<dim::Dim2, void> const& lineStrip
+                    ) const noexcept
+        {
+            auto normalizer = [](Vector2f const& value) -> Vector2f {
+                return Adapter2D{value}.get();
+            };
+            return lineStrip | views::position
+                | std::views::transform(normalizer);
+        }
+
+        [[nodiscard]] auto
+            LineStripClickCheckerNormalizer<dim::Dim3>::operator() (
+                LineStrip<dim::Dim3, void> const& lineStrip
+                    ) const noexcept
+        {
+            auto normalizer = [](Vector2u const& value) -> Vector2f {
+                return Adapter2D{value}.get();
+            };
+            return lineStrip | views::position | views::project(
+                lineStrip.model) | std::views::transform(normalizer);
+        }
+
+    }
+
     void LineStripDrawer<dim::Dim2, void>::operator() (
         LineStrip<dim::Dim2, void> const& lineStrip) const noexcept
     {
@@ -53,51 +81,14 @@ namespace mpgl {
             lineStrip.vertices.size());
     }
 
-    [[nodiscard]] auto
-        LineStripClickChecker<dim::Dim2, void>::normalized(
-            LineStrip<dim::Dim2, void> const& lineStrip) noexcept
-    {
-        auto normalizer = [](Vector2f const& value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return lineStrip | views::position
-            | std::views::transform(normalizer);
-    }
-
+    template <Dimension Dim>
     [[nodiscard]] bool
-        LineStripClickChecker<dim::Dim2, void>::operator() (
-            LineStrip<dim::Dim2, void> const& lineStrip,
+        LineStripClickChecker<Dim, void>::operator() (
+            LineStrip<Dim, void> const& lineStrip,
             Vector2u const& position) const noexcept
     {
         Vector2f pos = Adapter2D{position}.get();
-        auto range = normalized(lineStrip);
-        auto first = *range.begin();
-        for (Vector2f last : range | std::views::drop(1)) {
-            if (isOnLine(pos, first, last))
-                return true;
-            first = last;
-        }
-        return false;
-    }
-
-    [[nodiscard]] auto
-        LineStripClickChecker<dim::Dim3, void>::normalized(
-            LineStrip<dim::Dim3, void> const& lineStrip) noexcept
-    {
-        auto normalizer = [](Vector2u const& value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return lineStrip | views::position | views::project(
-            lineStrip.model) | std::views::transform(normalizer);
-    }
-
-    [[nodiscard]] bool
-        LineStripClickChecker<dim::Dim3, void>::operator() (
-            LineStrip<dim::Dim3, void> const& lineStrip,
-            Vector2u const& position) const noexcept
-    {
-        Vector2f pos = Adapter2D{position}.get();
-        auto range = normalized(lineStrip);
+        auto range = normalizer(lineStrip);
         auto first = *range.begin();
         for (Vector2f last : range | std::views::drop(1)) {
             if (isOnLine(pos, first, last))
