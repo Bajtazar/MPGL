@@ -25,16 +25,29 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/LineLoopHelpers.hpp>
 #include <MPGL/Core/Figures/ResizableAngular.hpp>
 
 namespace mpgl {
 
     /**
      * Represents a line strip loop on the screen
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    struct LineLoop : public ResizableAngular2D {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    class LineLoop :
+        public virtual
+            DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>,
+        public ResizableAngular<Dim, Spec>
+    {
+    public:
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vector = VertexTraits::Vector;
+
         /**
-         * Construct a new Line Loop object and initializes the
+         * Constructs a new Line Loop object and initializes the
          * vertices with the given positions and color
          *
          * @tparam ColorTp the color vector type
@@ -42,28 +55,29 @@ namespace mpgl {
          * @param color the color of the vertices
          * @param positions the vertices positions
          */
-        template <class ColorTp, AllConvertible<Vector2f>... Vectors>
+        template <class ColorTp, AllConvertible<Vector>... Vectors>
             requires std::constructible_from<Color, ColorTp>
         LineLoop(ColorTp&& color, Vectors&&... vertices);
 
         /**
-         * Construct a new Line Loop object and initializes the
+         * Constructs a new Line Loop object and initializes the
          * vertices with the given positions
          *
          * @tparam Vectors the parameter pack of 2D vectors
          * @param positions the vertices positions
          */
-        template <AllConvertible<Vector2f>... Vectors>
+        template <AllConvertible<Vector>... Vectors>
         LineLoop(Vectors&&... vertices);
 
         /**
-         * Construct a new Line Loop object with given number
+         * Constructs a new Line Loop object with given number
          * of vertices and the given base color
          *
          * @param vertices the number of the vertices
          * @param color the color of the vertices
          */
-        LineLoop(std::size_t vertices = 0,
+        LineLoop(
+            std::size_t vertices = 0,
             Color const& color = {});
 
         LineLoop(LineLoop const& lineStrip) = default;
@@ -87,33 +101,25 @@ namespace mpgl {
             Vector2u const& position) const noexcept final;
 
         /**
-         * Destroy the Line Strip object
+         * Destroys the Line Strip object
          */
         ~LineLoop(void) noexcept = default;
-    private:
-        /**
-         * Returns whether the given point position is inside
-         * an x-axis interval
-         *
-         * @param position the point position
-         * @param index the second vertex index
-         * @return if point is inside an x-axis interval
-         */
-        [[nodiscard]] bool insideInterval(
-            Vector2f const& position,
-            std::size_t index) const noexcept;
 
-        /**
-         * Checks whether the given point is located on the given line
-         *
-         * @param position the point position
-         * @param index the second vertex index
-         * @return if point is located on the line
-         */
-        [[nodiscard]] bool onLine(
-            Vector2f const& position,
-            std::size_t index) const noexcept;
+        friend class LineLoopDrawer<Dim, Spec>;
+        friend class LineLoopClickChecker<Dim, Spec>;
+    private:
+        using Drawer = LineLoopDrawer<Dim, Spec>;
+        using Clicker = LineLoopClickChecker<Dim, Spec>;
+
+        [[no_unique_address]] Drawer                drawer = {};
+        [[no_unique_address]] Clicker               clicker = {};
     };
+
+    template class LineLoop<dim::Dim2>;
+    template class LineLoop<dim::Dim3>;
+
+    typedef LineLoop<dim::Dim2>                     LineLoop2D;
+    typedef LineLoop<dim::Dim3>                     LineLoop3D;
 
 }
 

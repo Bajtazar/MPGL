@@ -46,6 +46,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/PointsHelpers.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/LineHelpers.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/PolygonHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/LineLoopHelpers.cpp
     ${MPGL_SOURCES}/Core/Windows/WindowPlatform.cpp
     ${MPGL_SOURCES}/Core/Windows/Window.cpp
     ${MPGL_SOURCES}/Core/Windows/RenderWindow.cpp

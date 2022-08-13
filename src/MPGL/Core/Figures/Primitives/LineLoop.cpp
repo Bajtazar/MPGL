@@ -25,55 +25,24 @@
  */
 #include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
 
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-
-#include <limits>
-
 namespace mpgl {
 
-    LineLoop::LineLoop(std::size_t vertices,
-        Color const& color) : ResizableAngular2D{vertices, color} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    LineLoop<Dim, Spec>::LineLoop(
+        std::size_t vertices,
+        Color const& color)
+            : ResizableAngular<Dim, Spec>{vertices, color} {}
 
-    void LineLoop::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::LineLoop,
-            vertices.size());
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void LineLoop<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
     }
 
-    [[nodiscard]] bool LineLoop::insideInterval(
-        Vector2f const& position,
-        std::size_t index) const noexcept
-    {
-        return between(get<"position">(vertices[index - 1]).get(),
-            get<"position">(vertices[index]).get(), position);
-    }
-
-    [[nodiscard]] bool LineLoop::onLine(
-        Vector2f const& position,
-        std::size_t index) const noexcept
-    {
-        Vector2f begin = get<"position">(vertices[index - 1]).get();
-        Vector2f end = get<"position">(vertices[index]).get();
-        return std::fabs(cross(position - begin, end - begin))
-            < std::numeric_limits<float>::epsilon();
-    }
-
-    [[nodiscard]] bool LineLoop::contains(
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool LineLoop<Dim, Spec>::contains(
         Vector2u const& position) const noexcept
     {
-        Vector2f normalized = Adapter2D{position}.get();
-        for (std::size_t i = 1; i < size(); ++i)
-            if (insideInterval(normalized, i) && onLine(normalized, i))
-                return true;
-        Vector2f begin = get<"position">(vertices.back()).get();
-        Vector2f end = get<"position">(vertices.front()).get();
-        if (!between(begin, end, normalized))
-            return false;
-        return std::fabs(cross(normalized - begin, end - begin))
-            < std::numeric_limits<float>::epsilon();
+        return clicker(*this, position);
     }
 
 }
