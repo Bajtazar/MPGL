@@ -94,8 +94,7 @@ namespace mpgl {
      * @tparam Dim the dimension of the space
      */
     template <Dimension Dim>
-    class LineStripClickChecker<Dim, void> {
-    public:
+    struct LineStripClickChecker<Dim, void> {
         /**
          * Functor responsible for normalizing the vertices range
          * inside the line strip click checker functor
@@ -114,8 +113,6 @@ namespace mpgl {
         [[nodiscard]] bool operator() (
             LineStrip<Dim, void> const& lineStrip,
             Vector2u const& position) const noexcept;
-    private:
-        [[no_unique_address]] Normalizer                normalizer = {};
     };
 
     /**

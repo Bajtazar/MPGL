@@ -32,43 +32,22 @@
 
 namespace mpgl {
 
-    LineStrip::LineStrip(std::size_t vertices,
-        Color const& color) : ResizableAngular2D{vertices, color} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    LineStrip<Dim, Spec>::LineStrip(
+        std::size_t vertices,
+        Color const& color)
+            : ResizableAngular<Dim, Spec>{vertices, color} {}
 
-    void LineStrip::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::LineStrip,
-            vertices.size());
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void LineStrip<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
     }
 
-    [[nodiscard]] bool LineStrip::insideInterval(
-        Vector2f const& position,
-        std::size_t index) const noexcept
-    {
-        return between(get<"position">(vertices[index - 1]).get(),
-            get<"position">(vertices[index]).get(), position);
-    }
-
-    [[nodiscard]] bool LineStrip::onLine(
-        Vector2f const& position,
-        std::size_t index) const noexcept
-    {
-        Vector2f begin = get<"position">(vertices[index - 1]).get();
-        Vector2f end = get<"position">(vertices[index]).get();
-        return std::fabs(cross(position - begin, end - begin))
-            < std::numeric_limits<float>::epsilon();
-    }
-
-    [[nodiscard]] bool LineStrip::contains(
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool LineStrip<Dim, Spec>::contains(
         Vector2u const& position) const noexcept
     {
-        Vector2f normalized = Adapter2D{position}.get();
-        for (std::size_t i = 1; i < size(); ++i)
-            if (insideInterval(normalized, i) && onLine(normalized, i))
-                return true;
-        return false;
+        return clicker(*this, position);
     }
 
 }

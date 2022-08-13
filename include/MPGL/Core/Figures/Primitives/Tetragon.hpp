@@ -39,8 +39,9 @@ namespace mpgl {
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     class Tetragon :
-        public Angular<Dim, Spec>,
-        public DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>
+        public virtual
+            DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>,
+        public Angular<Dim, Spec>
     {
     public:
         using VertexTraits = Angular<Dim, Spec>::VertexTraits;

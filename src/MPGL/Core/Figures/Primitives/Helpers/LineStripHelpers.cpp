@@ -47,11 +47,16 @@ namespace mpgl {
             LineStrip<dim::Dim3, void> const& lineStrip
                 ) const noexcept
     {
-        auto normalizer = [](Vector2u const& value) -> Vector2f {
+        auto normalizer = [](auto const& value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        return lineStrip | views::position | views::project(
-            lineStrip.model) | std::views::transform(normalizer);
+        std::vector<Vector2f> temp;
+        for (Vector2u pos : lineStrip | views::position |
+            views::project(lineStrip.model))
+        {
+            temp.push_back(normalizer(pos));
+        }
+        return temp;
     }
 
     void LineStripDrawer<dim::Dim2, void>::operator() (
@@ -84,7 +89,7 @@ namespace mpgl {
             Vector2u const& position) const noexcept
     {
         Vector2f pos = Adapter2D{position}.get();
-        auto range = normalizer(lineStrip);
+        auto range = Normalizer{}(lineStrip);
         auto first = *range.begin();
         for (Vector2f last : range | std::views::drop(1)) {
             if (isOnLine(pos, first, last))

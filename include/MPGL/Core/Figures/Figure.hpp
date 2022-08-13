@@ -49,8 +49,8 @@ namespace mpgl {
     class Figure<dim::Dim2> :
         public virtual Shape2D,
         public virtual Transformable2D,
-        public Shadeable,
-        public Clickable
+        public virtual Clickable,
+        public Shadeable
     {
     public:
         /**
