@@ -102,8 +102,8 @@ namespace mpgl {
      */
     template <EllipticTraitSpecifier<dim::Dim2> Spec>
     struct EllipseOutlineCalculator<dim::Dim2, Spec> {
-        using Matrix = Matrix2f;
-        using Result = std::optional<Matrix>;
+        using MatrixT = Matrix2f;
+        using ResultT = std::optional<MatrixT>;
 
         /**
          * Calculates a new outline of a 2D ellipse
@@ -111,7 +111,7 @@ namespace mpgl {
          * @param ellipse a constant reference to the ellipse object
          * @return an outline of a 2D ellipse
          */
-        [[nodiscard]] Result operator() (
+        [[nodiscard]] ResultT operator() (
             Ellipse<dim::Dim2, Spec> const& ellipse) const noexcept;
     };
 
@@ -122,8 +122,8 @@ namespace mpgl {
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
     class EllipseOutlineCalculator<dim::Dim3, Spec> {
     public:
-        using Matrix = Matrix<float32, 2, 3>;
-        using Result = std::optional<Matrix>;
+        using MatrixT = Matrix<float32, 2, 3>;
+        using ResultT = std::optional<MatrixT>;
 
         /**
          * Calculates a new outline of a 3D ellipse
@@ -131,7 +131,7 @@ namespace mpgl {
          * @param ellipse a constant reference to the ellipse object
          * @return an outline of a 3D ellipse
          */
-        [[nodiscard]] Result operator() (
+        [[nodiscard]] ResultT operator() (
             Ellipse<dim::Dim3, Spec> const& ellipse) const noexcept;
     private:
         using Versors = std::tuple<Vector2f, Vector2f, Vector2f>;
@@ -153,7 +153,7 @@ namespace mpgl {
          * @param yVersor a constant reference to the y versor object
          * @return the outline matrix
          */
-        [[nodiscard]] Result getXYMatrix(
+        [[nodiscard]] MatrixT getXYMatrix(
             Vector2f const& xVersor,
             Vector2f const& yVersor) const noexcept;
 
@@ -164,7 +164,7 @@ namespace mpgl {
          * @param zVersor a constant reference to the z versor object
          * @return the outline matrix
          */
-        [[nodiscard]] Result getXZMatrix(
+        [[nodiscard]] MatrixT getXZMatrix(
             Vector2f const& xVersor,
             Vector2f const& zVersor) const noexcept;
 
@@ -175,7 +175,7 @@ namespace mpgl {
          * @param zVersor a constant reference to the z versor object
          * @return the outline matrix
          */
-        [[nodiscard]] Result getYZMatrix(
+        [[nodiscard]] MatrixT getYZMatrix(
             Vector2f const& yVersor,
             Vector2f const& zVersor) const noexcept;
     };
@@ -199,6 +199,7 @@ namespace mpgl {
      * Structure containing information about shader used by
      * a 2D default ellipse
      */
+    template <>
     struct EllipseShader<dim::Dim2, void> {
         static std::string const                    shader;
     };
@@ -207,6 +208,7 @@ namespace mpgl {
      * Structure containing information about shader used by
      * a 2D colorable ellipse
      */
+    template <>
     struct EllipseShader<dim::Dim2, int32> {
         static std::string const                    shader;
     };
@@ -215,6 +217,7 @@ namespace mpgl {
      * Structure containing information about shader used by
      * a 3D default ellipse
      */
+    template <>
     struct EllipseShader<dim::Dim3, void> {
         static std::string const                    shader;
     };
@@ -223,6 +226,7 @@ namespace mpgl {
      * Structure containing information about shader used by
      * a 3D colorable ellipse
      */
+    template <>
     struct EllipseShader<dim::Dim3, int32> {
         static std::string const                    shader;
     };

@@ -58,7 +58,7 @@ namespace mpgl {
     }
 
     template <EllipticTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] EllipseOutlineCalculator<dim::Dim2, Spec>::Result
+    [[nodiscard]] EllipseOutlineCalculator<dim::Dim2, Spec>::ResultT
         EllipseOutlineCalculator<dim::Dim2, Spec>::operator() (
             Ellipse<dim::Dim2, Spec> const& ellipse) const noexcept
     {
@@ -86,27 +86,27 @@ namespace mpgl {
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::Result
+    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::ResultT
         EllipseOutlineCalculator<dim::Dim3, Spec>::operator() (
             Ellipse<dim::Dim3, Spec> const& ellipse) const noexcept
     {
         auto const& [xVersor, yVersor, zVersor] = getVersors(ellipse);
         if (cross(xVersor, yVersor))
-            { getXYMatrix(xVersor, yVersor) };
+            return { getXYMatrix(xVersor, yVersor) };
         else if (cross(xVersor, zVersor))
-            { getXZMatrix(xVersor, zVersor) };
+            return { getXZMatrix(xVersor, zVersor) };
         else if (cross(yVersor, zVersor))
-            { getYZMatrix(yVersor, zVersor) };
+            return { getYZMatrix(yVersor, zVersor) };
         return std::nullopt;
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::Result
+    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::MatrixT
         EllipseOutlineCalculator<dim::Dim3, Spec>::getXYMatrix(
             Vector2f const& xVersor,
             Vector2f const& yVersor) const noexcept
     {
-        Matrix2f matrix = *invert({xVersor, yVersor});
+        Matrix2f matrix = *invert(Matrix2f{xVersor, yVersor});
         return {
             Vector3f{matrix[0][0], matrix[0][1], 0.f},
             Vector3f{matrix[1][0], matrix[1][1], 0.f}
@@ -114,12 +114,12 @@ namespace mpgl {
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::Result
+    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::MatrixT
         EllipseOutlineCalculator<dim::Dim3, Spec>::getXZMatrix(
             Vector2f const& xVersor,
             Vector2f const& zVersor) const noexcept
     {
-        Matrix2f matrix = *invert({xVersor, zVersor});
+        Matrix2f matrix = *invert(Matrix2f{xVersor, zVersor});
         return {
             Vector3f{matrix[0][0], 0.f, matrix[0][1]},
             Vector3f{matrix[1][0], 0.f, matrix[1][1]}
@@ -127,12 +127,12 @@ namespace mpgl {
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::Result
+    [[nodiscard]] EllipseOutlineCalculator<dim::Dim3, Spec>::MatrixT
         EllipseOutlineCalculator<dim::Dim3, Spec>::getYZMatrix(
             Vector2f const& yVersor,
             Vector2f const& zVersor) const noexcept
     {
-        Matrix2f matrix = *invert({yVersor, zVersor});
+        Matrix2f matrix = *invert(Matrix2f{yVersor, zVersor});
         return {
             Vector3f{0.f, matrix[0][0], matrix[0][1]},
             Vector3f{0.f, matrix[1][0], matrix[1][1]}

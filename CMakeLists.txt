@@ -41,6 +41,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Primitives/LineLoop.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Line.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Ellipse.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/EllipseHelpers.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/TriangleHelpers.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/TetragonHelpers.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/LineStripHelpers.cpp
