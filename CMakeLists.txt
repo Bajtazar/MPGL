@@ -29,6 +29,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Angular.cpp
     ${MPGL_SOURCES}/Core/Figures/ResizableAngular.cpp
     ${MPGL_SOURCES}/Core/Figures/Elliptic.cpp
+    ${MPGL_SOURCES}/Core/Figures/EllipticVertices.cpp
     ${MPGL_SOURCES}/Core/Figures/Figure.cpp
     ${MPGL_SOURCES}/Core/Figures/AngularVertices.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Points.cpp
