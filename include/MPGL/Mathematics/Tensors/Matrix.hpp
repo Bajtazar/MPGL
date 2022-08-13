@@ -2276,6 +2276,8 @@ namespace mpgl {
         std::complex<float64>, Rows, Cols>;
 
     template class Matrix<float32, 2, 2>;
+    template class Matrix<float32, 3, 3>;
+    template class Matrix<float32, 4, 4>;
 
     typedef Matrix<float32, 2, 2>           Matrix2f;
     typedef Matrix<int32, 2, 2>             Matrix2i;

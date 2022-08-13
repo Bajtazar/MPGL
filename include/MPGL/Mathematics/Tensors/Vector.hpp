@@ -1178,6 +1178,8 @@ namespace mpgl {
         Vector<Tp, Size> const& right) noexcept;
 
     template class Vector<float32, 2>;
+    template class Vector<float32, 3>;
+    template class Vector<float32, 4>;
     template class Vector<uint32, 2>;
 
     template <std::size_t Size>
