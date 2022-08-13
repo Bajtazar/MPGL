@@ -81,7 +81,7 @@ namespace mpgl {
             Polygon<Dim, void> const& polygon,
             Vector2u const& position) const noexcept
     {
-        Vector2d normalized = Adapter2D{position}.get();
+        Vector2f normalized = Adapter2D{position}.get();
         auto range = Normalizer{}(polygon);
         auto begin = *range.begin(), last = *(++range.begin());
         for (auto pos : range | std::views::drop(2)) {
