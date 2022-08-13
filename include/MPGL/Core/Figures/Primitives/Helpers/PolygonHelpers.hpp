@@ -30,125 +30,124 @@
 namespace mpgl {
 
     /**
-     * Represents a points on the screen
+     * Represents a polygon on the screen
      *
      * @tparam Dim the dimension of the space
      * @tparam Spec the angular vertices specifier
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec = void>
-    class Points;
+    class Polygon;
 
     /**
-     * Functor responsible for drawing points on the screen
+     * Functor responsible for drawing polygon on the screen
      *
      * @tparam Dim the dimension of the space
      * @tparam Spec the angular vertices specifier
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    struct PointsDrawer;
+    struct PolygonDrawer;
 
     /**
-     * Functor responsible for drawing 2D points on the screen
+     * Functor responsible for drawing 2D polygon on the screen
      */
     template <>
-    struct PointsDrawer<dim::Dim2, void> {
+    struct PolygonDrawer<dim::Dim2, void> {
         /**
-         * Draws 2D points on the screen
+         * Draws 2D polygon on the screen
          *
-         * @param points a constant reference to the points object
+         * @param polygon a constant reference to the polygon object
          */
         void operator() (
-            Points<dim::Dim2, void> const& points) const noexcept;
+            Polygon<dim::Dim2, void> const& polygon) const noexcept;
     };
 
     /**
-     * Functor responsible for drawing 3D points on the screen
+     * Functor responsible for drawing 3D polygon on the screen
      */
     template <>
-    struct PointsDrawer<dim::Dim3, void> {
+    struct PolygonDrawer<dim::Dim3, void> {
         /**
-         * Draws 3D points on the screen
+         * Draws 3D polygon on the screen
          *
-         * @param points a constant reference to the points object
+         * @param polygon a constant reference to the polygon object
          */
         void operator() (
-            Points<dim::Dim3, void> const& points) const noexcept;
+            Polygon<dim::Dim3, void> const& polygon) const noexcept;
     };
 
     /**
      * Functor responsible for checking whether given point is
-     * inside a points group
+     * inside a polygon
      *
      * @tparam Dim the dimension of the space
      * @tparam Spec the angular vertices specifier
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    struct PointsClickChecker;
+    struct PolygonClickChecker;
 
     /**
      * Functor responsible for checking whether given point is
-     * inside a default points group
+     * inside a default polygon
      *
      * @tparam Dim the dimension of the space
      */
     template <Dimension Dim>
-    struct PointsClickChecker<Dim, void> {
+    struct PolygonClickChecker<Dim, void> {
         /**
          * Functor responsible for normalizing the vertices range
-         * inside the points click checker functor
+         * inside the polygon click checker functor
          */
         struct Normalizer;
 
         /**
-         * Checks whether the given point is inside a default points
-         * group
+         * Checks whether the given point is inside a default polygon
          *
-         * @param points a constant reference to the points object
+         * @param polygon a constant reference to the polygon object
          * @param position a constant reference to the position object
-         * @return if the given point is inside a default points group
+         * @return if the given point is inside a default polygon
          */
         [[nodiscard]] bool operator() (
-            Points<Dim, void> const& points,
+            Polygon<Dim, void> const& polygon,
             Vector2u const& position) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
-     * inside the 2D points click checker functor
+     * inside the 2D polygon click checker functor
      */
     template <>
-    struct PointsClickChecker<dim::Dim2, void>::Normalizer {
+    struct PolygonClickChecker<dim::Dim2, void>::Normalizer {
         /**
-         * Normalizes the points's vertex positions and returns
+         * Normalizes the polygon's vertex positions and returns
          * a view to it
          *
-         * @param points a constant reference to the points object
-         * @return the view to normalized points's vertex
+         * @param polygon a constant reference to the polygon object
+         * @return the view to normalized polygon's vertex
          * positions
          */
         [[nodiscard]] auto operator() (
-            Points<dim::Dim2, void> const& points) const noexcept;
+            Polygon<dim::Dim2, void> const& polygon) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
-     * inside the 3D points click checker functor
+     * inside the 3D polygon click checker functor
      */
     template <>
-    struct PointsClickChecker<dim::Dim3, void>::Normalizer {
+    struct PolygonClickChecker<dim::Dim3, void>::Normalizer {
         /**
-         * Normalizes the points's projected vertex positions
+         * Normalizes the polygon's projected vertex positions
          * and returns a view to it
          *
-         * @param points a constant reference to the points object
-         * @return the view to normalized points's projected
+         * @param polygon a constant reference to the polygon object
+         * @return the view to normalized polygon's projected
          * vertex positions
          */
         [[nodiscard]] auto operator() (
-            Points<dim::Dim3, void> const& points) const noexcept;
+            Polygon<dim::Dim3, void> const& polygon) const noexcept;
     };
 
-    template class PointsClickChecker<dim::Dim2, void>;
-    template class PointsClickChecker<dim::Dim3, void>;
+    template class PolygonClickChecker<dim::Dim2, void>;
+    template class PolygonClickChecker<dim::Dim3, void>;
 
 }
