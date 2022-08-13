@@ -107,7 +107,10 @@ namespace mpgl {
             Vector2f const& yVersor) const noexcept
     {
         Matrix2f matrix = *invert({xVersor, yVersor});
-        return {matrix[0], matrix[1], Vector2f{}};
+        return {
+            Vector3f{matrix[0][0], matrix[0][1], 0.f},
+            Vector3f{matrix[1][0], matrix[1][1], 0.f}
+        };
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
@@ -117,7 +120,10 @@ namespace mpgl {
             Vector2f const& zVersor) const noexcept
     {
         Matrix2f matrix = *invert({xVersor, zVersor});
-        return {matrix[0], Vector2f{}, matrix[1]};
+        return {
+            Vector3f{matrix[0][0], 0.f, matrix[0][1]},
+            Vector3f{matrix[1][0], 0.f, matrix[1][1]}
+        };
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
@@ -127,7 +133,10 @@ namespace mpgl {
             Vector2f const& zVersor) const noexcept
     {
         Matrix2f matrix = *invert({yVersor, zVersor});
-        return {Vector2f{}, matrix[0], matrix[1]};
+        return {
+            Vector3f{0.f, matrix[0][0], matrix[0][1]},
+            Vector3f{0.f, matrix[1][0], matrix[1][1]}
+        };
     }
 
     std::string const EllipseShader<dim::Dim2, void>::shader
