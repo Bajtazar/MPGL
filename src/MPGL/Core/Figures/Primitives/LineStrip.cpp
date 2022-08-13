@@ -25,11 +25,6 @@
  */
 #include <MPGL/Core/Figures/Primitives/LineStrip.hpp>
 
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-
-#include <limits>
-
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>

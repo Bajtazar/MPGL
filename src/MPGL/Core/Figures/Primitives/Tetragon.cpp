@@ -24,10 +24,7 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
-
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
-#include <iostream>
 
 namespace mpgl {
 
