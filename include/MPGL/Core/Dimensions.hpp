@@ -64,4 +64,22 @@ namespace mpgl {
     } && std::same_as<decltype(Tp::orthogonal_space_degree),
             std::size_t const> && Tp::orthogonal_space_degree > 1u;
 
+    /**
+     * Checks wheter the given type is a two dimensional space's tag
+     *
+     * @tparam Tp the checked type
+     */
+    template <class Tp>
+    concept TwoDimensional = Dimension<Tp> &&
+        Tp::orthogonal_space_degree == 2u;
+
+    /**
+     * Checks wheter the given type is a three dimensional space's tag
+     *
+     * @tparam Tp the checked type
+     */
+    template <class Tp>
+    concept ThreeDimensional = Dimension<Tp> &&
+        Tp::orthogonal_space_degree == 2u;
+
 }

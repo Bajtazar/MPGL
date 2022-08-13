@@ -33,6 +33,26 @@ namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     Polygon<Dim, Spec>::Polygon(
+        Vector2f const& center,
+        float32 radius,
+        std::size_t segments,
+        Color const& color) requires TwoDimensional<Dim>
+            : ResizableAngular<Dim, Spec>{segments + 1, color}
+    {
+        float32 increment = 2.f *
+            std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;
+        get<"position">(this->vertices.front()) = center;
+        for (auto& position : this->vertices | std::views::drop(1) |
+            views::position)
+        {
+            position = polarToCartesian(Vector2f{radius, angle})
+                + center;
+            angle += increment;
+        }
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Polygon<Dim, Spec>::Polygon(
         std::size_t vertices,
         Color const& color)
             : ResizableAngular<Dim, Spec>{vertices, color} {}
@@ -47,26 +67,6 @@ namespace mpgl {
         Vector2u const& position) const noexcept
     {
         return clicker(*this, position);
-    }
-
-    [[nodiscard]] Polygon2D makePolygon(
-        Vector2f const& center,
-        float32 radius,
-        std::size_t segments,
-        Color const& color)
-    {
-        Polygon2D polygon{segments + 1, color};
-        float32 increment = 2.f *
-            std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;
-        get<"position">(polygon.front()) = center;
-        for (auto& position : polygon | std::views::drop(1) |
-            views::position)
-        {
-            position = polarToCartesian(Vector2f{radius, angle})
-                + center;
-            angle += increment;
-        }
-        return polygon;
     }
 
 }

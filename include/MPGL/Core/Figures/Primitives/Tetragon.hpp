@@ -71,6 +71,19 @@ namespace mpgl {
             Color const& color = {});
 
         /**
+         * Constructs a new rectangle parallel to
+         * the x and y axis with the given color
+         *
+         * @param firstVertex the first vertex coord
+         * @param dimensions the rectangle dimensions
+         * @param color the color of the rectangle
+         */
+        Tetragon(
+            Vector2f const& firstVertex,
+            Vector2f const& dimensions,
+            Color const& color = {}) requires TwoDimensional<Dim>;
+
+        /**
          * Constructs a new Tetragon object from the given
          * constant reference to the other object
          *
@@ -129,18 +142,5 @@ namespace mpgl {
 
     typedef Tetragon<dim::Dim2>                     Tetragon2D;
     typedef Tetragon<dim::Dim3>                     Tetragon3D;
-
-    /**
-     * Constructs a new rectangle parallel to
-     * the x and y axis with the given color
-     *
-     * @param firstVertex the first vertex coord
-     * @param dimensions the rectangle dimensions
-     * @param color the color of the rectangle
-     */
-    [[nodiscard]] Tetragon2D makeTetragon(
-        Vector2f const& firstVertex,
-        Vector2f const& dimensions,
-        Color const& color = {});
 
 }

@@ -44,7 +44,7 @@ Snake::Snake(World& world)
 }
 
 Tetragon2D Snake::returnModule(Vector2si const& vector) const noexcept {
-    return makeTetragon(
+    return Tetragon2D(
         {117 + 36 * vector[0], 36 * (vector[1] + 3) + 9},
         {18, 18},
         Color::Green

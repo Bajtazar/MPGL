@@ -81,6 +81,22 @@ namespace mpgl {
             std::size_t vertices = 0,
             Color const& color = {});
 
+        /**
+         * Constructs a new circle-like Polygon object with
+         * the given radius, center, number of segments and color
+         *
+         * @param center the center of the polygon
+         * @param radius the radius of the polygon
+         * @param segments the number of the triangles which
+         * the polygon consists of
+         * @param color the color of the polygon
+         */
+        Polygon(
+            Vector2f const& center,
+            float32 radius = 0.f,
+            std::size_t segments = 0,
+            Color const& color = {}) requires TwoDimensional<Dim>;
+
         Polygon(Polygon const& polygon) = default;
         Polygon(Polygon&& polygon) noexcept = default;
 
@@ -121,22 +137,6 @@ namespace mpgl {
 
     typedef Polygon<dim::Dim2>                       Polygon2D;
     typedef Polygon<dim::Dim3>                       Polygon3D;
-
-    /**
-     * Constructs a new circle-like Polygon object with
-     * the given radius, center, number of segments and color
-     *
-     * @param center the center of the polygon
-     * @param radius the radius of the polygon
-     * @param segments the number of the triangles which
-     * the polygon consists of
-     * @param color the color of the polygon
-     */
-    [[nodiscard]] Polygon2D makePolygon(
-        Vector2f const& center = {},
-        float32 radius = 0.f,
-        std::size_t segments = 0,
-        Color const& color = {});
 
 }
 

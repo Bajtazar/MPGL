@@ -29,6 +29,17 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Tetragon<Dim, Spec>::Tetragon(
+        Vector2f const& firstVertex,
+        Vector2f const& dimensions,
+        Color const& color) requires TwoDimensional<Dim>
+            : Tetragon{
+                firstVertex,
+                firstVertex + 1._y * dimensions[1],
+                firstVertex + dimensions,
+                color} {}
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     Tetragon<Dim, Spec>::Tetragon(Color const& color)
         : Angular<Dim, Spec>{4, color}
     {
@@ -75,19 +86,6 @@ namespace mpgl {
         Vector2u const& position) const noexcept
     {
         return clicker(*this, position);
-    }
-
-    [[nodiscard]] Tetragon2D makeTetragon(
-        Vector2f const& firstVertex,
-        Vector2f const& dimensions,
-        Color const& color)
-    {
-        return Tetragon2D{
-            firstVertex,
-            firstVertex + 1._y * dimensions[1],
-            firstVertex + dimensions,
-            color
-        };
     }
 
 }
