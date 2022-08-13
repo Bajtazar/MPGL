@@ -44,8 +44,7 @@ namespace mpgl {
         using VertexTraits = AngluarVertices<Dim, Specifier>;
         /// The vertex used by all angular shapes
         using Vertex = typename VertexTraits::Vertex;
-
-        typedef std::vector<Vertex>         Vertices;
+        using Vertices = std::vector<Vertex>;
 
         /**
          * Pure virtual method. Has to be overloaded.

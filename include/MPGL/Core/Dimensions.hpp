@@ -80,6 +80,6 @@ namespace mpgl {
      */
     template <class Tp>
     concept ThreeDimensional = Dimension<Tp> &&
-        Tp::orthogonal_space_degree == 2u;
+        Tp::orthogonal_space_degree == 3u;
 
 }

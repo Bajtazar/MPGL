@@ -26,22 +26,29 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
+#include <MPGL/Core/Figures/EllipticVertices.hpp>
 #include <MPGL/Core/Figures/Figure.hpp>
-#include <MPGL/Utility/Adapter.hpp>
 
 namespace mpgl {
 
     /**
      * Base class for all elliptic shapes
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    class Elliptic : public Figure2D {
+    template <
+        Dimension Dim,
+        EllipticTraitSpecifier<Dim> Specifier = void>
+    class Elliptic :
+        public virtual Clickable,
+        public Figure<Dim>
+    {
     public:
+        using VertexTraits = EllipticVertices<Dim, Specifier>;
         /// The vertex used by all elliptic shapes
-        using Vertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter2D, DataType::Float32>>;
-
-        typedef std::vector<Vertex>                     Vertices;
+        using Vertex = typename VertexTraits::Vertex;
+        using Vertices = std::vector<Vertex>;
 
         /**
          * Pure virtual method. Has to be overloaded.
@@ -70,7 +77,7 @@ namespace mpgl {
          * transforming object
          */
         virtual void transform(
-            Transformation2D const& transformator) noexcept = 0;
+            Transformation<Dim> const& transformator) noexcept = 0;
 
         /**
          * Sets the elliptic color
@@ -93,8 +100,10 @@ namespace mpgl {
          */
         virtual ~Elliptic(void) noexcept = default;
     protected:
+        using Executable = typename Shadeable::Executable;
+
         /**
-         * Construct a new Elliptic object with given
+         * Constructs a new Elliptic object with given
          * vector of vertices, color, program name and
          * the executable
          *
@@ -110,7 +119,7 @@ namespace mpgl {
             Color const& color);
 
         /**
-         * Construct a new Elliptic object from the given
+         * Constructs a new Elliptic object from the given
          * constant reference
          *
          * @param shape the given elliptic constant reference
@@ -132,7 +141,7 @@ namespace mpgl {
         typedef std::array<uint32, 6>                   Indexes;
 
         ElementArrayBuffer                              elementBuffer;
-        Color                                           color = {};
+        Color                                           color;
         Vertices                                        vertices;
 
         /**
@@ -141,25 +150,9 @@ namespace mpgl {
         virtual void actualizeBufferBeforeDraw(void) const noexcept;
 
         /**
-         * Constructs the vector with ellipse vertices
-         *
-         * @param center the center of the ellipse
-         * @param semiAxis the semi-axis of the ellipse
-         * @param angle the angle between x-axis and semi-axis
-         * @return the ellipse's vertices
+         * Actualizes shader's locations before draw
          */
-        static Vertices ellipseVertices(Vector2f const& center,
-            Vector2f const& semiAxis, float32 angle);
-
-        /**
-         * Constructs the vector with circle vertices
-         *
-         * @param center the center of the circle
-         * @param radius the radius of the circle
-         * @return the circle's vertices
-         */
-        static Vertices circleVertices(Vector2f const& center,
-            float32 radius);
+        virtual void actualizeLocations(void) const noexcept;
 
         /**
          * Pure virtual method. Has to be overloaded. Actualizes
@@ -175,5 +168,15 @@ namespace mpgl {
         static constexpr const Indexes                  indexes {
             0, 1, 2, 0, 3, 2};
     };
+
+    template class Elliptic<dim::Dim2, void>;
+    template class Elliptic<dim::Dim2, int32>;
+    template class Elliptic<dim::Dim3, void>;
+    template class Elliptic<dim::Dim3, int32>;
+
+    typedef Elliptic<dim::Dim2, void>                   Elliptic2D;
+    typedef Elliptic<dim::Dim2, int32>                  ColorableElliptic2D;
+    typedef Elliptic<dim::Dim3, void>                   Elliptic3D;
+    typedef Elliptic<dim::Dim3, int32>                  ColorableElliptic3D;
 
 }

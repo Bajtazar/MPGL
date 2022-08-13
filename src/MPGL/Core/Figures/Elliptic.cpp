@@ -24,65 +24,46 @@
  *  distribution
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
 #include <MPGL/Core/Figures/Elliptic.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
 namespace mpgl {
 
-    Elliptic::Vertices Elliptic::ellipseVertices(Vector2f const& center,
-        Vector2f const& semiAxis, float32 angle)
-    {
-        Matrix2f rotation = rotationMatrix<float32>(angle);
-        Vector2f rot1 = rotation * semiAxis;
-        Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
-        return {
-            Vertex{center - rot2},
-            Vertex{center + rot1},
-            Vertex{center + rot2},
-            Vertex{center - rot1}
-        };
-    }
-
-    Elliptic::Vertices Elliptic::circleVertices(Vector2f const& center,
-        float32 radius)
-    {
-        Vector2f semiMajor = Vector2f{radius, 0.f};
-        Vector2f semiMinor = Vector2f{0.f, radius};
-        return {
-            Vertex{center - semiMajor + semiMinor},
-            Vertex{center + semiMajor + semiMinor},
-            Vertex{center + semiMajor - semiMinor},
-            Vertex{center - semiMajor - semiMinor}
-        };
-    }
-
-    Elliptic::Elliptic(Vertices vertices,
-        std::string const& programName, Executable exec,
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Elliptic(
+        Vertices vertices,
+        std::string const& programName,
+        Executable exec,
         Color const& color)
-            : Figure{programName, std::move(exec)},
+            : Figure<Dim>{programName, std::move(exec)},
             color{color}, vertices{std::move(vertices)}
     {
         initializeBuffers();
     }
 
-    Elliptic::Elliptic(Elliptic const& shape)
-        : Figure{shape}, vertices{shape.vertices}
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Elliptic(Elliptic const& shape)
+        : Figure<Dim>{shape}, vertices{shape.vertices}
     {
         initializeBuffers();
     }
 
-    void Elliptic::initializeBuffers(void) const noexcept {
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        BindGuard<VertexBuffer> vboGuard{vertexBuffer};
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Elliptic<Dim, Spec>::initializeBuffers(void) const noexcept {
+        BindGuard<VertexArray> vaoGuard{this->vertexArray};
+        BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
         elementBuffer.bind();
         elementBuffer.setBufferData(indexes);
-        vertexBuffer.setBufferData(vertices);
-        vertexArray.setArrayData(VertexArray::VertexTag<Vertex>{});
+        this->vertexBuffer.setBufferData(vertices);
+        this->vertexArray.setArrayData(
+            VertexArray::VertexTag<Vertex>{});
     }
 
-    Elliptic& Elliptic::operator=(Elliptic const& shape) {
-        Figure::operator=(shape);
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>& Elliptic<Dim, Spec>::operator=(
+        Elliptic const& shape)
+    {
+        Figure<Dim>::operator=(shape);
         color = shape.color;
         vertices.clear();
         vertices.reserve(shape.vertices.size());
@@ -90,13 +71,23 @@ namespace mpgl {
         return *this;
     }
 
-    void Elliptic::actualizeBufferBeforeDraw(void) const noexcept {
-        if (isModified) {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Elliptic<Dim, Spec>::actualizeBufferBeforeDraw(
+        void) const noexcept
+    {
+        if (this->isModified) {
             {
-                BindGuard<VertexBuffer> vboGuard{vertexBuffer};
-                vertexBuffer.changeBufferData(vertices);
+                BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
+                this->vertexBuffer.changeBufferData(vertices);
             }
-            isModified = false;
+            this->isModified = false;
+        }
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Elliptic<Dim, Spec>::actualizeLocations(void) const noexcept {
+        if constexpr (ThreeDimensional<Dim>) {
+            Figure3D::actualizeLocations();
         }
     }
 
