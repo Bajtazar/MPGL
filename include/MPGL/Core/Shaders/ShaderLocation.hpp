@@ -111,13 +111,15 @@ namespace mpgl {
          * Sets the matrix uniform
          *
          * @param Tp the matrix's type
-         * @param Size the matrix's size
+         * @param Rows the matrix's rows
+         * @param Columns the matrix's columns
          * @param matrix the uniform's matrix
          */
-        template <std::size_t Size>
-            requires (Size <= 4 && Size > 1)
+        template <std::size_t Rows, std::size_t Columns>
+            requires (Rows <= 4 && Rows > 1
+                && Columns <= 4 && Columns > 1)
         inline void operator()(
-            Matrix<float32, Size, Size> const& matrix) const noexcept;
+            Matrix<float32, Rows, Columns> const& matrix) const noexcept;
 
         /**
          * Returns whether the given shader location is valid

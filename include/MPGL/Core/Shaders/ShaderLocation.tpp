@@ -84,19 +84,32 @@ namespace mpgl {
         }(std::make_index_sequence<Size>{});
     }
 
-    template <std::size_t Size>
-        requires (Size <= 4 && Size > 1)
+    template <std::size_t Rows, std::size_t Columns>
+        requires (Rows <= 4 && Rows > 1
+            && Columns <= 4 && Columns > 1)
     inline void ShaderLocation::operator() (
-        Matrix<float32, Size, Size> const& matrix) const noexcept
+        Matrix<float32, Rows, Columns> const& matrix) const noexcept
     {
         float32 const* const memory = reinterpret_cast<
             float32 const* const>(&matrix);
-        if constexpr (Size == 4)
-            glUniformMatrix4fv(location, 1, GL_FALSE, memory);
-        else if constexpr (Size == 3)
-            glUniformMatrix3fv(location, 1, GL_FALSE, memory);
+        if constexpr (Columns == 2 && Rows == 2)
+            glUniformMatrix2fv(location, 1, GL_TRUE, memory);
+        else if constexpr (Columns == 3 && Rows == 2)
+            glUniformMatrix3x2fv(location, 1, GL_TRUE, memory);
+        else if constexpr (Columns == 4 && Rows == 2)
+            glUniformMatrix4x2fv(location, 1, GL_TRUE, memory);
+        else if constexpr (Columns == 2 && Rows == 3)
+            glUniformMatrix2x3fv(location, 1, GL_TRUE, memory);
+        else if constexpr (Columns == 3 && Rows == 3)
+            glUniformMatrix3fv(location, 1, GL_TRUE, memory);
+        else if constexpr (Columns == 4 && Rows == 3)
+            glUniformMatrix4x3fv(location, 1, GL_TRUE, memory);
+        else if constexpr (Columns == 2 && Rows == 4)
+            glUniformMatrix2x4fv(location, 1, GL_TRUE, memory);
+        else if constexpr (Columns == 3 && Rows == 4)
+            glUniformMatrix3x4fv(location, 1, GL_TRUE, memory);
         else
-            glUniformMatrix2fv(location, 1, GL_FALSE, memory);
+            glUniformMatrix4fv(location, 1, GL_TRUE, memory);
     }
 
 }
