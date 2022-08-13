@@ -206,7 +206,7 @@ namespace mpgl {
         using value_type = Vector2f;
 
         /**
-         * Construct a new projected position view object
+         * Constructs a new projected position view object
          *
          * @param matrix a constant reference to the model
          * transformation matrix
@@ -216,7 +216,7 @@ namespace mpgl {
                 : matrix{matrix} {}
 
         /**
-         * Construct a new projected position view object
+         * Constructs a new projected position view object
          * from the given range object
          *
          * @param baseObj the given range object
@@ -227,6 +227,12 @@ namespace mpgl {
             Range baseObj,
             Matrix4f const& matrix)
                 : baseRange{baseObj}, matrix{matrix} {}
+
+        /**
+         * Constructs a new projected position view object
+         */
+        explicit ProjectedPositionView(void) noexcept
+            : matrix{Default} {}
 
         /**
          * The inner view iterator
@@ -295,8 +301,6 @@ namespace mpgl {
 
             inner_iter                          iter;
             MatrixRef                           matrix;
-
-            static Matrix4f const               Default;
         };
 
         /**
@@ -355,6 +359,7 @@ namespace mpgl {
 
         Range                                   baseRange;
         MatrixRef                               matrix;
+        static Matrix4f const                   Default;
     };
 
     template <class Range>

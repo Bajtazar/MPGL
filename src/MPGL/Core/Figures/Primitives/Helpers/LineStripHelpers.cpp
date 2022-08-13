@@ -47,16 +47,11 @@ namespace mpgl {
             LineStrip<dim::Dim3, void> const& lineStrip
                 ) const noexcept
     {
-        auto normalizer = [](auto const& value) -> Vector2f {
+        auto normalizer = [](auto value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        std::vector<Vector2f> temp;
-        for (Vector2u pos : lineStrip | views::position |
-            views::project(lineStrip.model))
-        {
-            temp.push_back(normalizer(pos));
-        }
-        return temp;
+        return lineStrip | views::position | views::project(
+            lineStrip.model) | std::views::transform(normalizer);
     }
 
     void LineStripDrawer<dim::Dim2, void>::operator() (

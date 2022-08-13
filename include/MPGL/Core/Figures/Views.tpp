@@ -32,7 +32,7 @@ namespace mpgl {
     template <std::ranges::view Range>
         requires (std::same_as<std::remove_cvref_t<
             std::ranges::range_value_t<Range>>, Adapter3D>)
-    Matrix4f const ProjectedPositionView<Range>::iterator::Default
+    Matrix4f const ProjectedPositionView<Range>::Default
         = identityMatrix<float32, 4>();
 
     template <std::ranges::view Range>
