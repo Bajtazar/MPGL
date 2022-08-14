@@ -28,6 +28,14 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Drawer const
+        Triangle<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Clicker const
+        Triangle<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     Triangle<Dim, Spec>::Triangle(
         Vector const& firstVertex,
         Vector const& secondVertex,

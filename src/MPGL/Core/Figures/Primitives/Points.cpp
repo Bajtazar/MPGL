@@ -28,6 +28,14 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Drawer const
+        Points<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Clicker const
+        Points<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     Points<Dim, Spec>::Points(std::size_t vertices, Color const& color)
         : ResizableAngular<Dim, Spec>{vertices, color} {}
 

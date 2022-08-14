@@ -100,8 +100,8 @@ namespace mpgl {
         using Drawer = TriangleDrawer<Dim, Spec>;
         using Clicker = TriangleClickChecker<Dim, Spec>;
 
-        [[no_unique_address]] Drawer                drawer = {};
-        [[no_unique_address]] Clicker               clicker = {};
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
 
     template class Triangle<dim::Dim2>;

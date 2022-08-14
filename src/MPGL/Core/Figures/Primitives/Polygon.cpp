@@ -32,6 +32,14 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Polygon<Dim, Spec>::Drawer const
+        Polygon<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Polygon<Dim, Spec>::Clicker const
+        Polygon<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     Polygon<Dim, Spec>::Polygon(
         Vector2f const& center,
         float32 radius,

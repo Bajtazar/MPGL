@@ -28,6 +28,14 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    LineStrip<Dim, Spec>::Drawer const
+        LineStrip<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    LineStrip<Dim, Spec>::Clicker const
+        LineStrip<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     LineStrip<Dim, Spec>::LineStrip(
         std::size_t vertices,
         Color const& color)

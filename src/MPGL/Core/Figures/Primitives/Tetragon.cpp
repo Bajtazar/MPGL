@@ -29,6 +29,14 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Tetragon<Dim, Spec>::Drawer const
+        Tetragon<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Tetragon<Dim, Spec>::Clicker const
+        Tetragon<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     Tetragon<Dim, Spec>::Tetragon(
         Vector2f const& firstVertex,
         Vector2f const& dimensions,

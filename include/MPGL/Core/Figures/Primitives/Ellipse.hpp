@@ -183,9 +183,9 @@ namespace mpgl {
 
         DelegatePointer<Locations>                      locations;
         MatrixT                                         outlineTransform;
-        [[no_unique_address]] OutlineCalculator         outlineCalc;
-        [[no_unique_address]] Clicker                   clicker;
 
+        static OutlineCalculator const                  outlineCalc;
+        static Clicker const                            clicker;
         static ShaderManager const                      shaderManager;
 
         /**

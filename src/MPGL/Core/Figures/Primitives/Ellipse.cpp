@@ -33,8 +33,16 @@
 namespace mpgl {
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ellipse<Dim, Spec>::OutlineCalculator const
+        Ellipse<Dim, Spec>::outlineCalc = {};
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ellipse<Dim, Spec>::Clicker const
+        Ellipse<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     Ellipse<Dim, Spec>::ShaderManager const
-        Ellipse<Dim, Spec>::shaderManager{};
+        Ellipse<Dim, Spec>::shaderManager = {};
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ellipse<Dim, Spec>::setLocations(void) {

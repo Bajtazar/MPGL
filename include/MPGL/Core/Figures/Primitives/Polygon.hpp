@@ -128,15 +128,15 @@ namespace mpgl {
         using Drawer = PolygonDrawer<Dim, Spec>;
         using Clicker = PolygonClickChecker<Dim, Spec>;
 
-        [[no_unique_address]] Drawer                drawer = {};
-        [[no_unique_address]] Clicker               clicker = {};
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
 
     template class Polygon<dim::Dim2>;
     template class Polygon<dim::Dim3>;
 
-    typedef Polygon<dim::Dim2>                       Polygon2D;
-    typedef Polygon<dim::Dim3>                       Polygon3D;
+    typedef Polygon<dim::Dim2>                      Polygon2D;
+    typedef Polygon<dim::Dim3>                      Polygon3D;
 
 }
 

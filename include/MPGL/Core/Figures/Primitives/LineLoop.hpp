@@ -111,8 +111,8 @@ namespace mpgl {
         using Drawer = LineLoopDrawer<Dim, Spec>;
         using Clicker = LineLoopClickChecker<Dim, Spec>;
 
-        [[no_unique_address]] Drawer                drawer = {};
-        [[no_unique_address]] Clicker               clicker = {};
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
 
     template class LineLoop<dim::Dim2>;

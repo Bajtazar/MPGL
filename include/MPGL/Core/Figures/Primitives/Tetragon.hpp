@@ -133,8 +133,9 @@ namespace mpgl {
         void initElementBuffer(void) const noexcept;
 
         ElementArrayBuffer                          elementBuffer;
-        [[no_unique_address]] Drawer                drawer = {};
-        [[no_unique_address]] Clicker               clicker = {};
+
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
 
     template class Tetragon<dim::Dim2>;

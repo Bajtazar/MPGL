@@ -28,6 +28,14 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    LineLoop<Dim, Spec>::Drawer const
+        LineLoop<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    LineLoop<Dim, Spec>::Clicker const
+        LineLoop<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     LineLoop<Dim, Spec>::LineLoop(
         std::size_t vertices,
         Color const& color)

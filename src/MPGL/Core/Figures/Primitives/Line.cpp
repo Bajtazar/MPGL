@@ -28,6 +28,14 @@
 namespace mpgl {
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Line<Dim, Spec>::Drawer const
+        Line<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Line<Dim, Spec>::Clicker const
+        Line<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     Line<Dim, Spec>::Line(
         Vector const& firstVertex,
         Vector const& secondVertex,
