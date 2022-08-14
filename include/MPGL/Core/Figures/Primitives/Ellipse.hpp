@@ -77,6 +77,8 @@ namespace mpgl {
          * Constructs a new 2D ellipse object with given center
          * and with semiaxises lying on the designated vectors
          *
+         * @throws NotPerpendicularException when the minor and
+         * major axis are not perpendicular
          * @param center the center of the 3D ellipse
          * @param minorAxis the minor axise's vector
          * @param majorAxis the major axise's vector

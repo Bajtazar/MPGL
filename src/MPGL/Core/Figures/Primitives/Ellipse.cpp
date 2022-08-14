@@ -24,6 +24,7 @@
  *  distribution
  */
 #include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
+#include <MPGL/Exceptions/NotPerpendicularException.hpp>
 #include <MPGL/Core/Figures/Primitives/Ellipse.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
@@ -92,6 +93,8 @@ namespace mpgl {
             }, shaderManager.shader, shaderManager, color},
             locations{new Locations}
     {
+        if (dot(minorAxis, majorAxis))
+            throw NotPerpendicularException{minorAxis, majorAxis};
         actualizeMatrices();
         setLocations();
     }

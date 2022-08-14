@@ -80,7 +80,7 @@ namespace mpgl {
     [[nodiscard]] std::string toString(
         Vector<Tp, Size> const& vector)
     {
-        std::string result = '[';
+        std::string result = "[";
         for (std::size_t i = 0;i < vector.size() - 1; ++i)
             result += std::to_string(vector[i]) + '\t';
         return result += std::to_string(
@@ -92,7 +92,7 @@ namespace mpgl {
     [[nodiscard]] std::string toString(
         Matrix<Tp, Rows, Cols> const& matrix)
     {
-        std::string result = '[';
+        std::string result = "[";
         for (std::size_t i = 0;i < matrix.size() - 1; ++i)
             result += toString(matrix[i]) + '\n';
         return result += toString(matrix[matrix.size() - 1]) + ']';
