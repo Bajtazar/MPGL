@@ -46,9 +46,28 @@ namespace mpgl {
     {
     public:
         using VertexTraits = EllipticVertices<Dim, Specifier>;
+    private:
+        constexpr static bool Iterable = !std::same_as<
+            typename VertexTraits::IterableFields, NullTSHolderT>;
+    public:
         /// The vertex used by all elliptic shapes
         using Vertex = typename VertexTraits::Vertex;
         using Vertices = std::vector<Vertex>;
+
+        using iterator = VertexViewIterFromHolderT<
+            typename Vertices::iterator,
+            typename VertexTraits::IterableFields>;
+
+        using const_iterator = VertexViewIterFromHolderT<
+            typename Vertices::const_iterator,
+            typename VertexTraits::IterableFields>;
+
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<
+            const_iterator>;
+
+        using vertex_view = typename iterator::value_type;
+        using const_vertex_view = typename const_iterator::value_type;
 
         /**
          * Pure virtual method. Has to be overloaded.
@@ -94,6 +113,176 @@ namespace mpgl {
          */
         [[nodiscard]] Color const& getColor(void) const noexcept
             { return color; }
+
+        /**
+         * Returns a vertex view to the vertex with
+         * given index
+         *
+         * @param index the vertex's index
+         * @return the view to a desired vertex
+         */
+        [[nodiscard]] vertex_view operator[] (
+            std::size_t index) noexcept requires Iterable;
+
+        /**
+         * Returns a constant vertex view to the vertex with
+         * given index
+         *
+         * @param index the vertex's index
+         * @return the constant view to a desired vertex
+         */
+        [[nodiscard]] const_vertex_view operator[] (
+            std::size_t index) const noexcept requires Iterable;
+
+        /**
+         * Returns a vertex view to the first vertex
+         *
+         * @return the view to the first vertex
+         */
+        [[nodiscard]] vertex_view front(
+            void) noexcept requires Iterable;
+
+        /**
+         * Returns a constant vertex view to the first vertex
+         *
+         * @return the constant view to the first vertex
+         */
+        [[nodiscard]] const_vertex_view front(
+            void) const noexcept requires Iterable;
+
+        /**
+         * Returns a vertex view to the last vertex
+         *
+         * @return the view to the last vertex
+         */
+        [[nodiscard]] vertex_view back(
+            void) noexcept requires Iterable;
+
+        /**
+         * Returns a constant vertex view to the last vertex
+         *
+         * @return the constant view to the last vertex
+         */
+        [[nodiscard]] const_vertex_view back(
+            void) const noexcept requires Iterable;
+
+        /**
+         * Returns a vertex view iterator to the begin of
+         * the vertices vector
+         *
+         * @return the vertex view iterator to the begin of
+         * the vertices vector
+         */
+        [[nodiscard]] iterator begin(void) noexcept requires Iterable;
+
+        /**
+         * Returns a vertex view iterator to the end of
+         * the vertices vector
+         *
+         * @return the vertex view iterator to the end of
+         * the vertices vector
+         */
+        [[nodiscard]] iterator end(void) noexcept requires Iterable;
+
+        /**
+         * Returns a constant vertex view iterator to the begin of
+         * the vertices vector
+         *
+         * @return the constant vertex view iterator to the begin of
+         * the vertices vector
+         */
+        [[nodiscard]] const_iterator begin(
+            void) const noexcept requires Iterable;
+
+        /**
+         * Returns a constant vertex view iterator to the end of
+         * the vertices vector
+         *
+         * @return the constant vertex view iterator to the end of
+         * the vertices vector
+         */
+        [[nodiscard]] const_iterator end(
+            void) const noexcept requires Iterable;
+
+        /**
+         * Returns a constant vertex view iterator to the begin of
+         * the vertices vector
+         *
+         * @return the constant vertex view iterator to the begin of
+         * the vertices vector
+         */
+        [[nodiscard]] const_iterator cbegin(
+            void) const noexcept requires Iterable;
+
+        /**
+         * Returns a constant vertex view iterator to the end of
+         * the vertices vector
+         *
+         * @return the constant vertex view iterator to the end of
+         * the vertices vector
+         */
+        [[nodiscard]] const_iterator cend(
+            void) const noexcept requires Iterable;
+
+        /**
+         * Returns a reverse vertex view iterator to the end of
+         * the vertices vector
+         *
+         * @return the reverse vertex view iterator to the end of
+         * the vertices vector
+         */
+        [[nodiscard]] reverse_iterator rbegin(
+            void) noexcept requires Iterable;
+
+        /**
+         * Returns a reverse vertex view iterator to the begin of
+         * the vertices vector
+         *
+         * @return the reverse vertex view iterator to the begin of
+         * the vertices vector
+         */
+        [[nodiscard]] reverse_iterator rend(
+            void) noexcept requires Iterable;
+
+        /**
+         * Returns a constant reverse vertex view iterator to
+         * the end of the vertices vector
+         *
+         * @return the constant reverse vertex view iterator to
+         * the end of the vertices vector
+         */
+        [[nodiscard]] const_reverse_iterator
+            rbegin(void) const noexcept requires Iterable;
+
+        /**
+         * Returns a constant reverse vertex view iterator to
+         * the begin of the vertices vector
+         *
+         * @return the constant reverse vertex view iterator to
+         * the begin of the vertices vector
+         */
+        [[nodiscard]] const_reverse_iterator
+            rend(void) const noexcept requires Iterable;
+
+        /**
+         * Returns a constant reverse vertex view iterator to
+         * the end of the vertices vector
+         *
+         * @return the constant reverse vertex view iterator to
+         * the end of the vertices vector
+         */
+        [[nodiscard]] const_reverse_iterator
+            crbegin(void) const noexcept requires Iterable;
+
+        /**
+         * Returns a constant reverse vertex view iterator to
+         * the begin of the vertices vector
+         *
+         * @return the constant reverse vertex view iterator to
+         * the begin of the vertices vector
+         */
+        [[nodiscard]] const_reverse_iterator
+            crend(void) const noexcept requires Iterable;
 
         /**
          * Virtual destructor. Destroy the Elliptic object

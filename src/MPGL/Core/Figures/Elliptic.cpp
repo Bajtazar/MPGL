@@ -92,6 +92,163 @@ namespace mpgl {
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::vertex_view
+        Elliptic<Dim, Spec>::operator[] (
+            std::size_t index
+            ) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        this->isModified = true;
+        return *(iterator{this->vertices.begin() + index});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_vertex_view
+        Elliptic<Dim, Spec>::operator[] (
+            std::size_t index
+            ) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(const_iterator{this->vertices.cbegin() + index});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::vertex_view
+        Elliptic<Dim, Spec>::front(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        this->isModified = true;
+        return *(iterator{this->vertices.begin()});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_vertex_view
+        Elliptic<Dim, Spec>::front(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(const_iterator{this->vertices.begin()});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::vertex_view
+        Elliptic<Dim, Spec>::back(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        this->isModified = true;
+        return *(iterator{this->vertices.end() - 1});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_vertex_view
+        Elliptic<Dim, Spec>::back(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(const_iterator{this->vertices.end() - 1});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::iterator
+        Elliptic<Dim, Spec>::begin(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        this->isModified = true;
+        return iterator{this->vertices.begin()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::iterator
+        Elliptic<Dim, Spec>::end(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        this->isModified = true;
+        return iterator{this->vertices.end()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::begin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.begin()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::end(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.end()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::cbegin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.cbegin()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::cend(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.cend()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::reverse_iterator
+        Elliptic<Dim, Spec>::rbegin(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        this->isModified = true;
+        return reverse_iterator{iterator{this->vertices.end() - 1}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::reverse_iterator
+        Elliptic<Dim, Spec>::rend(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        this->isModified = true;
+        return reverse_iterator{iterator{this->vertices.begin() - 1}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::rbegin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{
+            const_iterator{this->vertices.end() - 1}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::rend(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{
+            const_iterator{this->vertices.begin() - 1}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::crbegin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{
+            const_iterator{this->vertices.end() - 1}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::crend(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{
+            const_iterator{this->vertices.begin() - 1}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     Elliptic<Dim, Spec>::Vertices
         Elliptic<Dim, Spec>::ellipseVertices(
             Vector2f const& center,

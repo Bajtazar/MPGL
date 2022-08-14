@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Iterators/VertexViewIterator.hpp>
 #include <MPGL/Core/Context/Buffers/Vertex.hpp>
 #include <MPGL/Core/Dimensions.hpp>
 #include <MPGL/Utility/Adapter.hpp>
@@ -51,6 +52,7 @@ namespace mpgl {
         using Vertex = mpgl::Vertex<
             VertexComponent<"position", Adapter2D, DataType::Float32>>;
 
+        using IterableFields = NullTSHolderT;
         using Vector = Vector2f;
         using Adapter = Adapter2D;
 
@@ -82,6 +84,7 @@ namespace mpgl {
             VertexComponent<"position", Adapter2D, DataType::Float32>,
             VertexComponent<"color", Color, DataType::Float32>>;
 
+        using IterableFields = TSHolder<"color">;
         using Vector = Vector2f;
         using Adapter = Adapter2D;
 
@@ -111,6 +114,7 @@ namespace mpgl {
         using Vertex = mpgl::Vertex<
             VertexComponent<"position", Adapter3D, DataType::Float32>>;
 
+        using IterableFields = NullTSHolderT;
         using Vector = Vector3f;
         using Adapter = Adapter3D;
 
@@ -142,6 +146,7 @@ namespace mpgl {
             VertexComponent<"position", Adapter3D, DataType::Float32>,
             VertexComponent<"color", Color, DataType::Float32>>;
 
+        using IterableFields = TSHolder<"color">;
         using Vector = Vector3f;
         using Adapter = Adapter3D;
 
@@ -177,6 +182,7 @@ namespace mpgl {
             typename EllipticVertices<Dim, Tp>::Vertex;
             typename EllipticVertices<Dim, Tp>::Vector;
             typename EllipticVertices<Dim, Tp>::Adapter;
+            typename EllipticVertices<Dim, Tp>::IterableFields;
             EllipticVertices<Dim, Tp>::defaultVertex();
             EllipticVertices<Dim, Tp>::buildVertex(vector);
     };
