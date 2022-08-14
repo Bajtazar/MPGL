@@ -159,6 +159,30 @@ namespace mpgl {
          * the matrices responsible for the elliptic shape
          */
         virtual void actualizeMatrices(void) noexcept = 0;
+
+        /**
+         * Constructs the vector with ellipse vertices
+         *
+         * @param center the center of the ellipse
+         * @param semiAxis the semi-axis of the ellipse
+         * @param angle the angle between x-axis and semi-axis
+         * @return the ellipse's vertices
+         */
+        static Vertices ellipseVertices(
+            Vector2f const& center,
+            Vector2f const& semiAxis,
+            float32 angle) requires TwoDimensional<Dim>;
+
+        /**
+         * Constructs the vector with circle vertices
+         *
+         * @param center the center of the circle
+         * @param radius the radius of the circle
+         * @return the circle's vertices
+         */
+        static Vertices circleVertices(
+            Vector2f const& center,
+            float32 radius) requires TwoDimensional<Dim>;
     private:
         /**
          * Initializes inner buffers

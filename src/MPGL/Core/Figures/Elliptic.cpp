@@ -91,4 +91,38 @@ namespace mpgl {
         }
     }
 
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Vertices
+        Elliptic<Dim, Spec>::ellipseVertices(
+            Vector2f const& center,
+            Vector2f const& semiAxis,
+            float32 angle) requires TwoDimensional<Dim>
+    {
+        Matrix2f rotation = rotationMatrix<float32>(angle);
+        Vector2f rot1 = rotation * semiAxis;
+        Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
+        return {
+            Vertex{center - rot2},
+            Vertex{center + rot1},
+            Vertex{center + rot2},
+            Vertex{center - rot1}
+        };
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Vertices
+        Elliptic<Dim, Spec>::circleVertices(
+            Vector2f const& center,
+            float32 radius) requires TwoDimensional<Dim>
+    {
+        Vector2f semiMajor = Vector2f{radius, 0.f};
+        Vector2f semiMinor = Vector2f{0.f, radius};
+        return {
+            Vertex{center - semiMajor + semiMinor},
+            Vertex{center + semiMajor + semiMinor},
+            Vertex{center + semiMajor - semiMinor},
+            Vertex{center - semiMajor - semiMinor}
+        };
+    }
+
 }
