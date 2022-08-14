@@ -187,7 +187,7 @@ namespace mpgl {
 
     /**
      * Structure containing information about shader used by
-     * an ellipse
+     * an ellipse. Acts as an executable for the shader
      *
      * @tparam Dim the dimension of the space
      * @tparam Spec the angular vertices specifier
@@ -197,37 +197,69 @@ namespace mpgl {
 
     /**
      * Structure containing information about shader used by
-     * a 2D default ellipse
+     * a 2D default ellipse. Acts as an executable for the shader
      */
     template <>
     struct EllipseShader<dim::Dim2, void> {
+
+        /**
+         * The shader's executable
+         *
+         * @param program a constant reference to the shader program
+         */
+        void operator() (ShaderProgram const& program) const noexcept;
+
         static std::string const                    shader;
     };
 
     /**
      * Structure containing information about shader used by
-     * a 2D colorable ellipse
+     * a 2D colorable ellipse. Acts as an executable for the shader
      */
     template <>
     struct EllipseShader<dim::Dim2, int32> {
+
+        /**
+         * The shader's executable
+         *
+         * @param program a constant reference to the shader program
+         */
+        void operator() (ShaderProgram const& program) const noexcept;
+
         static std::string const                    shader;
     };
 
     /**
      * Structure containing information about shader used by
-     * a 3D default ellipse
+     * a 3D default ellipse. Acts as an executable for the shader
      */
     template <>
     struct EllipseShader<dim::Dim3, void> {
+
+        /**
+         * The shader's executable
+         *
+         * @param program a constant reference to the shader program
+         */
+        void operator() (ShaderProgram const& program) const noexcept;
+
         static std::string const                    shader;
     };
 
     /**
      * Structure containing information about shader used by
-     * a 3D colorable ellipse
+     * a 3D colorable ellipse. Acts as an executable for the shader
      */
     template <>
     struct EllipseShader<dim::Dim3, int32> {
+
+        /**
+         * The shader's executable
+         *
+         * @param program a constant reference to the shader program
+         */
+        void operator() (ShaderProgram const& program) const noexcept;
+
         static std::string const                    shader;
     };
 

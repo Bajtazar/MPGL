@@ -25,6 +25,7 @@
  */
 #include <MPGL/Core/Figures/Primitives/Ellipse.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
+#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 
@@ -150,5 +151,30 @@ namespace mpgl {
 
     std::string const EllipseShader<dim::Dim3, int32>::shader
         = "MPGL/3D/CEllipse";
+
+    void EllipseShader<dim::Dim2, void>::operator() (
+        ShaderProgram const& program) const noexcept
+    {
+        ShaderLocation{program, "aafactor"}(
+            float32(context.windowOptions.antiAliasingSamples) / 4.f);
+    }
+
+    void EllipseShader<dim::Dim2, int32>::operator() (
+        ShaderProgram const& program) const noexcept
+    {
+        EllipseShader<dim::Dim2, void>{}(program);
+    }
+
+    void EllipseShader<dim::Dim3, void>::operator() (
+        ShaderProgram const& program) const noexcept
+    {
+        EllipseShader<dim::Dim2, void>{}(program);
+    }
+
+    void EllipseShader<dim::Dim3, int32>::operator() (
+        ShaderProgram const& program) const noexcept
+    {
+        EllipseShader<dim::Dim2, void>{}(program);
+    }
 
 }
