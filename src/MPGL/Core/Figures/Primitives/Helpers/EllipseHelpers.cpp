@@ -75,10 +75,12 @@ namespace mpgl {
         EllipseOutlineCalculator<dim::Dim3, Spec>::getVersors(
             Ellipse<dim::Dim3, Spec> const& ellipse) const noexcept
     {
-        Vector3f const a = Vector3f{ellipse.vertices[3]}
-            - Vector3f{ellipse.vertices[0]};
-        Vector3f const b = Vector3f{ellipse.vertices[1]}
-            - Vector3f{ellipse.vertices[0]};
+        Vector3f const a = Vector3f{get<"position">(
+            ellipse.vertices[3])} - Vector3f{get<"position">(
+                ellipse.vertices[0])};
+        Vector3f const b = Vector3f{get<"position">(
+            ellipse.vertices[1])} - Vector3f{get<"position">(
+                ellipse.vertices[0])};
         return {
             Vector2f{a[0], b[0]},
             Vector2f{a[1], b[1]},

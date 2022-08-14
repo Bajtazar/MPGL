@@ -31,16 +31,15 @@
 
 namespace mpgl {
 
-    Ellipse::Executable const Ellipse::shaderExec
-        = [](ShaderProgram const& program)
-    {
-        ShaderLocation{program, "aafactor"}(
-            float32(context.windowOptions.antiAliasingSamples) / 4.f);
-    };
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ellipse<Dim, Spec>::ShaderManager const
+        Ellipse<Dim, Spec>::shaderManager{};
 
-    void Ellipse::setLocations(void) {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::setLocations(void) {
         Shadeable::setLocations(DeferredExecutionWrapper{
-            shaderProgram, locations}([](auto program, auto locations)
+            this->shaderProgram, locations}(
+                [](auto program, auto locations)
         {
             locations->color = ShaderLocation{*program, "color"};
             locations->shift = ShaderLocation{*program, "shift"};
@@ -49,97 +48,137 @@ namespace mpgl {
         }));
     }
 
-    Ellipse::Ellipse(Vector2f const& center, Vector2f const& semiAxis,
-        Color const& color, float angle)
-            : Elliptic{ellipseVertices(center, semiAxis, angle),
-                "MPGL/2D/Ellipse", shaderExec, color},
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ellipse<Dim, Spec>::Ellipse(
+        Vector2f const& center,
+        Vector2f const& semiAxis,
+        Color const& color,
+        float angle) requires TwoDimensional<Dim>
+            : Elliptic<Dim, Spec>{
+                Elliptic<Dim, Spec>::ellipseVertices(
+                    center, semiAxis, angle),
+                shaderManager.shader, shaderManager, color},
             locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
     }
 
-    Ellipse::Ellipse(Vector2f const& center, float radius,
-        Color const& color)
-            : Elliptic{circleVertices(center, radius),
-                "MPGL/2D/Ellipse", shaderExec, color},
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ellipse<Dim, Spec>::Ellipse(
+        Vector2f const& center,
+        float radius,
+        Color const& color) requires TwoDimensional<Dim>
+            : Elliptic<Dim, Spec>{
+                Elliptic<Dim, Spec>::circleVertices(center, radius),
+                shaderManager.shader, shaderManager, color},
             locations{new Locations}
     {
         actualizeMatrices();
         setLocations();
     }
 
-    std::optional<Matrix2f> Ellipse::calculateNewOutline(
-        void) const noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ellipse<Dim, Spec>::Ellipse(
+        Vector3f const& center,
+        Vector3f const& minorAxis,
+        Vector3f const& majorAxis,
+        Color const& color) requires ThreeDimensional<Dim>
+            : Elliptic<Dim, Spec>{{
+                VertexTraits::buildVertex(-majorAxis - minorAxis),
+                VertexTraits::buildVertex(-majorAxis + minorAxis),
+                VertexTraits::buildVertex(majorAxis + minorAxis),
+                VertexTraits::buildVertex(majorAxis - minorAxis)
+            }, shaderManager.shader, shaderManager, color},
+            locations{new Locations}
     {
-        return invert(transpose(
-            Matrix2f{Vector2f{get<"position">(vertices[1])}
-                - Vector2f{get<"position">(vertices[0])},
-            Vector2f{get<"position">(vertices[3])}
-                - Vector2f{get<"position">(vertices[0])}}));
+        actualizeMatrices();
+        setLocations();
     }
 
-    void Ellipse::actualizeMatrices(void) noexcept {
-        if (auto outline = calculateNewOutline())
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::actualizeMatrices(void) noexcept {
+        if (auto outline = outlineCalc(*this))
             outlineTransform = *outline;
     }
 
-    [[nodiscard]] Vector2f Ellipse::getCenter(void) const noexcept {
-        return (Vector2f{get<"position">(vertices[3])}
-            + Vector2f{get<"position">(vertices[1])}) / 2.f;
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Ellipse<Dim, Spec>::Vector
+        Ellipse<Dim, Spec>::getCenter(void) const noexcept
+    {
+        return (Vector{get<"position">(this->vertices[3])}
+            + Vector{get<"position">(this->vertices[1])}) / 2.f;
     }
 
-    [[nodiscard]] Vector2f Ellipse::getSemiAxis(void) const noexcept {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Vector2f Ellipse<Dim, Spec>::getSemiAxis(
+        void) const noexcept
+    {
         return {
-            (Vector2f{get<"position">(vertices[1])}
-                - Vector2f{get<"position">(vertices[0])}).length(),
-            (Vector2f{get<"position">(vertices[3])}
-                - Vector2f{get<"position">(vertices[0])}).length()
+            (Vector{get<"position">(this->vertices[1])}
+                - Vector{get<"position">(this->vertices[0])}).length(),
+            (Vector{get<"position">(this->vertices[3])}
+                - Vector{get<"position">(this->vertices[0])}).length()
         };
     }
 
-    void Ellipse::transform(
-        Transformation2D const& transformator) noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::transform(
+        Transformation<Dim> const& transformator) noexcept
     {
-        any::InputRange<Adapter2D> positions{
-            vertices | views::position};
+        any::InputRange<Adapter> positions{
+            this->vertices | views::position};
         transformator(positions);
         actualizeMatrices();
-        isModified = true;
+        this->isModified = true;
     }
 
-    void Ellipse::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        locations->color(color);
-        locations->shift(Vector2f{get<"position">(vertices.front())});
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::actualizeLocations(void) const noexcept
+    {
+        Elliptic<Dim, Spec>::actualizeLocations();
+        locations->color(this->color);
+        locations->shift(Vector{get<"position">(
+            this->vertices.front())});
         locations->transform(outlineTransform);
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawElements(VertexArray::DrawMode::Triangles,
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::draw(void) const noexcept {
+        this->actualizeBufferBeforeDraw();
+        this->shaderProgram->use();
+        actualizeLocations();
+        BindGuard<VertexArray> vaoGuard{this->vertexArray};
+        this->vertexArray.drawElements(VertexArray::DrawMode::Triangles,
             6, DataType::UInt32);
     }
 
-    void Ellipse::setShader(ShaderProgram const& program) noexcept {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::setShader(
+        ShaderProgram const& program) noexcept
+    {
         Shadeable::setShader(program);
-        shaderExec(program);
+        shaderManager(program);
     }
 
-    void Ellipse::setShader(ShaderProgram&& program) noexcept {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::setShader(
+        ShaderProgram&& program) noexcept
+    {
         Shadeable::setShader(std::move(program));
-        shaderExec(*this->shaderProgram);
+        shaderManager(*this->shaderProgram);
     }
 
-    void Ellipse::setShader(std::string const& name) {
-        Shadeable::setShader(name, shaderExec);
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ellipse<Dim, Spec>::setShader(std::string const& name) {
+        Shadeable::setShader(name, shaderManager);
     }
 
-    [[nodiscard]] bool Ellipse::contains(
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Ellipse<Dim, Spec>::contains(
         Vector2u const& position) const noexcept
     {
-        Vector2f local = outlineTransform * (
-            vectorCast<float32>(position) -
-            Vector2f{get<"position">(vertices.front())});
-        return (local - 0.5f).length() <= 0.5f;
+        return clicker(*this, position);
     }
 
 }

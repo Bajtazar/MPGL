@@ -102,10 +102,10 @@ namespace mpgl {
         Vector2f rot1 = rotation * semiAxis;
         Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
         return {
-            Vertex{center - rot2},
-            Vertex{center + rot1},
-            Vertex{center + rot2},
-            Vertex{center - rot1}
+            VertexTraits::buildVertex(center - rot2),
+            VertexTraits::buildVertex(center + rot1),
+            VertexTraits::buildVertex(center + rot2),
+            VertexTraits::buildVertex(center - rot1)
         };
     }
 
@@ -118,10 +118,10 @@ namespace mpgl {
         Vector2f semiMajor = Vector2f{radius, 0.f};
         Vector2f semiMinor = Vector2f{0.f, radius};
         return {
-            Vertex{center - semiMajor + semiMinor},
-            Vertex{center + semiMajor + semiMinor},
-            Vertex{center + semiMajor - semiMinor},
-            Vertex{center - semiMajor - semiMinor}
+            VertexTraits::buildVertex(center - semiMajor + semiMinor),
+            VertexTraits::buildVertex(center + semiMajor + semiMinor),
+            VertexTraits::buildVertex(center + semiMajor - semiMinor),
+            VertexTraits::buildVertex(center - semiMajor - semiMinor)
         };
     }
 

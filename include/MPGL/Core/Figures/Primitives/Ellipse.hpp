@@ -25,46 +25,68 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/EllipseHelpers.hpp>
 #include <MPGL/Utility/Deferred/DelegatePointer.hpp>
-#include <MPGL/Core/Shaders/ShaderLocation.hpp>
-#include <MPGL/Core/Figures/Elliptic.hpp>
 
 namespace mpgl {
 
     /**
      * Represents an ellipse shape
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    class Ellipse : public Elliptic {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    class Ellipse : public Elliptic<Dim, Spec> {
     public:
+        using VertexTraits = typename Elliptic<Dim, Spec>::VertexTraits;
+        using Vector = typename VertexTraits::Vector;
+        using Adapter = typename VertexTraits::Adapter;
+
         /**
-         * Constructs a new ellipse with given center,
+         * Constructs a new 2D ellipse with given center,
          * color and semi-axis. The angle specifies
          * a counterclockwise angle bewteen the x-axis
          * and x-semi-axis component
          *
-         * @param center the center of the ellipse
-         * @param semiAxis the semi-axis of the ellipse
-         * @param color the color of the ellipse
+         * @param center the center of the 2D ellipse
+         * @param semiAxis the semi-axis of the 2D ellipse
+         * @param color the color of the 2D ellipse
          * @param angle the angle between x-axis and semi-axis
          */
         Ellipse(
             Vector2f const& center = {},
             Vector2f const& semiAxis = {},
             Color const& color = {},
-            float32 angle = 0.f);
+            float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
-         * Constructs a new circle with given center,
+         * Constructs a new 2D circle with given center,
          * radius and color
          *
-         * @param center the center of the circle
-         * @param radius the radius of the circle
-         * @param color the color of the circle
+         * @param center the center of the 2D circle
+         * @param radius the radius of the 2D circle
+         * @param color the color of the 2D circle
          */
         Ellipse(
             Vector2f const& center,
             float radius,
-            Color const& color = {});
+            Color const& color = {}) requires TwoDimensional<Dim>;
+
+        /**
+         * Constructs a new 2D ellipse object with given center
+         * and with semiaxises lying on the designated vectors
+         *
+         * @param center the center of the 3D ellipse
+         * @param minorAxis the minor axise's vector
+         * @param majorAxis the major axise's vector
+         * @param color the color of the 3D ellipse
+         */
+        Ellipse(
+            Vector3f const& center,
+            Vector3f const& minorAxis,
+            Vector3f const& majorAxis,
+            Color const& color) requires ThreeDimensional<Dim>;
 
         Ellipse(Ellipse const& ellipse) = default;
         Ellipse(Ellipse&& ellipse) noexcept = default;
@@ -84,7 +106,7 @@ namespace mpgl {
          * transforming object
          */
         void transform(
-            Transformation2D const& transformator) noexcept final;
+            Transformation<Dim> const& transformator) noexcept final;
 
         /**
          * Sets the given shader program
@@ -116,7 +138,7 @@ namespace mpgl {
          *
          * @return the position of the center of the ellipse
          */
-        [[nodiscard]] Vector2f getCenter(void) const noexcept;
+        [[nodiscard]] Vector getCenter(void) const noexcept;
 
         /**
          * Returns the semi-axis of the ellipse. If they are
@@ -139,7 +161,15 @@ namespace mpgl {
          * Destroys the Ellipse object
          */
         ~Ellipse(void) noexcept = default;
+
+        friend class EllipseClickChecker<Dim, Spec>;
+        friend class EllipseOutlineCalculator<Dim, Spec>;
     private:
+        using OutlineCalculator = EllipseOutlineCalculator<Dim, Spec>;
+        using Clicker = EllipseClickChecker<Dim, Spec>;
+        using ShaderManager = EllipseShader<Dim, Spec>;
+        using MatrixT = typename OutlineCalculator::MatrixT;
+
         /**
          * Collection of all shader location's pointers
          */
@@ -150,10 +180,11 @@ namespace mpgl {
         };
 
         DelegatePointer<Locations>                      locations;
-        Matrix2f                                        outlineTransform;
+        MatrixT                                         outlineTransform;
+        [[no_unique_address]] OutlineCalculator         outlineCalc;
+        [[no_unique_address]] Clicker                   clicker;
 
-        /// Loads the shader's constant variables
-        static const Executable                         shaderExec;
+        static ShaderManager const                      shaderManager;
 
         /**
          * Sets the shader locations
@@ -166,12 +197,19 @@ namespace mpgl {
         void actualizeMatrices(void) noexcept final;
 
         /**
-         * Calculates the new outline transformation matrix
-         *
-         * @return the optional with the matrix. If the matrix does not
-         * exist then returns std::nullopt
+         * Actualizes shader's locations before draw
          */
-        std::optional<Matrix2f> calculateNewOutline(void) const noexcept;
+        void actualizeLocations(void) const noexcept override final;
     };
+
+    template class Ellipse<dim::Dim2>;
+    template class Ellipse<dim::Dim3>;
+    template class Ellipse<dim::Dim2, int32>;
+    template class Ellipse<dim::Dim3, int32>;
+
+    typedef Ellipse<dim::Dim2>                      Ellipse2D;
+    typedef Ellipse<dim::Dim3>                      Ellipse3D;
+    typedef Ellipse<dim::Dim2, int32>               ColorableEllipse2D;
+    typedef Ellipse<dim::Dim3, int32>               ColorableEllipse3D;
 
 }

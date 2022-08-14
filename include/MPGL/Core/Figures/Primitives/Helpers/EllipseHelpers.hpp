@@ -86,6 +86,11 @@ namespace mpgl {
             Vector2u const& position) const noexcept;
     };
 
+    template class EllipseClickChecker<dim::Dim2, void>;
+    template class EllipseClickChecker<dim::Dim2, int32>;
+    template class EllipseClickChecker<dim::Dim3, void>;
+    template class EllipseClickChecker<dim::Dim3, int32>;
+
     /**
      * Functor responsible for calculating a new outline of the
      * ellipse
@@ -200,7 +205,7 @@ namespace mpgl {
      * a 2D default ellipse. Acts as an executable for the shader
      */
     template <>
-    struct EllipseShader<dim::Dim2, void> {
+    struct EllipseShader<dim::Dim2, void> : private GraphicalObject {
 
         /**
          * The shader's executable

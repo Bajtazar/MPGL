@@ -34,7 +34,7 @@ namespace mpgl {
     /**
      * Represents the ring on the screen
      */
-    class Ring : public Elliptic {
+    class Ring : public Elliptic2D {
     public:
         /**
          * Represents the ellipse describing inner outline
