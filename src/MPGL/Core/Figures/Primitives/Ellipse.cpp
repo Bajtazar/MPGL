@@ -85,10 +85,10 @@ namespace mpgl {
         Vector3f const& majorAxis,
         Color const& color) requires ThreeDimensional<Dim>
             : Elliptic<Dim, Spec>{{
-                VertexTraits::buildVertex(-majorAxis - minorAxis),
-                VertexTraits::buildVertex(-majorAxis + minorAxis),
-                VertexTraits::buildVertex(majorAxis + minorAxis),
-                VertexTraits::buildVertex(majorAxis - minorAxis)
+                VertexTraits::buildVertex(center - majorAxis - minorAxis),
+                VertexTraits::buildVertex(center - majorAxis + minorAxis),
+                VertexTraits::buildVertex(center + majorAxis + minorAxis),
+                VertexTraits::buildVertex(center + majorAxis - minorAxis)
             }, shaderManager.shader, shaderManager, color},
             locations{new Locations}
     {
