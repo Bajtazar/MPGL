@@ -39,6 +39,32 @@ namespace mpgl {
         return "MPGL/3D/Default";
     }
 
+    [[nodiscard]] std::string AngluarVertices<dim::Dim2, uint8>::shader(
+        void) noexcept
+    {
+        return "MPGL/2D/Texture";
+    }
+
+    [[nodiscard]] std::string AngluarVertices<dim::Dim3, uint8>::shader(
+        void) noexcept
+    {
+        return "MPGL/3D/Texture";
+    }
+
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim2, uint8>::convolutionShader(
+            void) noexcept
+    {
+        return "MPGL/2D/TextureConv";
+    }
+
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim3, uint8>::convolutionShader(
+            void) noexcept
+    {
+        return "MPGL/3D/TextureConv";
+    }
+
     [[nodiscard]] AngluarVertices<dim::Dim2, void>::Vertex
         AngluarVertices<dim::Dim2, void>::defaultVertex(
             Color const& color) noexcept
@@ -51,6 +77,20 @@ namespace mpgl {
             Color const& color) noexcept
     {
         return Vertex{Vector{}, color};
+    }
+
+    [[nodiscard]] AngluarVertices<dim::Dim2, uint8>::Vertex
+        AngluarVertices<dim::Dim2, uint8>::defaultVertex(
+            Color const& color) noexcept
+    {
+        return Vertex{Vector{}, Vector2f{}, color};
+    }
+
+    [[nodiscard]] AngluarVertices<dim::Dim3, uint8>::Vertex
+        AngluarVertices<dim::Dim3, uint8>::defaultVertex(
+            Color const& color) noexcept
+    {
+        return Vertex{Vector{}, Vector2f{}, color};
     }
 
     [[nodiscard]] AngluarVertices<dim::Dim2, void>::Vertex
@@ -67,6 +107,22 @@ namespace mpgl {
             Color const& color) noexcept
     {
         return Vertex{position, color};
+    }
+
+    [[nodiscard]] AngluarVertices<dim::Dim2, uint8>::Vertex
+        AngluarVertices<dim::Dim2, uint8>::buildVertex(
+            Vector const& position,
+            Color const& color) noexcept
+    {
+        return Vertex{position, Vector2f{}, color};
+    }
+
+    [[nodiscard]] AngluarVertices<dim::Dim3, uint8>::Vertex
+        AngluarVertices<dim::Dim3, uint8>::buildVertex(
+            Vector const& position,
+            Color const& color) noexcept
+    {
+        return Vertex{position, Vector2f{}, color};
     }
 
 }

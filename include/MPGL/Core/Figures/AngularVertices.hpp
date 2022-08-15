@@ -49,14 +49,8 @@ namespace mpgl {
     template <>
     struct AngluarVertices<dim::Dim2, void> {
         using Vertex = mpgl::Vertex<
-            VertexComponent<
-                "position",
-                Adapter2D,
-                DataType::Float32>,
-            VertexComponent<
-                "color",
-                Color,
-                DataType::Float32>
+            VertexComponent<"position", Adapter2D, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
         >;
 
         using Vector = Vector2f;
@@ -97,14 +91,8 @@ namespace mpgl {
     template <>
     struct AngluarVertices<dim::Dim3, void> {
         using Vertex = mpgl::Vertex<
-            VertexComponent<
-                "position",
-                Adapter3D,
-                DataType::Float32>,
-            VertexComponent<
-                "color",
-                Color,
-                DataType::Float32>
+            VertexComponent<"position", Adapter3D, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
         >;
 
         using Vector = Vector3f;
@@ -159,6 +147,125 @@ namespace mpgl {
                 -> std::same_as<std::string>;
             AngluarVertices<Dim, Tp>::defaultVertex(color);
             AngluarVertices<Dim, Tp>::buildVertex(vector, color);
+    };
+
+    /**
+     * Contains informations about vertices of the texturable
+     * 2D angular
+     */
+    template <>
+    struct AngluarVertices<dim::Dim2, uint8> {
+        using Vertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter2D, DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
+
+        using Vector = Vector2f;
+        using Adapter = Adapter2D;
+
+        /**
+         * Returns a shader's name used by the angular
+         *
+         * @return the shader's name used by the angular
+         */
+        [[nodiscard]] static std::string shader(void) noexcept;
+
+        /**
+         * Returns a convolution shader's name used by the angular
+         *
+         * @return the convolution shader's name used by the angular
+         */
+        [[nodiscard]] static std::string
+            convolutionShader(void) noexcept;
+
+        /**
+         * Generates a default vertex
+         *
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex defaultVertex(
+            Color const& color) noexcept;
+
+        /**
+         * Generates vertex
+         *
+         * @param position the constant reference to the position
+         * object
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex buildVertex(
+            Vector const& position,
+            Color const& color) noexcept;
+    };
+
+    /**
+     * Contains informations about vertices of the texturable
+     * 3D angular
+     */
+    template <>
+    struct AngluarVertices<dim::Dim3, uint8> {
+        using Vertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter3D, DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
+
+        using Vector = Vector3f;
+        using Adapter = Adapter3D;
+
+        /**
+         * Returns a shader's name used by the angular
+         *
+         * @return the shader's name used by the angular
+         */
+        [[nodiscard]] static std::string shader(void) noexcept;
+
+        /**
+         * Returns a convolution shader's name used by the angular
+         *
+         * @return the convolution shader's name used by the angular
+         */
+        [[nodiscard]] static std::string
+            convolutionShader(void) noexcept;
+
+        /**
+         * Generates a default vertex
+         *
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex defaultVertex(
+            Color const& color) noexcept;
+
+        /**
+         * Generates vertex
+         *
+         * @param position the constant reference to the position
+         * object
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex buildVertex(
+            Vector const& position,
+            Color const& color) noexcept;
+    };
+
+    /**
+     * Checks whether the given specifier is valid textured angular
+     * vertices specifier
+     *
+     * @tparam Tp the checked specifier
+     * @tparam Dim the angular vertices' dimension
+     */
+    template <typename Tp, class Dim>
+    concept TexturableAngularTraitSpecifier =
+        AngularTraitSpecifier<Tp, Dim> && requires
+    {
+        { AngluarVertices<Dim, Tp>::convolutionShader() }
+            -> std::same_as<std::string>;
     };
 
 }
