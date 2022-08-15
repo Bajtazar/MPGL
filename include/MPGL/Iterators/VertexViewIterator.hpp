@@ -55,7 +55,7 @@ namespace mpgl {
             Projected<VertexElementT<Fields, ProjectedVertex>>,
             VertexElement<Fields, ProjectedVertex>::ComponentType::vertexType()
         >...>;
-        using iterator_category = std::random_access_iterator_tag;
+        using iterator_category = std::output_iterator_tag;
         using difference_type = typename std::iter_difference_t<Iter>;
         using compare = std::compare_three_way_result_t<Iter, Iter>;
 
