@@ -23,8 +23,8 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Figures/Primitives/Helpers/RingHelpers.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
+#include <MPGL/Core/Figures/Primitives/Ring.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {

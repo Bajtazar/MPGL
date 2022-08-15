@@ -25,25 +25,32 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/RingHelpers.hpp>
 #include <MPGL/Utility/Deferred/DelegatePointer.hpp>
-#include <MPGL/Core/Shaders/ShaderLocation.hpp>
-#include <MPGL/Core/Figures/Elliptic.hpp>
 
 namespace mpgl {
 
     /**
      * Represents the ring on the screen
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    class Ring : public Elliptic2D {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    class Ring : public Elliptic<Dim, Spec> {
     public:
+        using VertexTraits = typename Elliptic<Dim, Spec>::VertexTraits;
+        using Vector = typename VertexTraits::Vector;
+        using Adapter = typename VertexTraits::Adapter;
+
         /**
          * Represents the ellipse describing inner outline
          * of the ring
          */
-        class InnerEllipse : public Transformable2D {
+        class InnerEllipse : public Transformable<Dim> {
         public:
             /**
-             * Construct a new ellipse with given center
+             * Construct a new 2D ellipse with given center
              * and semi-axis. The angle specifies
              * a counterclockwise angle bewteen the x-axis
              * and x-semi-axis component
@@ -55,10 +62,10 @@ namespace mpgl {
             InnerEllipse(
                 Vector2f const& center = {},
                 Vector2f const& semiAxis = {},
-                float32 angle = 0.f);
+                float32 angle = 0.f) requires TwoDimensional<Dim>;
 
             /**
-             * Construct a new circle with given center and
+             * Construct a new 2D circle with given center and
              * radius
              *
              * @param center the center of the circle
@@ -66,7 +73,7 @@ namespace mpgl {
              */
             InnerEllipse(
                 Vector2f const& center,
-                float radius);
+                float radius) requires TwoDimensional<Dim>;
 
             InnerEllipse(InnerEllipse const& ellipse) = default;
             InnerEllipse(InnerEllipse&& ellipse) noexcept = default;
@@ -83,14 +90,14 @@ namespace mpgl {
              * transforming object
              */
             void transform(
-                Transformation2D const& transformator) noexcept final;
+                Transformation<Dim> const& transformator) noexcept final;
 
             /**
              * Returns the position of the center of the ellipse
              *
              * @return the position of the center of the ellipse
              */
-            [[nodiscard]] Vector2f getCenter(void) const noexcept;
+            [[nodiscard]] Vector getCenter(void) const noexcept;
 
             /**
              * Returns the semi-axis of the ellipse. If they are
@@ -106,12 +113,16 @@ namespace mpgl {
             ~InnerEllipse(void) noexcept = default;
 
             friend class Ring;
+            friend class RingClickChecker<Dim, Spec>;
+            friend class RingOutlineCalculator<Dim, Spec>;
         private:
-            typedef Adapter2D                               Vertex;
-            typedef std::array<Vertex, 4>                   Vertices;
+            using OutlineCalculator = RingOutlineCalculator<Dim, Spec>;
+            using MatrixT = typename OutlineCalculator::MatrixT;
+            using Vertex = Adapter;
+            using Vertices = std::array<Vertex, 4>;
 
             Vertices                                        vertices;
-            Matrix2f                                        outline;
+            MatrixT                                         outline;
 
             /**
              * Constructs the vector with ellipse vertices
@@ -121,8 +132,10 @@ namespace mpgl {
              * @param angle the angle between x-axis and semi-axis
              * @return the ellipse's vertices
              */
-            static Vertices ellipseVertices(Vector2f const& center,
-                Vector2f const& semiAxis, float32 angle);
+            static Vertices ellipseVertices(
+                Vector2f const& center,
+                Vector2f const& semiAxis,
+                float32 angle) requires TwoDimensional<Dim>;
 
             /**
              * Constructs the vector with circle vertices
@@ -131,26 +144,18 @@ namespace mpgl {
              * @param radius the radius of the circle
              * @return the circle's vertices
              */
-            static Vertices circleVertices(Vector2f const& center,
-                float32 radius);
+            static Vertices circleVertices(
+                Vector2f const& center,
+                float32 radius) requires TwoDimensional<Dim>;
 
             /**
              * Actualizes the matrices responsible for the outline
              */
             void actualizeMatrices(void) noexcept;
-
-            /**
-             * Calculates the new outline transformation matrix
-             *
-             * @return the optional with the matrix. If the matrix does not
-             * exist then returns std::nullopt
-             */
-            std::optional<Matrix2f> calculateNewOutline(
-                void) const noexcept;
         };
 
         /**
-         * Construct a new ring with given center,
+         * Construct a new 2D ring with given center,
          * color, semi-axis and the inner ellipse. The
          * angle specifies a counterclockwise angle
          * between the x-axis and x-semi-axis component
@@ -166,10 +171,10 @@ namespace mpgl {
             Vector2f const& semiAxis = {},
             InnerEllipse const& innerEllipse = {},
             Color const& color = {},
-            float32 angle = 0.f);
+            float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
-         * Construct a new ring with given center,
+         * Construct a new 2D ring with given center,
          * color, outer and inner semi-axis. The
          * angle specifies a counterclockwise angle
          * between the x-axis and x-semi-axis component
@@ -185,10 +190,10 @@ namespace mpgl {
             Vector2f const& outerSemiAxis,
             Vector2f const& innerSemiAxis,
             Color const& color = {},
-            float32 angle = 0.f);
+            float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
-         * Construct a new circular ring with given center,
+         * Construct a new circular 2D ring with given center,
          * radius, color and inner ellipse
          *
          * @param center the center of the ring
@@ -200,10 +205,10 @@ namespace mpgl {
             Vector2f const& center,
             float32 radius,
             InnerEllipse const& innerEllipse = {},
-            Color const& color = {});
+            Color const& color = {}) requires TwoDimensional<Dim>;
 
         /**
-         * Construct a new circular ring with given center,
+         * Construct a new circular 2D ring with given center,
          * inner and outer radius and ring color
          *
          * @param center the center of the ring
@@ -215,7 +220,7 @@ namespace mpgl {
             Vector2f const& center,
             float32 outerRadius,
             float32 innerRadius,
-            Color const& color = {});
+            Color const& color = {}) requires TwoDimensional<Dim>;
 
         Ring(Ring const& ring) = default;
         Ring(Ring&& ring) noexcept = default;
@@ -235,7 +240,7 @@ namespace mpgl {
          * transforming object
          */
         void transform(
-            Transformation2D const& transformator) noexcept final;
+            Transformation<Dim> const& transformator) noexcept final;
 
         /**
          * Sets the given shader program
@@ -267,7 +272,7 @@ namespace mpgl {
          *
          * @return the center of the ring
          */
-        [[nodiscard]] Vector2f getCenter(void) const noexcept;
+        [[nodiscard]] Vector getCenter(void) const noexcept;
 
         /**
          * Returns the outer semi-axis of the ring. If they are
@@ -316,7 +321,15 @@ namespace mpgl {
          * Destroy the Ring object
          */
         ~Ring(void) noexcept = default;
+
+        friend class RingClickChecker<Dim, Spec>;
+        friend class RingOutlineCalculator<Dim, Spec>;
     private:
+        using OutlineCalculator = RingOutlineCalculator<Dim, Spec>;
+        using Clicker = RingClickChecker<Dim, Spec>;
+        using ShaderManager = RingShader<Dim, Spec>;
+        using MatrixT = typename OutlineCalculator::MatrixT;
+
         /**
          * Collection of all shader location's pointers
          */
@@ -330,9 +343,11 @@ namespace mpgl {
 
         DelegatePointer<Locations>                      locations;
         InnerEllipse                                    innerEllipse;
-        Matrix2f                                        outline;
+        MatrixT                                         outline;
 
-        static const Executable                         shaderExec;
+        static OutlineCalculator const                  outlineCalc;
+        static Clicker const                            clicker;
+        static ShaderManager const                      shaderManager;
 
         /**
          * Sets the shader locations
@@ -346,31 +361,19 @@ namespace mpgl {
         void actualizeMatrices(void) noexcept final;
 
         /**
-         * Calculates the new outline transformation matrix
-         *
-         * @return the optional with the matrix. If the matrix does not
-         * exist then returns std::nullopt
+         * Actualizes shader's locations before draw
          */
-        std::optional<Matrix2f> calculateNewOutline(void) const noexcept;
-
-        /**
-         * Sets the shader program uniforms
-         */
-        void setUniforms(void) const noexcept;
-
-        /**
-         * Returns whether the given point is inside local system
-         * created by translation vector and transformation matrix
-         *
-         * @param position the point position
-         * @param shift the translation vector
-         * @param transform the transformation matrix
-         * @return if point is inside the local system
-         */
-        [[nodiscard]] bool insideSystem(
-            Vector2f const& position,
-            Vector2f const& shift,
-            Matrix2f const& transform) const noexcept;
+        void actualizeLocations(void) const noexcept override final;
     };
+
+    template class Ring<dim::Dim2>;
+    template class Ring<dim::Dim3>;
+    template class Ring<dim::Dim2, int32>;
+    template class Ring<dim::Dim3, int32>;
+
+    typedef Ring<dim::Dim2>                         Ring2D;
+    typedef Ring<dim::Dim3>                         Ring3D;
+    typedef Ring<dim::Dim2, int32>                  ColorableRing2D;
+    typedef Ring<dim::Dim3, int32>                  ColorableRing3D;
 
 }

@@ -74,7 +74,6 @@ namespace mpgl {
             using value_type                  = ValueType;
             using reference                   = value_type&;
             using pointer                     = value_type*;
-            using iterator_category           = inner_iter::iterator_category;
             using difference_type             = std::ptrdiff_t;
         private:
             static constexpr bool               Bidirectional
@@ -82,6 +81,11 @@ namespace mpgl {
             static constexpr bool               RandomAccess
                 = std::random_access_iterator<inner_iter>;
         public:
+            using iterator_category           =
+                std::conditional_t<std::contiguous_iterator<inner_iter>,
+                std::random_access_iterator_tag,
+                typename inner_iter::iterator_category>;
+
             /**
              * Construct a new iterator object
              */

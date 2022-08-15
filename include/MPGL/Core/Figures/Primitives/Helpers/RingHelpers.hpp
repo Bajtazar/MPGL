@@ -74,10 +74,10 @@ namespace mpgl {
          * @param ring a constant reference to the ring object
          * @return an outline of a 2D ring
          */
-        template <std::ranges::random_access_range Range>
+        template <std::ranges::range Range>
             requires SameRangeType<Range, Adapter2D>
         [[nodiscard]] ResultT operator() (
-            std::remove_cvref_t<Range> const& ring) const noexcept;
+            Range const& ring) const noexcept;
     };
 
     /**
@@ -97,10 +97,10 @@ namespace mpgl {
          * @param ring a constant reference to the ring object
          * @return an outline of a 3D ring
          */
-        template <std::ranges::random_access_range Range>
+        template <std::ranges::range Range>
             requires SameRangeType<Range, Adapter3D>
         [[nodiscard]] ResultT operator() (
-            std::remove_cvref_t<Range> const& ring) const noexcept;
+            Range const& ring) const noexcept;
     private:
         using Versors = std::tuple<Vector2f, Vector2f, Vector2f>;
 
@@ -112,10 +112,9 @@ namespace mpgl {
          * @param ring a constant reference to the ring object
          * @return the space versors
          */
-        template <std::ranges::random_access_range Range>
-            requires SameRangeType<Range, Adapter3D>
+        template <std::ranges::range Range>
         [[nodiscard]] Versors getVersors(
-            std::remove_cvref_t<Range> const& ring) const noexcept;
+            Range const& ring) const noexcept;
 
         /**
          * Returns an outline matrix created from x and y versors
@@ -187,10 +186,9 @@ namespace mpgl {
          * @param position a constant reference to the position object
          * @return if the given point is inside a 2D ring's ellipse
          */
-        template <std::ranges::random_access_range Range>
-            requires SameRangeType<Range, Adapter2D>
-        [[nodiscard]] bool insideSystem (
-            std::remove_cvref_t<Range> const& ring,
+        template <std::ranges::range Range>
+        [[nodiscard]] bool insideSystem(
+            Range const& ring,
             MatrixT const& outline,
             Vector2u const& position) const noexcept;
     };
@@ -226,10 +224,9 @@ namespace mpgl {
          * @param position a constant reference to the position object
          * @return if the given point is inside a 3D ring's ellipses
          */
-        template <std::ranges::random_access_range Range>
-            requires SameRangeType<Range, Adapter3D>
+        template <std::ranges::range Range>
         [[nodiscard]] bool insideSystem(
-            std::remove_cvref_t<Range> const& ring,
+            Range const& ring,
             Matrix4f const& model,
             Vector2u const& position) const noexcept;
     };

@@ -31,23 +31,25 @@
 namespace mpgl {
 
     template <EllipticTraitSpecifier<dim::Dim2> Spec>
-    template <std::ranges::random_access_range Range>
+    template <std::ranges::range Range>
         requires SameRangeType<Range, Adapter2D>
     [[nodiscard]] RingOutlineCalculator<dim::Dim2, Spec>::ResultT
         RingOutlineCalculator<dim::Dim2, Spec>::operator() (
-            std::remove_cvref_t<Range> const& ring) const noexcept
+            Range const& ring) const noexcept
     {
-        return invert(transpose(Matrix2f{
-            Vector2f{ring[1]} - Vector2f{ring[0]},
-            Vector2f{ring[3]} - Vector2f{ring[0]}}));
+        auto iter = ring.begin();
+        auto const v0 = Vector2f{*iter++};
+        auto const v1 = Vector2f{*iter++};
+        auto const v3 = Vector2f{*++iter};
+        return invert(transpose(Matrix2f{v1 - v0, v3 - v0}));
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    template <std::ranges::random_access_range Range>
+    template <std::ranges::range Range>
         requires SameRangeType<Range, Adapter3D>
     [[nodiscard]] RingOutlineCalculator<dim::Dim3, Spec>::ResultT
         RingOutlineCalculator<dim::Dim3, Spec>::operator() (
-            std::remove_cvref_t<Range> const& ring) const noexcept
+            Range const& ring) const noexcept
     {
         auto const& [xVersor, yVersor, zVersor] = getVersors(ring);
         if (cross(xVersor, yVersor))
@@ -60,14 +62,16 @@ namespace mpgl {
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    template <std::ranges::random_access_range Range>
-        requires SameRangeType<Range, Adapter3D>
+    template <std::ranges::range Range>
     [[nodiscard]] RingOutlineCalculator<dim::Dim3, Spec>::Versors
         RingOutlineCalculator<dim::Dim3, Spec>::getVersors(
-            std::remove_cvref_t<Range> const& ring) const noexcept
+            Range const& ring) const noexcept
     {
-        Vector3f const a = Vector3f{ring[3]} - Vector3f{ring[0]};
-        Vector3f const b = Vector3f{ring[1]} - Vector3f{ring[0]};
+        auto iter = ring.begin();
+        auto const v0 = Vector3f{*iter++};
+        auto const v1 = Vector3f{*iter++};
+        auto const v3 = Vector3f{*++iter};
+        Vector3f const a = v3 - v0, b = v1 - v0;
         return {
             Vector2f{a[0], b[0]},
             Vector2f{a[1], b[1]},
@@ -76,27 +80,25 @@ namespace mpgl {
     }
 
     template <EllipticTraitSpecifier<dim::Dim2> Spec>
-    template <std::ranges::input_range Range>
-        requires SameRangeType<Range, Adapter2D>
+    template <std::ranges::range Range>
     [[nodiscard]] bool RingClickChecker<dim::Dim2, Spec>::insideSystem(
-        std::remove_cvref_t<Range> const& ring,
+        Range const& ring,
         MatrixT const& outline,
         Vector2u const& position) const noexcept
     {
         Vector2f local = outline * (vectorCast<float32>(position) -
-            Vector2f{ring[0]});
+            Vector2f{*ring.begin()});
         return (local - 0.5f).length() <= 0.5f;
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    template <std::ranges::random_access_range Range>
-        requires SameRangeType<Range, Adapter3D>
+    template <std::ranges::range Range>
     [[nodiscard]] bool RingClickChecker<dim::Dim3, Spec>::insideSystem(
-        std::remove_cvref_t<Range> const& ring,
+        Range const& ring,
         Matrix4f const& model,
         Vector2u const& position) const noexcept
     {
-        auto iter = (ring | views::project(ellipse.model)).begin();
+        auto iter = (ring | views::project(model)).begin();
         auto const p = Adapter2D{position}.get();
         auto const v0 = Adapter2D{*iter++}.get();
         auto const v1 = Adapter2D{*iter++}.get();

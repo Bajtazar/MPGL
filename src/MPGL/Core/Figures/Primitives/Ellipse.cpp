@@ -145,8 +145,7 @@ namespace mpgl {
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
-    void Ellipse<Dim, Spec>::actualizeLocations(void) const noexcept
-    {
+    void Ellipse<Dim, Spec>::actualizeLocations(void) const noexcept {
         Elliptic<Dim, Spec>::actualizeLocations();
         locations->color(this->color);
         locations->shift(Vector{get<"position">(
