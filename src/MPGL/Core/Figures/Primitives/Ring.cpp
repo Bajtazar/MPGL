@@ -24,6 +24,8 @@
  *  distribution
  */
 #include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
+#include <MPGL/Exceptions/NotPerpendicularException.hpp>
+#include <MPGL/Exceptions/DifferentPlanesException.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Figures/Primitives/Ring.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
@@ -93,6 +95,23 @@ namespace mpgl {
         float radius) requires TwoDimensional<Dim>
             : vertices{circleVertices(center, radius)}
     {
+        actualizeMatrices();
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::InnerEllipse::InnerEllipse(
+        Vector3f const& center,
+        Vector3f const& minorAxis,
+        Vector3f const& majorAxis) requires ThreeDimensional<Dim>
+            : vertices{
+                center - majorAxis - minorAxis,
+                center - majorAxis + minorAxis,
+                center + majorAxis + minorAxis,
+                center + majorAxis - minorAxis
+            }
+    {
+        if (dot(minorAxis, majorAxis))
+            throw NotPerpendicularException{minorAxis, majorAxis};
         actualizeMatrices();
     }
 
@@ -181,6 +200,28 @@ namespace mpgl {
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     Ring<Dim, Spec>::Ring(
+        Vector3f const& center,
+        Vector3f const& minorAxis,
+        Vector3f const& majorAxis,
+        InnerEllipse const& innerEllipse,
+        Color const& color) requires ThreeDimensional<Dim>
+            : Elliptic<Dim, Spec>{{
+                VertexTraits::buildVertex(center - majorAxis - minorAxis),
+                VertexTraits::buildVertex(center - majorAxis + minorAxis),
+                VertexTraits::buildVertex(center + majorAxis + minorAxis),
+                VertexTraits::buildVertex(center + majorAxis - minorAxis)
+            }, shaderManager.shader, shaderManager, color},
+            locations{new Locations}, innerEllipse{innerEllipse}
+    {
+        if (dot(minorAxis, majorAxis))
+            throw NotPerpendicularException{minorAxis, majorAxis};
+        checkInnerAndOuterPlanes();
+        actualizeMatrices();
+        setLocations();
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::Ring(
         Vector2f const& center,
         Vector2f const& outerSemiAxis,
         Vector2f const& innerSemiAxis,
@@ -198,6 +239,21 @@ namespace mpgl {
         Color const& color) requires TwoDimensional<Dim>
             : Ring{center, outerRadius, InnerEllipse{
                 center, innerRadius}, color} {}
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::checkInnerAndOuterPlanes(
+        void) const requires ThreeDimensional<Dim>
+    {
+        Vector4f coeffs = planeCoefficients<float32>(
+            get<"position">(this->vertices[0]),
+            get<"position">(this->vertices[1]),
+            get<"position">(this->vertices[3]));
+        for (uint8 i = 0; i < 3; ++i) {
+            Vector3f const vertex = innerEllipse.vertices[i];
+            if (!isOnPlane(coeffs, vertex))
+                throw DifferentPlanesException{coeffs, vertex};
+        }
+    }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ring<Dim, Spec>::actualizeMatrices(void) noexcept {

@@ -75,6 +75,22 @@ namespace mpgl {
                 Vector2f const& center,
                 float radius) requires TwoDimensional<Dim>;
 
+            /**
+             * Construct a new 3D ellipse with given center
+             * and semi-axises
+             *
+             * @throws NotPerpendicularException when the minor and
+             * major axis are not perpendicular
+             * @param center the center of the 3D ellipse
+             * @param minorAxis the minor axise's vector
+             * @param majorAxis the major axise's vector
+             */
+            InnerEllipse(
+                Vector3f const& center,
+                Vector3f const& minorAxis,
+                Vector3f const& majorAxis
+                ) requires ThreeDimensional<Dim>;
+
             InnerEllipse(InnerEllipse const& ellipse) = default;
             InnerEllipse(InnerEllipse&& ellipse) noexcept = default;
 
@@ -222,6 +238,27 @@ namespace mpgl {
             float32 innerRadius,
             Color const& color = {}) requires TwoDimensional<Dim>;
 
+        /**
+         * Construct a new circular 3D ring with given center,
+         * semi-axies, color and inner ellipse
+         *
+         * @throws NotPerpendicularException when the minor and
+         * major axis are not perpendicular
+         * @throws DifferentPlanesException when the inner and outer
+         * ring planes are different
+         * @param center the center of the ring
+         * @param minorAxis the minor axise's vector
+         * @param majorAxis the major axise's vector
+         * @param innerEllipse the inner ellipse
+         * @param color the color of the ring
+         */
+        Ring(
+            Vector3f const& center,
+            Vector3f const& minorAxis,
+            Vector3f const& majorAxis,
+            InnerEllipse const& innerEllipse,
+            Color const& color = {}) requires ThreeDimensional<Dim>;
+
         Ring(Ring const& ring) = default;
         Ring(Ring&& ring) noexcept = default;
 
@@ -348,6 +385,15 @@ namespace mpgl {
         static OutlineCalculator const                  outlineCalc;
         static Clicker const                            clicker;
         static ShaderManager const                      shaderManager;
+
+        /**
+         * Checks whether the inner and outer ring lies on the same
+         * plane
+         *
+         * @throws DifferentPlanesException if planes are different
+         */
+        void checkInnerAndOuterPlanes(
+            void) const requires ThreeDimensional<Dim>;
 
         /**
          * Sets the shader locations

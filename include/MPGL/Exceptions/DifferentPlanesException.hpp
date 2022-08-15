@@ -33,27 +33,37 @@
 namespace mpgl {
 
     /**
-     * Exception indicating that the given vectors are not
-     * perpendicular to each other
+     * Exception indicating that the planes are not the same one
      */
-    class NotPerpendicularException : public MPGLException {
+    class DifferentPlanesException : public MPGLException {
     public:
         /**
-         * Constructs a new not perpendicular exception object
+         * Constructs a new different planes exception object
          *
-         * @tparam Size the vector's size
          * @tparam Tp the vector's element type
-         * @param left a constant reference to the left vector
-         * @param right a constant reference to the right vector
+         * @param firstPlaneCoeffs a coefficents of the first plane
+         * @param secondPlaneCoeffs a coefficents of the second plane
          */
-        template <std::size_t Size, Arithmetic Tp>
-        explicit NotPerpendicularException(
-            Vector<Tp, Size> const& left,
-            Vector<Tp, Size> const& right);
+        template <Arithmetic Tp>
+        explicit DifferentPlanesException(
+            Vector4<Tp> const& firstPlaneCoeffs,
+            Vector4<Tp> const& secondPlaneCoeffs);
 
         /**
-         * Returns the message informing that the two vectors
-         * are not perpendicular
+         * Constructs a new different planes exception object
+         *
+         * @tparam Tp the vector's element type
+         * @param planeCoeffs a coefficents of the first plane
+         * @param point a point lying out the plane
+         */
+        template <Arithmetic Tp>
+        explicit DifferentPlanesException(
+            Vector4<Tp> const& planeCoeffs,
+            Vector3<Tp> const& point);
+
+        /**
+         * Returns the message informing that the two planes
+         * are not the same one
          *
          * @return the exception description
          */
@@ -61,9 +71,9 @@ namespace mpgl {
             { return message.c_str(); }
 
         /**
-         * Destroys the not perpendicular exception object
+         * Destroys the different planes exception object
          */
-        ~NotPerpendicularException(
+        ~DifferentPlanesException(
             void) noexcept = default;
     private:
         std::string                             message;
@@ -71,4 +81,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Exceptions/NotPerpendicularException.tpp>
+#include <MPGL/Exceptions/DifferentPlanesException.tpp>
