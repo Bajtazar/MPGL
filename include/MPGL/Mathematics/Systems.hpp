@@ -134,6 +134,64 @@ namespace mpgl {
             Vector2<Tp> const& secondVertex) noexcept;
 
     /**
+     * Calculates a normal vector of the given plane
+     *
+     * @tparam Tp the vector's value type
+     * @param firstPoint the plane's first point
+     * @param secondPoint the plane's second point
+     * @param thirdPoint the plane's third point
+     * @return the normal vector of the given plane
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr Vector3<Tp>
+        planeNormalVector(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& thirdPoint) noexcept;
+
+    /**
+     * Calculates a coefficients of the given plane [A, B, C, D]
+     *
+     * @tparam Tp the vector's value type
+     * @param firstPoint the plane's first point
+     * @param secondPoint the plane's second point
+     * @param thirdPoint the plane's third point
+     * @return the coefficients of the given plane
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Vector4<Tp>
+        planeCoefficients(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& thirdPoint) noexcept;
+
+    /**
+     * Checks whether the given point is on the plane
+     *
+     * @tparam Tp the vector's value type
+     * @param coefficients the plane's coefficients
+     * @param point the point's position
+     * @return if point is lying on the plane
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr bool isOnPlane(
+        Vector4<Tp> const& coefficients,
+        Vector3<Tp> const& point) noexcept;
+
+    /**
+     * Calculates distance between plane and point
+     *
+     * @tparam Tp the vector's value type
+     * @param coefficients the plane's coefficients
+     * @param point the point's position
+     * @return the distance between plane and point
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Tp distance(
+        Vector4<Tp> const& coefficients,
+        Vector3<Tp> const& point) noexcept;
+
+    /**
      * Transform the given vector from the cartesian coordinate
      * system to the polar coordinate system. The x-axis represents
      * the radius and the y-axis represents the angle in the

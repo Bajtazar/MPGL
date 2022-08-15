@@ -108,6 +108,52 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr Vector3<Tp>
+        planeNormalVector(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& thirdPoint) noexcept
+    {
+        return cross(secondPoint - firstPoint,
+            thirdPoint - secondPoint);
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Vector4<Tp>
+        planeCoefficients(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& thirdPoint) noexcept
+    {
+        Vector3<Tp> normal = planeNormalVector(firstPoint,
+            secondPoint, thirdPoint);
+        Vector4<Tp> result{normal};
+        result[3] = -dot(normal, firstPoint);
+        return result;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr bool isOnPlane(
+        Vector4<Tp> const& coefficients,
+        Vector3<Tp> const& point) noexcept
+    {
+        Vector3<Tp> normal{coefficients[0], coefficients[1],
+            coefficients[2]};
+        return dot(normal, point) == -coefficients[3];
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Tp distance(
+        Vector4<Tp> const& coefficients,
+        Vector3<Tp> const& point) noexcept
+    {
+        Vector3<Tp> normal{coefficients[0], coefficients[1],
+            coefficients[2]};
+        return std::abs(dot(normal, point) + coefficients[3])
+            / normal.length();
+    }
+
+    template <FloatConvertible Tp>
     [[nodiscard]] Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
     {
