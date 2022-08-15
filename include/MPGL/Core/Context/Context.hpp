@@ -61,6 +61,8 @@ namespace mpgl {
         Options                                 windowOptions;
         /// Current context projection matrix
         Matrix4f                                projection;
+        /// Current mouse position
+        Vector2u const                          mousePosition;
 
         /**
          * Ckecks whether the view-projection matrix has changed
