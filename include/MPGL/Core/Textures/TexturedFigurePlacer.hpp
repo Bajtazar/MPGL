@@ -27,6 +27,7 @@
 
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
+#include <MPGL/Core/Figures/Primitives/Line.hpp>
 
 namespace mpgl {
 
@@ -84,5 +85,51 @@ namespace mpgl {
 
     template struct TexturedFigurePlacer<Triangle>::Setter<dim::Dim2, uint8>;
     template struct TexturedFigurePlacer<Triangle>::Setter<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the tetragon
+     */
+    template <>
+    struct TexturedFigurePlacer<Tetragon> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the tetragon. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the tetragon
+             * ({[0, 0], [0, 1], [1, 1], [1, 0]} by default)
+             *
+             * @param tetragon a reference to the tetragon object
+             */
+            void operator() (
+                Tetragon<Dim, Spec>& tetragon) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the tetragon. Calls
+         * the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param tetragon a reference to the tetragon object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (Tetragon<Dim, Spec>& tetragon) const noexcept
+            { Setter<Dim, Spec>{}(tetragon); }
+    };
+
+    template struct TexturedFigurePlacer<Tetragon>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<Tetragon>::Setter<dim::Dim3, uint8>;
 
 }

@@ -38,4 +38,17 @@ namespace mpgl {
         get<"texCoords">(triangle[2]) = Vector2f{0.5, 1.};
     }
 
+    template <
+        Dimension Dim,
+        TexturableAngularTraitSpecifier<Dim> Spec>
+    void TexturedFigurePlacer<Tetragon>::Setter<Dim, Spec>::operator() (
+        Tetragon<Dim, Spec>& tetragon) const noexcept
+    {
+        get<"texCoords">(tetragon[0]) = Vector2f{0, 0};
+        get<"texCoords">(tetragon[1]) = Vector2f{0, 1};
+        get<"texCoords">(tetragon[2]) = Vector2f{1, 1};
+        get<"texCoords">(tetragon[3]) = Vector2f{1, 0};
+    }
+
+
 }
