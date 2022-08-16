@@ -323,4 +323,51 @@ namespace mpgl {
     template struct TexturedFigurePlacer<Points>::Setter<dim::Dim2, uint8>;
     template struct TexturedFigurePlacer<Points>::Setter<dim::Dim3, uint8>;
 
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the polygon
+     */
+    template <>
+    struct TexturedFigurePlacer<Polygon> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the polygon. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the polygon
+             * ([i/(n - 1), 0] for each vertex in range [0, n] if
+             * polygon is bigger than 1)
+             *
+             * @param polygon a reference to the polygon object
+             */
+            void operator() (
+                Polygon<Dim, Spec>& polygon) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the polygon.
+         * Calls the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param polygon a reference to the polygon object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (Polygon<Dim, Spec>& polygon) const noexcept
+            { Setter<Dim, Spec>{}(polygon); }
+    };
+
+    template struct TexturedFigurePlacer<Polygon>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<Polygon>::Setter<dim::Dim3, uint8>;
+
 }

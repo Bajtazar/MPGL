@@ -109,4 +109,20 @@ namespace mpgl {
         }
     }
 
+    template <
+        Dimension Dim,
+        TexturableAngularTraitSpecifier<Dim> Spec>
+    void TexturedFigurePlacer<Polygon>::Setter<Dim, Spec>::operator() (
+        Polygon<Dim, Spec>& polygon) const noexcept
+    {
+        if (polygon.size() <= 1)
+            return;
+        auto const piece = 1.f / (polygon.size() - 1);
+        std::remove_const_t<decltype(piece)> iter = 0.;
+        for (auto& vertex : polygon | views::texCoords) {
+            vertex = Vector2f{iter, 0};
+            iter += piece;
+        }
+    }
+
 }
