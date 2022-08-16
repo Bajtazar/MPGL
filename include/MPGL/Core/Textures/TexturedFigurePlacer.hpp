@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/LineStrip.hpp>
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
@@ -177,5 +178,52 @@ namespace mpgl {
 
     template struct TexturedFigurePlacer<Line>::Setter<dim::Dim2, uint8>;
     template struct TexturedFigurePlacer<Line>::Setter<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the line strip
+     */
+    template <>
+    struct TexturedFigurePlacer<LineStrip> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the line strip. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the line strip
+             * ([i/(n - 1), 0] for each vertex in range [0, n] if
+             * strip size is bigger than 1)
+             *
+             * @param line a reference to the line object
+             */
+            void operator() (
+                LineStrip<Dim, Spec>& line) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the line strip.
+         * Calls the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param lineStrip a reference to the line strip object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (LineStrip<Dim, Spec>& lineStrip) const noexcept
+            { Setter<Dim, Spec>{}(lineStrip); }
+    };
+
+    template struct TexturedFigurePlacer<LineStrip>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<LineStrip>::Setter<dim::Dim3, uint8>;
 
 }

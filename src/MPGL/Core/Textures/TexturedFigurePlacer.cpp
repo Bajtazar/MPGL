@@ -24,6 +24,7 @@
  *  distribution
  */
 #include <MPGL/Core/Textures/TexturedFigurePlacer.hpp>
+#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
@@ -58,6 +59,22 @@ namespace mpgl {
     {
         get<"texCoords">(line[0]) = Vector2f{0, 0};
         get<"texCoords">(line[1]) = Vector2f{1, 0};
+    }
+
+    template <
+        Dimension Dim,
+        TexturableAngularTraitSpecifier<Dim> Spec>
+    void TexturedFigurePlacer<LineStrip>::Setter<Dim, Spec>::operator() (
+        LineStrip<Dim, Spec>& lineStrip) const noexcept
+    {
+        if (lineStrip.size() <= 1)
+            return;
+        auto const piece = 1.f / (lineStrip.size() - 1);
+        std::remove_const_t<decltype(piece)> iter = 0.;
+        for (auto& vertex : lineStrip | views::texCoords) {
+            vertex = Vector2f{iter, 0};
+            iter += piece;
+        }
     }
 
 }
