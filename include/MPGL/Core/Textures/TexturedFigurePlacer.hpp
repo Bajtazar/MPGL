@@ -44,7 +44,7 @@ namespace mpgl {
      * coordinates for the triangle
      */
     template <>
-    class TexturedFigurePlacer<Triangle> {
+    struct TexturedFigurePlacer<Triangle> {
         /**
          * Functor responsible for the default texture
          * coordinates for the triangle. Allows to shift

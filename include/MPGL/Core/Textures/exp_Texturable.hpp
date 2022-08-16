@@ -42,6 +42,7 @@ namespace mpgl::exp {
         public virtual Drawable<Dim>,
         public virtual Transformable<Dim>
     {
+    public:
         /**
          * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
@@ -107,12 +108,6 @@ namespace mpgl::exp {
         Texturable& operator=(Texturable const& texturable) = default;
         Texturable& operator=(
             Texturable&& texturable) noexcept = default;
-
-        /**
-         * Pure virtual method. Has to be overloaded. Actualizes
-         * buffers before drawing them
-         */
-        virtual void actualizeBufferBeforeDraw(void) const noexcept = 0;
 
         Texture                                         texture;
     };

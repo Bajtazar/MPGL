@@ -40,6 +40,7 @@ namespace mpgl::exp {
         public virtual Clickable,
         public Texturable<Dim>
     {
+    public:
         /**
          * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
@@ -66,7 +67,7 @@ namespace mpgl::exp {
          * transforming object
          */
         virtual void transform(
-            Transformation<Dim> const& transformator) noexcept;
+            Transformation<Dim> const& transformator) noexcept = 0;
 
         /**
          * Pure virtual method. Has to be overloaded. Applies
@@ -102,5 +103,11 @@ namespace mpgl::exp {
         Sprite& operator=(Sprite const& sprite) = default;
         Sprite& operator=(Sprite&& sprite) noexcept = default;
     };
+
+    template class Sprite<dim::Dim2>;
+    template class Sprite<dim::Dim3>;
+
+    typedef Sprite<dim::Dim2>                           Sprite2D;
+    typedef Sprite<dim::Dim3>                           Sprite3D;
 
 }
