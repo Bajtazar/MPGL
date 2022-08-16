@@ -30,9 +30,10 @@
 
 namespace mpgl {
 
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
     [[nodiscard]] auto
-        PolygonClickChecker<dim::Dim2, void>::Normalizer::operator() (
-            Polygon<dim::Dim2, void> const& polygon) const noexcept
+        PolygonClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
+            Polygon<dim::Dim2, Spec> const& polygon) const noexcept
     {
         auto normalizer = [](Vector2f const& value) -> Vector2f {
             return Adapter2D{value}.get();
@@ -41,9 +42,10 @@ namespace mpgl {
             | std::views::transform(normalizer);
     }
 
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
     [[nodiscard]] auto
-        PolygonClickChecker<dim::Dim3, void>::Normalizer::operator() (
-            Polygon<dim::Dim3, void> const& polygon) const noexcept
+        PolygonClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
+            Polygon<dim::Dim3, Spec> const& polygon) const noexcept
     {
         auto normalizer = [](auto value) -> Vector2f {
             return Adapter2D{value}.get();
@@ -52,8 +54,9 @@ namespace mpgl {
             polygon.model) | std::views::transform(normalizer);
     }
 
-    void PolygonDrawer<dim::Dim2, void>::operator() (
-        Polygon<dim::Dim2, void> const& polygon) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void PolygonDrawer<dim::Dim2, Spec>::operator() (
+        Polygon<dim::Dim2, Spec> const& polygon) const noexcept
     {
         polygon.actualizeBufferBeforeDraw();
         polygon.shaderProgram->use();
@@ -63,8 +66,9 @@ namespace mpgl {
             polygon.vertices.size());
     }
 
-    void PolygonDrawer<dim::Dim3, void>::operator() (
-        Polygon<dim::Dim3, void> const& polygon) const noexcept
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void PolygonDrawer<dim::Dim3, Spec>::operator() (
+        Polygon<dim::Dim3, Spec> const& polygon) const noexcept
     {
         polygon.actualizeBufferBeforeDraw();
         polygon.shaderProgram->use();
@@ -75,10 +79,10 @@ namespace mpgl {
             polygon.vertices.size());
     }
 
-    template <Dimension Dim>
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     [[nodiscard]] bool
-        PolygonClickChecker<Dim, void>::operator() (
-            Polygon<Dim, void> const& polygon,
+        PolygonClickChecker<Dim, Spec>::operator() (
+            Polygon<Dim, Spec> const& polygon,
             Vector2u const& position) const noexcept
     {
         Vector2f normalized = Adapter2D{position}.get();

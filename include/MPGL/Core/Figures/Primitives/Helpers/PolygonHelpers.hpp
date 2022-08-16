@@ -49,31 +49,50 @@ namespace mpgl {
 
     /**
      * Functor responsible for drawing 2D polygon on the screen
+     *
+     * @tparam Dim the dimension of the space
      */
-    template <>
-    struct PolygonDrawer<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct PolygonDrawer<dim::Dim2, Spec> {
         /**
          * Draws 2D polygon on the screen
          *
          * @param polygon a constant reference to the polygon object
          */
         void operator() (
-            Polygon<dim::Dim2, void> const& polygon) const noexcept;
+            Polygon<dim::Dim2, Spec> const& polygon) const noexcept;
     };
 
     /**
      * Functor responsible for drawing 3D polygon on the screen
+     *
+     * @tparam Dim the dimension of the space
      */
-    template <>
-    struct PolygonDrawer<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct PolygonDrawer<dim::Dim3, Spec> {
         /**
          * Draws 3D polygon on the screen
          *
          * @param polygon a constant reference to the polygon object
          */
         void operator() (
-            Polygon<dim::Dim3, void> const& polygon) const noexcept;
+            Polygon<dim::Dim3, Spec> const& polygon) const noexcept;
     };
+
+    template class PolygonDrawer<dim::Dim2, void>;
+    template class PolygonDrawer<dim::Dim3, void>;
+    template class PolygonDrawer<dim::Dim2, uint8>;
+    template class PolygonDrawer<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for normalizing the vertices range
+     * inside the polygon click checker functor
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
+     */
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    struct PolygonClickCheckerNormalizer;
 
     /**
      * Functor responsible for checking whether given point is
@@ -83,21 +102,12 @@ namespace mpgl {
      * @tparam Spec the angular vertices specifier
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    struct PolygonClickChecker;
-
-    /**
-     * Functor responsible for checking whether given point is
-     * inside a default polygon
-     *
-     * @tparam Dim the dimension of the space
-     */
-    template <Dimension Dim>
-    struct PolygonClickChecker<Dim, void> {
+    struct PolygonClickChecker {
         /**
          * Functor responsible for normalizing the vertices range
          * inside the polygon click checker functor
          */
-        struct Normalizer;
+        using Normalizer = PolygonClickCheckerNormalizer<Dim, Spec>;
 
         /**
          * Checks whether the given point is inside a default polygon
@@ -107,16 +117,18 @@ namespace mpgl {
          * @return if the given point is inside a default polygon
          */
         [[nodiscard]] bool operator() (
-            Polygon<Dim, void> const& polygon,
+            Polygon<Dim, Spec> const& polygon,
             Vector2u const& position) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 2D polygon click checker functor
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct PolygonClickChecker<dim::Dim2, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct PolygonClickCheckerNormalizer<dim::Dim2, Spec> {
         /**
          * Normalizes the polygon's vertex positions and returns
          * a view to it
@@ -126,15 +138,17 @@ namespace mpgl {
          * positions
          */
         [[nodiscard]] auto operator() (
-            Polygon<dim::Dim2, void> const& polygon) const noexcept;
+            Polygon<dim::Dim2, Spec> const& polygon) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 3D polygon click checker functor
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct PolygonClickChecker<dim::Dim3, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct PolygonClickCheckerNormalizer<dim::Dim3, Spec> {
         /**
          * Normalizes the polygon's projected vertex positions
          * and returns a view to it
@@ -144,10 +158,17 @@ namespace mpgl {
          * vertex positions
          */
         [[nodiscard]] auto operator() (
-            Polygon<dim::Dim3, void> const& polygon) const noexcept;
+            Polygon<dim::Dim3, Spec> const& polygon) const noexcept;
     };
+
+    template class PolygonClickCheckerNormalizer<dim::Dim2, void>;
+    template class PolygonClickCheckerNormalizer<dim::Dim3, void>;
+    template class PolygonClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class PolygonClickCheckerNormalizer<dim::Dim3, uint8>;
 
     template class PolygonClickChecker<dim::Dim2, void>;
     template class PolygonClickChecker<dim::Dim3, void>;
+    template class PolygonClickChecker<dim::Dim2, uint8>;
+    template class PolygonClickChecker<dim::Dim3, uint8>;
 
 }

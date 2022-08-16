@@ -106,7 +106,7 @@ namespace mpgl {
         /**
          * Draws the polygon on the screen
          */
-        void draw(void) const noexcept;
+        virtual void draw(void) const noexcept;
 
         /**
          * Checks whether the given pixel is located inside the polygon
@@ -114,16 +114,17 @@ namespace mpgl {
          * @param position the pixel's position
          * @return if the given point is inside the polygon
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroys the Polygon object
+         * Virtual destructor. Destroys the Polygon object
          */
-        ~Polygon(void) noexcept = default;
+        virtual ~Polygon(void) noexcept = default;
 
         friend class PolygonDrawer<Dim, Spec>;
         friend class PolygonClickChecker<Dim, Spec>;
+        friend class PolygonClickCheckerNormalizer<Dim, Spec>;
     private:
         using Drawer = PolygonDrawer<Dim, Spec>;
         using Clicker = PolygonClickChecker<Dim, Spec>;
@@ -134,6 +135,8 @@ namespace mpgl {
 
     template class Polygon<dim::Dim2>;
     template class Polygon<dim::Dim3>;
+    template class Polygon<dim::Dim2, uint8>;
+    template class Polygon<dim::Dim3, uint8>;
 
     typedef Polygon<dim::Dim2>                      Polygon2D;
     typedef Polygon<dim::Dim3>                      Polygon3D;
