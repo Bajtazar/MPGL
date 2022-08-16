@@ -27,7 +27,7 @@
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Textures/TexturedFigure.hpp>
 
-namespace mpgl::exp {
+namespace mpgl {
 
     template <
         template <class, typename> class Base,

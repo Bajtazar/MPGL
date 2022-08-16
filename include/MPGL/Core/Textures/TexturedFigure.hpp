@@ -26,10 +26,10 @@
 #pragma once
 
 #include <MPGL/Core/Textures/TexturedFigurePlacer.hpp>
-#include <MPGL/Core/Textures/exp_Sprite.hpp>
+#include <MPGL/Core/Textures/Sprite.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
-namespace mpgl::exp {
+namespace mpgl {
 
     /**
      * Wrapper class that allows to use a given figure as a sprite
@@ -162,9 +162,33 @@ namespace mpgl::exp {
 
     template class TexturedFigure<Triangle<dim::Dim2, uint8>>;
     template class TexturedFigure<Triangle<dim::Dim3, uint8>>;
+    template class TexturedFigure<Tetragon<dim::Dim2, uint8>>;
+    template class TexturedFigure<Tetragon<dim::Dim3, uint8>>;
+    template class TexturedFigure<Line<dim::Dim2, uint8>>;
+    template class TexturedFigure<Line<dim::Dim3, uint8>>;
+    template class TexturedFigure<LineLoop<dim::Dim2, uint8>>;
+    template class TexturedFigure<LineLoop<dim::Dim3, uint8>>;
+    template class TexturedFigure<LineStrip<dim::Dim2, uint8>>;
+    template class TexturedFigure<LineStrip<dim::Dim3, uint8>>;
+    template class TexturedFigure<Points<dim::Dim2, uint8>>;
+    template class TexturedFigure<Points<dim::Dim3, uint8>>;
+    template class TexturedFigure<Polygon<dim::Dim2, uint8>>;
+    template class TexturedFigure<Polygon<dim::Dim3, uint8>>;
 
     using TriangleSprite2D = TexturedFigure<Triangle<dim::Dim2, uint8>>;
     using TriangleSprite3D = TexturedFigure<Triangle<dim::Dim3, uint8>>;
+    using TetragonSprite2D = TexturedFigure<Tetragon<dim::Dim2, uint8>>;
+    using TetragonSprite3D = TexturedFigure<Tetragon<dim::Dim3, uint8>>;
+    using LineSprite2D = TexturedFigure<Line<dim::Dim2, uint8>>;
+    using LineSprite3D = TexturedFigure<Line<dim::Dim3, uint8>>;
+    using LineLoopSprite2D = TexturedFigure<LineLoop<dim::Dim2, uint8>>;
+    using LineLoopSprite3D = TexturedFigure<LineLoop<dim::Dim3, uint8>>;
+    using LineStripSprite2D = TexturedFigure<LineStrip<dim::Dim2, uint8>>;
+    using LineStripSprite3D = TexturedFigure<LineStrip<dim::Dim3, uint8>>;
+    using PointsSprite2D = TexturedFigure<Points<dim::Dim2, uint8>>;
+    using PointsSprite3D = TexturedFigure<Points<dim::Dim3, uint8>>;
+    using PolygonSprite2D = TexturedFigure<Polygon<dim::Dim2, uint8>>;
+    using PolygonSprite3D = TexturedFigure<Polygon<dim::Dim3, uint8>>;
 
 }
 

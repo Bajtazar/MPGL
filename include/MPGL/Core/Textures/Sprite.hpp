@@ -25,387 +25,89 @@
  */
 #pragma once
 
-#include <MPGL/Core/Textures/ShadeableSprite.hpp>
+#include <MPGL/Core/Textures/exp_Texturable.hpp>
+#include <MPGL/Core/Figures/Clickable.hpp>
 
 namespace mpgl {
 
-
     /**
-     * Represents a texture on the screen
+     * Base class for independent texturable shapes
      *
-     * @tparam IsColorable specifies whether the vertices
-     * should contain information about color
+     * @tparam Dim the dimension of the space
      */
-    template <bool IsColorable>
-    class Sprite : public ShadeableSprite<IsColorable> {
+    template <Dimension Dim>
+    class Sprite :
+        public virtual Clickable,
+        public exp::Texturable<Dim>
+    {
     public:
-        typedef ShadeableSprite<IsColorable>::Vertex    Vertex;
-        typedef ShadeableSprite<IsColorable>::Vertices  Vertices;
-
         /**
-         * Construct a new Sprite object with the given
-         * texture
-         *
-         * @param texture the sprite's texture
+         * Pure virtual method. Has to be overloaded.
+         * Allows to draw an object
          */
-        Sprite(Texture const& texture = {});
+        virtual void draw(void) const noexcept = 0;
 
         /**
-         * Construct a new Sprite object with the given
-         * texture and color
-         *
-         * @param texture the sprite's texture
-         * @param color the sprite vertices color
-         */
-        Sprite(
-            Texture const& texture,
-            Color const& color) requires IsColorable;
-
-        /**
-         * Construct a new parralelogram-like Sprite object
-         * from a three given vertices with given texture
-         *
-         * @param texture the sprite's texture
-         * @param firstVertex the first vertex position
-         * @param secondVertex the second vertex position
-         * @param thirdVertex the third vertex color
-         */
-        Sprite(
-            Texture const& texture,
-            Vector2f const& firstVertex,
-            Vector2f const& secondVertex,
-            Vector2f const& thirdVertex);
-
-        /**
-         * Construct a new parralelogram-like Sprite object
-         * from a three given vertices with given texture
-         * and color
-         *
-         * @param texture the sprite's texture
-         * @param firstVertex the first vertex position
-         * @param secondVertex the second vertex position
-         * @param thirdVertex the third vertex color
-         * @param color the vertices color
-         */
-        Sprite(
-            Texture const& texture,
-            Vector2f const& firstVertex,
-            Vector2f const& secondVertex,
-            Vector2f const& thirdVertex,
-            Color const& color) requires IsColorable;
-
-        /**
-         * Construct a new Sprite object parallel to
-         * x and y axis with the given texture
-         *
-         * @param texture the sprite's texture
-         * @param firstVertex the first vertex position
-         * @param dimensions the sprite dimensions
-         */
-        Sprite(
-            Texture const& texture,
-            Vector2f const& firstVertex,
-            Vector2f const& dimensions);
-
-        /**
-         * Construct a new Sprite object parallel to
-         * x and y axis with the given texture and color
-         *
-         * @param texture the sprite's texture
-         * @param firstVertex the first vertex position
-         * @param dimensions the sprite dimensions
-         * @param color the vertices color
-         */
-        Sprite(
-            Texture const& texture,
-            Vector2f const& firstVertex,
-            Vector2f const& dimensions,
-            Color const& color) requires IsColorable;
-
-        Sprite(Sprite const& sprite) = default;
-        Sprite(Sprite&& sprite) noexcept = default;
-
-        Sprite& operator= (Sprite const& sprite) = default;
-        Sprite& operator= (Sprite&& sprite) noexcept = default;
-
-        /**
-         * Draws the sprite on the screen
-         */
-        void draw(void) const noexcept final;
-
-        /**
-         * Checks whether the given pixel is located inside the sprite
+         * Pure virtual method. Has to be overloaded.
+         * Checks whether the given pixel is located
+         * inside of the figure [boundry is concidered
+         * as a part of the figure, the 3D figures are
+         * projected onto screen and then checked]
          *
          * @param position the pixel's position
-         * @return if the given point is inside the sprite
+         * @return if point is inside figure
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept = 0;
 
         /**
-         * Returns the reference to vertex with the given index
+         * Performs transformation on the figure
          *
-         * @param index the vertex's index
-         * @return the reference to vertex with the given index
+         * @param transformator the constant reference to the
+         * transforming object
          */
-        [[nodiscard]] Vertex& operator[] (std::size_t index) noexcept
-            { this->isModified = true; return this->vertices[index]; }
+        virtual void transform(
+            Transformation<Dim> const& transformator) noexcept = 0;
 
         /**
-         * Returns the constant reference to vertex with
-         * the given index
-         *
-         * @param index the vertex's index
-         * @return the constant reference to vertex with
-         * the given index
-         */
-        [[nodiscard]] Vertex const& operator[] (
-            std::size_t index) const noexcept
-                { return this->vertices[index]; }
-
-        /**
-         * Returns the reference to the front vertex
-         *
-         * @return the reference to the front vertex
-         */
-        [[nodiscard]] Vertex& front(void) noexcept
-            { this->isModified = true; return this->vertices.front(); }
-
-        /**
-         * Returns the constant reference to the front vertex
-         *
-         * @return the constant reference to the front vertex
-         */
-        [[nodiscard]] Vertex const& front(void) const noexcept
-            { return this->vertices.front(); }
-
-        /**
-         * Returns the reference to the back vertex
-         *
-         * @return the reference to the back vertex
-         */
-        [[nodiscard]] Vertex& back(void) noexcept
-            { this->isModified = true; return this->vertices.back(); }
-
-        /**
-         * Returns the constant reference to the back vertex
-         *
-         * @return the constant reference to the back vertex
-         */
-        [[nodiscard]] Vertex const& back(void) const noexcept
-            { return this->vertices.back(); }
-
-        using iterator                    = Vertices::iterator;
-        using const_iterator              = Vertices::const_iterator;
-        using reverse_iterator
-            = Vertices::reverse_iterator;
-        using const_reverse_iterator
-            = Vertices::const_reverse_iterator;
-
-        /**
-         * Returns the number of vertices in the object
-         *
-         * @return the number of vertices
-         */
-        [[nodiscard]] std::size_t size(void) const noexcept
-            { return this->vertices.size(); }
-
-        /**
-         * Returns the iterator to the begining of the vertices
-         *
-         * @return the iterator to the begining of the vertices
-         */
-        [[nodiscard]] iterator begin(void) noexcept
-            { this->isModified = true; return this->vertices.begin(); }
-
-        /**
-         * Returns the iterator to the end of the vertices
-         *
-         * @return the iterator to the end of the vertices
-         */
-        [[nodiscard]] iterator end(void) noexcept
-            { this->isModified = true; return this->vertices.end(); }
-
-        /**
-         * Returns the constant iterator to the begining
-         * of the vertices
-         *
-         * @return the constant iterator to the begining
-         * of the vertices
-         */
-        [[nodiscard]] const_iterator begin(void) const noexcept
-            { return this->vertices.begin(); }
-
-        /**
-         * Returns the constant iterator to the end
-         * of the vertices
-         *
-         * @return the constant iterator to the end
-         * of the vertices
-         */
-        [[nodiscard]] const_iterator end(void) const noexcept
-            { return this->vertices.end(); }
-
-        /**
-         * Returns the constant iterator to the begining
-         * of the vertices
-         *
-         * @return the constant iterator to the begining
-         * of the vertices
-         */
-        [[nodiscard]] const_iterator cbegin(void) const noexcept
-            { return this->vertices.begin(); }
-
-        /**
-         * Returns the constant iterator to the end
-         * of the vertices
-         *
-         * @return the constant iterator to the end
-         * of the vertices
-         */
-        [[nodiscard]] const_iterator cend(void) const noexcept
-            { return this->vertices.end(); }
-
-        /**
-         * Returns the reverse iterator to the end of
-         * the vertices
-         *
-         * @return the reverse iterator to the end of
-         * the vertices
-         */
-        [[nodiscard]] reverse_iterator rbegin(void) noexcept
-            { this->isModified = true; return this->vertices.rbegin(); }
-
-        /**
-         * Returns the reverse iterator to the begining of
-         * the vertices
-         *
-         * @return the reverse iterator to the begining of
-         * the vertices
-         */
-        [[nodiscard]] reverse_iterator rend(void) noexcept
-            { this->isModified = true; return this->vertices.rend(); }
-
-        /**
-         * Returns the constant reverse iterator to the end of
-         * the vertices
-         *
-         * @return the constant reverse iterator to the end of
-         * the vertices
-         */
-        [[nodiscard]] const_reverse_iterator
-            rbegin(void) const noexcept
-                { return this->vertices.rbegin(); }
-
-        /**
-         * Returns the constant reverse iterator to the begining of
-         * the vertices
-         *
-         * @return the constant reverse iterator to the begining of
-         * the vertices
-         */
-        [[nodiscard]] const_reverse_iterator
-            rend(void) const noexcept
-                { return this->vertices.rend(); }
-
-        /**
-         * Returns the constant reverse iterator to the end of
-         * the vertices
-         *
-         * @return the constant reverse iterator to the end of
-         * the vertices
-         */
-        [[nodiscard]] const_reverse_iterator
-            crbegin(void) const noexcept
-                { return this->vertices.crbegin(); }
-
-        /**
-         * Returns the constant reverse iterator to the begining of
-         * the vertices
-         *
-         * @return the constant reverse iterator to the begining of
-         * the vertices
-         */
-        [[nodiscard]] const_reverse_iterator
-            crend(void) const noexcept
-                { return this->vertices.crend(); }
-
-        /**
-         * Sets the given shader program
-         *
-         * @param program the constant reference to the
-         * shader program object
-         */
-        void setShader(
-            ShaderProgram const& program) noexcept override final;
-
-        /**
-         * Sets the given shader program
-         *
-         * @param program the rvalue reference to the
-         * shader program object
-         */
-        void setShader(
-            ShaderProgram&& program) noexcept override final;
-
-        /**
-         * Sets the given shader program from an internal
-         * library
-         *
-         * @param name the name of the shader program
-         */
-        void setShader(
-            std::string const& name) override final;
-
-        /**
-         * Applies convolution shader with given convolution matrix
+         * Pure virtual method. Has to be overloaded. Applies
+         * convolution shader with given convolution matrix
          *
          * @param convolution the convolution matrix
          */
         virtual void setConvolution(
-            Matrix3f const& convolution) final;
+            Matrix3f const& convolution) = 0;
 
         /**
-         * Applies default shader - removes convolution
+         * Pure virtual method. Has to be overloaded. Applies
+         * default shader - removes convolution
          */
-        virtual void resetConvolution(void) final;
+        virtual void resetConvolution(void) = 0;
 
         /**
-         *  Destroy the Sprite object
+         * Destroy the Sprite object
          */
-        ~Sprite(void) noexcept = default;
-    private:
-        typedef Shadeable::Executable               Executable;
-
+        virtual ~Sprite(void) noexcept = default;
+    protected:
         /**
-         * Returns the shader name used by sprite implementation
+         * Construct a new Sprite object from the given
+         * texture and shader name with given vertices color
          *
-         * @return the shader name used by sprite implementation
+         * @param texture the texture object
          */
-        static std::string shaderName(void) noexcept;
+        Sprite(Texture const& texture);
 
-        /**
-         * Calculates whether the given point is inside subtriangle
-         *
-         * @param position the point position
-         * @param firstVertex the first vertex position
-         * @param secondVertex the second vertex position
-         * @param thirdVertex the third vertex position
-         * @return if the given point is inside subtriangle
-         */
-        [[nodiscard]] bool insideSubtriangle(
-            Vector2d const& position,
-            Vector2d const& firstVertex,
-            Vector2d const& secondVertex,
-            Vector2d const& thirdVertex) const noexcept;
+        Sprite(Sprite const& sprite) = default;
+        Sprite(Sprite&&) noexcept = default;
 
-        static const Executable                     shaderExec;
+        Sprite& operator=(Sprite const& sprite) = default;
+        Sprite& operator=(Sprite&& sprite) noexcept = default;
     };
 
-    template class Sprite<true>;
-    template class Sprite<false>;
+    template class Sprite<dim::Dim2>;
+    template class Sprite<dim::Dim3>;
 
-    typedef Sprite<false>                           DefaultSprite;
-    typedef Sprite<true>                            ColorableSprite;
+    typedef Sprite<dim::Dim2>                           Sprite2D;
+    typedef Sprite<dim::Dim3>                           Sprite3D;
 
 }

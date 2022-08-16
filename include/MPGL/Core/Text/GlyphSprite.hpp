@@ -25,7 +25,10 @@
  */
 #pragma once
 
-#include <MPGL/Core/Textures/Texturable.hpp>
+#include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
+#include <MPGL/Core/Context/Buffers/Vertex.hpp>
+#include <MPGL/Core/Textures/exp_Texturable.hpp>
+#include <MPGL/Core/Shape.hpp>
 
 namespace mpgl {
 
@@ -38,7 +41,10 @@ namespace mpgl {
      * should contain information about color
      */
     template <bool IsColorable>
-    class GlyphSprite : public Texturable {
+    class GlyphSprite :
+        public exp::Texturable2D,
+        public Shape2D
+    {
     private:
         /// The default texturable vertex
         using DefaultVertex = mpgl::Vertex<
@@ -375,6 +381,9 @@ namespace mpgl {
          */
         ~GlyphSprite(void) noexcept = default;
     private:
+        typedef std::array<Vector2f, 4>                 Positions;
+        typedef std::array<uint32, 6>                   Indexes;
+
         Vertices                                        vertices;
 
         /**
@@ -403,12 +412,17 @@ namespace mpgl {
         /**
          * Actualizes buffers before draw
          */
-        void actualizeBufferBeforeDraw(void) const noexcept final;
+        void actualizeBufferBeforeDraw(void) const noexcept;
 
         /**
          * Initializes inner buffers
          */
         void initializeBuffers(void) const noexcept;
+
+        ElementArrayBuffer                              elementBuffer;
+
+        static constexpr const Indexes                  indexes {
+            0, 1, 2, 0, 3, 2};
     };
 
     template class GlyphSprite<true>;

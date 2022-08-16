@@ -25,7 +25,7 @@
  */
 #pragma once
 
-namespace mpgl::exp {
+namespace mpgl {
 
     template <
         template <class, typename> class Base,
