@@ -29,8 +29,9 @@
 
 namespace mpgl {
 
-    void TetragonDrawer<dim::Dim2, void>::operator() (
-        Tetragon<dim::Dim2, void> const& tetragon) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void TetragonDrawer<dim::Dim2, Spec>::operator() (
+        Tetragon<dim::Dim2, Spec> const& tetragon) const noexcept
     {
         tetragon.actualizeBufferBeforeDraw();
         tetragon.shaderProgram->use();
@@ -39,8 +40,9 @@ namespace mpgl {
             VertexArray::DrawMode::Triangles, 6, DataType::UInt32);
     }
 
-    void TetragonDrawer<dim::Dim3, void>::operator() (
-        Tetragon<dim::Dim3, void> const& tetragon) const noexcept
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void TetragonDrawer<dim::Dim3, Spec>::operator() (
+        Tetragon<dim::Dim3, Spec> const& tetragon) const noexcept
     {
         tetragon.actualizeBufferBeforeDraw();
         tetragon.shaderProgram->use();
@@ -50,8 +52,9 @@ namespace mpgl {
             VertexArray::DrawMode::Triangles, 6, DataType::UInt32);
     }
 
-    [[nodiscard]] bool TetragonClickChecker<dim::Dim2, void>::operator() (
-        Tetragon<dim::Dim2, void> const& tetragon,
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    [[nodiscard]] bool TetragonClickChecker<dim::Dim2, Spec>::operator() (
+        Tetragon<dim::Dim2, Spec> const& tetragon,
         Vector2u const& position) const noexcept
     {
         auto const p = Adapter2D{position}.get();
@@ -63,8 +66,9 @@ namespace mpgl {
             isInsideTriangle(p, v0, v2, v3);
     }
 
-    [[nodiscard]] bool TetragonClickChecker<dim::Dim3, void>::operator() (
-        Tetragon<dim::Dim3, void> const& tetragon,
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    [[nodiscard]] bool TetragonClickChecker<dim::Dim3, Spec>::operator() (
+        Tetragon<dim::Dim3, Spec> const& tetragon,
         Vector2u const& position) const noexcept
     {
         auto iter = (tetragon.vertices | views::position

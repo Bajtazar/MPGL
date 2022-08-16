@@ -49,31 +49,40 @@ namespace mpgl {
 
     /**
      * Functor responsible for drawing 2D tetragon on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TetragonDrawer<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct TetragonDrawer<dim::Dim2, Spec> {
         /**
          * Draws 2D tetragon on the screen
          *
          * @param tetragon a constant reference to the tetragon object
          */
         void operator() (
-            Tetragon<dim::Dim2, void> const& tetragon) const noexcept;
+            Tetragon<dim::Dim2, Spec> const& tetragon) const noexcept;
     };
 
     /**
      * Functor responsible for drawing 3D tetragon on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TetragonDrawer<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct TetragonDrawer<dim::Dim3, Spec> {
         /**
          * Draws 3D tetragon on the screen
          *
          * @param tetragon a constant reference to the tetragon object
          */
         void operator() (
-            Tetragon<dim::Dim3, void> const& tetragon) const noexcept;
+            Tetragon<dim::Dim3, Spec> const& tetragon) const noexcept;
     };
+
+    template class TetragonDrawer<dim::Dim2, void>;
+    template class TetragonDrawer<dim::Dim3, void>;
+    template class TetragonDrawer<dim::Dim2, uint8>;
+    template class TetragonDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -88,9 +97,11 @@ namespace mpgl {
     /**
      * Functor responsible for checking whether given point is
      * inside a 2D tetragon
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TetragonClickChecker<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct TetragonClickChecker<dim::Dim2, Spec> {
         /**
          * Checks whether the given point is inside a 2D tetragon
          *
@@ -99,16 +110,18 @@ namespace mpgl {
          * @return if the given point is inside a 2D tetragon
          */
         [[nodiscard]] bool operator() (
-            Tetragon<dim::Dim2, void> const& tetragon,
+            Tetragon<dim::Dim2, Spec> const& tetragon,
             Vector2u const& position) const noexcept;
     };
 
     /**
      * Functor responsible for checking whether given point is
      * inside a 3D tetragon's projection
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TetragonClickChecker<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct TetragonClickChecker<dim::Dim3, Spec> {
         /**
          * Checks whether the given point is inside a 3D tetragon's
          * projection
@@ -119,8 +132,13 @@ namespace mpgl {
          * projection
          */
         [[nodiscard]] bool operator() (
-            Tetragon<dim::Dim3, void> const& tetragon,
+            Tetragon<dim::Dim3, Spec> const& tetragon,
             Vector2u const& position) const noexcept;
     };
+
+    template class TetragonClickChecker<dim::Dim2, void>;
+    template class TetragonClickChecker<dim::Dim3, void>;
+    template class TetragonClickChecker<dim::Dim2, uint8>;
+    template class TetragonClickChecker<dim::Dim3, uint8>;
 
 }

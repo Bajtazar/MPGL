@@ -100,7 +100,7 @@ namespace mpgl {
         /**
          * Draws the tetragon on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
          * Checks whether the given pixel is located inside
@@ -109,13 +109,13 @@ namespace mpgl {
          * @param position the pixel's position
          * @return if the given point is inside the tetragon
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroys the Tetragon object
+         * Virtual destructor. Destroys the Tetragon object
          */
-        ~Tetragon(void) noexcept = default;
+        virtual ~Tetragon(void) noexcept = default;
 
         friend class TetragonDrawer<Dim, Spec>;
         friend class TetragonClickChecker<Dim, Spec>;
@@ -140,6 +140,8 @@ namespace mpgl {
 
     template class Tetragon<dim::Dim2>;
     template class Tetragon<dim::Dim3>;
+    template class Tetragon<dim::Dim2, uint8>;
+    template class Tetragon<dim::Dim3, uint8>;
 
     typedef Tetragon<dim::Dim2>                     Tetragon2D;
     typedef Tetragon<dim::Dim3>                     Tetragon3D;
