@@ -29,6 +29,8 @@
 #include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
+#include <MPGL/Core/Figures/Primitives/Polygon.hpp>
+#include <MPGL/Core/Figures/Primitives/Points.hpp>
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
 
 namespace mpgl {
@@ -273,5 +275,52 @@ namespace mpgl {
 
     template struct TexturedFigurePlacer<LineLoop>::Setter<dim::Dim2, uint8>;
     template struct TexturedFigurePlacer<LineLoop>::Setter<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the points
+     */
+    template <>
+    struct TexturedFigurePlacer<Points> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the points. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the points
+             * ([i/(n - 1), 0] for each vertex in range [0, n] if
+             * points is bigger than 1)
+             *
+             * @param points a reference to the points object
+             */
+            void operator() (
+                Points<Dim, Spec>& points) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the points.
+         * Calls the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param points a reference to the points object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (Points<Dim, Spec>& points) const noexcept
+            { Setter<Dim, Spec>{}(points); }
+    };
+
+    template struct TexturedFigurePlacer<Points>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<Points>::Setter<dim::Dim3, uint8>;
 
 }

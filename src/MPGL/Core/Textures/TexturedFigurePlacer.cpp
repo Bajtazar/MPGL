@@ -81,13 +81,29 @@ namespace mpgl {
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
     void TexturedFigurePlacer<LineLoop>::Setter<Dim, Spec>::operator() (
-        LineLoop<Dim, Spec>& lineStrip) const noexcept
+        LineLoop<Dim, Spec>& lineLoop) const noexcept
     {
-        if (lineStrip.size() <= 1)
+        if (lineLoop.size() <= 1)
             return;
-        auto const piece = 1.f / (lineStrip.size() - 1);
+        auto const piece = 1.f / (lineLoop.size() - 1);
         std::remove_const_t<decltype(piece)> iter = 0.;
-        for (auto& vertex : lineStrip | views::texCoords) {
+        for (auto& vertex : lineLoop | views::texCoords) {
+            vertex = Vector2f{iter, 0};
+            iter += piece;
+        }
+    }
+
+    template <
+        Dimension Dim,
+        TexturableAngularTraitSpecifier<Dim> Spec>
+    void TexturedFigurePlacer<Points>::Setter<Dim, Spec>::operator() (
+        Points<Dim, Spec>& points) const noexcept
+    {
+        if (points.size() <= 1)
+            return;
+        auto const piece = 1.f / (points.size() - 1);
+        std::remove_const_t<decltype(piece)> iter = 0.;
+        for (auto& vertex : points | views::texCoords) {
             vertex = Vector2f{iter, 0};
             iter += piece;
         }
