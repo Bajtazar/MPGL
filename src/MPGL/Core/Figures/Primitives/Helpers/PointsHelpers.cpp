@@ -30,9 +30,10 @@
 
 namespace mpgl {
 
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
     [[nodiscard]] auto
-        PointsClickChecker<dim::Dim2, void>::Normalizer::operator() (
-            Points<dim::Dim2, void> const& points) const noexcept
+        PointsClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
+            Points<dim::Dim2, Spec> const& points) const noexcept
     {
         auto normalizer = [](Vector2f const& value) -> Vector2f {
             return Adapter2D{value}.get();
@@ -41,9 +42,10 @@ namespace mpgl {
             | std::views::transform(normalizer);
     }
 
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
     [[nodiscard]] auto
-        PointsClickChecker<dim::Dim3, void>::Normalizer::operator() (
-            Points<dim::Dim3, void> const& points) const noexcept
+        PointsClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
+            Points<dim::Dim3, Spec> const& points) const noexcept
     {
         auto normalizer = [](auto value) -> Vector2f {
             return Adapter2D{value}.get();
@@ -52,8 +54,9 @@ namespace mpgl {
             points.model) | std::views::transform(normalizer);
     }
 
-    void PointsDrawer<dim::Dim2, void>::operator() (
-        Points<dim::Dim2, void> const& points) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void PointsDrawer<dim::Dim2, Spec>::operator() (
+        Points<dim::Dim2, Spec> const& points) const noexcept
     {
         points.actualizeBufferBeforeDraw();
         points.shaderProgram->use();
@@ -62,8 +65,9 @@ namespace mpgl {
             points.vertices.size());
     }
 
-    void PointsDrawer<dim::Dim3, void>::operator() (
-        Points<dim::Dim3, void> const& points) const noexcept
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void PointsDrawer<dim::Dim3, Spec>::operator() (
+        Points<dim::Dim3, Spec> const& points) const noexcept
     {
         points.actualizeBufferBeforeDraw();
         points.shaderProgram->use();
@@ -73,10 +77,10 @@ namespace mpgl {
             points.vertices.size());
     }
 
-    template <Dimension Dim>
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     [[nodiscard]] bool
-        PointsClickChecker<Dim, void>::operator() (
-            Points<Dim, void> const& points,
+        PointsClickChecker<Dim, Spec>::operator() (
+            Points<Dim, Spec> const& points,
             Vector2u const& position) const noexcept
     {
         Vector2f normalized = Adapter2D{position}.get();

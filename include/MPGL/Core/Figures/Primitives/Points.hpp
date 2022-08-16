@@ -91,21 +91,22 @@ namespace mpgl {
          * @param position the pixel's position
          * @return if the given point is one of the points
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
          * Draws the polygon on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
-         * Destroys the Points object
+         * Virtual destructor. Destroys the Points object
          */
-        ~Points(void) noexcept = default;
+        virtual ~Points(void) noexcept = default;
 
         friend class PointsDrawer<Dim, Spec>;
         friend class PointsClickChecker<Dim, Spec>;
+        friend class PointsClickCheckerNormalizer<Dim, Spec>;
     private:
         using Drawer = PointsDrawer<Dim, Spec>;
         using Clicker = PointsClickChecker<Dim, Spec>;
@@ -116,6 +117,8 @@ namespace mpgl {
 
     template class Points<dim::Dim2>;
     template class Points<dim::Dim3>;
+    template class Points<dim::Dim2, uint8>;
+    template class Points<dim::Dim3, uint8>;
 
     typedef Points<dim::Dim2>                       Points2D;
     typedef Points<dim::Dim3>                       Points3D;

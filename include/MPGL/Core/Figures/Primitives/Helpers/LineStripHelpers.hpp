@@ -128,6 +128,8 @@ namespace mpgl {
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 2D line strip click checker functor
+     *
+     * @tparam Dim the dimension of the space
      */
     template <AngularTraitSpecifier<dim::Dim2> Spec>
     struct LineStripClickCheckerNormalizer<dim::Dim2, Spec> {
@@ -148,6 +150,8 @@ namespace mpgl {
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 3D line strip click checker functor
+     *
+     * @tparam Dim the dimension of the space
      */
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     struct LineStripClickCheckerNormalizer<dim::Dim3, Spec> {

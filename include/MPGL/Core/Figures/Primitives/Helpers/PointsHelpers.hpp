@@ -49,31 +49,50 @@ namespace mpgl {
 
     /**
      * Functor responsible for drawing 2D points on the screen
+     *
+     * @tparam Dim the dimension of the space
      */
-    template <>
-    struct PointsDrawer<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct PointsDrawer<dim::Dim2, Spec> {
         /**
          * Draws 2D points on the screen
          *
          * @param points a constant reference to the points object
          */
         void operator() (
-            Points<dim::Dim2, void> const& points) const noexcept;
+            Points<dim::Dim2, Spec> const& points) const noexcept;
     };
 
     /**
      * Functor responsible for drawing 3D points on the screen
+     *
+     * @tparam Dim the dimension of the space
      */
-    template <>
-    struct PointsDrawer<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct PointsDrawer<dim::Dim3, Spec> {
         /**
          * Draws 3D points on the screen
          *
          * @param points a constant reference to the points object
          */
         void operator() (
-            Points<dim::Dim3, void> const& points) const noexcept;
+            Points<dim::Dim3, Spec> const& points) const noexcept;
     };
+
+    template class PointsDrawer<dim::Dim2, void>;
+    template class PointsDrawer<dim::Dim3, void>;
+    template class PointsDrawer<dim::Dim2, uint8>;
+    template class PointsDrawer<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for normalizing the vertices range
+     * inside the points click checker functor
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
+     */
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    struct PointsClickCheckerNormalizer;
 
     /**
      * Functor responsible for checking whether given point is
@@ -83,21 +102,12 @@ namespace mpgl {
      * @tparam Spec the angular vertices specifier
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    struct PointsClickChecker;
-
-    /**
-     * Functor responsible for checking whether given point is
-     * inside a default points group
-     *
-     * @tparam Dim the dimension of the space
-     */
-    template <Dimension Dim>
-    struct PointsClickChecker<Dim, void> {
+    struct PointsClickChecker {
         /**
          * Functor responsible for normalizing the vertices range
          * inside the points click checker functor
          */
-        struct Normalizer;
+        using Normalizer = PointsClickCheckerNormalizer<Dim, Spec>;
 
         /**
          * Checks whether the given point is inside a default points
@@ -108,16 +118,18 @@ namespace mpgl {
          * @return if the given point is inside a default points group
          */
         [[nodiscard]] bool operator() (
-            Points<Dim, void> const& points,
+            Points<Dim, Spec> const& points,
             Vector2u const& position) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 2D points click checker functor
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct PointsClickChecker<dim::Dim2, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct PointsClickCheckerNormalizer<dim::Dim2, Spec> {
         /**
          * Normalizes the points's vertex positions and returns
          * a view to it
@@ -127,15 +139,17 @@ namespace mpgl {
          * positions
          */
         [[nodiscard]] auto operator() (
-            Points<dim::Dim2, void> const& points) const noexcept;
+            Points<dim::Dim2, Spec> const& points) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 3D points click checker functor
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct PointsClickChecker<dim::Dim3, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct PointsClickCheckerNormalizer<dim::Dim3, Spec> {
         /**
          * Normalizes the points's projected vertex positions
          * and returns a view to it
@@ -145,10 +159,17 @@ namespace mpgl {
          * vertex positions
          */
         [[nodiscard]] auto operator() (
-            Points<dim::Dim3, void> const& points) const noexcept;
+            Points<dim::Dim3, Spec> const& points) const noexcept;
     };
+
+    template class PointsClickCheckerNormalizer<dim::Dim2, void>;
+    template class PointsClickCheckerNormalizer<dim::Dim3, void>;
+    template class PointsClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class PointsClickCheckerNormalizer<dim::Dim3, uint8>;
 
     template class PointsClickChecker<dim::Dim2, void>;
     template class PointsClickChecker<dim::Dim3, void>;
+    template class PointsClickChecker<dim::Dim2, uint8>;
+    template class PointsClickChecker<dim::Dim3, uint8>;
 
 }
