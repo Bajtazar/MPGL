@@ -56,7 +56,7 @@ namespace mpgl::exp {
          * transforming object
          */
         virtual void transform(
-            Transformation2D const& transformator) noexcept = 0;
+            Transformation<Dim> const& transformator) noexcept = 0;
 
         /**
          * Sets the current texture object
