@@ -49,9 +49,11 @@ namespace mpgl {
 
     /**
      * Functor responsible for drawing 2D line strip on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineStripDrawer<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct LineStripDrawer<dim::Dim2, Spec> {
         /**
          * Draws 2D line strip on the screen
          *
@@ -59,14 +61,16 @@ namespace mpgl {
          * line strip object
          */
         void operator() (
-            LineStrip<dim::Dim2, void> const& lineStrip) const noexcept;
+            LineStrip<dim::Dim2, Spec> const& lineStrip) const noexcept;
     };
 
     /**
      * Functor responsible for drawing 3D line strip on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineStripDrawer<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct LineStripDrawer<dim::Dim3, Spec> {
         /**
          * Draws 3D line strip on the screen
          *
@@ -74,8 +78,23 @@ namespace mpgl {
          * object
          */
         void operator() (
-            LineStrip<dim::Dim3, void> const& lineStrip) const noexcept;
+            LineStrip<dim::Dim3, Spec> const& lineStrip) const noexcept;
     };
+
+    template class LineStripDrawer<dim::Dim2, void>;
+    template class LineStripDrawer<dim::Dim3, void>;
+    template class LineStripDrawer<dim::Dim2, uint8>;
+    template class LineStripDrawer<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for normalizing the vertices range
+     * inside the line strip click checker functor
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
+     */
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    struct LineStripClickCheckerNormalizer;
 
     /**
      * Functor responsible for checking whether given point is
@@ -85,21 +104,12 @@ namespace mpgl {
      * @tparam Spec the angular vertices specifier
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    struct LineStripClickChecker;
-
-    /**
-     * Functor responsible for checking whether given point is
-     * inside a default line strip
-     *
-     * @tparam Dim the dimension of the space
-     */
-    template <Dimension Dim>
-    struct LineStripClickChecker<Dim, void> {
+    struct LineStripClickChecker {
         /**
          * Functor responsible for normalizing the vertices range
          * inside the line strip click checker functor
          */
-        struct Normalizer;
+        using Normalizer = LineStripClickCheckerNormalizer<Dim, Spec>;
 
         /**
          * Checks whether the given point is inside a default line
@@ -111,7 +121,7 @@ namespace mpgl {
          * @return if the given point is inside a default line strip
          */
         [[nodiscard]] bool operator() (
-            LineStrip<Dim, void> const& lineStrip,
+            LineStrip<Dim, Spec> const& lineStrip,
             Vector2u const& position) const noexcept;
     };
 
@@ -119,8 +129,8 @@ namespace mpgl {
      * Functor responsible for normalizing the vertices range
      * inside the 2D line strip click checker functor
      */
-    template <>
-    struct LineStripClickChecker<dim::Dim2, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct LineStripClickCheckerNormalizer<dim::Dim2, Spec> {
         /**
          * Normalizes the line strip's vertex positions and returns
          * a view to it
@@ -131,7 +141,7 @@ namespace mpgl {
          * positions
          */
         [[nodiscard]] auto operator() (
-            LineStrip<dim::Dim2, void> const& lineStrip
+            LineStrip<dim::Dim2, Spec> const& lineStrip
             ) const noexcept;
     };
 
@@ -139,8 +149,8 @@ namespace mpgl {
      * Functor responsible for normalizing the vertices range
      * inside the 3D line strip click checker functor
      */
-    template <>
-    struct LineStripClickChecker<dim::Dim3, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct LineStripClickCheckerNormalizer<dim::Dim3, Spec> {
         /**
          * Normalizes the line strip's projected vertex positions
          * and returns a view to it
@@ -151,11 +161,18 @@ namespace mpgl {
          * vertex positions
          */
         [[nodiscard]] auto operator() (
-            LineStrip<dim::Dim3, void> const& lineStrip
+            LineStrip<dim::Dim3, Spec> const& lineStrip
             ) const noexcept;
     };
 
+    template class LineStripClickCheckerNormalizer<dim::Dim2, void>;
+    template class LineStripClickCheckerNormalizer<dim::Dim3, void>;
+    template class LineStripClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class LineStripClickCheckerNormalizer<dim::Dim3, uint8>;
+
     template class LineStripClickChecker<dim::Dim2, void>;
     template class LineStripClickChecker<dim::Dim3, void>;
+    template class LineStripClickChecker<dim::Dim2, uint8>;
+    template class LineStripClickChecker<dim::Dim3, uint8>;
 
 }

@@ -30,9 +30,10 @@
 
 namespace mpgl {
 
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
     [[nodiscard]] auto
-        LineStripClickChecker<dim::Dim2, void>::Normalizer::operator() (
-            LineStrip<dim::Dim2, void> const& lineStrip
+        LineStripClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
+            LineStrip<dim::Dim2, Spec> const& lineStrip
                 ) const noexcept
     {
         auto normalizer = [](Vector2f const& value) -> Vector2f {
@@ -42,9 +43,10 @@ namespace mpgl {
             | std::views::transform(normalizer);
     }
 
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
     [[nodiscard]] auto
-        LineStripClickChecker<dim::Dim3, void>::Normalizer::operator() (
-            LineStrip<dim::Dim3, void> const& lineStrip
+        LineStripClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
+            LineStrip<dim::Dim3, Spec> const& lineStrip
                 ) const noexcept
     {
         auto normalizer = [](auto value) -> Vector2f {
@@ -54,8 +56,9 @@ namespace mpgl {
             lineStrip.model) | std::views::transform(normalizer);
     }
 
-    void LineStripDrawer<dim::Dim2, void>::operator() (
-        LineStrip<dim::Dim2, void> const& lineStrip) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void LineStripDrawer<dim::Dim2, Spec>::operator() (
+        LineStrip<dim::Dim2, Spec> const& lineStrip) const noexcept
     {
         lineStrip.actualizeBufferBeforeDraw();
         lineStrip.shaderProgram->use();
@@ -65,8 +68,9 @@ namespace mpgl {
             lineStrip.vertices.size());
     }
 
-    void LineStripDrawer<dim::Dim3, void>::operator() (
-        LineStrip<dim::Dim3, void> const& lineStrip) const noexcept
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void LineStripDrawer<dim::Dim3, Spec>::operator() (
+        LineStrip<dim::Dim3, Spec> const& lineStrip) const noexcept
     {
         lineStrip.actualizeBufferBeforeDraw();
         lineStrip.shaderProgram->use();
@@ -77,11 +81,10 @@ namespace mpgl {
             lineStrip.vertices.size());
     }
 
-    template <Dimension Dim>
-    [[nodiscard]] bool
-        LineStripClickChecker<Dim, void>::operator() (
-            LineStrip<Dim, void> const& lineStrip,
-            Vector2u const& position) const noexcept
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool LineStripClickChecker<Dim, Spec>::operator() (
+        LineStrip<Dim, Spec> const& lineStrip,
+        Vector2u const& position) const noexcept
     {
         Vector2f pos = Adapter2D{position}.get();
         auto range = Normalizer{}(lineStrip);
