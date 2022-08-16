@@ -50,5 +50,14 @@ namespace mpgl {
         get<"texCoords">(tetragon[3]) = Vector2f{1, 0};
     }
 
+    template <
+        Dimension Dim,
+        TexturableAngularTraitSpecifier<Dim> Spec>
+    void TexturedFigurePlacer<Line>::Setter<Dim, Spec>::operator() (
+        Line<Dim, Spec>& line) const noexcept
+    {
+        get<"texCoords">(line[0]) = Vector2f{0, 0};
+        get<"texCoords">(line[1]) = Vector2f{1, 0};
+    }
 
 }

@@ -132,4 +132,50 @@ namespace mpgl {
     template struct TexturedFigurePlacer<Tetragon>::Setter<dim::Dim2, uint8>;
     template struct TexturedFigurePlacer<Tetragon>::Setter<dim::Dim3, uint8>;
 
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the line
+     */
+    template <>
+    struct TexturedFigurePlacer<Line> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the line. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the line
+             * ({[0, 0], [1, 0]} by default)
+             *
+             * @param line a reference to the line object
+             */
+            void operator() (
+                Line<Dim, Spec>& line) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the line. Calls
+         * the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param line a reference to the line object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (Line<Dim, Spec>& line) const noexcept
+            { Setter<Dim, Spec>{}(line); }
+    };
+
+    template struct TexturedFigurePlacer<Line>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<Line>::Setter<dim::Dim3, uint8>;
+
 }
