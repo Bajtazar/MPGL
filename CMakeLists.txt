@@ -77,6 +77,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Textures/TexturePack.cpp
     ${MPGL_SOURCES}/Core/Textures/Sprite.cpp
     ${MPGL_SOURCES}/Core/Textures/TextureLoader.cpp
+    ${MPGL_SOURCES}/Core/Textures/exp_Texturable.cpp
     ${MPGL_SOURCES}/Core/Textures/Texturable.cpp
     ${MPGL_SOURCES}/Core/Textures/EllipticSprite.cpp
     ${MPGL_SOURCES}/Core/Textures/ShadeableSprite.cpp
