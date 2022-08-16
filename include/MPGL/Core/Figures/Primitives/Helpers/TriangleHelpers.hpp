@@ -49,59 +49,40 @@ namespace mpgl {
 
     /**
      * Functor responsible for drawing 2D triangle on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TriangleDrawer<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct TriangleDrawer<dim::Dim2, Spec> {
         /**
          * Draws 2D triangle on the screen
          *
          * @param triangle a constant reference to the triangle object
          */
         void operator() (
-            Triangle<dim::Dim2, void> const& triangle) const noexcept;
+            Triangle<dim::Dim2, Spec> const& triangle) const noexcept;
     };
 
     /**
      * Functor responsible for drawing 3D triangle on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TriangleDrawer<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct TriangleDrawer<dim::Dim3, Spec> {
         /**
          * Draws 3D triangle on the screen
          *
          * @param triangle a constant reference to the triangle object
          */
         void operator() (
-            Triangle<dim::Dim3, void> const& triangle) const noexcept;
+            Triangle<dim::Dim3, Spec> const& triangle) const noexcept;
     };
 
-    /**
-     * Functor responsible for drawing 2D triangle on the screen
-     */
-    template <>
-    struct TriangleDrawer<dim::Dim2, uint8> {
-        /**
-         * Draws 2D triangle on the screen
-         *
-         * @param triangle a constant reference to the triangle object
-         */
-        void operator() (
-            Triangle<dim::Dim2, uint8> const& triangle) const noexcept;
-    };
-
-    /**
-     * Functor responsible for drawing 3D triangle on the screen
-     */
-    template <>
-    struct TriangleDrawer<dim::Dim3, uint8> {
-        /**
-         * Draws 3D triangle on the screen
-         *
-         * @param triangle a constant reference to the triangle object
-         */
-        void operator() (
-            Triangle<dim::Dim3, uint8> const& triangle) const noexcept;
-    };
+    template class TriangleDrawer<dim::Dim2, void>;
+    template class TriangleDrawer<dim::Dim3, void>;
+    template class TriangleDrawer<dim::Dim2, uint8>;
+    template class TriangleDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -116,9 +97,11 @@ namespace mpgl {
     /**
      * Functor responsible for checking whether given point is
      * inside a 2D triangle
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TriangleClickChecker<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct TriangleClickChecker<dim::Dim2, Spec> {
         /**
          * Checks whether the given point is inside a 2D triangle
          *
@@ -127,16 +110,18 @@ namespace mpgl {
          * @return if the given point is inside a 2D triangle
          */
         [[nodiscard]] bool operator() (
-            Triangle<dim::Dim2, void> const& triangle,
+            Triangle<dim::Dim2, Spec> const& triangle,
             Vector2u const& position) const noexcept;
     };
 
     /**
      * Functor responsible for checking whether given point is
      * inside a 3D triangle's projection
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct TriangleClickChecker<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct TriangleClickChecker<dim::Dim3, Spec> {
         /**
          * Checks whether the given point is inside a 3D triangle's
          * projection
@@ -147,46 +132,13 @@ namespace mpgl {
          * projection
          */
         [[nodiscard]] bool operator() (
-            Triangle<dim::Dim3, void> const& triangle,
+            Triangle<dim::Dim3, Spec> const& triangle,
             Vector2u const& position) const noexcept;
     };
 
-    /**
-     * Functor responsible for checking whether given point is
-     * inside a 2D triangle
-     */
-    template <>
-    struct TriangleClickChecker<dim::Dim2, uint8> {
-        /**
-         * Checks whether the given point is inside a 2D triangle
-         *
-         * @param triangle a constant reference to the triangle object
-         * @param position a constant reference to the position object
-         * @return if the given point is inside a 2D triangle
-         */
-        [[nodiscard]] bool operator() (
-            Triangle<dim::Dim2, uint8> const& triangle,
-            Vector2u const& position) const noexcept;
-    };
-
-    /**
-     * Functor responsible for checking whether given point is
-     * inside a 3D triangle's projection
-     */
-    template <>
-    struct TriangleClickChecker<dim::Dim3, uint8> {
-        /**
-         * Checks whether the given point is inside a 3D triangle's
-         * projection
-         *
-         * @param triangle a constant reference to the triangle object
-         * @param position a constant reference to the position object
-         * @return if the given point is inside a 3D triangle's
-         * projection
-         */
-        [[nodiscard]] bool operator() (
-            Triangle<dim::Dim3, uint8> const& triangle,
-            Vector2u const& position) const noexcept;
-    };
+    template class TriangleClickChecker<dim::Dim2, void>;
+    template class TriangleClickChecker<dim::Dim3, void>;
+    template class TriangleClickChecker<dim::Dim2, uint8>;
+    template class TriangleClickChecker<dim::Dim3, uint8>;
 
 }

@@ -30,8 +30,9 @@
 
 namespace mpgl {
 
-    void TriangleDrawer<dim::Dim2, void>::operator() (
-        Triangle<dim::Dim2, void> const& triangle) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void TriangleDrawer<dim::Dim2, Spec>::operator() (
+        Triangle<dim::Dim2, Spec> const& triangle) const noexcept
     {
         triangle.actualizeBufferBeforeDraw();
         triangle.shaderProgram->use();
@@ -40,29 +41,9 @@ namespace mpgl {
             VertexArray::DrawMode::Triangles, 3);
     }
 
-    void TriangleDrawer<dim::Dim3, void>::operator() (
-        Triangle<dim::Dim3, void> const& triangle) const noexcept
-    {
-        triangle.actualizeBufferBeforeDraw();
-        triangle.shaderProgram->use();
-        triangle.actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{triangle.vertexArray};
-        triangle.vertexArray.drawArrays(
-            VertexArray::DrawMode::Triangles, 3);
-    }
-
-    void TriangleDrawer<dim::Dim2, uint8>::operator() (
-        Triangle<dim::Dim2, uint8> const& triangle) const noexcept
-    {
-        triangle.actualizeBufferBeforeDraw();
-        triangle.shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{triangle.vertexArray};
-        triangle.vertexArray.drawArrays(
-            VertexArray::DrawMode::Triangles, 3);
-    }
-
-    void TriangleDrawer<dim::Dim3, uint8>::operator() (
-        Triangle<dim::Dim3, uint8> const& triangle) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void TriangleDrawer<dim::Dim3, Spec>::operator() (
+        Triangle<dim::Dim3, Spec> const& triangle) const noexcept
     {
         triangle.actualizeBufferBeforeDraw();
         triangle.shaderProgram->use();
@@ -72,8 +53,9 @@ namespace mpgl {
             VertexArray::DrawMode::Triangles, 3);
     }
 
-    [[nodiscard]] bool TriangleClickChecker<dim::Dim2, void>::operator() (
-        Triangle<dim::Dim2, void> const& triangle,
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    [[nodiscard]] bool TriangleClickChecker<dim::Dim2, Spec>::operator() (
+        Triangle<dim::Dim2, Spec> const& triangle,
         Vector2u const& position) const noexcept
     {
         return isInsideTriangle(Adapter2D{position}.get(),
@@ -82,29 +64,9 @@ namespace mpgl {
             get<"position">(triangle.vertices[2]).get());
     }
 
-    [[nodiscard]] bool TriangleClickChecker<dim::Dim3, void>::operator() (
-        Triangle<dim::Dim3, void> const& triangle,
-        Vector2u const& position) const noexcept
-    {
-        auto iter = (triangle.vertices | views::position
-            | views::project(triangle.model)).begin();
-        return isInsideTriangle(Adapter2D{position}.get(),
-            Adapter2D{*iter++}.get(), Adapter2D{*iter++}.get(),
-            Adapter2D{*iter++}.get());
-    }
-
-    [[nodiscard]] bool TriangleClickChecker<dim::Dim2, uint8>::operator() (
-        Triangle<dim::Dim2, uint8> const& triangle,
-        Vector2u const& position) const noexcept
-    {
-        return isInsideTriangle(Adapter2D{position}.get(),
-            get<"position">(triangle.vertices[0]).get(),
-            get<"position">(triangle.vertices[1]).get(),
-            get<"position">(triangle.vertices[2]).get());
-    }
-
-    [[nodiscard]] bool TriangleClickChecker<dim::Dim3, uint8>::operator() (
-        Triangle<dim::Dim3, uint8> const& triangle,
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    [[nodiscard]] bool TriangleClickChecker<dim::Dim3, Spec>::operator() (
+        Triangle<dim::Dim3, Spec> const& triangle,
         Vector2u const& position) const noexcept
     {
         auto iter = (triangle.vertices | views::position
