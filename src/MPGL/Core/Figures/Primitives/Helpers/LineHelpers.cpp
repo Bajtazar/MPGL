@@ -30,8 +30,9 @@
 
 namespace mpgl {
 
-    void LineDrawer<dim::Dim2, void>::operator() (
-        Line<dim::Dim2, void> const& line) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void LineDrawer<dim::Dim2, Spec>::operator() (
+        Line<dim::Dim2, Spec> const& line) const noexcept
     {
         line.actualizeBufferBeforeDraw();
         line.shaderProgram->use();
@@ -39,8 +40,9 @@ namespace mpgl {
         line.vertexArray.drawArrays(VertexArray::DrawMode::Lines, 2);
     }
 
-    void LineDrawer<dim::Dim3, void>::operator() (
-        Line<dim::Dim3, void> const& line) const noexcept
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void LineDrawer<dim::Dim3, Spec>::operator() (
+        Line<dim::Dim3, Spec> const& line) const noexcept
     {
         line.actualizeBufferBeforeDraw();
         line.shaderProgram->use();
@@ -49,8 +51,9 @@ namespace mpgl {
         line.vertexArray.drawArrays(VertexArray::DrawMode::Lines, 2);
     }
 
-    [[nodiscard]] bool LineClickChecker<dim::Dim2, void>::operator() (
-        Line<dim::Dim2, void> const& line,
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    [[nodiscard]] bool LineClickChecker<dim::Dim2, Spec>::operator() (
+        Line<dim::Dim2, Spec> const& line,
         Vector2u const& position) const noexcept
     {
         return isOnLine(Adapter2D{position}.get(),
@@ -58,8 +61,9 @@ namespace mpgl {
             get<"position">(line.vertices.back()).get());
     }
 
-    [[nodiscard]] bool LineClickChecker<dim::Dim3, void>::operator() (
-        Line<dim::Dim3, void> const& line,
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    [[nodiscard]] bool LineClickChecker<dim::Dim3, Spec>::operator() (
+        Line<dim::Dim3, Spec> const& line,
         Vector2u const& position) const noexcept
     {
         auto iter = (line.vertices | views::position

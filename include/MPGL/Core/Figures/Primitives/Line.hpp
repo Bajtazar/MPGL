@@ -84,7 +84,7 @@ namespace mpgl {
         /**
          * Draws the line on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
          * Checks whether the given pixel is located on the line
@@ -92,13 +92,13 @@ namespace mpgl {
          * @param position the pixel's position
          * @return if the given point is located on the line
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         *  Destroy the Line object
+         * Virtual destructor. Destroys the Line object
          */
-        ~Line(void) noexcept = default;
+        virtual ~Line(void) noexcept = default;
 
         friend class LineDrawer<Dim, Spec>;
         friend class LineClickChecker<Dim, Spec>;
@@ -112,6 +112,8 @@ namespace mpgl {
 
     template class Line<dim::Dim2>;
     template class Line<dim::Dim3>;
+    template class Line<dim::Dim2, uint8>;
+    template class Line<dim::Dim3, uint8>;
 
     typedef Line<dim::Dim2>                         Line2D;
     typedef Line<dim::Dim3>                         Line3D;

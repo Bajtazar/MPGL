@@ -49,31 +49,40 @@ namespace mpgl {
 
     /**
      * Functor responsible for drawing 2D line on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineDrawer<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct LineDrawer<dim::Dim2, Spec> {
         /**
          * Draws 2D line on the screen
          *
          * @param line a constant reference to the line object
          */
         void operator() (
-            Line<dim::Dim2, void> const& line) const noexcept;
+            Line<dim::Dim2, Spec> const& line) const noexcept;
     };
 
     /**
      * Functor responsible for drawing 3D line on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineDrawer<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct LineDrawer<dim::Dim3, Spec> {
         /**
          * Draws 3D line on the screen
          *
          * @param line a constant reference to the line object
          */
         void operator() (
-            Line<dim::Dim3, void> const& line) const noexcept;
+            Line<dim::Dim3, Spec> const& line) const noexcept;
     };
+
+    template class LineDrawer<dim::Dim2, void>;
+    template class LineDrawer<dim::Dim3, void>;
+    template class LineDrawer<dim::Dim2, uint8>;
+    template class LineDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -88,9 +97,11 @@ namespace mpgl {
     /**
      * Functor responsible for checking whether given point is
      * inside a 2D line
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineClickChecker<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct LineClickChecker<dim::Dim2, Spec> {
         /**
          * Checks whether the given point is inside a 2D line
          *
@@ -99,16 +110,18 @@ namespace mpgl {
          * @return if the given point is inside a 2D line
          */
         [[nodiscard]] bool operator() (
-            Line<dim::Dim2, void> const& line,
+            Line<dim::Dim2, Spec> const& line,
             Vector2u const& position) const noexcept;
     };
 
     /**
      * Functor responsible for checking whether given point is
      * inside a 3D line's projection
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineClickChecker<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct LineClickChecker<dim::Dim3, Spec> {
         /**
          * Checks whether the given point is inside a 3D line's
          * projection
@@ -119,8 +132,13 @@ namespace mpgl {
          * projection
          */
         [[nodiscard]] bool operator() (
-            Line<dim::Dim3, void> const& line,
+            Line<dim::Dim3, Spec> const& line,
             Vector2u const& position) const noexcept;
     };
+
+    template class LineClickChecker<dim::Dim2, void>;
+    template class LineClickChecker<dim::Dim3, void>;
+    template class LineClickChecker<dim::Dim2, uint8>;
+    template class LineClickChecker<dim::Dim3, uint8>;
 
 }
