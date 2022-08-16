@@ -192,6 +192,8 @@ namespace mpgl {
 
     template class ResizableAngular<dim::Dim2>;
     template class ResizableAngular<dim::Dim3>;
+    template class ResizableAngular<dim::Dim2, uint8>;
+    template class ResizableAngular<dim::Dim3, uint8>;
 
     typedef ResizableAngular<dim::Dim2>             ResizableAngular2D;
     typedef ResizableAngular<dim::Dim3>             ResizableAngular3D;

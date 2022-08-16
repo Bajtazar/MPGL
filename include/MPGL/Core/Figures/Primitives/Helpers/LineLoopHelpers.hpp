@@ -49,9 +49,11 @@ namespace mpgl {
 
     /**
      * Functor responsible for drawing 2D line loop on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineLoopDrawer<dim::Dim2, void> {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct LineLoopDrawer<dim::Dim2, Spec> {
         /**
          * Draws 2D line loop on the screen
          *
@@ -59,14 +61,16 @@ namespace mpgl {
          * line loop object
          */
         void operator() (
-            LineLoop<dim::Dim2, void> const& lineLoop) const noexcept;
+            LineLoop<dim::Dim2, Spec> const& lineLoop) const noexcept;
     };
 
     /**
      * Functor responsible for drawing 3D line loop on the screen
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineLoopDrawer<dim::Dim3, void> {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct LineLoopDrawer<dim::Dim3, Spec> {
         /**
          * Draws 3D line loop on the screen
          *
@@ -74,8 +78,23 @@ namespace mpgl {
          * object
          */
         void operator() (
-            LineLoop<dim::Dim3, void> const& lineLoop) const noexcept;
+            LineLoop<dim::Dim3, Spec> const& lineLoop) const noexcept;
     };
+
+    template class LineLoopDrawer<dim::Dim2, void>;
+    template class LineLoopDrawer<dim::Dim2, uint8>;
+    template class LineLoopDrawer<dim::Dim3, void>;
+    template class LineLoopDrawer<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for normalizing the vertices range
+     * inside the line loop click checker functor
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
+     */
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    struct LineLoopClickCheckerNormalizer;
 
     /**
      * Functor responsible for checking whether given point is
@@ -85,21 +104,12 @@ namespace mpgl {
      * @tparam Spec the angular vertices specifier
      */
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    struct LineLoopClickChecker;
-
-    /**
-     * Functor responsible for checking whether given point is
-     * inside a default line loop
-     *
-     * @tparam Dim the dimension of the space
-     */
-    template <Dimension Dim>
-    struct LineLoopClickChecker<Dim, void> {
+    struct LineLoopClickChecker {
         /**
          * Functor responsible for normalizing the vertices range
          * inside the line loop click checker functor
          */
-        struct Normalizer;
+        using Normalizer = LineLoopClickCheckerNormalizer<Dim, Spec>;
 
         /**
          * Checks whether the given point is inside a default line
@@ -111,16 +121,18 @@ namespace mpgl {
          * @return if the given point is inside a default line loop
          */
         [[nodiscard]] bool operator() (
-            LineLoop<Dim, void> const& lineLoop,
+            LineLoop<Dim, Spec> const& lineLoop,
             Vector2u const& position) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 2D line loop click checker functor
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineLoopClickChecker<dim::Dim2, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    struct LineLoopClickCheckerNormalizer<dim::Dim2, Spec> {
         /**
          * Normalizes the line loop's vertex positions and returns
          * a view to it
@@ -131,15 +143,17 @@ namespace mpgl {
          * positions
          */
         [[nodiscard]] auto operator() (
-            LineLoop<dim::Dim2, void> const& lineLoop) const noexcept;
+            LineLoop<dim::Dim2, Spec> const& lineLoop) const noexcept;
     };
 
     /**
      * Functor responsible for normalizing the vertices range
      * inside the 3D line loop click checker functor
+     *
+     * @tparam Spec the angular vertices specifier
      */
-    template <>
-    struct LineLoopClickChecker<dim::Dim3, void>::Normalizer {
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    struct LineLoopClickCheckerNormalizer<dim::Dim3, Spec> {
         /**
          * Normalizes the line loop's projected vertex positions
          * and returns a view to it
@@ -150,10 +164,17 @@ namespace mpgl {
          * vertex positions
          */
         [[nodiscard]] auto operator() (
-            LineLoop<dim::Dim3, void> const& lineLoop) const noexcept;
+            LineLoop<dim::Dim3, Spec> const& lineLoop) const noexcept;
     };
+
+    template class LineLoopClickCheckerNormalizer<dim::Dim2, void>;
+    template class LineLoopClickCheckerNormalizer<dim::Dim3, void>;
+    template class LineLoopClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class LineLoopClickCheckerNormalizer<dim::Dim3, uint8>;
 
     template class LineLoopClickChecker<dim::Dim2, void>;
     template class LineLoopClickChecker<dim::Dim3, void>;
+    template class LineLoopClickChecker<dim::Dim2, uint8>;
+    template class LineLoopClickChecker<dim::Dim3, uint8>;
 
 }

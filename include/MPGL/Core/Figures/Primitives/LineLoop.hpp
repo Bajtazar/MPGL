@@ -89,7 +89,7 @@ namespace mpgl {
         /**
          * Draws the polygon on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
          * Checks whether the given pixel is located on the line loop
@@ -97,16 +97,17 @@ namespace mpgl {
          * @param position the pixel's position
          * @return if the given point is on the line loop
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroys the Line Strip object
+         * Virtual destructor. Destroys the Line Strip object
          */
-        ~LineLoop(void) noexcept = default;
+        virtual ~LineLoop(void) noexcept = default;
 
         friend class LineLoopDrawer<Dim, Spec>;
         friend class LineLoopClickChecker<Dim, Spec>;
+        friend class LineLoopClickCheckerNormalizer<Dim, Spec>;
     private:
         using Drawer = LineLoopDrawer<Dim, Spec>;
         using Clicker = LineLoopClickChecker<Dim, Spec>;
@@ -117,6 +118,8 @@ namespace mpgl {
 
     template class LineLoop<dim::Dim2>;
     template class LineLoop<dim::Dim3>;
+    template class LineLoop<dim::Dim2, uint8>;
+    template class LineLoop<dim::Dim3, uint8>;
 
     typedef LineLoop<dim::Dim2>                     LineLoop2D;
     typedef LineLoop<dim::Dim3>                     LineLoop3D;

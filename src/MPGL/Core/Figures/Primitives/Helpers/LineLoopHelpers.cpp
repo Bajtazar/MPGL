@@ -30,9 +30,10 @@
 
 namespace mpgl {
 
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
     [[nodiscard]] auto
-        LineLoopClickChecker<dim::Dim2, void>::Normalizer::operator() (
-            LineLoop<dim::Dim2, void> const& lineLoop) const noexcept
+        LineLoopClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
+            LineLoop<dim::Dim2, Spec> const& lineLoop) const noexcept
     {
         auto normalizer = [](Vector2f const& value) -> Vector2f {
             return Adapter2D{value}.get();
@@ -41,9 +42,10 @@ namespace mpgl {
             | std::views::transform(normalizer);
     }
 
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
     [[nodiscard]] auto
-        LineLoopClickChecker<dim::Dim3, void>::Normalizer::operator() (
-            LineLoop<dim::Dim3, void> const& lineLoop) const noexcept
+        LineLoopClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
+            LineLoop<dim::Dim3, Spec> const& lineLoop) const noexcept
     {
         auto normalizer = [](auto value) -> Vector2f {
             return Adapter2D{value}.get();
@@ -52,8 +54,9 @@ namespace mpgl {
             lineLoop.model) | std::views::transform(normalizer);
     }
 
-    void LineLoopDrawer<dim::Dim2, void>::operator() (
-        LineLoop<dim::Dim2, void> const& lineLoop) const noexcept
+    template <AngularTraitSpecifier<dim::Dim2> Spec>
+    void LineLoopDrawer<dim::Dim2, Spec>::operator() (
+        LineLoop<dim::Dim2, Spec> const& lineLoop) const noexcept
     {
         lineLoop.actualizeBufferBeforeDraw();
         lineLoop.shaderProgram->use();
@@ -63,8 +66,9 @@ namespace mpgl {
             lineLoop.vertices.size());
     }
 
-    void LineLoopDrawer<dim::Dim3, void>::operator() (
-        LineLoop<dim::Dim3, void> const& lineLoop) const noexcept
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void LineLoopDrawer<dim::Dim3, Spec>::operator() (
+        LineLoop<dim::Dim3, Spec> const& lineLoop) const noexcept
     {
         lineLoop.actualizeBufferBeforeDraw();
         lineLoop.shaderProgram->use();
@@ -75,10 +79,10 @@ namespace mpgl {
             lineLoop.vertices.size());
     }
 
-    template <Dimension Dim>
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     [[nodiscard]] bool
-        LineLoopClickChecker<Dim, void>::operator() (
-            LineLoop<Dim, void> const& lineLoop,
+        LineLoopClickChecker<Dim, Spec>::operator() (
+            LineLoop<Dim, Spec> const& lineLoop,
             Vector2u const& position) const noexcept
     {
         Vector2f pos = Adapter2D{position}.get();
