@@ -55,10 +55,11 @@ namespace mpgl {
          * @param thirdVertex the third vertex coord
          * @param color the color of the triangle
          */
-        Triangle(Vector const& firstVertex,
-                Vector const& secondVertex,
-                Vector const& thirdVertex,
-                Color const& color = {});
+        Triangle(
+            Vector const& firstVertex,
+            Vector const& secondVertex,
+            Vector const& thirdVertex,
+            Color const& color = {});
 
         /**
          * Constructs a new Triangle with given
@@ -77,7 +78,7 @@ namespace mpgl {
         /**
          * Draws the triangle on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
          * Checks whether the given pixel is located inside
@@ -86,13 +87,13 @@ namespace mpgl {
          * @param position the pixel's position
          * @return if the given point is inside the triangle
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroy the Triangle object
+         * Virtual destructor. Destroys the Triangle object
          */
-        ~Triangle(void) noexcept = default;
+        virtual ~Triangle(void) noexcept = default;
 
         friend class TriangleDrawer<Dim, Spec>;
         friend class TriangleClickChecker<Dim, Spec>;
@@ -106,6 +107,8 @@ namespace mpgl {
 
     template class Triangle<dim::Dim2>;
     template class Triangle<dim::Dim3>;
+    template class Triangle<dim::Dim2, uint8>;
+    template class Triangle<dim::Dim3, uint8>;
 
     typedef Triangle<dim::Dim2>                     Triangle2D;
     typedef Triangle<dim::Dim3>                     Triangle3D;

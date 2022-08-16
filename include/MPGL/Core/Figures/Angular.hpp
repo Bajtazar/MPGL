@@ -58,8 +58,8 @@ namespace mpgl {
          * @param transformator the constant reference to the
          * transforming object
          */
-        void transform(
-            Transformation<Dim> const& transformator) noexcept final;
+        virtual void transform(
+            Transformation<Dim> const& transformator) noexcept;
 
         /**
          * Returns the reference to vertex with the given index
@@ -287,6 +287,8 @@ namespace mpgl {
 
     template class Angular<dim::Dim2>;
     template class Angular<dim::Dim3>;
+    template class Angular<dim::Dim2, uint8>;
+    template class Angular<dim::Dim3, uint8>;
 
     typedef Angular<dim::Dim2>              Angular2D;
     typedef Angular<dim::Dim3>              Angular3D;

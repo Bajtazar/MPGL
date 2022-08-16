@@ -76,6 +76,34 @@ namespace mpgl {
     };
 
     /**
+     * Functor responsible for drawing 2D triangle on the screen
+     */
+    template <>
+    struct TriangleDrawer<dim::Dim2, uint8> {
+        /**
+         * Draws 2D triangle on the screen
+         *
+         * @param triangle a constant reference to the triangle object
+         */
+        void operator() (
+            Triangle<dim::Dim2, uint8> const& triangle) const noexcept;
+    };
+
+    /**
+     * Functor responsible for drawing 3D triangle on the screen
+     */
+    template <>
+    struct TriangleDrawer<dim::Dim3, uint8> {
+        /**
+         * Draws 3D triangle on the screen
+         *
+         * @param triangle a constant reference to the triangle object
+         */
+        void operator() (
+            Triangle<dim::Dim3, uint8> const& triangle) const noexcept;
+    };
+
+    /**
      * Functor responsible for checking whether given point is
      * inside a triangle
      *
@@ -120,6 +148,44 @@ namespace mpgl {
          */
         [[nodiscard]] bool operator() (
             Triangle<dim::Dim3, void> const& triangle,
+            Vector2u const& position) const noexcept;
+    };
+
+    /**
+     * Functor responsible for checking whether given point is
+     * inside a 2D triangle
+     */
+    template <>
+    struct TriangleClickChecker<dim::Dim2, uint8> {
+        /**
+         * Checks whether the given point is inside a 2D triangle
+         *
+         * @param triangle a constant reference to the triangle object
+         * @param position a constant reference to the position object
+         * @return if the given point is inside a 2D triangle
+         */
+        [[nodiscard]] bool operator() (
+            Triangle<dim::Dim2, uint8> const& triangle,
+            Vector2u const& position) const noexcept;
+    };
+
+    /**
+     * Functor responsible for checking whether given point is
+     * inside a 3D triangle's projection
+     */
+    template <>
+    struct TriangleClickChecker<dim::Dim3, uint8> {
+        /**
+         * Checks whether the given point is inside a 3D triangle's
+         * projection
+         *
+         * @param triangle a constant reference to the triangle object
+         * @param position a constant reference to the position object
+         * @return if the given point is inside a 3D triangle's
+         * projection
+         */
+        [[nodiscard]] bool operator() (
+            Triangle<dim::Dim3, uint8> const& triangle,
             Vector2u const& position) const noexcept;
     };
 
