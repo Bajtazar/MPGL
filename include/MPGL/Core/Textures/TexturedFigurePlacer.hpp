@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Primitives/LineStrip.hpp>
+#include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
@@ -202,7 +203,7 @@ namespace mpgl {
              * ([i/(n - 1), 0] for each vertex in range [0, n] if
              * strip size is bigger than 1)
              *
-             * @param line a reference to the line object
+             * @param line a reference to the line strip object
              */
             void operator() (
                 LineStrip<Dim, Spec>& line) const noexcept;
@@ -225,5 +226,52 @@ namespace mpgl {
 
     template struct TexturedFigurePlacer<LineStrip>::Setter<dim::Dim2, uint8>;
     template struct TexturedFigurePlacer<LineStrip>::Setter<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the line loop
+     */
+    template <>
+    struct TexturedFigurePlacer<LineLoop> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the line loop. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the line loop
+             * ([i/(n - 1), 0] for each vertex in range [0, n] if
+             * loop size is bigger than 1)
+             *
+             * @param lineLoop a reference to the line loop object
+             */
+            void operator() (
+                LineLoop<Dim, Spec>& lineLoop) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the line loop.
+         * Calls the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param lineLoop a reference to the line loop object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (LineLoop<Dim, Spec>& lineLoop) const noexcept
+            { Setter<Dim, Spec>{}(lineLoop); }
+    };
+
+    template struct TexturedFigurePlacer<LineLoop>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<LineLoop>::Setter<dim::Dim3, uint8>;
 
 }
