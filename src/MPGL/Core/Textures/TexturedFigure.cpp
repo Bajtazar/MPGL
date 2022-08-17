@@ -32,10 +32,10 @@ namespace mpgl {
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    TexturedFigure<Base<Dim, Spec>>::Executable const
-        TexturedFigure<Base<Dim, Spec>>::executable =
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    TexturedFigure<Base, Dim, Spec>::Executable const
+        TexturedFigure<Base, Dim, Spec>::executable =
     [](ShaderProgram const& program) {
         ShaderLocation{program, "tex"}(0);
     };
@@ -43,17 +43,17 @@ namespace mpgl {
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    TexturedFigure<Base<Dim, Spec>>::Placer const
-        TexturedFigure<Base<Dim, Spec>>::placer{};
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    TexturedFigure<Base, Dim, Spec>::Placer const
+        TexturedFigure<Base, Dim, Spec>::placer{};
 
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    void TexturedFigure<Base<Dim, Spec>>::draw(void) const noexcept {
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    void TexturedFigure<Base, Dim, Spec>::draw(void) const noexcept {
         auto const& textureBuffer = this->texture.getTextureBuffer();
         textureBuffer.activate();
         BindGuard textureGuard{textureBuffer};
@@ -63,9 +63,9 @@ namespace mpgl {
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    void TexturedFigure<Base<Dim, Spec>>::setConvolution(
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    void TexturedFigure<Base, Dim, Spec>::setConvolution(
         Matrix3f const& convolution)
     {
         this->setShader(VertexTraits::convolutionShader());
@@ -81,18 +81,18 @@ namespace mpgl {
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    void TexturedFigure<Base<Dim, Spec>>::resetConvolution(void) {
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    void TexturedFigure<Base, Dim, Spec>::resetConvolution(void) {
         setShader(VertexTraits::shader());
     }
 
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    void TexturedFigure<Base<Dim, Spec>>::setShader(
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    void TexturedFigure<Base, Dim, Spec>::setShader(
         ShaderProgram const& program) noexcept
     {
         Base<Dim, Spec>::setShader(program);
@@ -102,9 +102,9 @@ namespace mpgl {
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    void TexturedFigure<Base<Dim, Spec>>::setShader(
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    void TexturedFigure<Base, Dim, Spec>::setShader(
         ShaderProgram&& program) noexcept
     {
         Base<Dim, Spec>::setShader(std::move(program));
@@ -114,9 +114,9 @@ namespace mpgl {
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    void TexturedFigure<Base<Dim, Spec>>::setShader(
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    void TexturedFigure<Base, Dim, Spec>::setShader(
         std::string const& name) noexcept
     {
         Base<Dim, Spec>::setShader(name, executable);

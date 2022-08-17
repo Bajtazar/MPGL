@@ -26,32 +26,40 @@
 #pragma once
 
 #include <MPGL/Core/Textures/TexturedFigurePlacer.hpp>
+#include <MPGL/Core/Figures/Elliptic.hpp>
 #include <MPGL/Core/Textures/Sprite.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
 namespace mpgl {
 
+    namespace details {
+
+        /**
+         * Checks whether the given specifier is either angular
+         * or elliptic specifier
+         *
+         * @tparam Specifier the figure vertices specifier
+         * @tparam Dim the dimension of the space
+         */
+        template <typename Tp, class Dim>
+        concept FigureTraitSpecifier =
+            TexturableAngularTraitSpecifier<Tp, Dim> ||
+            EllipticTraitSpecifier<Tp, Dim>;
+    }
+
     /**
      * Wrapper class that allows to use a given figure as a sprite
      *
-     * @tparam Tp the type of the figure
-     */
-    template <InstanceOf<Figure> Tp>
-    class TexturedFigure;
-
-    /**
-     * Wrapper class that allows to use a given angular as a sprite
-     *
-     * @tparam Base an angular type
+     * @tparam Base a figure type
      * @tparam Dim the dimension of the space
-     * @tparam Specifier the angular vertices specifier
+     * @tparam Specifier the figure vertices specifier
      */
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
-    class TexturedFigure<Base<Dim, Spec>> :
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
+    class TexturedFigure :
         public Sprite<Dim>,
         public Base<Dim, Spec>
     {
@@ -77,11 +85,13 @@ namespace mpgl {
         TexturedFigure(TexturedFigure const&) = default;
         TexturedFigure(TexturedFigure&&) noexcept = default;
 
-        TexturedFigure& operator=(TexturedFigure const&) = default;
-        TexturedFigure& operator=(TexturedFigure&&) noexcept = default;
+        TexturedFigure& operator=(
+            TexturedFigure const&) = default;
+        TexturedFigure& operator=(
+            TexturedFigure&&) noexcept = default;
 
         /**
-         * Allows to draw an object
+         * Draws a textured object on the screen
          */
         void draw(void) const noexcept override final;
 
@@ -160,35 +170,35 @@ namespace mpgl {
         static Placer const                         placer;
     };
 
-    template class TexturedFigure<Triangle<dim::Dim2, uint8>>;
-    template class TexturedFigure<Triangle<dim::Dim3, uint8>>;
-    template class TexturedFigure<Tetragon<dim::Dim2, uint8>>;
-    template class TexturedFigure<Tetragon<dim::Dim3, uint8>>;
-    template class TexturedFigure<Line<dim::Dim2, uint8>>;
-    template class TexturedFigure<Line<dim::Dim3, uint8>>;
-    template class TexturedFigure<LineLoop<dim::Dim2, uint8>>;
-    template class TexturedFigure<LineLoop<dim::Dim3, uint8>>;
-    template class TexturedFigure<LineStrip<dim::Dim2, uint8>>;
-    template class TexturedFigure<LineStrip<dim::Dim3, uint8>>;
-    template class TexturedFigure<Points<dim::Dim2, uint8>>;
-    template class TexturedFigure<Points<dim::Dim3, uint8>>;
-    template class TexturedFigure<Polygon<dim::Dim2, uint8>>;
-    template class TexturedFigure<Polygon<dim::Dim3, uint8>>;
+    template class TexturedFigure<Triangle, dim::Dim2, uint8>;
+    template class TexturedFigure<Triangle, dim::Dim3, uint8>;
+    template class TexturedFigure<Tetragon, dim::Dim2, uint8>;
+    template class TexturedFigure<Tetragon, dim::Dim3, uint8>;
+    template class TexturedFigure<Line, dim::Dim2, uint8>;
+    template class TexturedFigure<Line, dim::Dim3, uint8>;
+    template class TexturedFigure<LineLoop, dim::Dim2, uint8>;
+    template class TexturedFigure<LineLoop, dim::Dim3, uint8>;
+    template class TexturedFigure<LineStrip, dim::Dim2, uint8>;
+    template class TexturedFigure<LineStrip, dim::Dim3, uint8>;
+    template class TexturedFigure<Points, dim::Dim2, uint8>;
+    template class TexturedFigure<Points, dim::Dim3, uint8>;
+    template class TexturedFigure<Polygon, dim::Dim2, uint8>;
+    template class TexturedFigure<Polygon, dim::Dim3, uint8>;
 
-    using TriangleSprite2D = TexturedFigure<Triangle<dim::Dim2, uint8>>;
-    using TriangleSprite3D = TexturedFigure<Triangle<dim::Dim3, uint8>>;
-    using TetragonSprite2D = TexturedFigure<Tetragon<dim::Dim2, uint8>>;
-    using TetragonSprite3D = TexturedFigure<Tetragon<dim::Dim3, uint8>>;
-    using LineSprite2D = TexturedFigure<Line<dim::Dim2, uint8>>;
-    using LineSprite3D = TexturedFigure<Line<dim::Dim3, uint8>>;
-    using LineLoopSprite2D = TexturedFigure<LineLoop<dim::Dim2, uint8>>;
-    using LineLoopSprite3D = TexturedFigure<LineLoop<dim::Dim3, uint8>>;
-    using LineStripSprite2D = TexturedFigure<LineStrip<dim::Dim2, uint8>>;
-    using LineStripSprite3D = TexturedFigure<LineStrip<dim::Dim3, uint8>>;
-    using PointsSprite2D = TexturedFigure<Points<dim::Dim2, uint8>>;
-    using PointsSprite3D = TexturedFigure<Points<dim::Dim3, uint8>>;
-    using PolygonSprite2D = TexturedFigure<Polygon<dim::Dim2, uint8>>;
-    using PolygonSprite3D = TexturedFigure<Polygon<dim::Dim3, uint8>>;
+    using TriangleSprite2D = TexturedFigure<Triangle, dim::Dim2, uint8>;
+    using TriangleSprite3D = TexturedFigure<Triangle, dim::Dim3, uint8>;
+    using TetragonSprite2D = TexturedFigure<Tetragon, dim::Dim2, uint8>;
+    using TetragonSprite3D = TexturedFigure<Tetragon, dim::Dim3, uint8>;
+    using LineSprite2D = TexturedFigure<Line, dim::Dim2, uint8>;
+    using LineSprite3D = TexturedFigure<Line, dim::Dim3, uint8>;
+    using LineLoopSprite2D = TexturedFigure<LineLoop, dim::Dim2, uint8>;
+    using LineLoopSprite3D = TexturedFigure<LineLoop, dim::Dim3, uint8>;
+    using LineStripSprite2D = TexturedFigure<LineStrip, dim::Dim2, uint8>;
+    using LineStripSprite3D = TexturedFigure<LineStrip, dim::Dim3, uint8>;
+    using PointsSprite2D = TexturedFigure<Points, dim::Dim2, uint8>;
+    using PointsSprite3D = TexturedFigure<Points, dim::Dim3, uint8>;
+    using PolygonSprite2D = TexturedFigure<Polygon, dim::Dim2, uint8>;
+    using PolygonSprite3D = TexturedFigure<Polygon, dim::Dim3, uint8>;
 
 }
 

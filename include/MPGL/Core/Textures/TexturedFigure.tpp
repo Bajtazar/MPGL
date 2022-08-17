@@ -30,13 +30,13 @@ namespace mpgl {
     template <
         template <class, typename> class Base,
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Angular>
+        details::FigureTraitSpecifier<Dim> Spec>
+            requires InstanceOf<Base<Dim, Spec>, Figure>
     template <typename... Args>
         requires std::constructible_from<
-            typename TexturedFigure<Base<Dim, Spec>>::BaseFigure,
+            typename TexturedFigure<Base, Dim, Spec>::BaseFigure,
             Args...>
-    TexturedFigure<Base<Dim, Spec>>::TexturedFigure(
+    TexturedFigure<Base, Dim, Spec>::TexturedFigure(
         Texture const& texture,
         Args&&... args) :
             Sprite<Dim>{texture},
