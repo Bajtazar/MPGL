@@ -28,55 +28,19 @@
 namespace mpgl {
 
     [[nodiscard]] EllipticVertices<dim::Dim2, void>::Vertex
-        EllipticVertices<dim::Dim2, void>::defaultVertex(void) noexcept
-    {
-        return Vertex{Vector2f{}};
-    }
-
-    [[nodiscard]] EllipticVertices<dim::Dim2, void>::Vertex
         EllipticVertices<dim::Dim2, void>::buildVertex(
-            Vector const& position) noexcept
+            Vector const& position,
+            Color const& color) noexcept
     {
-        return Vertex{position};
-    }
-
-    [[nodiscard]] EllipticVertices<dim::Dim2, int32>::Vertex
-        EllipticVertices<dim::Dim2, int32>::defaultVertex(void) noexcept
-    {
-        return Vertex{Vector2f{}, Color{}};
-    }
-
-    [[nodiscard]] EllipticVertices<dim::Dim2, int32>::Vertex
-        EllipticVertices<dim::Dim2, int32>::buildVertex(
-            Vector const& position) noexcept
-    {
-        return Vertex{position, Color{}};
-    }
-
-    [[nodiscard]] EllipticVertices<dim::Dim3, void>::Vertex
-        EllipticVertices<dim::Dim3, void>::defaultVertex(void) noexcept
-    {
-        return Vertex{Vector3f{}};
+        return Vertex{position, color};
     }
 
     [[nodiscard]] EllipticVertices<dim::Dim3, void>::Vertex
         EllipticVertices<dim::Dim3, void>::buildVertex(
-            Vector const& position) noexcept
+            Vector const& position,
+            Color const& color) noexcept
     {
-        return Vertex{position};
-    }
-
-    [[nodiscard]] EllipticVertices<dim::Dim3, int32>::Vertex
-        EllipticVertices<dim::Dim3, int32>::defaultVertex(void) noexcept
-    {
-        return Vertex{Vector3f{}, Color{}};
-    }
-
-    [[nodiscard]] EllipticVertices<dim::Dim3, int32>::Vertex
-        EllipticVertices<dim::Dim3, int32>::buildVertex(
-            Vector const& position) noexcept
-    {
-        return Vertex{position, Color{}};
+        return Vertex{position, color};
     }
 
 }

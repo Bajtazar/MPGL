@@ -99,22 +99,6 @@ namespace mpgl {
             Transformation<Dim> const& transformator) noexcept = 0;
 
         /**
-         * Sets the elliptic color
-         *
-         * @param color the color of the elliptic
-         */
-        void setColor(Color const& color = {}) noexcept
-            { this->color = color; }
-
-        /**
-         * Returns the constant reference to the elliptic color
-         *
-         * @return the constant reference to the elliptic color
-         */
-        [[nodiscard]] Color const& getColor(void) const noexcept
-            { return color; }
-
-        /**
          * Returns a vertex view to the vertex with
          * given index
          *
@@ -299,13 +283,11 @@ namespace mpgl {
          * @param vertices the vector of vertices
          * @param programName the shader program name
          * @param exec the shader's executible
-         * @param color the ellipse's color
          */
         explicit Elliptic(
             Vertices vertices,
             std::string const& programName,
-            Executable exec,
-            Color const& color);
+            Executable exec);
 
         /**
          * Constructs a new Elliptic object from the given
@@ -330,7 +312,6 @@ namespace mpgl {
         typedef std::array<uint32, 6>                   Indexes;
 
         ElementArrayBuffer                              elementBuffer;
-        Color                                           color;
         Vertices                                        vertices;
 
         /**
@@ -355,23 +336,27 @@ namespace mpgl {
          * @param center the center of the ellipse
          * @param semiAxis the semi-axis of the ellipse
          * @param angle the angle between x-axis and semi-axis
+         * @param color the vertices' color
          * @return the ellipse's vertices
          */
         static Vertices ellipseVertices(
             Vector2f const& center,
             Vector2f const& semiAxis,
-            float32 angle) requires TwoDimensional<Dim>;
+            float32 angle,
+            Color const& color) requires TwoDimensional<Dim>;
 
         /**
          * Constructs the vector with circle vertices
          *
          * @param center the center of the circle
          * @param radius the radius of the circle
+         * @param color the vertices' color
          * @return the circle's vertices
          */
         static Vertices circleVertices(
             Vector2f const& center,
-            float32 radius) requires TwoDimensional<Dim>;
+            float32 radius,
+            Color const& color) requires TwoDimensional<Dim>;
     private:
         /**
          * Initializes inner buffers
@@ -383,13 +368,9 @@ namespace mpgl {
     };
 
     template class Elliptic<dim::Dim2, void>;
-    template class Elliptic<dim::Dim2, int32>;
     template class Elliptic<dim::Dim3, void>;
-    template class Elliptic<dim::Dim3, int32>;
 
     typedef Elliptic<dim::Dim2, void>                   Elliptic2D;
-    typedef Elliptic<dim::Dim2, int32>                  ColorableElliptic2D;
     typedef Elliptic<dim::Dim3, void>                   Elliptic3D;
-    typedef Elliptic<dim::Dim3, int32>                  ColorableElliptic3D;
 
 }

@@ -155,7 +155,6 @@ namespace mpgl {
             this->shaderProgram, locations}(
                 [](auto program, auto locations)
         {
-            locations->color = ShaderLocation{*program, "color"};
             locations->outerShift
                 = ShaderLocation{*program, "outerShift"};
             locations->innerShift
@@ -175,8 +174,8 @@ namespace mpgl {
         Color const& color,
         float32 angle) requires TwoDimensional<Dim>
             : Elliptic<Dim, Spec>{Elliptic<Dim, Spec>::ellipseVertices(
-                center, semiAxis, angle), shaderManager.shader,
-                shaderManager, color},
+                center, semiAxis, angle, color),
+                shaderManager.shader, shaderManager},
             locations{new Locations}, innerEllipse{innerEllipse}
     {
         actualizeMatrices();
@@ -190,8 +189,8 @@ namespace mpgl {
         InnerEllipse const& innerEllipse,
         Color const& color) requires TwoDimensional<Dim>
             : Elliptic<Dim, Spec>{Elliptic<Dim, Spec>::circleVertices(
-                center, radius), shaderManager.shader,
-                shaderManager, color},
+                center, radius, color),
+                shaderManager.shader, shaderManager},
             locations{new Locations}, innerEllipse{innerEllipse}
     {
         actualizeMatrices();
@@ -206,11 +205,11 @@ namespace mpgl {
         InnerEllipse const& innerEllipse,
         Color const& color) requires ThreeDimensional<Dim>
             : Elliptic<Dim, Spec>{{
-                VertexTraits::buildVertex(center - majorAxis - minorAxis),
-                VertexTraits::buildVertex(center - majorAxis + minorAxis),
-                VertexTraits::buildVertex(center + majorAxis + minorAxis),
-                VertexTraits::buildVertex(center + majorAxis - minorAxis)
-            }, shaderManager.shader, shaderManager, color},
+                VertexTraits::buildVertex(center - majorAxis - minorAxis, color),
+                VertexTraits::buildVertex(center - majorAxis + minorAxis, color),
+                VertexTraits::buildVertex(center + majorAxis + minorAxis, color),
+                VertexTraits::buildVertex(center + majorAxis - minorAxis, color)
+            }, shaderManager.shader, shaderManager},
             locations{new Locations}, innerEllipse{innerEllipse}
     {
         if (dot(minorAxis, majorAxis))
@@ -296,7 +295,6 @@ namespace mpgl {
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ring<Dim, Spec>::actualizeLocations(void) const noexcept {
         Elliptic<Dim, Spec>::actualizeLocations();
-        locations->color(this->color);
         locations->outerShift(
             Vector{get<"position">(this->vertices.front())});
         locations->innerShift(

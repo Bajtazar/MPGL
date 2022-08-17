@@ -186,7 +186,7 @@ namespace mpgl {
             Vector2f const& center = {},
             Vector2f const& semiAxis = {},
             InnerEllipse const& innerEllipse = {},
-            Color const& color = {},
+            Color const& color = Color::White,
             float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
@@ -205,7 +205,7 @@ namespace mpgl {
             Vector2f const& center,
             Vector2f const& outerSemiAxis,
             Vector2f const& innerSemiAxis,
-            Color const& color = {},
+            Color const& color = Color::White,
             float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
@@ -221,7 +221,8 @@ namespace mpgl {
             Vector2f const& center,
             float32 radius,
             InnerEllipse const& innerEllipse = {},
-            Color const& color = {}) requires TwoDimensional<Dim>;
+            Color const& color = Color::White
+            ) requires TwoDimensional<Dim>;
 
         /**
          * Construct a new circular 2D ring with given center,
@@ -236,7 +237,8 @@ namespace mpgl {
             Vector2f const& center,
             float32 outerRadius,
             float32 innerRadius,
-            Color const& color = {}) requires TwoDimensional<Dim>;
+            Color const& color = Color::White
+            ) requires TwoDimensional<Dim>;
 
         /**
          * Construct a new circular 3D ring with given center,
@@ -257,7 +259,8 @@ namespace mpgl {
             Vector3f const& minorAxis,
             Vector3f const& majorAxis,
             InnerEllipse const& innerEllipse,
-            Color const& color = {}) requires ThreeDimensional<Dim>;
+            Color const& color = Color::White
+            ) requires ThreeDimensional<Dim>;
 
         Ring(Ring const& ring) = default;
         Ring(Ring&& ring) noexcept = default;
@@ -414,12 +417,8 @@ namespace mpgl {
 
     template class Ring<dim::Dim2>;
     template class Ring<dim::Dim3>;
-    template class Ring<dim::Dim2, int32>;
-    template class Ring<dim::Dim3, int32>;
 
     typedef Ring<dim::Dim2>                         Ring2D;
     typedef Ring<dim::Dim3>                         Ring3D;
-    typedef Ring<dim::Dim2, int32>                  ColorableRing2D;
-    typedef Ring<dim::Dim3, int32>                  ColorableRing3D;
 
 }

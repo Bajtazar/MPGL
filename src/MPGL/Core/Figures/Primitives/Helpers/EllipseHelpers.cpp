@@ -145,14 +145,8 @@ namespace mpgl {
     std::string const EllipseShader<dim::Dim2, void>::shader
         = "MPGL/2D/Ellipse";
 
-    std::string const EllipseShader<dim::Dim2, int32>::shader
-        = "MPGL/2D/CEllipse";
-
     std::string const EllipseShader<dim::Dim3, void>::shader
         = "MPGL/3D/Ellipse";
-
-    std::string const EllipseShader<dim::Dim3, int32>::shader
-        = "MPGL/3D/CEllipse";
 
     void EllipseShader<dim::Dim2, void>::operator() (
         ShaderProgram const& program) const noexcept
@@ -161,19 +155,7 @@ namespace mpgl {
             float32(context.windowOptions.antiAliasingSamples) / 4.f);
     }
 
-    void EllipseShader<dim::Dim2, int32>::operator() (
-        ShaderProgram const& program) const noexcept
-    {
-        EllipseShader<dim::Dim2, void>{}(program);
-    }
-
     void EllipseShader<dim::Dim3, void>::operator() (
-        ShaderProgram const& program) const noexcept
-    {
-        EllipseShader<dim::Dim2, void>{}(program);
-    }
-
-    void EllipseShader<dim::Dim3, int32>::operator() (
         ShaderProgram const& program) const noexcept
     {
         EllipseShader<dim::Dim2, void>{}(program);

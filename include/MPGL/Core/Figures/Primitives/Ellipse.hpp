@@ -57,7 +57,7 @@ namespace mpgl {
         Ellipse(
             Vector2f const& center = {},
             Vector2f const& semiAxis = {},
-            Color const& color = {},
+            Color const& color = Color::White,
             float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
@@ -71,7 +71,8 @@ namespace mpgl {
         Ellipse(
             Vector2f const& center,
             float radius,
-            Color const& color = {}) requires TwoDimensional<Dim>;
+            Color const& color = Color::White
+            ) requires TwoDimensional<Dim>;
 
         /**
          * Constructs a new 2D ellipse object with given center
@@ -88,7 +89,8 @@ namespace mpgl {
             Vector3f const& center,
             Vector3f const& minorAxis,
             Vector3f const& majorAxis,
-            Color const& color) requires ThreeDimensional<Dim>;
+            Color const& color = Color::White
+            ) requires ThreeDimensional<Dim>;
 
         Ellipse(Ellipse const& ellipse) = default;
         Ellipse(Ellipse&& ellipse) noexcept = default;
@@ -206,12 +208,8 @@ namespace mpgl {
 
     template class Ellipse<dim::Dim2>;
     template class Ellipse<dim::Dim3>;
-    template class Ellipse<dim::Dim2, int32>;
-    template class Ellipse<dim::Dim3, int32>;
 
     typedef Ellipse<dim::Dim2>                      Ellipse2D;
     typedef Ellipse<dim::Dim3>                      Ellipse3D;
-    typedef Ellipse<dim::Dim2, int32>               ColorableEllipse2D;
-    typedef Ellipse<dim::Dim3, int32>               ColorableEllipse3D;
 
 }

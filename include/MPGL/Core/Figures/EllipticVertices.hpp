@@ -50,60 +50,25 @@ namespace mpgl {
     template <>
     struct EllipticVertices<dim::Dim2, void> {
         using Vertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter2D, DataType::Float32>>;
-
-        using IterableFields = NullTSHolderT;
-        using Vector = Vector2f;
-        using Adapter = Adapter2D;
-
-        /**
-         * Generates a default vertex
-         *
-         * @return the default vertex
-         */
-        [[nodiscard]] static Vertex defaultVertex(void) noexcept;
-
-        /**
-         * Generates vertex
-         *
-         * @param position the constant reference to the position
-         * object
-         * @return the default vertex
-         */
-        [[nodiscard]] static Vertex buildVertex(
-            Vector const& position) noexcept;
-    };
-
-    /**
-     * Contains informations about vertices of the 2D elliptic
-     * which vertices can be colored indepedently
-     */
-    template <>
-    struct EllipticVertices<dim::Dim2, int32> {
-        using Vertex = mpgl::Vertex<
             VertexComponent<"position", Adapter2D, DataType::Float32>,
-            VertexComponent<"color", Color, DataType::Float32>>;
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
 
         using IterableFields = TSHolder<"color">;
         using Vector = Vector2f;
         using Adapter = Adapter2D;
 
         /**
-         * Generates a default vertex
-         *
-         * @return the default vertex
-         */
-        [[nodiscard]] static Vertex defaultVertex(void) noexcept;
-
-        /**
          * Generates vertex
          *
          * @param position the constant reference to the position
          * object
+         * @param color the constant reference to the color object
          * @return the default vertex
          */
         [[nodiscard]] static Vertex buildVertex(
-            Vector const& position) noexcept;
+            Vector const& position,
+            Color const& color) noexcept;
     };
 
     /**
@@ -112,60 +77,25 @@ namespace mpgl {
     template <>
     struct EllipticVertices<dim::Dim3, void> {
         using Vertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter3D, DataType::Float32>>;
-
-        using IterableFields = NullTSHolderT;
-        using Vector = Vector3f;
-        using Adapter = Adapter3D;
-
-        /**
-         * Generates a default vertex
-         *
-         * @return the default vertex
-         */
-        [[nodiscard]] static Vertex defaultVertex(void) noexcept;
-
-        /**
-         * Generates vertex
-         *
-         * @param position the constant reference to the position
-         * object
-         * @return the default vertex
-         */
-        [[nodiscard]] static Vertex buildVertex(
-            Vector const& position) noexcept;
-    };
-
-    /**
-     * Contains informations about vertices of the 3D elliptic
-     * which vertices can be colored indepedently
-     */
-    template <>
-    struct EllipticVertices<dim::Dim3, int32> {
-        using Vertex = mpgl::Vertex<
             VertexComponent<"position", Adapter3D, DataType::Float32>,
-            VertexComponent<"color", Color, DataType::Float32>>;
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
 
         using IterableFields = TSHolder<"color">;
         using Vector = Vector3f;
         using Adapter = Adapter3D;
 
         /**
-         * Generates a default vertex
-         *
-         * @return the default vertex
-         */
-        [[nodiscard]] static Vertex defaultVertex(void) noexcept;
-
-        /**
          * Generates vertex
          *
          * @param position the constant reference to the position
          * object
+         * @param color the constant reference to the color object
          * @return the default vertex
          */
         [[nodiscard]] static Vertex buildVertex(
-            Vector const& position) noexcept;
+            Vector const& position,
+            Color const& color) noexcept;
     };
 
     /**
@@ -177,14 +107,15 @@ namespace mpgl {
      */
     template <typename Tp, class Dim>
     concept EllipticTraitSpecifier = Dimension<Dim> &&
-        requires (Vector<float32, Dim::orthogonal_space_degree> vector)
+        requires (
+            Color const& color,
+            Vector<float32, Dim::orthogonal_space_degree> vector)
         {
             typename EllipticVertices<Dim, Tp>::Vertex;
             typename EllipticVertices<Dim, Tp>::Vector;
             typename EllipticVertices<Dim, Tp>::Adapter;
             typename EllipticVertices<Dim, Tp>::IterableFields;
-            EllipticVertices<Dim, Tp>::defaultVertex();
-            EllipticVertices<Dim, Tp>::buildVertex(vector);
+            EllipticVertices<Dim, Tp>::buildVertex(vector, color);
     };
 
 }

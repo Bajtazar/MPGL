@@ -50,7 +50,6 @@ namespace mpgl {
             this->shaderProgram, locations}(
                 [](auto program, auto locations)
         {
-            locations->color = ShaderLocation{*program, "color"};
             locations->shift = ShaderLocation{*program, "shift"};
             locations->transform
                 = ShaderLocation{*program, "transform"};
@@ -65,8 +64,8 @@ namespace mpgl {
         float angle) requires TwoDimensional<Dim>
             : Elliptic<Dim, Spec>{
                 Elliptic<Dim, Spec>::ellipseVertices(
-                    center, semiAxis, angle),
-                shaderManager.shader, shaderManager, color},
+                    center, semiAxis, angle, color),
+                shaderManager.shader, shaderManager},
             locations{new Locations}
     {
         actualizeMatrices();
@@ -79,8 +78,9 @@ namespace mpgl {
         float radius,
         Color const& color) requires TwoDimensional<Dim>
             : Elliptic<Dim, Spec>{
-                Elliptic<Dim, Spec>::circleVertices(center, radius),
-                shaderManager.shader, shaderManager, color},
+                Elliptic<Dim, Spec>::circleVertices(
+                    center, radius, color),
+                shaderManager.shader, shaderManager},
             locations{new Locations}
     {
         actualizeMatrices();
@@ -94,11 +94,11 @@ namespace mpgl {
         Vector3f const& majorAxis,
         Color const& color) requires ThreeDimensional<Dim>
             : Elliptic<Dim, Spec>{{
-                VertexTraits::buildVertex(center - majorAxis - minorAxis),
-                VertexTraits::buildVertex(center - majorAxis + minorAxis),
-                VertexTraits::buildVertex(center + majorAxis + minorAxis),
-                VertexTraits::buildVertex(center + majorAxis - minorAxis)
-            }, shaderManager.shader, shaderManager, color},
+                VertexTraits::buildVertex(center - majorAxis - minorAxis, color),
+                VertexTraits::buildVertex(center - majorAxis + minorAxis, color),
+                VertexTraits::buildVertex(center + majorAxis + minorAxis, color),
+                VertexTraits::buildVertex(center + majorAxis - minorAxis, color)
+            }, shaderManager.shader, shaderManager},
             locations{new Locations}
     {
         if (dot(minorAxis, majorAxis))
@@ -147,7 +147,6 @@ namespace mpgl {
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ellipse<Dim, Spec>::actualizeLocations(void) const noexcept {
         Elliptic<Dim, Spec>::actualizeLocations();
-        locations->color(this->color);
         locations->shift(Vector{get<"position">(
             this->vertices.front())});
         locations->transform(outlineTransform);

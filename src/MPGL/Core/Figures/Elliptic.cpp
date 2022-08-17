@@ -33,10 +33,9 @@ namespace mpgl {
     Elliptic<Dim, Spec>::Elliptic(
         Vertices vertices,
         std::string const& programName,
-        Executable exec,
-        Color const& color)
+        Executable exec)
             : Figure<Dim>{programName, std::move(exec)},
-            color{color}, vertices{std::move(vertices)}
+            vertices{std::move(vertices)}
     {
         initializeBuffers();
     }
@@ -64,7 +63,6 @@ namespace mpgl {
         Elliptic const& shape)
     {
         Figure<Dim>::operator=(shape);
-        color = shape.color;
         vertices.clear();
         vertices.reserve(shape.vertices.size());
         std::ranges::copy(shape.vertices, std::back_inserter(vertices));
@@ -253,16 +251,17 @@ namespace mpgl {
         Elliptic<Dim, Spec>::ellipseVertices(
             Vector2f const& center,
             Vector2f const& semiAxis,
-            float32 angle) requires TwoDimensional<Dim>
+            float32 angle,
+            Color const& color) requires TwoDimensional<Dim>
     {
         Matrix2f rotation = rotationMatrix<float32>(angle);
         Vector2f rot1 = rotation * semiAxis;
         Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
         return {
-            VertexTraits::buildVertex(center - rot2),
-            VertexTraits::buildVertex(center + rot1),
-            VertexTraits::buildVertex(center + rot2),
-            VertexTraits::buildVertex(center - rot1)
+            VertexTraits::buildVertex(center - rot2, color),
+            VertexTraits::buildVertex(center + rot1, color),
+            VertexTraits::buildVertex(center + rot2, color),
+            VertexTraits::buildVertex(center - rot1, color)
         };
     }
 
@@ -270,15 +269,16 @@ namespace mpgl {
     Elliptic<Dim, Spec>::Vertices
         Elliptic<Dim, Spec>::circleVertices(
             Vector2f const& center,
-            float32 radius) requires TwoDimensional<Dim>
+            float32 radius,
+            Color const& color) requires TwoDimensional<Dim>
     {
         Vector2f semiMajor = Vector2f{radius, 0.f};
         Vector2f semiMinor = Vector2f{0.f, radius};
         return {
-            VertexTraits::buildVertex(center - semiMajor + semiMinor),
-            VertexTraits::buildVertex(center + semiMajor + semiMinor),
-            VertexTraits::buildVertex(center + semiMajor - semiMinor),
-            VertexTraits::buildVertex(center - semiMajor - semiMinor)
+            VertexTraits::buildVertex(center - semiMajor + semiMinor, color),
+            VertexTraits::buildVertex(center + semiMajor + semiMinor, color),
+            VertexTraits::buildVertex(center + semiMajor - semiMinor, color),
+            VertexTraits::buildVertex(center - semiMajor - semiMinor, color)
         };
     }
 

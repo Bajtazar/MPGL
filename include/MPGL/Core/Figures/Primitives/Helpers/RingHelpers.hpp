@@ -151,9 +151,7 @@ namespace mpgl {
     };
 
     template class RingOutlineCalculator<dim::Dim2, void>;
-    template class RingOutlineCalculator<dim::Dim2, int32>;
     template class RingOutlineCalculator<dim::Dim3, void>;
-    template class RingOutlineCalculator<dim::Dim3, int32>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -232,9 +230,7 @@ namespace mpgl {
     };
 
     template class RingClickChecker<dim::Dim2, void>;
-    template class RingClickChecker<dim::Dim2, int32>;
     template class RingClickChecker<dim::Dim3, void>;
-    template class RingClickChecker<dim::Dim3, int32>;
 
     /**
      * Structure containing information about shader used by
@@ -265,44 +261,10 @@ namespace mpgl {
 
     /**
      * Structure containing information about shader used by
-     * a 2D colorable ring. Acts as an executable for the shader
-     */
-    template <>
-    struct RingShader<dim::Dim2, int32> {
-
-        /**
-         * The shader's executable
-         *
-         * @param program a constant reference to the shader program
-         */
-        void operator() (ShaderProgram const& program) const noexcept;
-
-        static std::string const                    shader;
-    };
-
-    /**
-     * Structure containing information about shader used by
      * a 3D default ring. Acts as an executable for the shader
      */
     template <>
     struct RingShader<dim::Dim3, void> {
-
-        /**
-         * The shader's executable
-         *
-         * @param program a constant reference to the shader program
-         */
-        void operator() (ShaderProgram const& program) const noexcept;
-
-        static std::string const                    shader;
-    };
-
-    /**
-     * Structure containing information about shader used by
-     * a 3D colorable ring. Acts as an executable for the shader
-     */
-    template <>
-    struct RingShader<dim::Dim3, int32> {
 
         /**
          * The shader's executable

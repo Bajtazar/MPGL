@@ -95,14 +95,8 @@ namespace mpgl {
     std::string const RingShader<dim::Dim2, void>::shader
         = "MPGL/2D/Ring";
 
-    std::string const RingShader<dim::Dim2, int32>::shader
-        = "MPGL/2D/CRing";
-
     std::string const RingShader<dim::Dim3, void>::shader
         = "MPGL/3D/Ring";
-
-    std::string const RingShader<dim::Dim3, int32>::shader
-        = "MPGL/3D/CRing";
 
     void RingShader<dim::Dim2, void>::operator() (
         ShaderProgram const& program) const noexcept
@@ -111,19 +105,7 @@ namespace mpgl {
             float32(context.windowOptions.antiAliasingSamples) / 4.f);
     }
 
-    void RingShader<dim::Dim2, int32>::operator() (
-        ShaderProgram const& program) const noexcept
-    {
-        RingShader<dim::Dim2, void>{}(program);
-    }
-
     void RingShader<dim::Dim3, void>::operator() (
-        ShaderProgram const& program) const noexcept
-    {
-        RingShader<dim::Dim2, void>{}(program);
-    }
-
-    void RingShader<dim::Dim3, int32>::operator() (
         ShaderProgram const& program) const noexcept
     {
         RingShader<dim::Dim2, void>{}(program);

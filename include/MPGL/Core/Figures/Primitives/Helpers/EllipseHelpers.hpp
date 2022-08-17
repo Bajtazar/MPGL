@@ -87,9 +87,7 @@ namespace mpgl {
     };
 
     template class EllipseClickChecker<dim::Dim2, void>;
-    template class EllipseClickChecker<dim::Dim2, int32>;
     template class EllipseClickChecker<dim::Dim3, void>;
-    template class EllipseClickChecker<dim::Dim3, int32>;
 
     /**
      * Functor responsible for calculating a new outline of the
@@ -186,9 +184,7 @@ namespace mpgl {
     };
 
     template class EllipseOutlineCalculator<dim::Dim2, void>;
-    template class EllipseOutlineCalculator<dim::Dim2, int32>;
     template class EllipseOutlineCalculator<dim::Dim3, void>;
-    template class EllipseOutlineCalculator<dim::Dim3, int32>;
 
     /**
      * Structure containing information about shader used by
@@ -219,44 +215,10 @@ namespace mpgl {
 
     /**
      * Structure containing information about shader used by
-     * a 2D colorable ellipse. Acts as an executable for the shader
-     */
-    template <>
-    struct EllipseShader<dim::Dim2, int32> {
-
-        /**
-         * The shader's executable
-         *
-         * @param program a constant reference to the shader program
-         */
-        void operator() (ShaderProgram const& program) const noexcept;
-
-        static std::string const                    shader;
-    };
-
-    /**
-     * Structure containing information about shader used by
      * a 3D default ellipse. Acts as an executable for the shader
      */
     template <>
     struct EllipseShader<dim::Dim3, void> {
-
-        /**
-         * The shader's executable
-         *
-         * @param program a constant reference to the shader program
-         */
-        void operator() (ShaderProgram const& program) const noexcept;
-
-        static std::string const                    shader;
-    };
-
-    /**
-     * Structure containing information about shader used by
-     * a 3D colorable ellipse. Acts as an executable for the shader
-     */
-    template <>
-    struct EllipseShader<dim::Dim3, int32> {
 
         /**
          * The shader's executable
