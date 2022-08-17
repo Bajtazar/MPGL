@@ -54,7 +54,9 @@ namespace mpgl {
          * @param vertices the number of points
          * @param color the color of points
          */
-        Points(std::size_t vertices = 0, Color const& color = {});
+        Points(
+            std::size_t vertices = 0,
+            Color const& color = Color::White);
 
         /**
          * Constructs a new Points object and initializes the

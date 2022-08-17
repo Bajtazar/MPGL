@@ -59,7 +59,7 @@ namespace mpgl {
             Vector const& firstVertex,
             Vector const& secondVertex,
             Vector const& thirdVertex,
-            Color const& color = {});
+            Color const& color = Color::White);
 
         /**
          * Constructs a new Triangle with given
@@ -67,7 +67,7 @@ namespace mpgl {
          *
          * @param color the color of the triangle
          */
-        Triangle(Color const& color = {});
+        Triangle(Color const& color = Color::White);
 
         Triangle(Triangle const& triangle) = default;
         Triangle(Triangle&& triangle) noexcept = default;
