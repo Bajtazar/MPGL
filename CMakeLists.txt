@@ -61,6 +61,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Text/Subfont.cpp
     ${MPGL_SOURCES}/Core/Text/Text.cpp
     ${MPGL_SOURCES}/Core/Text/FontComponents.cpp
+    ${MPGL_SOURCES}/Core/Text/exp_GlyphSprite.cpp
     ${MPGL_SOURCES}/Core/Text/UTF-8.cpp
     ${MPGL_SOURCES}/Core/Text/FontRasterizer.cpp
     ${MPGL_SOURCES}/Core/Context/Context.cpp
