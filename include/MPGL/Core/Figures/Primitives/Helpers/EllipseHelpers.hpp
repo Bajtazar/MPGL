@@ -249,6 +249,7 @@ namespace mpgl {
         void operator() (ShaderProgram const& program) const noexcept;
 
         static std::string const                    shader;
+        static std::string const                    convolutionShader;
     };
 
     /**
@@ -266,6 +267,7 @@ namespace mpgl {
         void operator() (ShaderProgram const& program) const noexcept;
 
         static std::string const                    shader;
+        static std::string const                    convolutionShader;
     };
 
 }

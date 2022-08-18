@@ -104,6 +104,12 @@ namespace mpgl {
     std::string const RingShader<dim::Dim3, uint8>::shader
         = "MPGL/3D/TRing";
 
+    std::string const RingShader<dim::Dim2, uint8>::convolutionShader
+        = "MPGL/2D/TRingConv";
+
+    std::string const RingShader<dim::Dim3, uint8>::convolutionShader
+        = "MPGL/3D/TRingConv";
+
     void RingShader<dim::Dim2, void>::operator() (
         ShaderProgram const& program) const noexcept
     {

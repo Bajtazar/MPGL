@@ -42,6 +42,7 @@ namespace mpgl {
         using VertexTraits = typename Elliptic<Dim, Spec>::VertexTraits;
         using Vector = typename VertexTraits::Vector;
         using Adapter = typename VertexTraits::Adapter;
+        using ShaderManager = RingShader<Dim, Spec>;
 
         /**
          * Represents the ellipse describing inner outline
@@ -271,7 +272,7 @@ namespace mpgl {
         /**
          * Draws the ring on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
          * Performs transformation on the figure
@@ -279,8 +280,8 @@ namespace mpgl {
          * @param transformator the constant reference to the
          * transforming object
          */
-        void transform(
-            Transformation<Dim> const& transformator) noexcept final;
+        virtual void transform(
+            Transformation<Dim> const& transformator) noexcept;
 
         /**
          * Sets the given shader program
@@ -288,8 +289,8 @@ namespace mpgl {
          * @param program the constant reference to the shader program
          * object
          */
-        void setShader(
-            ShaderProgram const& program) noexcept override final;
+        virtual void setShader(
+            ShaderProgram const& program) noexcept override;
 
         /**
          * Sets the given shader program
@@ -297,15 +298,15 @@ namespace mpgl {
          * @param program the rvalue reference to the shader program
          * object
          */
-        void setShader(
-            ShaderProgram&& program) noexcept override final;
+        virtual void setShader(
+            ShaderProgram&& program) noexcept override;
 
         /**
          * Sets the given shader program
          *
          * @param name the name of the shader program
          */
-        void setShader(std::string const& name) override final;
+        virtual void setShader(std::string const& name) override;
 
         /**
          * Returns the center of the ring
@@ -354,20 +355,19 @@ namespace mpgl {
          * @param position the pixel's position
          * @return if the given point is inside the ring
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroy the Ring object
+         * Virtual destructor. Destroy the Ring object
          */
-        ~Ring(void) noexcept = default;
+        virtual ~Ring(void) noexcept = default;
 
         friend class RingClickChecker<Dim, Spec>;
         friend class RingOutlineCalculator<Dim, Spec>;
     private:
         using OutlineCalculator = RingOutlineCalculator<Dim, Spec>;
         using Clicker = RingClickChecker<Dim, Spec>;
-        using ShaderManager = RingShader<Dim, Spec>;
         using MatrixT = typename OutlineCalculator::MatrixT;
 
         /**

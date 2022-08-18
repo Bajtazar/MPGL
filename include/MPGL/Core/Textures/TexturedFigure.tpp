@@ -42,8 +42,13 @@ namespace mpgl {
             Sprite<Dim>{texture},
             Base<Dim, Spec>{std::forward<Args>(args)...}
     {
-        this->context.shaders.setOrQueue(this->shaderProgram,
-            VertexTraits::shader(), executable);
+        if constexpr (InstanceOf<Base<Dim, Spec>, Elliptic>) {
+            this->context.shaders.setOrQueue(this->shaderProgram,
+                Base<Dim, Spec>::ShaderManager::shader, executable);
+        } else {
+            this->context.shaders.setOrQueue(this->shaderProgram,
+                VertexTraits::shader(), executable);
+        }
         placer(*this);
     }
 

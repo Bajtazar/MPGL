@@ -185,6 +185,11 @@ namespace mpgl {
     template class TexturedFigure<Polygon, dim::Dim2, uint8>;
     template class TexturedFigure<Polygon, dim::Dim3, uint8>;
 
+    template class TexturedFigure<Ellipse, dim::Dim2, uint8>;
+    template class TexturedFigure<Ellipse, dim::Dim3, uint8>;
+    template class TexturedFigure<Ring, dim::Dim2, uint8>;
+    template class TexturedFigure<Ring, dim::Dim3, uint8>;
+
     using TriangleSprite2D = TexturedFigure<Triangle, dim::Dim2, uint8>;
     using TriangleSprite3D = TexturedFigure<Triangle, dim::Dim3, uint8>;
     using TetragonSprite2D = TexturedFigure<Tetragon, dim::Dim2, uint8>;
@@ -199,6 +204,11 @@ namespace mpgl {
     using PointsSprite3D = TexturedFigure<Points, dim::Dim3, uint8>;
     using PolygonSprite2D = TexturedFigure<Polygon, dim::Dim2, uint8>;
     using PolygonSprite3D = TexturedFigure<Polygon, dim::Dim3, uint8>;
+
+    using EllipseSprite2D = TexturedFigure<Ellipse, dim::Dim2, uint8>;
+    using EllipseSprite3D = TexturedFigure<Ellipse, dim::Dim3, uint8>;
+    using RingSprite2D = TexturedFigure<Ring, dim::Dim2, uint8>;
+    using RingSprite3D = TexturedFigure<Ring, dim::Dim3, uint8>;
 
 }
 

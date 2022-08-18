@@ -154,6 +154,12 @@ namespace mpgl {
     std::string const EllipseShader<dim::Dim3, uint8>::shader
         = "MPGL/3D/TEllipse";
 
+    std::string const EllipseShader<dim::Dim2, uint8>::convolutionShader
+        = "MPGL/2D/TEllipseConv";
+
+    std::string const EllipseShader<dim::Dim3, uint8>::convolutionShader
+        = "MPGL/3D/TEllipseConv";
+
     void EllipseShader<dim::Dim2, void>::operator() (
         ShaderProgram const& program) const noexcept
     {

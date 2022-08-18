@@ -125,4 +125,28 @@ namespace mpgl {
         }
     }
 
+    template <
+        Dimension Dim,
+        TexturableAngularTraitSpecifier<Dim> Spec>
+    void TexturedFigurePlacer<Ellipse>::Setter<Dim, Spec>::operator() (
+        Ellipse<Dim, Spec>& ellipse) const noexcept
+    {
+        get<"texCoords">(ellipse[0]) = Vector2f{0, 0};
+        get<"texCoords">(ellipse[1]) = Vector2f{0, 1};
+        get<"texCoords">(ellipse[2]) = Vector2f{1, 1};
+        get<"texCoords">(ellipse[3]) = Vector2f{1, 0};
+    }
+
+    template <
+        Dimension Dim,
+        TexturableAngularTraitSpecifier<Dim> Spec>
+    void TexturedFigurePlacer<Ring>::Setter<Dim, Spec>::operator() (
+        Ring<Dim, Spec>& ring) const noexcept
+    {
+        get<"texCoords">(ring[0]) = Vector2f{0, 0};
+        get<"texCoords">(ring[1]) = Vector2f{0, 1};
+        get<"texCoords">(ring[2]) = Vector2f{1, 1};
+        get<"texCoords">(ring[3]) = Vector2f{1, 0};
+    }
+
 }

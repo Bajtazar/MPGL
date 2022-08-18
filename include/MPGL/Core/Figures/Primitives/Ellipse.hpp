@@ -42,6 +42,7 @@ namespace mpgl {
         using VertexTraits = typename Elliptic<Dim, Spec>::VertexTraits;
         using Vector = typename VertexTraits::Vector;
         using Adapter = typename VertexTraits::Adapter;
+        using ShaderManager = EllipseShader<Dim, Spec>;
 
         /**
          * Constructs a new 2D ellipse with given center,
@@ -101,7 +102,7 @@ namespace mpgl {
         /**
          * Draws the circle on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
          * Performs transformation on the figure
@@ -109,8 +110,8 @@ namespace mpgl {
          * @param transformator the constant reference to the
          * transforming object
          */
-        void transform(
-            Transformation<Dim> const& transformator) noexcept final;
+        virtual void transform(
+            Transformation<Dim> const& transformator) noexcept;
 
         /**
          * Sets the given shader program
@@ -118,8 +119,8 @@ namespace mpgl {
          * @param program the constant reference to the shader program
          * object
          */
-        void setShader(
-            ShaderProgram const& program) noexcept override final;
+        virtual void setShader(
+            ShaderProgram const& program) noexcept override;
 
         /**
          * Sets the given shader program
@@ -127,15 +128,15 @@ namespace mpgl {
          * @param program the rvalue reference to the shader program
          * object
          */
-        void setShader(
-            ShaderProgram&& program) noexcept override final;
+        virtual void setShader(
+            ShaderProgram&& program) noexcept override;
 
         /**
          * Sets the given shader program
          *
          * @param name the name of the shader program
          */
-        void setShader(std::string const& name) override final;
+        virtual void setShader(std::string const& name) override;
 
         /**
          * Returns the position of the center of the ellipse
@@ -158,20 +159,19 @@ namespace mpgl {
          * @param position the point position [pixel position]
          * @return if the given point is inside the ellipse
          */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroys the Ellipse object
+         * Virtual destructor. Destroys the Ellipse object
          */
-        ~Ellipse(void) noexcept = default;
+        virtual ~Ellipse(void) noexcept = default;
 
         friend class EllipseClickChecker<Dim, Spec>;
         friend class EllipseOutlineCalculator<Dim, Spec>;
     private:
         using OutlineCalculator = EllipseOutlineCalculator<Dim, Spec>;
         using Clicker = EllipseClickChecker<Dim, Spec>;
-        using ShaderManager = EllipseShader<Dim, Spec>;
         using MatrixT = typename OutlineCalculator::MatrixT;
 
         /**

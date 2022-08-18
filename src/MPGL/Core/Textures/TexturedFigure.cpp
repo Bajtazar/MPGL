@@ -68,7 +68,12 @@ namespace mpgl {
     void TexturedFigure<Base, Dim, Spec>::setConvolution(
         Matrix3f const& convolution)
     {
-        this->setShader(VertexTraits::convolutionShader());
+        if constexpr (InstanceOf<Base<Dim, Spec>, Elliptic>) {
+            this->setShader(Base<Dim, Spec>::
+                ShaderManager::convolutionShader);
+        } else {
+            this->setShader(VertexTraits::convolutionShader());
+        }
         Shadeable::setLocations(DeferredExecutionWrapper{
             this->shaderProgram}(
             [](auto program, auto convolution, auto dimensions) {
@@ -84,7 +89,12 @@ namespace mpgl {
         details::FigureTraitSpecifier<Dim> Spec>
             requires InstanceOf<Base<Dim, Spec>, Figure>
     void TexturedFigure<Base, Dim, Spec>::resetConvolution(void) {
-        setShader(VertexTraits::shader());
+        if constexpr (InstanceOf<Base<Dim, Spec>, Elliptic>) {
+            this->setShader(Base<Dim, Spec>::
+                ShaderManager::shader);
+        } else {
+            this->setShader(VertexTraits::convolutionShader());
+        }
     }
 
     template <
@@ -119,7 +129,7 @@ namespace mpgl {
     void TexturedFigure<Base, Dim, Spec>::setShader(
         std::string const& name) noexcept
     {
-        Base<Dim, Spec>::setShader(name, executable);
+        Shadeable::setShader(name, executable);
     }
 
 }

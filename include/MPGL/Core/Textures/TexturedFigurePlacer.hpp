@@ -29,8 +29,10 @@
 #include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
+#include <MPGL/Core/Figures/Primitives/Ellipse.hpp>
 #include <MPGL/Core/Figures/Primitives/Polygon.hpp>
 #include <MPGL/Core/Figures/Primitives/Points.hpp>
+#include <MPGL/Core/Figures/Primitives/Ring.hpp>
 #include <MPGL/Core/Figures/Primitives/Line.hpp>
 
 namespace mpgl {
@@ -369,5 +371,97 @@ namespace mpgl {
 
     template struct TexturedFigurePlacer<Polygon>::Setter<dim::Dim2, uint8>;
     template struct TexturedFigurePlacer<Polygon>::Setter<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the ellipse
+     */
+    template <>
+    struct TexturedFigurePlacer<Ellipse> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the ellipse. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the ellipse
+             * ({[0, 0], [0, 1], [1, 1], [1, 0]})
+             *
+             * @param ellipse a reference to the ellipse object
+             */
+            void operator() (
+                Ellipse<Dim, Spec>& ellipse) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the ellipse.
+         * Calls the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param ellipse a reference to the ellipse object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (Ellipse<Dim, Spec>& ellipse) const noexcept
+            { Setter<Dim, Spec>{}(ellipse); }
+    };
+
+    template struct TexturedFigurePlacer<Ellipse>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<Ellipse>::Setter<dim::Dim3, uint8>;
+
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the ring
+     */
+    template <>
+    struct TexturedFigurePlacer<Ring> {
+        /**
+         * Functor responsible for the default texture
+         * coordinates for the ring. Allows to shift
+         * code into the source file
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        struct Setter {
+            /**
+             * Sets the default texture coordinates for the ring
+             * ({[0, 0], [0, 1], [1, 1], [1, 0]})
+             *
+             * @param ellipse a reference to the ring object
+             */
+            void operator() (
+                Ring<Dim, Spec>& ring) const noexcept;
+        };
+
+        /**
+         * Sets the default texture coordinates for the ring.
+         * Calls the inner setter
+         *
+         * @tparam Dim the dimension of the space
+         * @tparam Specifier the angular vertices specifier
+         * @param ring a reference to the ring object
+         */
+        template <
+            Dimension Dim,
+            TexturableAngularTraitSpecifier<Dim> Spec>
+        void operator() (Ring<Dim, Spec>& ring) const noexcept
+            { Setter<Dim, Spec>{}(ring); }
+    };
+
+    template struct TexturedFigurePlacer<Ring>::Setter<dim::Dim2, uint8>;
+    template struct TexturedFigurePlacer<Ring>::Setter<dim::Dim3, uint8>;
 
 }
