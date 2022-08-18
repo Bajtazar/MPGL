@@ -129,7 +129,12 @@ namespace mpgl {
     void TexturedFigure<Base, Dim, Spec>::setShader(
         std::string const& name) noexcept
     {
-        Shadeable::setShader(name, executable);
+        Base<Dim, Spec>::setShader(name);
+        Shadeable::setLocations(DeferredExecutionWrapper{this->shaderProgram}(
+            [](auto program)
+        {
+            executable(*program);
+        }));
     }
 
 }

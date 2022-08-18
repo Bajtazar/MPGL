@@ -127,8 +127,8 @@ namespace mpgl {
         private:
             typedef std::tuple<Args...> ArgTuple;
 
-            DeferredExecutionWrapper           wrapper;
-            ArgTuple                    args;
+            DeferredExecutionWrapper            wrapper;
+            ArgTuple                            args;
         };
 
         /**

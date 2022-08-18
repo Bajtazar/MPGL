@@ -318,21 +318,21 @@ namespace mpgl {
     void Ring<Dim, Spec>::setShader(
         ShaderProgram const& program) noexcept
     {
-        Shadeable::setShader(program);
+        Elliptic<Dim, Spec>::setShader(program);
         shaderManager(program);
         setLocations();
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ring<Dim, Spec>::setShader(ShaderProgram&& program) noexcept {
-        Shadeable::setShader(std::move(program));
+        Elliptic<Dim, Spec>::setShader(std::move(program));
         shaderManager(*this->shaderProgram);
         setLocations();
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ring<Dim, Spec>::setShader(std::string const& name) {
-        Shadeable::setShader(name, shaderManager);
+        Elliptic<Dim, Spec>::setShader(name, shaderManager);
         setLocations();
     }
 
