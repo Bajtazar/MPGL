@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Textures/exp_Texturable.hpp>
+#include <MPGL/Core/Textures/Texturable.hpp>
 #include <MPGL/Core/Figures/Clickable.hpp>
 
 namespace mpgl {
@@ -38,7 +38,7 @@ namespace mpgl {
     template <Dimension Dim>
     class Sprite :
         public virtual Clickable,
-        public exp::Texturable<Dim>
+        public Texturable<Dim>
     {
     public:
         /**

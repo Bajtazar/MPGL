@@ -27,7 +27,7 @@
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
 #include <MPGL/Core/Context/Buffers/Vertex.hpp>
-#include <MPGL/Core/Textures/exp_Texturable.hpp>
+#include <MPGL/Core/Textures/Texturable.hpp>
 #include <MPGL/Core/Shape.hpp>
 
 namespace mpgl {
@@ -42,7 +42,7 @@ namespace mpgl {
      */
     template <bool IsColorable>
     class GlyphSprite :
-        public exp::Texturable2D,
+        public Texturable2D,
         public Shape2D
     {
     private:

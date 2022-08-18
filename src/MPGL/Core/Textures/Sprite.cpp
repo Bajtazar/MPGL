@@ -29,6 +29,6 @@ namespace mpgl {
 
     template <Dimension Dim>
     Sprite<Dim>::Sprite(Texture const& texture)
-        : exp::Texturable<Dim>{texture} {}
+        : Texturable<Dim>{texture} {}
 
 }

@@ -27,23 +27,12 @@
 
 namespace mpgl {
 
-
-
-    Texturable::Texturable(Texture const& texture)
+    template <Dimension Dim>
+    Texturable<Dim>::Texturable(Texture const& texture)
         : texture{texture} {}
 
-    Texturable::Texturable(Texturable const& texturable)
+    template <Dimension Dim>
+    Texturable<Dim>::Texturable(Texturable const& texturable)
         : texture{texturable.texture} {}
-
-    Texturable& Texturable::operator=(
-        Texturable&& texturable) noexcept
-    {
-        vertexArray = std::move(texturable.vertexArray);
-        vertexBuffer = std::move(texturable.vertexBuffer);
-        elementBuffer = std::move(texturable.elementBuffer);
-        isModified = std::move(texturable.isModified);
-        texture = std::move(texturable.texture);
-        return *this;
-    }
 
 }

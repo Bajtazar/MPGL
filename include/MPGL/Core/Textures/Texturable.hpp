@@ -25,22 +25,22 @@
  */
 #pragma once
 
-#include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
 #include <MPGL/Core/Transformations/Transformable.hpp>
-#include <MPGL/Core/Context/Buffers/VertexBuffer.hpp>
-#include <MPGL/Core/Context/Buffers/VertexArray.hpp>
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
 #include <MPGL/Core/Textures/Texture.hpp>
 #include <MPGL/Utility/Adapter.hpp>
-#include <MPGL/Core/Shape.hpp>
+#include <MPGL/Core/Drawable.hpp>
 
 namespace mpgl {
 
     /**
      * Base class for texturable shapes
+     *
+     * @tparam Dim the dimension of the space
      */
-    class Texturable : public virtual Shape2D,
-        public virtual Transformable2D
+    template <Dimension Dim>
+    class Texturable :
+        public virtual Drawable<Dim>,
+        public virtual Transformable<Dim>
     {
     public:
         /**
@@ -57,7 +57,7 @@ namespace mpgl {
          * transforming object
          */
         virtual void transform(
-            Transformation2D const& transformator) noexcept = 0;
+            Transformation<Dim> const& transformator) noexcept = 0;
 
         /**
          * Sets the current texture object
@@ -88,9 +88,6 @@ namespace mpgl {
          */
         virtual ~Texturable(void) noexcept = default;
     protected:
-        typedef std::array<uint32, 6>                   Indexes;
-        typedef std::array<Vector2f, 4>                 Positions;
-
         /**
          * Construct a new Texturable object from the given texture
          *
@@ -109,29 +106,16 @@ namespace mpgl {
         Texturable(Texturable&& texturable) noexcept = default;
 
         Texturable& operator=(Texturable const& texturable) = default;
-
-        /**
-         * Assigns the given rvalue reference to the object
-         *
-         * @note Wvirtual-move-assign warning workaround
-         *
-         * @param texturable the given texturable rvalue reference
-         * @return the reference to this object
-         */
         Texturable& operator=(
-            Texturable&& texturable) noexcept;
-
-        /**
-         * Pure virtual method. Has to be overloaded. Actualizes
-         * buffers before drawing them
-         */
-        virtual void actualizeBufferBeforeDraw(void) const noexcept = 0;
+            Texturable&& texturable) noexcept = default;
 
         Texture                                         texture;
-        ElementArrayBuffer                              elementBuffer;
-
-        static constexpr const Indexes                  indexes {
-            0, 1, 2, 0, 3, 2};
     };
+
+    template class Texturable<dim::Dim2>;
+    template class Texturable<dim::Dim3>;
+
+    typedef Texturable<dim::Dim2>                       Texturable2D;
+    typedef Texturable<dim::Dim3>                       Texturable3D;
 
 }
