@@ -369,6 +369,8 @@ namespace mpgl {
 
     template class Elliptic<dim::Dim2, void>;
     template class Elliptic<dim::Dim3, void>;
+    template class Elliptic<dim::Dim2, uint8>;
+    template class Elliptic<dim::Dim3, uint8>;
 
     typedef Elliptic<dim::Dim2, void>                   Elliptic2D;
     typedef Elliptic<dim::Dim3, void>                   Elliptic3D;

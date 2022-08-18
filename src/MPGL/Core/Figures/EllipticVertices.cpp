@@ -43,4 +43,20 @@ namespace mpgl {
         return Vertex{position, color};
     }
 
+    [[nodiscard]] EllipticVertices<dim::Dim2, uint8>::Vertex
+        EllipticVertices<dim::Dim2, uint8>::buildVertex(
+            Vector const& position,
+            Color const& color) noexcept
+    {
+        return Vertex{position, Vector2f{}, color};
+    }
+
+    [[nodiscard]] EllipticVertices<dim::Dim3, uint8>::Vertex
+        EllipticVertices<dim::Dim3, uint8>::buildVertex(
+            Vector const& position,
+            Color const& color) noexcept
+    {
+        return Vertex{position, Vector2f{}, color};
+    }
+
 }

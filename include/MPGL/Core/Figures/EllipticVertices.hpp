@@ -118,4 +118,62 @@ namespace mpgl {
             EllipticVertices<Dim, Tp>::buildVertex(vector, color);
     };
 
+    /**
+     * Contains informations about vertices of the texturable
+     * 2D elliptic
+     */
+    template <>
+    struct EllipticVertices<dim::Dim2, uint8> {
+        using Vertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter2D, DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
+
+        using IterableFields = TSHolder<"texCoords", "color">;
+        using Vector = Vector2f;
+        using Adapter = Adapter2D;
+
+        /**
+         * Generates vertex
+         *
+         * @param position the constant reference to the position
+         * object
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex buildVertex(
+            Vector const& position,
+            Color const& color) noexcept;
+    };
+
+    /**
+     * Contains informations about vertices of the texturable
+     * 3D elliptic
+     */
+    template <>
+    struct EllipticVertices<dim::Dim3, uint8> {
+        using Vertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter3D, DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
+
+        using IterableFields = TSHolder<"texCoords", "color">;
+        using Vector = Vector3f;
+        using Adapter = Adapter3D;
+
+        /**
+         * Generates vertex
+         *
+         * @param position the constant reference to the position
+         * object
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex buildVertex(
+            Vector const& position,
+            Color const& color) noexcept;
+    };
+
 }
