@@ -88,6 +88,8 @@ namespace mpgl {
 
     template class EllipseClickChecker<dim::Dim2, void>;
     template class EllipseClickChecker<dim::Dim3, void>;
+    template class EllipseClickChecker<dim::Dim2, uint8>;
+    template class EllipseClickChecker<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for calculating a new outline of the
@@ -185,6 +187,8 @@ namespace mpgl {
 
     template class EllipseOutlineCalculator<dim::Dim2, void>;
     template class EllipseOutlineCalculator<dim::Dim3, void>;
+    template class EllipseOutlineCalculator<dim::Dim2, uint8>;
+    template class EllipseOutlineCalculator<dim::Dim3, uint8>;
 
     /**
      * Structure containing information about shader used by
@@ -219,6 +223,40 @@ namespace mpgl {
      */
     template <>
     struct EllipseShader<dim::Dim3, void> {
+
+        /**
+         * The shader's executable
+         *
+         * @param program a constant reference to the shader program
+         */
+        void operator() (ShaderProgram const& program) const noexcept;
+
+        static std::string const                    shader;
+    };
+
+    /**
+     * Structure containing information about shader used by
+     * a 2D texturable ellipse. Acts as an executable for the shader
+     */
+    template <>
+    struct EllipseShader<dim::Dim2, uint8> : private GraphicalObject {
+
+        /**
+         * The shader's executable
+         *
+         * @param program a constant reference to the shader program
+         */
+        void operator() (ShaderProgram const& program) const noexcept;
+
+        static std::string const                    shader;
+    };
+
+    /**
+     * Structure containing information about shader used by
+     * a 3D texturable ellipse. Acts as an executable for the shader
+     */
+    template <>
+    struct EllipseShader<dim::Dim3, uint8> {
 
         /**
          * The shader's executable

@@ -208,6 +208,8 @@ namespace mpgl {
 
     template class Ellipse<dim::Dim2>;
     template class Ellipse<dim::Dim3>;
+    template class Ellipse<dim::Dim2, uint8>;
+    template class Ellipse<dim::Dim3, uint8>;
 
     typedef Ellipse<dim::Dim2>                      Ellipse2D;
     typedef Ellipse<dim::Dim3>                      Ellipse3D;
