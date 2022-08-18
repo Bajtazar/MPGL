@@ -417,6 +417,8 @@ namespace mpgl {
 
     template class Ring<dim::Dim2>;
     template class Ring<dim::Dim3>;
+    template class Ring<dim::Dim2, uint8>;
+    template class Ring<dim::Dim3, uint8>;
 
     typedef Ring<dim::Dim2>                         Ring2D;
     typedef Ring<dim::Dim3>                         Ring3D;
