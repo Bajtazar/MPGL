@@ -45,14 +45,14 @@ namespace mpgl {
             (*this)[i].draw();
     }
 
-    template <details::Trans2DDrawable Base,
+    template <details::TransDrawable Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::draw(void) const noexcept {
         std::ranges::for_each(*this,
             [](auto const& drawable){ drawable.draw(); });
     }
 
-    template <details::Trans2DDrawable Base,
+    template <details::TransDrawable Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::draw(
         std::size_t begin,
@@ -63,10 +63,10 @@ namespace mpgl {
             (*this)[i].draw();
     }
 
-    template <details::Trans2DDrawable Base,
+    template <details::TransDrawable Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::transform(
-        Transformation2D const& transformator) noexcept
+        Transformation<Dim> const& transformator) noexcept
     {
         for (auto& drawable : *this)
             drawable.transform(transformator);
