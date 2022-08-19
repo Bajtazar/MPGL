@@ -26,13 +26,12 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
-#include <MPGL/Utility/Deferred/DelegatePointer.hpp>
 #include <MPGL/Core/Context/Buffers/VertexCast.hpp>
-#include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Core/DrawableCollection.hpp>
-#include <MPGL/Core/Shaders/Shadeable.hpp>
 #include <MPGL/Core/Text/GlyphSprite.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
 #include <MPGL/Core/Text/Font.hpp>
+#include <MPGL/Core/Model.hpp>
 
 namespace mpgl {
 
@@ -455,7 +454,8 @@ namespace mpgl {
         class Text :
         public Shadeable,
         public Transformable<Dim>,
-        public Drawable<Dim> // sprite
+        public Drawable<Dim>,
+        public DeriveIfT<ThreeDimensional<Dim>, Model>
     {
     public:
         typedef GlyphSprite<Dim>                    FontGlyph;

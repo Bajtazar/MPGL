@@ -196,7 +196,12 @@ namespace mpgl {
 
     template <Dimension Dim>
     void Text<Dim>::setLocations(void) {
-        /// model location
+        if constexpr (ThreeDimensional<Dim>) {
+            Shadeable::setLocations(
+                this->locationSetterBuilder(
+                    this->shaderProgram,
+                    this->locations));
+        }
     }
 
     template <Dimension Dim>
@@ -406,6 +411,8 @@ namespace mpgl {
     template <Dimension Dim>
     void Text<Dim>::draw(void) const noexcept {
         shaderProgram->use();
+        if constexpr (ThreeDimensional<Dim>)
+            this->actualizeLocations();
         glyphs.draw();
         underlines.draw();
         strikethroughs.draw();
