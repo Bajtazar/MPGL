@@ -286,6 +286,8 @@ namespace mpgl {
 
     template <Dimension Dim>
     uint8 Text<Dim>::getLevel(void) const noexcept {
+        if (textSize < 1.f)
+            return 0;
         uint8 level = std::ceil(log2(textSize));
         return level > ShiftValue ? level - ShiftValue : 0;
     }
