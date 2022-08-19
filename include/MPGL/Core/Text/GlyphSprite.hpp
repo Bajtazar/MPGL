@@ -37,68 +37,40 @@ namespace mpgl {
      * external commands in order to gain performance boost.
      * Cannot be drawn alone
      *
-     * @tparam IsColorable specifies whether the vertices
-     * should contain information about color
+     * @tparam Dim the dimension of the space where the glyph is
+     * being drawn
      */
-    template <bool IsColorable>
+    template <Dimension Dim>
     class GlyphSprite :
-        public Texturable2D,
-        public Shape2D
+        public Texturable<Dim>,
+        public Shape<Dim>
     {
     private:
-        /// The default texturable vertex
-        using DefaultVertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter2D, DataType::Float32>,
-            VertexComponent<"texCoords", Vector2f, DataType::Float32>
-        >;
-
-        /// The colorable texturable vertex
-        using ColorableVertex = mpgl::Vertex<
-            VertexComponent<"position", Adapter2D, DataType::Float32>,
+        static constexpr std::size_t Degree
+            = Dim::orthogonal_space_degree;
+    public:
+        using Vector = mpgl::Vector<float32, Degree>;
+        using Adapter = mpgl::Adapter<Degree>;
+        using Vertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter, DataType::Float32>,
             VertexComponent<"texCoords", Vector2f, DataType::Float32>,
             VertexComponent<"color", Color, DataType::Float32>
         >;
-    public:
-        using Vertex = std::conditional_t<IsColorable, ColorableVertex,
-            DefaultVertex>;
+        using Vertices = std::vector<Vertex>;
 
-        typedef std::vector<Vertex>                     Vertices;
         /**
-         * Construct a new Glyph Sprite object with given
+         * Constructs a new Glyph Sprite object with given
          * texture
-         *
-         * @param texture the texture drawn by sprite
-         */
-        GlyphSprite(Texture const& texture = {});
-
-        /**
-         * Construct a new Glyph Sprite object with given
-         * texture and color
          *
          * @param texture the texture drawn by sprite
          * @param color sprite's color
          */
-        GlyphSprite(Texture const& texture,
-            Color const& color) requires (IsColorable);
-
-        /**
-         * Construct a new parallelogram-like Glyph Sprite
-         * object from the given three vertices and sprite's
-         * texture
-         *
-         * @param texture the texture drawn by sprite
-         * @param firstVertex the first vertex position
-         * @param secondVertex the second vertex position
-         * @param thirdVertex the third vertex position
-         */
         GlyphSprite(
-            Texture const& texture,
-            Vector2f const& firstVertex,
-            Vector2f const& secondVertex,
-            Vector2f const& thirdVertex);
+            Texture const& texture = {},
+            Color const& color = {});
 
         /**
-         * Construct a new parallelogram-like Glyph Sprite
+         * Constructs a new parallelogram-like Glyph Sprite
          * object from the given three vertices, sprite's
          * texture and its color
          *
@@ -110,28 +82,15 @@ namespace mpgl {
          */
         GlyphSprite(
             Texture const& texture,
-            Vector2f const& firstVertex,
-            Vector2f const& secondVertex,
-            Vector2f const& thirdVertex,
-            Color const& color) requires (IsColorable);
+            Vector const& firstVertex,
+            Vector const& secondVertex,
+            Vector const& thirdVertex,
+            Color const& color);
 
         /**
-         * @brief Construct a new rectangular Glyph Sprite
-         * object. The edges are parallel to x and y axis
-         *
-         * @param texture the sprite's texture
-         * @param firstVertex the first vertex position
-         * @param dimensions the sprite's dimensions
-         */
-        GlyphSprite(
-            Texture const& texture,
-            Vector2f const& firstVertex,
-            Vector2f const& dimensions);
-
-        /**
-         * @brief Construct a new rectangular Glyph Sprite
-         * object. The edges are parallel to x and y axis.
-         * Colors sprite with given color
+         * Construct a new rectangular Glyph Sprite object.
+         * The edges are parallel to x and y axis. Colors
+         * sprite with given color
          *
          * @param texture the sprite's texture
          * @param firstVertex the first vertex position
@@ -142,7 +101,7 @@ namespace mpgl {
             Texture const& texture,
             Vector2f const& firstVertex,
             Vector2f const& dimensions,
-            Color const& color) requires (IsColorable);
+            Color const& color) requires TwoDimensional<Dim>;
 
         /**
          * Construct a new Glyph Sprite object from the given
@@ -167,9 +126,9 @@ namespace mpgl {
             GlyphSprite&& sprite) noexcept = default;
 
         /**
-         * Draws sprite on the screen
+         * Draws glyph sprite on the screen
          */
-        void draw(void) const noexcept;
+        void draw(void) const noexcept final;
 
         /**
          * Performs transformation on the figure
@@ -177,8 +136,8 @@ namespace mpgl {
          * @param transformator the constant reference to the
          * transforming object
          */
-        virtual void transform(
-            Transformation2D const& transformator) noexcept;
+        void transform(
+            Transformation<Dim> const& transformator) noexcept final;
 
         /**
          * Returns the reference to vertex with the given index
@@ -187,7 +146,7 @@ namespace mpgl {
          * @return the reference to vertex with the given index
          */
         [[nodiscard]] Vertex& operator[] (std::size_t index) noexcept
-            { isModified = true; return vertices[index]; }
+            { this->isModified = true; return vertices[index]; }
 
         /**
          * Returns the constant reference to vertex with
@@ -207,7 +166,7 @@ namespace mpgl {
          * @return the reference to the front vertex
          */
         [[nodiscard]] Vertex& front(void) noexcept
-            { isModified = true; return vertices.front(); }
+            { this->isModified = true; return vertices.front(); }
 
         /**
          * Returns the constant reference to the front vertex
@@ -223,7 +182,7 @@ namespace mpgl {
          * @return the reference to the back vertex
          */
         [[nodiscard]] Vertex& back(void) noexcept
-            { isModified = true; return vertices.back(); }
+            { this->isModified = true; return vertices.back(); }
 
         /**
          * Returns the constant reference to the back vertex
@@ -254,7 +213,7 @@ namespace mpgl {
          * @return the iterator to the begining of the vertices
          */
         [[nodiscard]] iterator begin(void) noexcept
-            { isModified = true; return vertices.begin(); }
+            { this->isModified = true; return vertices.begin(); }
 
         /**
          * Returns the iterator to the end of the vertices
@@ -262,7 +221,7 @@ namespace mpgl {
          * @return the iterator to the end of the vertices
          */
         [[nodiscard]] iterator end(void) noexcept
-            { isModified = true; return vertices.end(); }
+            { this->isModified = true; return vertices.end(); }
 
         /**
          * Returns the constant iterator to the begining
@@ -312,7 +271,7 @@ namespace mpgl {
          * the vertices
          */
         [[nodiscard]] reverse_iterator rbegin(void) noexcept
-            { isModified = true; return vertices.rbegin(); }
+            { this->isModified = true; return vertices.rbegin(); }
 
         /**
          * Returns the reverse iterator to the begining of
@@ -322,7 +281,7 @@ namespace mpgl {
          * the vertices
          */
         [[nodiscard]] reverse_iterator rend(void) noexcept
-            { isModified = true; return vertices.rend(); }
+            { this->isModified = true; return vertices.rend(); }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -373,41 +332,18 @@ namespace mpgl {
          *
          * @param color the sprite's new color
          */
-        void setColor(Color const& color = {}) noexcept
-            requires (IsColorable);
+        void setColor(Color const& color = {}) noexcept;
 
         /**
-         * Destroy the Glyph Sprite object
+         * Destroys the Glyph Sprite object
          */
         ~GlyphSprite(void) noexcept = default;
     private:
-        typedef std::array<Vector2f, 4>                 Positions;
-        typedef std::array<uint32, 6>                   Indexes;
+        using Positions = std::array<Vector, 4>;
+        using Indexes = std::array<uint32, 6>;
 
         Vertices                                        vertices;
-
-        /**
-         * Creates the four vertices vector with the correct
-         * texture positions
-         *
-         * @param positions the vertices positions
-         * @return the vertices vector
-         */
-        static Vertices makeVertices(
-            Positions const& positions = {});
-
-        /**
-         * Creates the four vertices vector with the correct
-         * texture positions and with the given color
-         *
-         * @param color the color of the vertices
-         * @param positions the vertices positions
-         * @return the vertices vector
-         */
-        static Vertices makeVertices(
-            Color const& color,
-            Positions const& positions = {}
-            ) requires IsColorable;
+        ElementArrayBuffer                              elementBuffer;
 
         /**
          * Actualizes buffers before draw
@@ -419,13 +355,26 @@ namespace mpgl {
          */
         void initializeBuffers(void) const noexcept;
 
-        ElementArrayBuffer                              elementBuffer;
+        /**
+         * Creates the four vertices vector with the correct
+         * texture positions and with the given color
+         *
+         * @param color the color of the vertices
+         * @param positions the vertices positions
+         * @return the vertices vector
+         */
+        static Vertices makeVertices(
+            Color const& color,
+            Positions const& positions = {});
 
         static constexpr const Indexes                  indexes {
             0, 1, 2, 0, 3, 2};
     };
 
-    template class GlyphSprite<true>;
-    template class GlyphSprite<false>;
+    template class GlyphSprite<dim::Dim2>;
+    template class GlyphSprite<dim::Dim3>;
+
+    using GlyphSprite2D = GlyphSprite<dim::Dim2>;
+    using GlyphSprite3D = GlyphSprite<dim::Dim3>;
 
 }

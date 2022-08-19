@@ -34,8 +34,6 @@
 #include <MPGL/Core/Text/GlyphSprite.hpp>
 #include <MPGL/Core/Text/Font.hpp>
 
-#include <array>
-
 namespace mpgl {
 
     /**
@@ -43,14 +41,16 @@ namespace mpgl {
      * glyph and allows to get only the color of the glyph's
      * vertices
      *
+     * @tparam Dim the dimension of the space where the glyph is
+     * being drawn
      * @tparam IsConst if the glyph sprite should be constant
      */
-    template <bool IsConst>
+    template <Dimension Dim, bool IsConst>
     class TextGlyphView {
     public:
         typedef std::conditional_t<IsConst,
-            GlyphSprite<true> const,
-            GlyphSprite<true>>                      GlyphType;
+            GlyphSprite<Dim> const,
+            GlyphSprite<Dim>>                       GlyphType;
         typedef std::reference_wrapper<GlyphType>   GlyphRef;
         typedef std::size_t                         SizeT;
         typedef std::conditional_t<IsConst,
@@ -276,9 +276,9 @@ namespace mpgl {
         };
 
         using iterator = Iterator<Color, typename
-            GlyphSprite<true>::iterator>;
+            GlyphSprite<Dim>::iterator>;
         using const_iterator = Iterator<Color const, typename
-            GlyphSprite<true>::const_iterator>;
+            GlyphSprite<Dim>::const_iterator>;
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<
             const_iterator>;
@@ -409,189 +409,10 @@ namespace mpgl {
         GlyphRef                                    ref;
     };
 
-    template class TextGlyphView<false>;
-    template class TextGlyphView<true>;
-
-    /**
-     * The colorable text class iterator. Returns a views
-     * to the glyph sprites contained in the text
-     *
-     * @tparam IsConst if the glyph sprite's should be constant
-     */
-    template <bool IsConst>
-    class ColorableTextIterator {
-    public:
-        typedef GlyphSprite<true>                   FontGlyph;
-        typedef DrawableCollection<FontGlyph>       GlyphsVector;
-        typedef std::conditional_t<IsConst,
-            typename GlyphsVector::const_iterator,
-            typename GlyphsVector::iterator>        GlyphIter;
-        typedef TextGlyphView<IsConst>              value_type;
-        typedef std::ptrdiff_t                      difference_type;
-        typedef std::output_iterator_tag            iterator_category;
-
-        using compare =
-            std::compare_three_way_result_t<GlyphIter, GlyphIter>;
-
-        /**
-         * Constructs a new Colorable Text Iterator object from
-         * a constant reference to the glyph's vector iterator
-         *
-         * @param iter the constant reference to the glyph's
-         * vector iterator
-         */
-        explicit ColorableTextIterator(
-            GlyphIter const& iter) noexcept
-                : iter{iter} {}
-
-        /**
-         * Increments iterator by one
-         *
-         * @return reference to this object
-         */
-        ColorableTextIterator& operator++(void) noexcept
-            { ++iter; return *this; }
-
-        /**
-         * Post-increments iterator by one and returns copy
-         * of the object
-         *
-         * @return the copied object
-         */
-        [[nodiscard]] ColorableTextIterator operator++(int) noexcept
-            { auto temp = *this; ++iter; return temp; }
-
-        /**
-         * Decrements iterator by one
-         *
-         * @return reference to this object
-         */
-        ColorableTextIterator& operator--(void) noexcept
-            { --iter; return *this; }
-
-        /**
-         * Post-decrements iterator by one and returns copy
-         * of the object
-         *
-         * @return the copied object
-         */
-        [[nodiscard]] ColorableTextIterator operator--(int) noexcept
-            { auto temp = *this; --iter; return temp; }
-
-        /**
-         * Returns a view to the glyph sprite
-         *
-         * @return the view to the glyph sprite
-         */
-        [[nodiscard]] value_type operator* (void) const noexcept
-            { return value_type{std::ref(*iter)}; }
-
-        /**
-         * Increments iterator by the given distance
-         *
-         * @param offset the incremented distance
-         * @return reference to this object
-         */
-        ColorableTextIterator& operator+= (
-            difference_type offset) noexcept
-                { iter += offset; return *this; };
-
-        /**
-         * Decrements iterator by the given distance
-         *
-         * @param offset the decremented distance
-         * @return reference to this object
-         */
-        ColorableTextIterator& operator-= (
-            difference_type offset) noexcept
-                { iter -= offset; return *this; };
-
-        /**
-         * Returns a glyph sprites's view shifted by
-         * the given offset
-         *
-         * @param offset the incremented distance
-         * @return the glyph sprites's view shifted by
-         * the given offset
-         */
-        [[nodiscard]] value_type operator[] (
-            difference_type offset) noexcept
-                { return value_type{std::ref(*(iter + offset))}; }
-
-        /**
-         * Adds given distance to an iterator
-         *
-         * @param left the iterator
-         * @param right the distance
-         * @return the shifted iterator
-         */
-        [[nodiscard]] friend ColorableTextIterator operator+(
-            ColorableTextIterator const& left,
-            difference_type right) noexcept
-                { auto temp = left; temp.iter += right; return temp; }
-
-        /**
-         * Adds given distance to an iterator
-         *
-         * @param left the distance
-         * @param right the iterator
-         * @return the shifted iterator
-         */
-        [[nodiscard]] friend ColorableTextIterator operator+(
-            difference_type left,
-            ColorableTextIterator const& right) noexcept
-                { auto temp = right; temp.iter += left; return temp; }
-
-        /**
-         * Subtracts given distance from iterator
-         *
-         * @param left the iterator
-         * @param right the distance
-         * @return the shifted operator
-         */
-        [[nodiscard]] friend ColorableTextIterator operator-(
-            ColorableTextIterator const& left,
-            difference_type right) noexcept
-                { auto temp = left; temp.iter -= right; return temp; }
-
-        /**
-         * Returns distance between iterators
-         *
-         * @param left the left iterator
-         * @param right the right iterator
-         * @return difference_type
-         */
-        [[nodiscard]] friend difference_type operator-(
-            ColorableTextIterator const& left,
-            ColorableTextIterator const& right) noexcept
-                { return left.iter - right.iter; }
-
-        /**
-         * Checks whether two iterators are equal
-         *
-         * @param left the left iterator
-         * @param right the right iterator
-         * @return whether two iterators are equal
-         */
-        [[nodiscard]] friend bool operator==(
-            ColorableTextIterator const& left,
-            ColorableTextIterator const& right) noexcept
-                { return left.iter == right.iter; }
-
-        /**
-         * Compares two iterators to each other
-         *
-         * @param left the left iterator
-         * @param right the right iterator
-         * @return the result of compare
-         */
-        [[nodiscard]] friend compare operator<=>(
-            ColorableTextIterator const& left,
-            ColorableTextIterator const& right) noexcept
-                { return left.iter <=> right.iter; }
-    private:
-        GlyphIter                                   iter;
-    };
+    template class TextGlyphView<dim::Dim2, false>;
+    template class TextGlyphView<dim::Dim2, true>;
+    template class TextGlyphView<dim::Dim3, false>;
+    template class TextGlyphView<dim::Dim3, true>;
 
     /**
      * The text initialization options
@@ -624,37 +445,27 @@ namespace mpgl {
         Modifiers                               mods = Modifiers::None;
     };
 
-    class MonochromaticTextBase {
-    protected:
-        explicit MonochromaticTextBase(void);
-
-        DelegatePointer<ShaderLocation>         colorLoc;
-    };
-
-    template <bool IsColorable>
-    using TextBase = std::conditional_t<IsColorable,
-        std::monostate, MonochromaticTextBase>;
-
     /**
      * Represents a text on the screen
      *
-     * @tparam IsColorable if text's glyph sprites vertices should
-     * be colorable
+     * @tparam Dim the dimension of the space where the glyph is
+     * being drawn
      */
-    template <bool IsColorable = false>
-    class Text :
+    template <Dimension Dim>
+        class Text :
         public Shadeable,
-        public Transformable2D,
-        public Drawable2D,
-        private TextBase<IsColorable>
+        public Transformable<Dim>,
+        public Drawable<Dim> // sprite
     {
     public:
-        typedef GlyphSprite<IsColorable>            FontGlyph;
+        typedef GlyphSprite<Dim>                    FontGlyph;
         typedef DrawableCollection<FontGlyph>       GlyphsVector;
         typedef Font::Type                          Style;
         typedef std::size_t                         SizeT;
         typedef std::string                         String;
         typedef TextOptions::Modifiers              Modifiers;
+        typedef typename FontGlyph::Vector          Vector;
+        typedef typename FontGlyph::Adapter         Adapter;
 
         /**
          * Constructs a new Text with given font, position,
@@ -667,7 +478,7 @@ namespace mpgl {
          */
         explicit Text(
             Font const& font = {},
-            Vector2f const& position = {},
+            Vector const& position = {},
             String const& text = {},
             TextOptions const& options = {});
 
@@ -815,7 +626,7 @@ namespace mpgl {
          *
          * @return the text's position
          */
-        [[nodiscard]] Vector2f getPosition(void) const noexcept;
+        [[nodiscard]] Vector getPosition(void) const noexcept;
 
         /**
          * Removes string displayed by the text
@@ -829,7 +640,7 @@ namespace mpgl {
          * transforming object
          */
         void transform(
-            Transformation2D const& transformator) noexcept final;
+            Transformation<Dim> const& transformator) noexcept final;
 
         /**
          * Sets the given shader program
@@ -862,8 +673,186 @@ namespace mpgl {
          */
         void draw(void) const noexcept final;
 
-        using iterator = ColorableTextIterator<false>;
-        using const_iterator = ColorableTextIterator<true>;
+        /**
+         * The text class iterator. Returns a views to the glyph
+         * sprites contained in the text
+         *
+         * @tparam IsConst if the glyph sprite's should be constant
+         */
+        template <bool IsConst>
+        class Iterator {
+        public:
+            typedef std::conditional_t<IsConst,
+                typename GlyphsVector::const_iterator,
+                typename GlyphsVector::iterator>        GlyphIter;
+            typedef TextGlyphView<Dim, IsConst>         value_type;
+            typedef std::ptrdiff_t                      difference_type;
+            typedef std::output_iterator_tag            iterator_category;
+
+            using compare =
+                std::compare_three_way_result_t<GlyphIter, GlyphIter>;
+
+            /**
+             * Constructs a new Iterator object from a constant
+             * reference to the glyph's vector iterator
+             *
+             * @param iter the constant reference to the glyph's
+             * vector iterator
+             */
+            explicit Iterator(GlyphIter const& iter) noexcept
+                : iter{iter} {}
+
+            /**
+             * Increments iterator by one
+             *
+             * @return reference to this object
+             */
+            Iterator& operator++(void) noexcept
+                { ++iter; return *this; }
+
+            /**
+             * Post-increments iterator by one and returns copy
+             * of the object
+             *
+             * @return the copied object
+             */
+            [[nodiscard]] Iterator operator++(int) noexcept
+                { auto temp = *this; ++iter; return temp; }
+
+            /**
+             * Decrements iterator by one
+             *
+             * @return reference to this object
+             */
+            Iterator& operator--(void) noexcept
+                { --iter; return *this; }
+
+            /**
+             * Post-decrements iterator by one and returns copy
+             * of the object
+             *
+             * @return the copied object
+             */
+            [[nodiscard]] Iterator operator--(int) noexcept
+                { auto temp = *this; --iter; return temp; }
+
+            /**
+             * Returns a view to the glyph sprite
+             *
+             * @return the view to the glyph sprite
+             */
+            [[nodiscard]] value_type operator* (void) const noexcept
+                { return value_type{std::ref(*iter)}; }
+
+            /**
+             * Increments iterator by the given distance
+             *
+             * @param offset the incremented distance
+             * @return reference to this object
+             */
+            Iterator& operator+= (
+                difference_type offset) noexcept
+                    { iter += offset; return *this; };
+
+            /**
+             * Decrements iterator by the given distance
+             *
+             * @param offset the decremented distance
+             * @return reference to this object
+             */
+            Iterator& operator-= (
+                difference_type offset) noexcept
+                    { iter -= offset; return *this; };
+
+            /**
+             * Returns a glyph sprites's view shifted by
+             * the given offset
+             *
+             * @param offset the incremented distance
+             * @return the glyph sprites's view shifted by
+             * the given offset
+             */
+            [[nodiscard]] value_type operator[] (
+                difference_type offset) noexcept
+                    { return value_type{std::ref(*(iter + offset))}; }
+
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend Iterator operator+(
+                Iterator const& left,
+                difference_type right) noexcept
+                    { auto temp = left; temp.iter += right; return temp; }
+
+            /**
+             * Adds given distance to an iterator
+             *
+             * @param left the distance
+             * @param right the iterator
+             * @return the shifted iterator
+             */
+            [[nodiscard]] friend Iterator operator+(
+                difference_type left,
+                Iterator const& right) noexcept
+                    { auto temp = right; temp.iter += left; return temp; }
+
+            /**
+             * Subtracts given distance from iterator
+             *
+             * @param left the iterator
+             * @param right the distance
+             * @return the shifted operator
+             */
+            [[nodiscard]] friend Iterator operator-(
+                Iterator const& left,
+                difference_type right) noexcept
+                    { auto temp = left; temp.iter -= right; return temp; }
+
+            /**
+             * Returns distance between iterators
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return difference_type
+             */
+            [[nodiscard]] friend difference_type operator-(
+                Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter - right.iter; }
+
+            /**
+             * Checks whether two iterators are equal
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return whether two iterators are equal
+             */
+            [[nodiscard]] friend bool operator==(
+                Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter == right.iter; }
+
+            /**
+             * Compares two iterators to each other
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return the result of compare
+             */
+            [[nodiscard]] friend compare operator<=>(
+                Iterator const& left,
+                Iterator const& right) noexcept
+                    { return left.iter <=> right.iter; }
+        private:
+            GlyphIter                                   iter;
+        };
+
+        using iterator = Iterator<false>;
+        using const_iterator = Iterator<true>;
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<
             const_iterator>;
@@ -873,18 +862,16 @@ namespace mpgl {
          *
          * @return the iterator to the begining of the glyph sprites
          */
-        [[nodiscard]] iterator begin(
-            void) noexcept requires IsColorable
-                { return iterator{glyphs.begin()}; }
+        [[nodiscard]] iterator begin(void) noexcept
+            { return iterator{glyphs.begin()}; }
 
         /**
          * Returns the iterator to the end of the glyph sprites
          *
          * @return the iterator to the end of the glyph sprites
          */
-        [[nodiscard]] iterator end(
-            void) noexcept requires IsColorable
-                { return iterator{glyphs.end()}; }
+        [[nodiscard]] iterator end(void) noexcept
+            { return iterator{glyphs.end()}; }
 
         /**
          * Returns the constant iterator to the begining
@@ -893,9 +880,8 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the glyph sprites
          */
-        [[nodiscard]] const_iterator begin(
-            void) const noexcept requires IsColorable
-                { return const_iterator{glyphs.begin()}; }
+        [[nodiscard]] const_iterator begin(void) const noexcept
+            { return const_iterator{glyphs.begin()}; }
 
         /**
          * Returns the constant iterator to the end
@@ -904,9 +890,8 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the glyph sprites
          */
-        [[nodiscard]] const_iterator end(
-            void) const noexcept requires IsColorable
-                { return const_iterator{glyphs.end()}; }
+        [[nodiscard]] const_iterator end(void) const noexcept
+            { return const_iterator{glyphs.end()}; }
 
         /**
          * Returns the constant iterator to the begining
@@ -915,9 +900,8 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the glyph sprites
          */
-        [[nodiscard]] const_iterator cbegin(
-            void) const noexcept requires IsColorable
-                { return const_iterator{glyphs.begin()}; }
+        [[nodiscard]] const_iterator cbegin(void) const noexcept
+            { return const_iterator{glyphs.begin()}; }
 
         /**
          * Returns the constant iterator to the end
@@ -926,9 +910,8 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the glyph sprites
          */
-        [[nodiscard]] const_iterator cend(
-            void) const noexcept requires IsColorable
-                { return const_iterator{glyphs.end()}; }
+        [[nodiscard]] const_iterator cend(void) const noexcept
+            { return const_iterator{glyphs.end()}; }
 
         /**
          * Returns the reverse iterator to the end of
@@ -937,9 +920,8 @@ namespace mpgl {
          * @return the reverse iterator to the end of
          * the glyph sprites
          */
-        [[nodiscard]] reverse_iterator rbegin(
-            void) noexcept requires IsColorable
-                { return reverse_iterator{end() - 1}; }
+        [[nodiscard]] reverse_iterator rbegin(void) noexcept
+            { return reverse_iterator{end() - 1}; }
 
         /**
          * Returns the reverse iterator to the begining of
@@ -948,9 +930,8 @@ namespace mpgl {
          * @return the reverse iterator to the begining of
          * the glyph sprites
          */
-        [[nodiscard]] reverse_iterator rend(
-            void) noexcept requires IsColorable
-                { return reverse_iterator{begin() - 1}; }
+        [[nodiscard]] reverse_iterator rend(void) noexcept
+            { return reverse_iterator{begin() - 1}; }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -960,7 +941,7 @@ namespace mpgl {
          * the glyph sprites
          */
         [[nodiscard]] const_reverse_iterator rbegin(
-            void) const noexcept requires IsColorable
+            void) const noexcept
                 { return const_reverse_iterator{end() - 1}; }
 
         /**
@@ -971,7 +952,7 @@ namespace mpgl {
          * the glyph sprites
          */
         [[nodiscard]] const_reverse_iterator rend(
-            void) const noexcept requires IsColorable
+            void) const noexcept
                 { return const_reverse_iterator{begin() - 1}; }
 
         /**
@@ -982,7 +963,7 @@ namespace mpgl {
          * the glyph sprites
          */
         [[nodiscard]] const_reverse_iterator crbegin(
-            void) const noexcept requires IsColorable
+            void) const noexcept
                 { return const_reverse_iterator{end() - 1}; }
 
         /**
@@ -993,7 +974,7 @@ namespace mpgl {
          * the glyph sprites
          */
         [[nodiscard]] const_reverse_iterator crend(
-            void) const noexcept requires IsColorable
+            void) const noexcept
                 { return const_reverse_iterator{begin() - 1}; }
 
         /**
@@ -1002,10 +983,10 @@ namespace mpgl {
         ~Text(void) noexcept = default;
     private:
         typedef std::vector<uint16>                 IDArray;
-        typedef DrawableCollection<Tetragon2D>      Lines;
+        typedef DrawableCollection<Tetragon<Dim>>   Lines;
         typedef std::pair<uint8, float32>           ArgTuple;
-        typedef std::tuple<Vector2f, Vector2f,
-            Vector2f>                               VectorTuple;
+        typedef std::tuple<Vector, Vector,
+            Vector>                                 VectorTuple;
         typedef std::tuple<float32, float32,
             Vector2f>                               GlyphDimensions;
         typedef std::pair<Vector2f, std::size_t>    GlyphPosPair;
@@ -1024,7 +1005,7 @@ namespace mpgl {
          * position of glyphs / modifiers in text. Rememberes all
          * of the linear transformations performed on it
          */
-        class PositionHolder : public Transformable2D {
+        class PositionHolder : public Transformable<Dim> {
         public:
             /**
              * Constructs a new Position Holder object
@@ -1032,7 +1013,7 @@ namespace mpgl {
              * @param position the constant reference to the
              * text's initial position vector object
              */
-            explicit PositionHolder(Vector2f const& position) noexcept;
+            explicit PositionHolder(Vector const& position) noexcept;
 
             PositionHolder(PositionHolder const&) noexcept = default;
             PositionHolder(PositionHolder&&) noexcept = default;
@@ -1049,7 +1030,8 @@ namespace mpgl {
              * transforming object
              */
             void transform(
-                Transformation2D const& transformator) noexcept final;
+                Transformation<Dim> const& transformator
+                ) noexcept final;
 
             /**
              * Advances space according to the advance vector
@@ -1058,7 +1040,7 @@ namespace mpgl {
              * advance vector
              * @return the real advancement
              */
-            Vector2f advance(Vector2f const& advanceVector) noexcept;
+            Vector advance(Vector2f const& advanceVector) noexcept;
 
             /**
              * Calculates the position of the glyph sprite according
@@ -1102,14 +1084,14 @@ namespace mpgl {
              *
              * @param vector the point
              */
-            void move(Vector2f const& point) noexcept;
+            void move(Vector const& point) noexcept;
 
             /**
              * Returns the inner space's position vector
              *
              * @return the inner space's positon versor
              */
-            [[nodiscard]] Vector2f getPosition(void) const noexcept;
+            [[nodiscard]] Vector getPosition(void) const noexcept;
 
             /**
              * Calculates the position of text based on the first
@@ -1121,8 +1103,8 @@ namespace mpgl {
              * bearing
              * @return the original's position
              */
-            [[nodiscard]] Vector2f findOrigin(
-                Vector2f const& position,
+            [[nodiscard]] Vector findOrigin(
+                Vector const& position,
                 Vector2f const& bearing) const noexcept;
 
             /**
@@ -1130,12 +1112,12 @@ namespace mpgl {
              */
             ~PositionHolder(void) noexcept = default;
         private:
-            typedef std::array<Adapter2D, 3>        Vertices;
+            typedef std::array<Adapter, 3>          Vertices;
 
             Vertices                                vertices;
-            Vector2f                                xVersor;
-            Vector2f                                yVersor;
-            Vector2f                                position;
+            Vector                                  xVersor;
+            Vector                                  yVersor;
+            Vector                                  position;
 
             /**
              * Actualizes the inner versors and position
@@ -1148,7 +1130,7 @@ namespace mpgl {
              * @param position the position in euclidean system
              * @return the position in the inner system
              */
-            [[nodiscard]] Vector2f changeSystem(
+            [[nodiscard]] Vector changeSystem(
                 Vector2f const& position) const noexcept;
         };
 
@@ -1165,7 +1147,7 @@ namespace mpgl {
 
         static const Executable                     shaderExec;
 
-        /**
+/**
          * Loads the glyphs into the memory
          *
          * @param array the array with glyphs ids
@@ -1253,7 +1235,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendModifiers(
-            Vector2f const& advance) noexcept;
+            Vector const& advance) noexcept;
 
         /**
          * Extends text underline
@@ -1261,7 +1243,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendUnderline(
-            Vector2f const& advance) noexcept;
+            Vector const& advance) noexcept;
 
         /**
          * Extends text strikethrough
@@ -1269,7 +1251,7 @@ namespace mpgl {
          * @param advance the glyph advance vector
          */
         void extendStrikethrough(
-           Vector2f const& advance) noexcept;
+           Vector const& advance) noexcept;
 
         /**
          * Emplaces modifiers into memory
@@ -1341,7 +1323,7 @@ namespace mpgl {
          * @param color the color of the text
          * @return the underline tetragon
          */
-        static Tetragon2D generateUnderline(
+        static Tetragon<Dim> generateUnderline(
             PositionHolder const& positionSpace,
             SizeT textSize,
             Color const& color) noexcept;
@@ -1354,7 +1336,7 @@ namespace mpgl {
          * @param color the color of the text
          * @return the strikethrough tetragon
          */
-        static Tetragon2D generateStrikethrough(
+        static Tetragon<Dim> generateStrikethrough(
             PositionHolder const& positionSpace,
             SizeT textSize,
             Color const& color) noexcept;
@@ -1369,10 +1351,14 @@ namespace mpgl {
         static void setColorOnJoinableRange(
             std::ranges::forward_range auto&& range,
             Color const& color) noexcept;
+
     };
 
-    template class Text<true>;
-    template class Text<false>;
+    template class Text<dim::Dim2>;
+    template class Text<dim::Dim3>;
+
+    using Text2D = Text<dim::Dim2>;
+    using Text3D = Text<dim::Dim3>;
 
     /**
      * Bitwise adds two modifiers flags
