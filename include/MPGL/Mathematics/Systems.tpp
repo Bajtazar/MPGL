@@ -61,12 +61,12 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr std::optional<Vector2<Tp>>
-        intersectionOf(
+    [[nodiscard]] constexpr std::optional<Vector2<Tp>>
+        IntersectionOfFn::operator() (
             Vector2<Tp> const& firstPoint,
             Vector2<Tp> const& firstVersor,
             Vector2<Tp> const& secondPoint,
-            Vector2<Tp> const& secondVersor) noexcept
+            Vector2<Tp> const& secondVersor) const noexcept
     {
         if (auto matrix = invert(transpose(Matrix2f{firstVersor,
             -secondVersor})))
@@ -74,6 +74,87 @@ namespace mpgl {
             Vector2<Tp> pos = *matrix * (secondPoint - firstPoint);
             return firstPoint + firstVersor * pos[0];
         }
+        return std::nullopt;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr std::optional<Vector3<Tp>>
+        IntersectionOfFn::operator() (
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& firstVersor,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& secondVersor) const noexcept
+    {
+        if (auto system = findValidSystem(firstVersor, secondVersor)) {
+            auto [matrix, d1, d2, dt] = *system;
+            auto const result = buildResultVector(firstPoint, secondPoint, d1, d2);
+            if (auto perms = lupDecomposition(matrix)) {
+                auto const solution = lupSolve(matrix, *perms, result);
+                if (validSolution(solution, firstPoint, firstVersor,
+                    secondPoint, secondVersor, dt))
+                        return {firstVersor * solution[0] + firstPoint};
+            }
+        }
+        return std::nullopt;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr bool
+        IntersectionOfFn::validSolution(
+            Vector2<Tp> const& solution,
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& firstVersor,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& secondVersor,
+            uint8 testDim) const noexcept
+    {
+        return (firstVersor[testDim] * solution[0]
+                - secondVersor[testDim] * solution[1])
+            == (secondPoint[testDim] - firstPoint[testDim]);
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Vector2<Tp>
+        IntersectionOfFn::buildResultVector(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            uint8 firstDim,
+            uint8 secondDim) const noexcept
+    {
+        return {
+            secondPoint[firstDim] - firstPoint[firstDim],
+            secondPoint[secondDim] - firstPoint[secondDim]
+        };
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr std::optional<Matrix2<Tp>>
+        IntersectionOfFn::getMatrix(
+            Vector3<Tp> const& firstVersor,
+            Vector3<Tp> const& secondVersor,
+            uint8 firstDim,
+            uint8 secondDim) const noexcept
+    {
+        Vector2<Tp> const v1{firstVersor[firstDim], -secondVersor[firstDim]};
+        Vector2<Tp> const v2{firstVersor[secondDim], -secondVersor[secondDim]};
+        if (cross(v1, v2))
+            return {{v1, v2}};
+        return std::nullopt;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr std::optional<
+        IntersectionOfFn::SystemTuple<Tp>>
+    IntersectionOfFn::findValidSystem(
+        Vector3<Tp> const& firstVersor,
+        Vector3<Tp> const& secondVersor) const noexcept
+    {
+        if (auto matrix = getMatrix(firstVersor, secondVersor, 0, 1))
+            return {SystemTuple{*matrix, 0, 1, 2}};
+        if (auto matrix = getMatrix(firstVersor, secondVersor, 0, 2))
+            return {SystemTuple{*matrix, 0, 2, 1}};
+        if (auto matrix = getMatrix(firstVersor, secondVersor, 1, 2))
+            return {SystemTuple{*matrix, 1, 2, 0}};
         return std::nullopt;
     }
 

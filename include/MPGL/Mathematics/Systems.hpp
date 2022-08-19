@@ -81,23 +81,139 @@ namespace mpgl {
         Vector<Tp, Size> const& checked) noexcept;
 
     /**
-     * Returns an intersection of two lines. Returns an empty optional
-     * if lines are parallel
-     *
-     * @tparam Tp the vector's value type
-     * @param firstPoint the point on the first line
-     * @param firstVersor the versor of the first line
-     * @param secondPoint the point on the second line
-     * @param secondVersor the versor of the second line
-     * @return the intersection point of the two lines
+     * Algorithms that computes the intersection of lines
      */
-    template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr std::optional<Vector2<Tp>>
-        intersectionOf(
-            Vector2<Tp> const& firstPoint,
-            Vector2<Tp> const& firstVersor,
-            Vector2<Tp> const& secondPoint,
-            Vector2<Tp> const& secondVersor) noexcept;
+    class IntersectionOfFn {
+    public:
+        /**
+         * Returns an intersection of two lines. Returns an empty
+         * optional if lines are parallel
+         *
+         * @tparam Tp the vector's value type
+         * @param firstPoint the point on the first line
+         * @param firstVersor the versor of the first line
+         * @param secondPoint the point on the second line
+         * @param secondVersor the versor of the second line
+         * @return the intersection point of the two lines
+         */
+        template <FloatConvertible Tp>
+        [[nodiscard]] constexpr std::optional<Vector2<Tp>>
+            operator() (
+                Vector2<Tp> const& firstPoint,
+                Vector2<Tp> const& firstVersor,
+                Vector2<Tp> const& secondPoint,
+                Vector2<Tp> const& secondVersor) const noexcept;
+
+        /**
+         * Returns an intersection of two lines. Returns an empty optional
+         * if lines are not intesecting
+         *
+         * @tparam Tp the vector's value type
+         * @param firstPoint the point on the first line
+         * @param firstVersor the versor of the first line
+         * @param secondPoint the point on the second line
+         * @param secondVersor the versor of the second line
+         * @return the intersection point of the two lines
+         */
+        template <FloatConvertible Tp>
+        [[nodiscard]] constexpr std::optional<Vector3<Tp>>
+            operator() (
+                Vector3<Tp> const& firstPoint,
+                Vector3<Tp> const& firstVersor,
+                Vector3<Tp> const& secondPoint,
+                Vector3<Tp> const& secondVersor) const noexcept;
+    private:
+        /// Tuple used to return the valid system params
+        template <FloatConvertible Tp>
+        using SystemTuple = std::tuple<Matrix2<Tp>, uint8, uint8, uint8>;
+
+        /**
+         * Constructs a Matrix2 consisting of vector elements lying
+         * under the indicated dimensions
+         *
+         * @tparam Tp the vector's value type
+         * @param firstVersor the versor of the first line
+         * @param secondVersor the versor of the second line
+         * @param firstDim the first dimension used to build the matrix
+         * @param secondDim the second dimension used to build
+         * the matrix
+         * @return an optional containing the space's matrix. If
+         * matrix is singular then returns an empty optional
+         */
+        template <FloatConvertible Tp>
+        [[nodiscard]] constexpr std::optional<Matrix2<Tp>>
+            getMatrix(
+                Vector3<Tp> const& firstVersor,
+                Vector3<Tp> const& secondVersor,
+                uint8 firstDim,
+                uint8 secondDim) const noexcept;
+
+        /**
+         * Finds a system of coordinates that can be used to determine
+         * the intersection of lines. If this system does not exist
+         * then returns an empty optional
+         *
+         * @tparam Tp the vector's value type
+         * @param firstVersor the versor of the first line
+         * @param secondVersor the versor of the second line
+         * @return an optional containing informations about valid
+         * system of coordinates. If this system does not exist then
+         * returns an empty optional
+         */
+        template <FloatConvertible Tp>
+        [[nodiscard]] constexpr std::optional<SystemTuple<Tp>>
+            findValidSystem(
+                Vector3<Tp> const& firstVersor,
+                Vector3<Tp> const& secondVersor) const noexcept;
+
+        /**
+         * Builds the result vector used by the linear system solver
+         * consisting of vector elements lying under the indicated
+         * dimensions
+         *
+         * @tparam Tp the vector's value type
+         * @param firstPoint the point on the first line
+         * @param secondPoint the point on the second line
+         * @param firstDim the first dimension used to build the matrix
+         * @param secondDim the second dimension used to build
+         * the matrix
+         * @return the result vector
+         */
+        template <FloatConvertible Tp>
+        [[nodiscard]] constexpr Vector2<Tp>
+            buildResultVector(
+                Vector3<Tp> const& firstPoint,
+                Vector3<Tp> const& secondPoint,
+                uint8 firstDim,
+                uint8 secondDim) const noexcept;
+
+        /**
+         * Checks whether solution of the linear system satisfies
+         * the last dimension requirements
+         *
+         * @tparam Tp the vector's value type
+         * @param solution the solution of the linear system
+         * @param firstPoint the point on the first line
+         * @param firstVersor the versor of the first line
+         * @param secondPoint the point on the second line
+         * @param secondVersor the versor of the second line
+         * @param testDim the third dimension used to test the
+         * solution
+         * @return if solution satisfies the last dimension
+         * requirements
+         */
+        template <FloatConvertible Tp>
+        [[nodiscard]] constexpr bool
+            validSolution(
+                Vector2<Tp> const& solution,
+                Vector3<Tp> const& firstPoint,
+                Vector3<Tp> const& firstVersor,
+                Vector3<Tp> const& secondPoint,
+                Vector3<Tp> const& secondVersor,
+                uint8 testDim) const noexcept;
+    };
+
+    inline constexpr IntersectionOfFn               intersectionOf;
 
     /**
      * Checks whether the given point is inside a triangle
