@@ -418,7 +418,6 @@ namespace mpgl {
      */
     struct TextOptions {
         typedef Font::Type                          Style;
-        typedef std::size_t                         SizeT;
 
         /**
          * The text modifiers
@@ -435,7 +434,7 @@ namespace mpgl {
         };
 
         /// The size of the text
-        SizeT                                   size = 18;
+        float32                                 size = 18.f;
         /// The color of the text
         Color                                   color = Color{};
         /// The style of the text
@@ -562,7 +561,7 @@ namespace mpgl {
          *
          * @param size the new size of the text
          */
-        void setSize(SizeT size);
+        void setSize(float32 size);
 
         /**
          * Sets the given string
@@ -601,7 +600,7 @@ namespace mpgl {
          *
          * @return the constant reference to the size object
          */
-        [[nodiscard]] SizeT const& getTextSize(void) const noexcept
+        [[nodiscard]] float32 const& getTextSize(void) const noexcept
             { return textSize; }
 
         /**
@@ -1141,7 +1140,7 @@ namespace mpgl {
         Lines                                       underlines;
         Lines                                       strikethroughs;
         Color                                       color;
-        SizeT                                       textSize;
+        float32                                     textSize;
         Style                                       style;
         Modifiers                                   mods;
 
@@ -1325,7 +1324,7 @@ namespace mpgl {
          */
         static Tetragon<Dim> generateUnderline(
             PositionHolder const& positionSpace,
-            SizeT textSize,
+            float32 textSize,
             Color const& color) noexcept;
 
         /**
@@ -1338,7 +1337,7 @@ namespace mpgl {
          */
         static Tetragon<Dim> generateStrikethrough(
             PositionHolder const& positionSpace,
-            SizeT textSize,
+            float32 textSize,
             Color const& color) noexcept;
 
         /**

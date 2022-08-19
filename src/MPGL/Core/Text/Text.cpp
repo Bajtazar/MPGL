@@ -170,7 +170,7 @@ namespace mpgl {
     template <Dimension Dim>
     Tetragon<Dim> Text<Dim>::generateUnderline(
         PositionHolder const& positionSpace,
-        SizeT textSize,
+        float32 textSize,
         Color const& color) noexcept
     {
         float span = 2 * std::ceil(0.05f * textSize);
@@ -183,7 +183,7 @@ namespace mpgl {
     template <Dimension Dim>
     Tetragon<Dim> Text<Dim>::generateStrikethrough(
         PositionHolder const& positionSpace,
-        SizeT textSize,
+        float32 textSize,
         Color const& color) noexcept
     {
         float midspan = std::floor(textSize / 2.5f);
@@ -491,7 +491,7 @@ namespace mpgl {
     }
 
     template <Dimension Dim>
-    void  Text<Dim>::setSize(SizeT size) {
+    void  Text<Dim>::setSize(float32 size) {
         this->textSize = size;
         reloadGlyphs();
     }
