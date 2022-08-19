@@ -32,101 +32,48 @@ namespace mpgl {
     namespace details {
 
         /**
-         * Base for the negative derive if operation, designed
-         * for types that can be used at compilation time
+         * Base for the negative derive if operation
          *
          * @tparam Tp the positive derive if result type
          */
         template <class Tp>
-        class DeriveIfConstexprBase {
+        class DeriveIfBase {
         public:
             /**
-             * Constructs a new derive if constexpr base object
+             * Constructs a new derive if base object
              */
-            constexpr explicit DeriveIfConstexprBase(
+            constexpr explicit DeriveIfBase(
                 void) noexcept = default;
 
             /**
-             * Virtual destructor. Destroys the derive if constexpr
-             * base object
+             * Virtual destructor. Destroys the derive if base object
              */
-            constexpr virtual ~DeriveIfConstexprBase(
+            constexpr virtual ~DeriveIfBase(
                 void) noexcept = default;
         protected:
-            constexpr DeriveIfConstexprBase(
-                DeriveIfConstexprBase const&) noexcept = default;
-            constexpr DeriveIfConstexprBase(
-                DeriveIfConstexprBase&&) noexcept = default;
+            constexpr DeriveIfBase(
+                DeriveIfBase const&) noexcept = default;
+            constexpr DeriveIfBase(
+                DeriveIfBase&&) noexcept = default;
 
-            constexpr DeriveIfConstexprBase& operator=(
-                DeriveIfConstexprBase const&) noexcept = default;
+            constexpr DeriveIfBase& operator=(
+                DeriveIfBase const&) noexcept = default;
 
-            constexpr DeriveIfConstexprBase& operator=(
-                DeriveIfConstexprBase&&) noexcept = default;
-        };
-
-        /**
-         * Base for the negative derive if operation, designed
-         * for types that cannot be used at compilation time
-         *
-         * @tparam Tp the positive derive if result type
-         */
-        template <class Tp>
-        class DeriveIfNormalBase {
-        public:
-            /**
-             * Constructs a new derive if normal base object
-             */
-            constexpr explicit DeriveIfNormalBase(
-                void) noexcept = default;
-
-            /**
-             * Virtual destructor. destroys the derive if normal base
-             * object
-             */
-            virtual ~DeriveIfNormalBase(
-                void) noexcept = default;
-        protected:
-            constexpr DeriveIfNormalBase(
-                DeriveIfNormalBase const&) noexcept = default;
-            constexpr DeriveIfNormalBase(
-                DeriveIfNormalBase&&) noexcept = default;
-
-            constexpr DeriveIfNormalBase& operator=(
-                DeriveIfNormalBase const&) noexcept = default;
-
-            constexpr DeriveIfNormalBase& operator=(
-                DeriveIfNormalBase&&) noexcept = default;
+            constexpr DeriveIfBase& operator=(
+                DeriveIfBase&&) noexcept = default;
         };
 
     }
 
     /**
      * Derives from the given type if the value is true. Otherwise
-     * derives from the derive if constexpr base if the constexpr
-     * base flag is true or from derive if normal base if the
-     * constexpr base flag is false
-     *
-     * @tparam Value the value flag
-     * @tparam ConstexprBase the constexpr base flag
-     * @tparam Tp the positive derive if result type
-     */
-    template <bool Value, bool ConstexprBase, class Tp>
-    using DeriveIfWBST = std::conditional_t<
-        Value, Tp, std::conditional_t<ConstexprBase,
-            details::DeriveIfConstexprBase<Tp>,
-            details::DeriveIfNormalBase<Tp>>>;
-
-    /**
-     * Derives from the given type if the value is true. Otherwise
-     * derives from the derive if constexpr base if the given type
-     * can be used at compilation time or from normal base
-     * otherwise
+     * derives from the derive if base
      *
      * @tparam Value the value flag
      * @tparam Tp the positive derive if result type
      */
     template <bool Value, class Tp>
-    using DeriveIfT = DeriveIfWBST<Value, ConstevalType<Tp>, Tp>;
+    using DeriveIfT = std::conditional_t<
+        Value, Tp, details::DeriveIfBase<Tp>>;
 
 }
