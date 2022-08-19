@@ -39,7 +39,7 @@ namespace mpgl {
         auto normalizer = [](Vector2f const& value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        return lineStrip | views::position
+        return lineStrip.vertices | views::position
             | std::views::transform(normalizer);
     }
 
@@ -52,7 +52,7 @@ namespace mpgl {
         auto normalizer = [](auto value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        return lineStrip | views::position | views::project(
+        return lineStrip.vertices | views::position | views::project(
             lineStrip.model) | std::views::transform(normalizer);
     }
 

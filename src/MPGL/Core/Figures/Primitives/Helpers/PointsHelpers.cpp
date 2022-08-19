@@ -38,7 +38,7 @@ namespace mpgl {
         auto normalizer = [](Vector2f const& value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        return points | views::position
+        return points.vertices | views::position
             | std::views::transform(normalizer);
     }
 
@@ -50,7 +50,7 @@ namespace mpgl {
         auto normalizer = [](auto value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        return points | views::position | views::project(
+        return points.vertices | views::position | views::project(
             points.model) | std::views::transform(normalizer);
     }
 

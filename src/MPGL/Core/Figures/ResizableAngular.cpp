@@ -56,7 +56,7 @@ namespace mpgl {
     {
         if (!this->vertices.size())
             return {};
-        return { accumulate(*this | views::position, Vector{},
+        return { accumulate(this->vertices | views::position, Vector{},
             [](auto const& x){ return std::forward<Vector>(x); })
                 / static_cast<float32>(this->vertices.size()) };
     }

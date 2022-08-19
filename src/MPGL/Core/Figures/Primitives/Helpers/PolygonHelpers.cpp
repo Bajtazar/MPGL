@@ -38,7 +38,7 @@ namespace mpgl {
         auto normalizer = [](Vector2f const& value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        return polygon | views::position
+        return polygon.vertices | views::position
             | std::views::transform(normalizer);
     }
 
@@ -50,7 +50,7 @@ namespace mpgl {
         auto normalizer = [](auto value) -> Vector2f {
             return Adapter2D{value}.get();
         };
-        return polygon | views::position | views::project(
+        return polygon.vertices | views::position | views::project(
             polygon.model) | std::views::transform(normalizer);
     }
 
