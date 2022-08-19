@@ -28,109 +28,55 @@
 
 namespace mpgl {
 
-    Figure<dim::Dim2>::Figure(std::string const& programName)
-        : Shadeable{programName} {}
+    template <Dimension Dim>
+    Figure<Dim>::Figure(std::string const& programName)
+        : Shadeable{programName}
+    {
+        setLocations();
+    }
 
-    Figure<dim::Dim2>::Figure(
+    template <Dimension Dim>
+    Figure<Dim>::Figure(
         std::string const& programName,
         Executable exec)
-            : Shadeable{programName, exec} {}
-
-    Figure<dim::Dim2>::Figure(Figure const& shape)
-        : Shadeable{shape.shaderProgram} {}
-
-    Figure<dim::Dim2>& Figure<dim::Dim2>::operator=(
-        Figure const& shape)
-    {
-        shaderProgram = shape.shaderProgram;
-        isModified = true;
-        return *this;
-    }
-
-    Figure<dim::Dim2>& Figure<dim::Dim2>::operator=(
-        Figure&& shape) noexcept
-    {
-        vertexArray = std::move(shape.vertexArray);
-        vertexBuffer = std::move(shape.vertexBuffer);
-        isModified = std::move(shape.isModified);
-        return *this;
-    }
-
-    Matrix4f const Figure<dim::Dim3>::defaultModel =
-        identityMatrix<float32, 4>();
-
-    Figure<dim::Dim3>::Figure(
-        std::string const& programName)
-            : Shadeable{programName},
-            locations{new Locations}
+            : Shadeable{programName, exec}
     {
         setLocations();
     }
 
-    Figure<dim::Dim3>::Figure(
-        std::string const& programName,
-        Executable exec)
-            : Shadeable{programName, exec},
-            locations{new Locations}
+    template <Dimension Dim>
+    Figure<Dim>::Figure(Figure const& shape)
+        : Shadeable{shape.shaderProgram}
     {
         setLocations();
     }
 
-    Figure<dim::Dim3>::Figure(Figure const& shape)
-        : Shadeable{shape.shaderProgram},
-        locations{shape.locations} {}
-
-    Figure<dim::Dim3>::Figure(void)
-        : locations{new Locations}
-    {
-        setLocations();
-    }
-
-    Figure<dim::Dim3>& Figure<dim::Dim3>::operator=(
-        Figure const& shape)
-    {
-        shaderProgram = shape.shaderProgram;
-        model = shape.model;
-        locations = shape.locations;
-        hasModelChanged = isModified = true;
+    template <Dimension Dim>
+    Figure<Dim>& Figure<Dim>::operator=(Figure const& shape) {
+        if constexpr (ThreeDimensional<Dim>)
+            Model::operator=(shape);
+        this->shaderProgram = shape.shaderProgram;
+        this->isModified = true;
         return *this;
     }
 
-    Figure<dim::Dim3>& Figure<dim::Dim3>::operator=(
-        Figure&& shape) noexcept
-    {
-        vertexArray = std::move(shape.vertexArray);
-        vertexBuffer = std::move(shape.vertexBuffer);
-        model = std::move(shape.model);
-        locations = std::move(shape.locations);
-        isModified = std::move(shape.isModified);
-        hasModelChanged = std::move(shape.hasModelChanged);
+    template <Dimension Dim>
+    Figure<Dim>& Figure<Dim>::operator=(Figure&& shape) noexcept {
+        if constexpr (ThreeDimensional<Dim>)
+            Model::operator=(std::move(shape));
+        this->shaderProgram = std::move(shape.shaderProgram);
+        this->isModified = shape.isModified;
         return *this;
     }
 
-    void Figure<dim::Dim3>::setModel(Matrix4f const& model) noexcept {
-        this->model = model;
-        hasModelChanged = true;
-    }
-
-    void Figure<dim::Dim3>::setLocations(void) {
-        Shadeable::setLocations(DeferredExecutionWrapper{
-            shaderProgram, locations}(
-                [](auto program, auto locations)
-        {
-            locations->model = ShaderLocation{*program, "model"};
-            locations->viewProjection = ShaderLocation{
-                *program, "viewProjection"};
-        }));
-    }
-
-    void Figure<dim::Dim3>::actualizeLocations(void) const noexcept {
-        if (hasModelChanged) {
-            locations->model(model.get());
-            hasModelChanged = false;
+    template <Dimension Dim>
+    void Figure<Dim>::setLocations(void) {
+        if constexpr (ThreeDimensional<Dim>) {
+            Shadeable::setLocations(
+                this->locationSetterBuilder(
+                    this->shaderProgram,
+                    this->locations));
         }
-        if (context.hasVPChanges())
-            locations->viewProjection(context.getViewProjection());
     }
 
 }
