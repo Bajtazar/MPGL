@@ -37,6 +37,6 @@ namespace mpgl {
     template <std::forward_iterator Iter>
     AccessRegisteringIterator<Iter>::AccessRegisteringIterator(
         Iter const& iterator,
-        bool& flag) noexcept : iter{iter}, flag{flag} {}
+        bool& flag) noexcept : iter{iterator}, flag{flag} {}
 
 }

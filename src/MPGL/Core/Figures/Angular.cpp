@@ -96,7 +96,8 @@ namespace mpgl {
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     [[nodiscard]] Angular<Dim, Spec>::Vertex& Angular<Dim, Spec>::back(
         void) noexcept
-    {   this->isModified = true;
+    {
+        this->isModified = true;
         return vertices.back();
     }
 
@@ -111,16 +112,14 @@ namespace mpgl {
     [[nodiscard]] Angular<Dim, Spec>::iterator
         Angular<Dim, Spec>::begin(void) noexcept
     {
-        this->isModified = true;
-        return vertices.begin();
+        return iterator{vertices.begin(), this->isModified};
     }
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     [[nodiscard]] Angular<Dim, Spec>::iterator Angular<Dim, Spec>::end(
         void) noexcept
     {
-        this->isModified = true;
-        return vertices.end();
+        return iterator{vertices.end(), this->isModified};
     }
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
@@ -155,16 +154,14 @@ namespace mpgl {
     [[nodiscard]] Angular<Dim, Spec>::reverse_iterator
         Angular<Dim, Spec>::rbegin(void) noexcept
     {
-        this->isModified = true;
-        return vertices.rbegin();
+        return reverse_iterator{vertices.rbegin(), this->isModified};
     }
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     [[nodiscard]] Angular<Dim, Spec>::reverse_iterator
         Angular<Dim, Spec>::rend(void) noexcept
     {
-        this->isModified = true;
-        return vertices.rend();
+        return reverse_iterator{vertices.rend(), this->isModified};
     }
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>

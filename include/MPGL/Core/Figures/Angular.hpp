@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Iterators/AccessRegisteringIterator.hpp>
 #include <MPGL/Core/Figures/AngularVertices.hpp>
 #include <MPGL/Core/Figures/Figure.hpp>
 
@@ -108,10 +109,11 @@ namespace mpgl {
          */
         [[nodiscard]] Vertex const& back(void) const noexcept;
 
-        using iterator                    = Vertices::iterator;
-        using const_iterator              = Vertices::const_iterator;
-        using reverse_iterator
-            = Vertices::reverse_iterator;
+        using iterator = AccessRegisteringIterator<
+            typename Vertices::iterator>;
+        using const_iterator = Vertices::const_iterator;
+        using reverse_iterator = AccessRegisteringIterator<
+            typename Vertices::reverse_iterator>;
         using const_reverse_iterator
             = Vertices::const_reverse_iterator;
 
