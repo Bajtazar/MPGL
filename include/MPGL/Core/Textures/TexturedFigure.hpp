@@ -29,6 +29,7 @@
 #include <MPGL/Core/Figures/Elliptic.hpp>
 #include <MPGL/Core/Textures/Sprite.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
+#include <MPGL/Core/DrawableTraits.hpp>
 
 namespace mpgl {
 
@@ -51,20 +52,14 @@ namespace mpgl {
      * Wrapper class that allows to use a given figure as a sprite
      *
      * @tparam Base a figure type
-     * @tparam Dim the dimension of the space
-     * @tparam Specifier the figure vertices specifier
      */
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
+    template <InstanceOf<Figure> Base>
     class TexturedFigure :
-        public Sprite<Dim>,
-        public Base<Dim, Spec>
+        public Sprite<DrawableDimensionT<Base>>,
+        public Base
     {
     public:
-        using BaseFigure = Base<Dim, Spec>;
+        using Dim = DrawableDimensionT<Base>;
 
         /**
          * Constructs a new textured figure object. Initializes
@@ -77,7 +72,7 @@ namespace mpgl {
          * constructor arguments
          */
         template <typename... Args>
-            requires std::constructible_from<BaseFigure, Args...>
+            requires std::constructible_from<Base, Args...>
         explicit TexturedFigure(
             Texture const& texture,
             Args&&... args);
@@ -96,27 +91,15 @@ namespace mpgl {
         void draw(void) const noexcept override final;
 
         /**
-         * Checks whether the given pixel is located
-         * inside of the figure [boundry is concidered
-         * as a part of the figure, the 3D figures are
-         * projected onto screen and then checked]
-         *
-         * @param position the pixel's position
-         * @return if point is inside figure
-         */
-        [[nodiscard]] bool contains(
-            Vector2u const& position) const noexcept override final
-                { return Base<Dim, Spec>::contains(position); }
-
-        /**
          * Performs transformation on the figure
          *
          * @param transformator the constant reference to the
          * transforming object
          */
-        void transform(Transformation<Dim> const& transformator
+        void transform(
+            Transformation<Dim> const& transformator
             ) noexcept override final
-                { Base<Dim, Spec>::transform(transformator); }
+                { Base::transform(transformator); }
 
         /**
          * Applies convolution shader with given convolution matrix
@@ -158,57 +141,57 @@ namespace mpgl {
             std::string const& name) noexcept override final;
 
         /**
-         * Destroys the textured figure object
+         * Virtual destructor. Destroys the textured figure object
          */
-        ~TexturedFigure(void) noexcept = default;
+        virtual ~TexturedFigure(void) noexcept = default;
     private:
         using Executable = typename Shadeable::Executable;
-        using VertexTraits = typename BaseFigure::VertexTraits;
+        using VertexTraits = typename Base::VertexTraits;
         using Placer = TexturedFigurePlacer<Base>;
 
         static Executable const                     executable;
         static Placer const                         placer;
     };
 
-    template class TexturedFigure<Triangle, dim::Dim2, uint8>;
-    template class TexturedFigure<Triangle, dim::Dim3, uint8>;
-    template class TexturedFigure<Tetragon, dim::Dim2, uint8>;
-    template class TexturedFigure<Tetragon, dim::Dim3, uint8>;
-    template class TexturedFigure<Line, dim::Dim2, uint8>;
-    template class TexturedFigure<Line, dim::Dim3, uint8>;
-    template class TexturedFigure<LineLoop, dim::Dim2, uint8>;
-    template class TexturedFigure<LineLoop, dim::Dim3, uint8>;
-    template class TexturedFigure<LineStrip, dim::Dim2, uint8>;
-    template class TexturedFigure<LineStrip, dim::Dim3, uint8>;
-    template class TexturedFigure<Points, dim::Dim2, uint8>;
-    template class TexturedFigure<Points, dim::Dim3, uint8>;
-    template class TexturedFigure<Polygon, dim::Dim2, uint8>;
-    template class TexturedFigure<Polygon, dim::Dim3, uint8>;
+    template class TexturedFigure<Triangle<dim::Dim2, uint8>>;
+    template class TexturedFigure<Triangle<dim::Dim3, uint8>>;
+    template class TexturedFigure<Tetragon<dim::Dim2, uint8>>;
+    template class TexturedFigure<Tetragon<dim::Dim3, uint8>>;
+    template class TexturedFigure<Line<dim::Dim2, uint8>>;
+    template class TexturedFigure<Line<dim::Dim3, uint8>>;
+    template class TexturedFigure<LineLoop<dim::Dim2, uint8>>;
+    template class TexturedFigure<LineLoop<dim::Dim3, uint8>>;
+    template class TexturedFigure<LineStrip<dim::Dim2, uint8>>;
+    template class TexturedFigure<LineStrip<dim::Dim3, uint8>>;
+    template class TexturedFigure<Points<dim::Dim2, uint8>>;
+    template class TexturedFigure<Points<dim::Dim3, uint8>>;
+    template class TexturedFigure<Polygon<dim::Dim2, uint8>>;
+    template class TexturedFigure<Polygon<dim::Dim3, uint8>>;
 
-    template class TexturedFigure<Ellipse, dim::Dim2, uint8>;
-    template class TexturedFigure<Ellipse, dim::Dim3, uint8>;
-    template class TexturedFigure<Ring, dim::Dim2, uint8>;
-    template class TexturedFigure<Ring, dim::Dim3, uint8>;
+    template class TexturedFigure<Ellipse<dim::Dim2, uint8>>;
+    template class TexturedFigure<Ellipse<dim::Dim3, uint8>>;
+    template class TexturedFigure<Ring<dim::Dim2, uint8>>;
+    template class TexturedFigure<Ring<dim::Dim3, uint8>>;
 
-    using TriangleSprite2D = TexturedFigure<Triangle, dim::Dim2, uint8>;
-    using TriangleSprite3D = TexturedFigure<Triangle, dim::Dim3, uint8>;
-    using TetragonSprite2D = TexturedFigure<Tetragon, dim::Dim2, uint8>;
-    using TetragonSprite3D = TexturedFigure<Tetragon, dim::Dim3, uint8>;
-    using LineSprite2D = TexturedFigure<Line, dim::Dim2, uint8>;
-    using LineSprite3D = TexturedFigure<Line, dim::Dim3, uint8>;
-    using LineLoopSprite2D = TexturedFigure<LineLoop, dim::Dim2, uint8>;
-    using LineLoopSprite3D = TexturedFigure<LineLoop, dim::Dim3, uint8>;
-    using LineStripSprite2D = TexturedFigure<LineStrip, dim::Dim2, uint8>;
-    using LineStripSprite3D = TexturedFigure<LineStrip, dim::Dim3, uint8>;
-    using PointsSprite2D = TexturedFigure<Points, dim::Dim2, uint8>;
-    using PointsSprite3D = TexturedFigure<Points, dim::Dim3, uint8>;
-    using PolygonSprite2D = TexturedFigure<Polygon, dim::Dim2, uint8>;
-    using PolygonSprite3D = TexturedFigure<Polygon, dim::Dim3, uint8>;
+    using TriangleSprite2D = TexturedFigure<Triangle<dim::Dim2, uint8>>;
+    using TriangleSprite3D = TexturedFigure<Triangle<dim::Dim3, uint8>>;
+    using TetragonSprite2D = TexturedFigure<Tetragon<dim::Dim2, uint8>>;
+    using TetragonSprite3D = TexturedFigure<Tetragon<dim::Dim3, uint8>>;
+    using LineSprite2D = TexturedFigure<Line<dim::Dim2, uint8>>;
+    using LineSprite3D = TexturedFigure<Line<dim::Dim3, uint8>>;
+    using LineLoopSprite2D = TexturedFigure<LineLoop<dim::Dim2, uint8>>;
+    using LineLoopSprite3D = TexturedFigure<LineLoop<dim::Dim3, uint8>>;
+    using LineStripSprite2D = TexturedFigure<LineStrip<dim::Dim2, uint8>>;
+    using LineStripSprite3D = TexturedFigure<LineStrip<dim::Dim3, uint8>>;
+    using PointsSprite2D = TexturedFigure<Points<dim::Dim2, uint8>>;
+    using PointsSprite3D = TexturedFigure<Points<dim::Dim3, uint8>>;
+    using PolygonSprite2D = TexturedFigure<Polygon<dim::Dim2, uint8>>;
+    using PolygonSprite3D = TexturedFigure<Polygon<dim::Dim3, uint8>>;
 
-    using EllipseSprite2D = TexturedFigure<Ellipse, dim::Dim2, uint8>;
-    using EllipseSprite3D = TexturedFigure<Ellipse, dim::Dim3, uint8>;
-    using RingSprite2D = TexturedFigure<Ring, dim::Dim2, uint8>;
-    using RingSprite3D = TexturedFigure<Ring, dim::Dim3, uint8>;
+    using EllipseSprite2D = TexturedFigure<Ellipse<dim::Dim2, uint8>>;
+    using EllipseSprite3D = TexturedFigure<Ellipse<dim::Dim3, uint8>>;
+    using RingSprite2D = TexturedFigure<Ring<dim::Dim2, uint8>>;
+    using RingSprite3D = TexturedFigure<Ring<dim::Dim3, uint8>>;
 
 }
 

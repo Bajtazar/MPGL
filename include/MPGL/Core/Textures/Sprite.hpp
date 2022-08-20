@@ -26,7 +26,6 @@
 #pragma once
 
 #include <MPGL/Core/Textures/Texturable.hpp>
-#include <MPGL/Core/Figures/Clickable.hpp>
 
 namespace mpgl {
 
@@ -36,29 +35,13 @@ namespace mpgl {
      * @tparam Dim the dimension of the space
      */
     template <Dimension Dim>
-    class Sprite :
-        public virtual Clickable,
-        public Texturable<Dim>
-    {
+    class Sprite : public Texturable<Dim> {
     public:
         /**
          * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;
-
-        /**
-         * Pure virtual method. Has to be overloaded.
-         * Checks whether the given pixel is located
-         * inside of the figure [boundry is concidered
-         * as a part of the figure, the 3D figures are
-         * projected onto screen and then checked]
-         *
-         * @param position the pixel's position
-         * @return if point is inside figure
-         */
-        [[nodiscard]] virtual bool contains(
-            Vector2u const& position) const noexcept = 0;
 
         /**
          * Performs transformation on the figure

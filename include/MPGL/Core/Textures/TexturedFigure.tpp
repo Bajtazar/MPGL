@@ -27,24 +27,18 @@
 
 namespace mpgl {
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
+    template <InstanceOf<Figure> Base>
     template <typename... Args>
-        requires std::constructible_from<
-            typename TexturedFigure<Base, Dim, Spec>::BaseFigure,
-            Args...>
-    TexturedFigure<Base, Dim, Spec>::TexturedFigure(
+        requires std::constructible_from<Base, Args...>
+    TexturedFigure<Base>::TexturedFigure(
         Texture const& texture,
         Args&&... args) :
             Sprite<Dim>{texture},
-            Base<Dim, Spec>{std::forward<Args>(args)...}
+            Base{std::forward<Args>(args)...}
     {
-        if constexpr (InstanceOf<Base<Dim, Spec>, Elliptic>) {
+        if constexpr (InstanceOf<Base, Elliptic>) {
             this->context.shaders.setOrQueue(this->shaderProgram,
-                Base<Dim, Spec>::ShaderManager::shader, executable);
+                Base::ShaderManager::shader, executable);
         } else {
             this->context.shaders.setOrQueue(this->shaderProgram,
                 VertexTraits::shader(), executable);

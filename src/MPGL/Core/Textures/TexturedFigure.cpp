@@ -29,48 +29,30 @@
 
 namespace mpgl {
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    TexturedFigure<Base, Dim, Spec>::Executable const
-        TexturedFigure<Base, Dim, Spec>::executable =
+    template <InstanceOf<Figure> Base>
+    TexturedFigure<Base>::Executable const
+        TexturedFigure<Base>::executable =
     [](ShaderProgram const& program) {
         ShaderLocation{program, "tex"}(0);
     };
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    TexturedFigure<Base, Dim, Spec>::Placer const
-        TexturedFigure<Base, Dim, Spec>::placer{};
+    template <InstanceOf<Figure> Base>
+    TexturedFigure<Base>::Placer const TexturedFigure<Base>::placer{};
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    void TexturedFigure<Base, Dim, Spec>::draw(void) const noexcept {
+    template <InstanceOf<Figure> Base>
+    void TexturedFigure<Base>::draw(void) const noexcept {
         auto const& textureBuffer = this->texture.getTextureBuffer();
         textureBuffer.activate();
         BindGuard textureGuard{textureBuffer};
-        Base<Dim, Spec>::draw();
+        Base::draw();
     }
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    void TexturedFigure<Base, Dim, Spec>::setConvolution(
+    template <InstanceOf<Figure> Base>
+    void TexturedFigure<Base>::setConvolution(
         Matrix3f const& convolution)
     {
-        if constexpr (InstanceOf<Base<Dim, Spec>, Elliptic>) {
-            this->setShader(Base<Dim, Spec>::
-                ShaderManager::convolutionShader);
+        if constexpr (InstanceOf<Base, Elliptic>) {
+            this->setShader(Base::ShaderManager::convolutionShader);
         } else {
             this->setShader(VertexTraits::convolutionShader());
         }
@@ -83,55 +65,38 @@ namespace mpgl {
         ));
     }
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    void TexturedFigure<Base, Dim, Spec>::resetConvolution(void) {
-        if constexpr (InstanceOf<Base<Dim, Spec>, Elliptic>) {
-            this->setShader(Base<Dim, Spec>::
-                ShaderManager::shader);
+    template <InstanceOf<Figure> Base>
+    void TexturedFigure<Base>::resetConvolution(void) {
+        if constexpr (InstanceOf<Base, Elliptic>) {
+            this->setShader(Base::ShaderManager::shader);
         } else {
             this->setShader(VertexTraits::convolutionShader());
         }
     }
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    void TexturedFigure<Base, Dim, Spec>::setShader(
+    template <InstanceOf<Figure> Base>
+    void TexturedFigure<Base>::setShader(
         ShaderProgram const& program) noexcept
     {
-        Base<Dim, Spec>::setShader(program);
+        Base::setShader(program);
         executable(*this->shaderProgram);
     }
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    void TexturedFigure<Base, Dim, Spec>::setShader(
+    template <InstanceOf<Figure> Base>
+    void TexturedFigure<Base>::setShader(
         ShaderProgram&& program) noexcept
     {
-        Base<Dim, Spec>::setShader(std::move(program));
+        Base::setShader(std::move(program));
         executable(*this->shaderProgram);
     }
 
-    template <
-        template <class, typename> class Base,
-        Dimension Dim,
-        details::FigureTraitSpecifier<Dim> Spec>
-            requires InstanceOf<Base<Dim, Spec>, Figure>
-    void TexturedFigure<Base, Dim, Spec>::setShader(
+    template <InstanceOf<Figure> Base>
+    void TexturedFigure<Base>::setShader(
         std::string const& name) noexcept
     {
-        Base<Dim, Spec>::setShader(name);
-        Shadeable::setLocations(DeferredExecutionWrapper{this->shaderProgram}(
-            [](auto program)
+        Base::setShader(name);
+        Shadeable::setLocations(DeferredExecutionWrapper{
+            this->shaderProgram}([](auto program)
         {
             executable(*program);
         }));
