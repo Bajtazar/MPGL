@@ -39,6 +39,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Primitives/Ring.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Tetrahedron.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Polygon.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/ConvexHexahedron.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Tetragon.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/LineLoop.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Line.cpp

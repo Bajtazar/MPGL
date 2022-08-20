@@ -24,77 +24,77 @@
  *  distribution
  */
 #pragma once
-
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
 namespace mpgl {
 
     /**
-     * Represents a tetrahedron figure
+     * Represents a convex hexahedron figure
      *
      * @tparam Spec the angular vertices specifier
      */
     template <AngularTraitSpecifier<dim::Dim3> Spec = void>
-    class Tetrahedron : public Angular<dim::Dim3, Spec> {
+    class ConvexHexahedron : public Angular<dim::Dim3, Spec> {
     public:
         using VertexTraits = Angular<dim::Dim3, Spec>::VertexTraits;
 
         /**
-         * Constructs a new tetrahedron with given
+         * Constructs a new convex hexahedron with given
          * color
          *
-         * @param color the color of the tetrahedron (optional)
+         * @param color the color of the hexahedron (optional)
          */
-        Tetrahedron(Color const& color = Color::White);
+        ConvexHexahedron(Color const& color = Color::White);
 
         /**
-         * Constructs a new tetrahedron from a four
-         * given vertices [fourth is then calculated]
+         * Constructs a new convex hexahedron from a point and
+         * three dimension versors
          *
          * @param firstVertex the first vertex coord
-         * @param secondVertex the second vertex coord
-         * @param thirdVertex the third vertex coord
-         * @param fourthVertex the fourth vertex coord
-         * @param color the color of the tetragon (optional)
+         * @param firstVersor the first versor
+         * @param secondVersor the second versor
+         * @param thirdVersor the third versor
+         * @param color the color of the convex hexahedron (optional)
          */
-        Tetrahedron(
+        ConvexHexahedron(
             Vector3f const& firstVertex,
-            Vector3f const& secondVertex,
-            Vector3f const& thirdVertex,
-            Vector3f const& fourthVertex,
+            Vector3f const& firstVersor,
+            Vector3f const& secondVersor,
+            Vector3f const& thirdVersor,
             Color const& color = Color::White);
 
         /**
-         * Constructs a new tetrahedron object from the given
+         * Constructs a new convex hexahedron object from the given
          * constant reference to the other object
          *
-         * @param tetrahedron the constant reference to the other
+         * @param hexahedron the constant reference to the other
          * object
          */
-        Tetrahedron(Tetrahedron const& tetrahedron);
+        ConvexHexahedron(ConvexHexahedron const& hexahedron);
 
-        Tetrahedron(Tetrahedron&& tetrahedron) noexcept = default;
+        ConvexHexahedron(ConvexHexahedron&& hexahedron) noexcept = default;
 
-        Tetrahedron& operator=(
-            Tetrahedron const& tetrahedron) = default;
-        Tetrahedron& operator=(
-            Tetrahedron&& tetrahedron) noexcept = default;
+        ConvexHexahedron& operator=(
+            ConvexHexahedron const& hexahedron) = default;
+        ConvexHexahedron& operator=(
+            ConvexHexahedron&& hexahedron) noexcept = default;
 
         /**
-         * Draws the tetrahedron on the screen
+         * Draws the convex hexahedron on the screen
          */
         virtual void draw(void) const noexcept;
 
         /**
-         * Virtual destructor. Destroys the tetrahedron object
+         * Virtual destructor. Destroys the convex hexahedron object
          */
-        virtual ~Tetrahedron(void) noexcept = default;
+        virtual ~ConvexHexahedron(void) noexcept = default;
     private:
-        using Indexes = std::array<uint32, 12>;
+        using Indexes = std::array<uint32, 36>;
 
         static constexpr Indexes const              indexes{
-            0, 1, 2, 0, 2, 3, 0, 1, 3, 1, 2, 3};
+            0, 1, 3, 1, 2, 3, 1, 2, 4, 2, 4, 7, 0, 1, 5, 1, 5, 4,
+            4, 5, 7, 7, 5, 6, 0, 3, 5, 3, 5, 6, 3, 2, 6, 2, 6, 7};
 
         /**
          * Initializes the element buffer object
@@ -104,7 +104,8 @@ namespace mpgl {
         ElementArrayBuffer                          elementBuffer;
     };
 
-    template class Tetrahedron<void>;
-    template class Tetrahedron<uint8>;
+    template class ConvexHexahedron<void>;
+    template class ConvexHexahedron<uint8>;
+
 
 }
