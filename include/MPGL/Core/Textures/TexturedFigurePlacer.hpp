@@ -41,427 +41,202 @@ namespace mpgl {
      * Functor responsible for setting the default texture
      * coordinates for the given figures
      *
-     * @tparam Figure the figure type
+     * @tparam Tp the figure type
      */
-    template <template <class, typename> class Figure>
+    template <InstanceOf<Figure> Tp>
     class TexturedFigurePlacer;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the triangle
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<Triangle> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<Triangle<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the triangle. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the triangle
+         * ({[0, 0], [1, 0], [0.5, 1]} by default)
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the triangle
-             * ({[0, 0], [1, 0], [0.5, 1]} by default)
-             *
-             * @param triangle a reference to the triangle object
-             */
-            void operator() (
-                Triangle<Dim, Spec>& triangle) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the triangle. Calls
-         * the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param triangle a reference to the triangle object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (Triangle<Dim, Spec>& triangle) const noexcept
-            { Setter<Dim, Spec>{}(triangle); }
+        void operator() (Triangle<Dim, Spec>& triangle) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Triangle>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<Triangle>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<Triangle<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Triangle<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the tetragon
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<Tetragon> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<Tetragon<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the tetragon. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the tetragon
+         * ({[0, 0], [0, 1], [1, 1], [1, 0]} by default)
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the tetragon
-             * ({[0, 0], [0, 1], [1, 1], [1, 0]} by default)
-             *
-             * @param tetragon a reference to the tetragon object
-             */
-            void operator() (
-                Tetragon<Dim, Spec>& tetragon) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the tetragon. Calls
-         * the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param tetragon a reference to the tetragon object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (Tetragon<Dim, Spec>& tetragon) const noexcept
-            { Setter<Dim, Spec>{}(tetragon); }
+        void operator() (Tetragon<Dim, Spec>& tetragon) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Tetragon>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<Tetragon>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<Tetragon<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Tetragon<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the line
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<Line> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<Line<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the line. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the line
+         * ({[0, 0], [1, 0]} by default)
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the line
-             * ({[0, 0], [1, 0]} by default)
-             *
-             * @param line a reference to the line object
-             */
-            void operator() (
-                Line<Dim, Spec>& line) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the line. Calls
-         * the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param line a reference to the line object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (Line<Dim, Spec>& line) const noexcept
-            { Setter<Dim, Spec>{}(line); }
+        void operator() (Line<Dim, Spec>& line) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Line>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<Line>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<Line<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Line<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the line strip
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<LineStrip> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<LineStrip<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the line strip. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the line strip
+         * ([i/(n - 1), 0] for each vertex in range [0, n] if
+         * strip size is bigger than 1)
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the line strip
-             * ([i/(n - 1), 0] for each vertex in range [0, n] if
-             * strip size is bigger than 1)
-             *
-             * @param line a reference to the line strip object
-             */
-            void operator() (
-                LineStrip<Dim, Spec>& line) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the line strip.
-         * Calls the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param lineStrip a reference to the line strip object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (LineStrip<Dim, Spec>& lineStrip) const noexcept
-            { Setter<Dim, Spec>{}(lineStrip); }
+        void operator() (LineStrip<Dim, Spec>& lineStrip) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<LineStrip>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<LineStrip>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<LineStrip<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<LineStrip<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the line loop
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<LineLoop> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<LineLoop<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the line loop. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the line loop
+         * ([i/(n - 1), 0] for each vertex in range [0, n] if
+         * loop size is bigger than 1)
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the line loop
-             * ([i/(n - 1), 0] for each vertex in range [0, n] if
-             * loop size is bigger than 1)
-             *
-             * @param lineLoop a reference to the line loop object
-             */
-            void operator() (
-                LineLoop<Dim, Spec>& lineLoop) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the line loop.
-         * Calls the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param lineLoop a reference to the line loop object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (LineLoop<Dim, Spec>& lineLoop) const noexcept
-            { Setter<Dim, Spec>{}(lineLoop); }
+        void operator() (LineLoop<Dim, Spec>& lineLoop) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<LineLoop>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<LineLoop>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<LineLoop<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<LineLoop<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the points
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<Points> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<Points<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the points. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the points
+         * ([i/(n - 1), 0] for each vertex in range [0, n] if
+         * points is bigger than 1)
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the points
-             * ([i/(n - 1), 0] for each vertex in range [0, n] if
-             * points is bigger than 1)
-             *
-             * @param points a reference to the points object
-             */
-            void operator() (
-                Points<Dim, Spec>& points) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the points.
-         * Calls the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param points a reference to the points object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (Points<Dim, Spec>& points) const noexcept
-            { Setter<Dim, Spec>{}(points); }
+        void operator() (Points<Dim, Spec>& points) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Points>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<Points>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<Points<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Points<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the polygon
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<Polygon> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<Polygon<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the polygon. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the polygon
+         * ([i/(n - 1), 0] for each vertex in range [0, n] if
+         * polygon is bigger than 1)
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the polygon
-             * ([i/(n - 1), 0] for each vertex in range [0, n] if
-             * polygon is bigger than 1)
-             *
-             * @param polygon a reference to the polygon object
-             */
-            void operator() (
-                Polygon<Dim, Spec>& polygon) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the polygon.
-         * Calls the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param polygon a reference to the polygon object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (Polygon<Dim, Spec>& polygon) const noexcept
-            { Setter<Dim, Spec>{}(polygon); }
+        void operator() (Polygon<Dim, Spec>& polygon) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Polygon>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<Polygon>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<Polygon<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Polygon<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the ellipse
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<Ellipse> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<Ellipse<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the ellipse. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the ellipse
+         * ({[0, 0], [0, 1], [1, 1], [1, 0]})
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the ellipse
-             * ({[0, 0], [0, 1], [1, 1], [1, 0]})
-             *
-             * @param ellipse a reference to the ellipse object
-             */
-            void operator() (
-                Ellipse<Dim, Spec>& ellipse) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the ellipse.
-         * Calls the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param ellipse a reference to the ellipse object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (Ellipse<Dim, Spec>& ellipse) const noexcept
-            { Setter<Dim, Spec>{}(ellipse); }
+        void operator() (Ellipse<Dim, Spec>& ellipse) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Ellipse>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<Ellipse>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<Ellipse<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Ellipse<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
      * coordinates for the ring
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Specifier the angular vertices specifier
      */
-    template <>
-    struct TexturedFigurePlacer<Ring> {
+    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    struct TexturedFigurePlacer<Ring<Dim, Spec>> {
         /**
-         * Functor responsible for the default texture
-         * coordinates for the ring. Allows to shift
-         * code into the source file
+         * Sets the default texture coordinates for the ring
+         * ({[0, 0], [0, 1], [1, 1], [1, 0]})
          *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
-         */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        struct Setter {
-            /**
-             * Sets the default texture coordinates for the ring
-             * ({[0, 0], [0, 1], [1, 1], [1, 0]})
-             *
-             * @param ellipse a reference to the ring object
-             */
-            void operator() (
-                Ring<Dim, Spec>& ring) const noexcept;
-        };
-
-        /**
-         * Sets the default texture coordinates for the ring.
-         * Calls the inner setter
-         *
-         * @tparam Dim the dimension of the space
-         * @tparam Specifier the angular vertices specifier
          * @param ring a reference to the ring object
          */
-        template <
-            Dimension Dim,
-            TexturableAngularTraitSpecifier<Dim> Spec>
-        void operator() (Ring<Dim, Spec>& ring) const noexcept
-            { Setter<Dim, Spec>{}(ring); }
+        void operator() (Ring<Dim, Spec>& ring) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Ring>::Setter<dim::Dim2, uint8>;
-    template struct TexturedFigurePlacer<Ring>::Setter<dim::Dim3, uint8>;
+    template struct TexturedFigurePlacer<Ring<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Ring<dim::Dim3, uint8>>;
 
 }

@@ -31,7 +31,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Triangle>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<Triangle<Dim, Spec>>::operator() (
         Triangle<Dim, Spec>& triangle) const noexcept
     {
         get<"texCoords">(triangle[0]) = Vector2f{0, 0};
@@ -42,7 +42,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Tetragon>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<Tetragon<Dim, Spec>>::operator() (
         Tetragon<Dim, Spec>& tetragon) const noexcept
     {
         get<"texCoords">(tetragon[0]) = Vector2f{0, 0};
@@ -54,7 +54,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Line>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<Line<Dim, Spec>>::operator() (
         Line<Dim, Spec>& line) const noexcept
     {
         get<"texCoords">(line[0]) = Vector2f{0, 0};
@@ -64,7 +64,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<LineStrip>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<LineStrip<Dim, Spec>>::operator() (
         LineStrip<Dim, Spec>& lineStrip) const noexcept
     {
         if (lineStrip.size() <= 1)
@@ -80,7 +80,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<LineLoop>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<LineLoop<Dim, Spec>>::operator() (
         LineLoop<Dim, Spec>& lineLoop) const noexcept
     {
         if (lineLoop.size() <= 1)
@@ -96,7 +96,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Points>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<Points<Dim, Spec>>::operator() (
         Points<Dim, Spec>& points) const noexcept
     {
         if (points.size() <= 1)
@@ -112,7 +112,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Polygon>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<Polygon<Dim, Spec>>::operator() (
         Polygon<Dim, Spec>& polygon) const noexcept
     {
         if (polygon.size() <= 1)
@@ -128,7 +128,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Ellipse>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<Ellipse<Dim, Spec>>::operator() (
         Ellipse<Dim, Spec>& ellipse) const noexcept
     {
         get<"texCoords">(ellipse[0]) = Vector2f{0, 0};
@@ -140,7 +140,7 @@ namespace mpgl {
     template <
         Dimension Dim,
         TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Ring>::Setter<Dim, Spec>::operator() (
+    void TexturedFigurePlacer<Ring<Dim, Spec>>::operator() (
         Ring<Dim, Spec>& ring) const noexcept
     {
         get<"texCoords">(ring[0]) = Vector2f{0, 0};
