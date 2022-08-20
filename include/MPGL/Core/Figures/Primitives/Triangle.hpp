@@ -25,14 +25,27 @@
  */
 #pragma once
 
-#include <MPGL/Core/Figures/Angular.hpp>
+#include <MPGL/Core/Figures/Primitives/Helpers/TriangleHelpers.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
 
 namespace mpgl {
 
     /**
      * Represents a triangle figure
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    struct Triangle : public Angular {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    class Triangle :
+        public virtual
+            DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>,
+        public Angular<Dim, Spec>
+    {
+    public:
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vector = VertexTraits::Vector;
+
         /**
          * Constructs a new Triangle with given
          * vertices
@@ -42,10 +55,11 @@ namespace mpgl {
          * @param thirdVertex the third vertex coord
          * @param color the color of the triangle
          */
-        Triangle(Vector2f const& firstVertex,
-                Vector2f const& secondVertex,
-                Vector2f const& thirdVertex,
-                Color const& color = {});
+        Triangle(
+            Vector const& firstVertex,
+            Vector const& secondVertex,
+            Vector const& thirdVertex,
+            Color const& color = Color::White);
 
         /**
          * Constructs a new Triangle with given
@@ -53,7 +67,7 @@ namespace mpgl {
          *
          * @param color the color of the triangle
          */
-        Triangle(Color const& color = {});
+        Triangle(Color const& color = Color::White);
 
         Triangle(Triangle const& triangle) = default;
         Triangle(Triangle&& triangle) noexcept = default;
@@ -64,21 +78,39 @@ namespace mpgl {
         /**
          * Draws the triangle on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
-         * Checks whether the given point is located inside the triangle
+         * Checks whether the given pixel is located inside
+         * the triangle
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is inside the triangle
          */
-        [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroy the Triangle object
+         * Virtual destructor. Destroys the Triangle object
          */
-        ~Triangle(void) noexcept = default;
+        virtual ~Triangle(void) noexcept = default;
+
+        friend class TriangleDrawer<Dim, Spec>;
+        friend class TriangleClickChecker<Dim, Spec>;
+    private:
+        using Drawer = TriangleDrawer<Dim, Spec>;
+        using Clicker = TriangleClickChecker<Dim, Spec>;
+
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
+
+    template class Triangle<dim::Dim2>;
+    template class Triangle<dim::Dim3>;
+    template class Triangle<dim::Dim2, uint8>;
+    template class Triangle<dim::Dim3, uint8>;
+
+    typedef Triangle<dim::Dim2>                     Triangle2D;
+    typedef Triangle<dim::Dim3>                     Triangle3D;
 
 }

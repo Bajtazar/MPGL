@@ -103,6 +103,18 @@ namespace mpgl {
         return left[0] * right[1] - left[1] * right[0];
     }
 
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Vector<Tp, 3> cross(
+        Vector<Tp, 3> const& left,
+        Vector<Tp, 3> const& right) noexcept
+    {
+        return {
+            left[1] * right[2] - left[2] * right[1],
+            left[2] * right[0] - left[0] * right[2],
+            left[0] * right[1] - left[1] * right[0]
+        };
+    }
+
     template <Arithmetic Up, Arithmetic Tp, std::size_t Size>
     [[nodiscard]] constexpr Vector<Up, Size>
         vectorCast(Vector<Tp, Size> const& vector) noexcept
@@ -145,6 +157,21 @@ namespace mpgl {
         std::ranges::for_each(vector, [](Tp& value)
             { value = std::round(value); });
         return vector;
+    }
+
+    template <std::floating_point Tp, std::size_t Size>
+    [[nodiscard]] constexpr Vector<Tp, Size> normalize(
+        Vector<Tp, Size> const& vector)
+    {
+        return vector / vector.length();
+    }
+
+    template <Arithmetic Tp, std::size_t Size>
+    constexpr Vector<Tp, Size>& Vector<Tp, Size>::normalize(
+        void) noexcept
+    {
+        (*this) /= length();
+        return *this;
     }
 
     template <Arithmetic Tp, std::size_t Size>

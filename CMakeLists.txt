@@ -14,8 +14,9 @@ set(MPGL_SOURCES ${PROJECT_SOURCE_DIR}/src/MPGL)
 add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Exceptions/ShaderLibraryInvalidShadersException.cpp
     ${MPGL_SOURCES}/Collections/Image.cpp
-    ${MPGL_SOURCES}/Mathematics/FFT.cpp
+    ${MPGL_SOURCES}/Mathematics/Systems.cpp
     ${MPGL_SOURCES}/Mathematics/FastFunctions.cpp
+    ${MPGL_SOURCES}/Mathematics/Transforms/FFT.cpp
     ${MPGL_SOURCES}/Utility/Adapter.cpp
     ${MPGL_SOURCES}/Utility/StringAlgorithm.cpp
     ${MPGL_SOURCES}/IO/FileIO.cpp
@@ -23,11 +24,15 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/IO/ImageLoading/ImageLoader.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/BMPLoader.cpp
     ${MPGL_SOURCES}/IO/ImageLoading/PNGLoader.cpp
+    ${MPGL_SOURCES}/Core/Model.cpp
     ${MPGL_SOURCES}/Core/Transformations/Rotation.cpp
+    ${MPGL_SOURCES}/Core/Figures/Views.cpp
     ${MPGL_SOURCES}/Core/Figures/Angular.cpp
     ${MPGL_SOURCES}/Core/Figures/ResizableAngular.cpp
     ${MPGL_SOURCES}/Core/Figures/Elliptic.cpp
+    ${MPGL_SOURCES}/Core/Figures/EllipticVertices.cpp
     ${MPGL_SOURCES}/Core/Figures/Figure.cpp
+    ${MPGL_SOURCES}/Core/Figures/AngularVertices.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Points.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/LineStrip.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Triangle.cpp
@@ -37,6 +42,15 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Primitives/LineLoop.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Line.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Ellipse.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/RingHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/EllipseHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/TriangleHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/TetragonHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/LineStripHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/PointsHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/LineHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/PolygonHelpers.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/LineLoopHelpers.cpp
     ${MPGL_SOURCES}/Core/Windows/WindowPlatform.cpp
     ${MPGL_SOURCES}/Core/Windows/Window.cpp
     ${MPGL_SOURCES}/Core/Windows/RenderWindow.cpp
@@ -59,14 +73,12 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Context/Buffers/VertexArray.cpp
     ${MPGL_SOURCES}/Core/Context/Buffers/ElementArrayBuffer.cpp
     ${MPGL_SOURCES}/Core/Textures/Texture.cpp
-    ${MPGL_SOURCES}/Core/Textures/RingSprite.cpp
-    ${MPGL_SOURCES}/Core/Textures/EllipseSprite.cpp
     ${MPGL_SOURCES}/Core/Textures/TexturePack.cpp
     ${MPGL_SOURCES}/Core/Textures/Sprite.cpp
     ${MPGL_SOURCES}/Core/Textures/TextureLoader.cpp
     ${MPGL_SOURCES}/Core/Textures/Texturable.cpp
-    ${MPGL_SOURCES}/Core/Textures/EllipticSprite.cpp
-    ${MPGL_SOURCES}/Core/Textures/ShadeableSprite.cpp
+    ${MPGL_SOURCES}/Core/Textures/TexturedFigurePlacer.cpp
+    ${MPGL_SOURCES}/Core/Textures/TexturedFigure.cpp
     ${MPGL_SOURCES}/Core/Shaders/Shadeable.cpp
     ${MPGL_SOURCES}/Core/Shaders/Shader.cpp
     ${MPGL_SOURCES}/Core/Shaders/ShaderLocation.cpp

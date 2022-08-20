@@ -26,35 +26,32 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformable.hpp>
-#include <MPGL/Core/Shaders/Shadeable.hpp>
+#include <MPGL/Core/Figures/Clickable.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
+#include <MPGL/Core/Model.hpp>
 #include <MPGL/Core/Shape.hpp>
 
 namespace mpgl {
 
     /**
-     * Base class for the two-dimensional figures
+     * Base class for figures
+     *
+     * @tparam Dim the dimension of the space
      */
-    class Figure : public virtual Shape, public Shadeable,
-        public virtual Transformable2D
+    template <Dimension Dim>
+    class Figure :
+        public virtual Shape<Dim>,
+        public virtual Transformable<Dim>,
+        public virtual DeriveIfT<TwoDimensional<Dim>, Clickable>,
+        public Shadeable,
+        public DeriveIfT<ThreeDimensional<Dim>, Model>
     {
     public:
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;
-
-        /**
-         * Pure virtual function. Has to be overloaded.
-         * Checks whether given point position is located
-         * inside of the figure [boundry is concidered
-         * as a part of the figure]
-         *
-         * @param position the point position
-         * @return if point is inside figure
-         */
-        [[nodiscard]] virtual bool contains(
-            Vector2f const& position) const noexcept = 0;
 
         /**
          * Pure virtual method. Has to be overloaded.
@@ -64,13 +61,15 @@ namespace mpgl {
          * transforming object
          */
         virtual void transform(
-            Transformation2D const& transformator) noexcept = 0;
+            Transformation<Dim> const& transformator) noexcept = 0;
 
         /**
-         * Destroy the Figure object
+         * Destroys the Figure object
          */
         virtual ~Figure(void) noexcept = default;
     protected:
+        using Executable = typename Shadeable::Executable;
+
         /**
          * Construct a new Figure object. Loads the given
          * shaders
@@ -80,19 +79,15 @@ namespace mpgl {
         explicit Figure(std::string const& programName);
 
         /**
-         * Construct a new Figure object. Loads the given
+         * Constructs a new Figure object. Loads the given
          * shaders
          *
          * @param programName the given shader name
          * @param exec the shader's executable
          */
-        explicit Figure(std::string const& programName,
+        explicit Figure(
+            std::string const& programName,
             Executable exec);
-
-        /**
-         *  Construct a new Figure object
-         */
-        explicit Figure(void) noexcept = default;
 
         /**
          * Construct a new Figure object from the given
@@ -121,6 +116,17 @@ namespace mpgl {
          * @return the reference to this object
          */
         Figure& operator=(Figure&& shape) noexcept;
+
+        /**
+         * Sets the shader locations
+         */
+        void setLocations(void);
     };
+
+    template class Figure<dim::Dim2>;
+    template class Figure<dim::Dim3>;
+
+    typedef Figure<dim::Dim2>                   Figure2D;
+    typedef Figure<dim::Dim3>                   Figure3D;
 
 }

@@ -32,7 +32,7 @@
 using namespace mpgl;
 
 World::World(void)
-    : apple{Vector2f{}, Tetragon{Color::Red}}
+    : apple{Vector2f{}, Tetragon2D{Color::Red}}
 {
     generateTable();
     createNewApple();
@@ -41,13 +41,13 @@ World::World(void)
 void World::createNewApple(void) noexcept {
     apple.first = genApplePosition();
     auto const& [k, j] = apple.first;
-    apple.second[0] & cast::position
+    apple.second[0] | cast::position
         = Vector2f{117 + 36*j, 36*(k+3)+9};
-    apple.second[1] & cast::position
+    apple.second[1] | cast::position
         = Vector2f{99 + 36*(j+1), 36*(k+3)+9};
-    apple.second[2] & cast::position
+    apple.second[2] | cast::position
         = Vector2f{99 + 36*(j+1), 36*(k+4)-9};
-    apple.second[3] & cast::position
+    apple.second[3] | cast::position
         = Vector2f{117 + 36*j, 36*(k+4)-9};
 }
 
@@ -68,12 +68,11 @@ void World::generateTable(void) {
             Vector2f{108 + 36*i, 612}, Color::White);
 }
 
-void World::onScreenTransformation(
-    Layout& layout,
-    Vector2u const& oldDimensions) noexcept
+void World::transform(
+    Transformation2D const& transformator) noexcept
 {
-    table.onScreenTransformation(layout, oldDimensions);
-    apple.second.onScreenTransformation(layout, oldDimensions);
+    table.transform(transformator);
+    apple.second.transform(transformator);
 }
 
 void World::draw(void) const noexcept {

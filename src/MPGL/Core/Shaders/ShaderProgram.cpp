@@ -66,8 +66,6 @@ namespace mpgl {
             info.resize(512);
             glGetProgramInfoLog(*shaderProgramID, 512, nullptr,
                 info.data());
-            if (!accumulate(info, 0u))
-                return;
             throw ShaderProgramLinkingException{
                 "[" + programName + "]\t" + info};
         }

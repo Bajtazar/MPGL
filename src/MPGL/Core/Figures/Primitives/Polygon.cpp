@@ -24,65 +24,57 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Polygon.hpp>
-
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 
 #include <numbers>
-#include <iterator>
 
 namespace mpgl {
 
-    Polygon::Polygon(Vector2f const& center,
-        float32 radius, std::size_t segments,
-        Color const& color)
-            : ResizableAngular{segments + 1, color}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Polygon<Dim, Spec>::Drawer const
+        Polygon<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Polygon<Dim, Spec>::Clicker const
+        Polygon<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Polygon<Dim, Spec>::Polygon(
+        Vector2f const& center,
+        float32 radius,
+        std::size_t segments,
+        Color const& color) requires TwoDimensional<Dim>
+            : ResizableAngular<Dim, Spec>{segments + 1, color}
     {
         float32 increment = 2.f *
             std::numbers::pi_v<float32> / (segments - 1), angle = 0.f;
-        get<"position">(vertices.front()) = center;
-        for (auto& position : vertices | std::views::drop(1) |
+        get<"position">(this->vertices.front()) = center;
+        for (auto& position : this->vertices | std::views::drop(1) |
             views::position)
         {
-            position = polarToCartesian(Vector2f{radius, angle}) + center;
+            position = polarToCartesian(Vector2f{radius, angle})
+                + center;
             angle += increment;
         }
     }
 
-    void Polygon::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::TriangleFan,
-            vertices.size());
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Polygon<Dim, Spec>::Polygon(
+        std::size_t vertices,
+        Color const& color)
+            : ResizableAngular<Dim, Spec>{vertices, color} {}
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void Polygon<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
     }
 
-    [[nodiscard]] bool Polygon::insideSubtriangle(
-        Vector2d const& position,
-        Vector2d const& firstVertex,
-        Vector2d const& secondVertex,
-        Vector2d const& thirdVertex) const noexcept
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Polygon<Dim, Spec>::contains(
+        Vector2u const& position) const noexcept
     {
-        Vector2d v1 = secondVertex - firstVertex;
-        Vector2d v2 = thirdVertex - firstVertex;
-        double base = cross(v1, v2);
-        double a = (cross(position, v2) - cross(firstVertex, v2)) / base;
-        double b = (cross(firstVertex, v1) - cross(position, v1)) / base;
-        return (a >= 0) && (b >= 0) && (a + b <= 1);
-    }
-
-    [[nodiscard]] bool Polygon::contains(
-        Vector2f const& position) const noexcept
-    {
-        Vector2d normalized = Adapter2D{position}.get();
-        for (std::size_t i = 2; i < size(); ++i)
-            if (insideSubtriangle(normalized,
-                get<"position">(vertices[0]).get(),
-                get<"position">(vertices[i - 1]).get(),
-                get<"position">(vertices[i]).get()))
-                    return true;
-        return false;
+        return clicker(*this, position);
     }
 
 }

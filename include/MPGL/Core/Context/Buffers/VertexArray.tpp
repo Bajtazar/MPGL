@@ -27,18 +27,16 @@
 
 namespace mpgl {
 
-    template <VertexComponents... Components>
+    template <InstanceOf<Vertex> Tp>
     void VertexArray::setArrayData(
-        Vertex<Components...>) const noexcept
+        [[maybe_unused]] VertexTag<Tp>) const noexcept
     {
         std::size_t i = 0;
-        for (auto const& [size, offset, type]
-                : Vertex<Components...>::memoryLayout)
+        for (auto const& [size, offset, type] : Tp::memoryLayout)
         {
             // Change static cast to std::to_underlying in C++23
             glVertexAttribPointer(i, size, static_cast<uint16>(type),
-                GL_FALSE, sizeof(Vertex<Components...>),
-                reinterpret_cast<void*>(offset));
+                GL_FALSE, sizeof(Tp), reinterpret_cast<void*>(offset));
             glEnableVertexAttribArray(i++);
         }
     }

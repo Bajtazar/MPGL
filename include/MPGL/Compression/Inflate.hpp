@@ -64,10 +64,7 @@ namespace mpgl {
          */
         [[nodiscard]] Range operator()(void);
     private:
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<typename Range::iterator>,
-            typename Range::iterator>                   Iterator;
+        typedef PolicyIterRT<Policy, Range>             Iterator;
         typedef LittleEndianInputBitIter<Iterator>      BitIter;
         typedef HuffmanTree<uint16>::Decoder            Decoder;
         typedef std::vector<uint16>                     VectorU16;

@@ -25,35 +25,49 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/PointsHelpers.hpp>
 #include <MPGL/Core/Figures/ResizableAngular.hpp>
-
-#include <optional>
+#include <MPGL/Traits/DeriveIf.hpp>
 
 namespace mpgl {
 
     /**
-     * Represents a points on the screen
+     * Represents a points group on the screen
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    struct Points : public ResizableAngular {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    class Points :
+        public virtual
+            DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>,
+        public ResizableAngular<Dim, Spec>
+    {
+    public:
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vector = VertexTraits::Vector;
+
         /**
-         * Construct a new Points object with given number of points
+         * Constructs a new Points object with given number of points
          * and theirs color
          *
          * @param vertices the number of points
          * @param color the color of points
          */
-        Points(std::size_t vertices = 0, Color const& color = {});
+        Points(
+            std::size_t vertices = 0,
+            Color const& color = Color::White);
 
         /**
-         * Construct a new Points object and initializes the
+         * Constructs a new Points object and initializes the
          * vertices with the given positions and color
          *
          * @tparam ColorTp the color vector type
-         * @tparam Vectors the parameter pack of 2D vectors
+         * @tparam Vectors the parameter pack of vectors
          * @param color the color of the vertices
          * @param positions the vertices positions
          */
-        template <class ColorTp, AllConvertible<Vector2f>... Vectors>
+        template <class ColorTp, AllConvertible<Vector>... Vectors>
             requires std::constructible_from<Color, ColorTp>
         Points(ColorTp&& color, Vectors&&... vertices);
 
@@ -61,10 +75,10 @@ namespace mpgl {
          * Construct a new Points object and initializes the
          * vertices with the given positions
          *
-         * @tparam Vectors the parameter pack of 2D vectors
+         * @tparam Vectors the parameter pack of vectors
          * @param positions the vertices positions
          */
-        template <AllConvertible<Vector2f>... Vectors>
+        template <AllConvertible<Vector>... Vectors>
         Points(Vectors&&... vertices);
 
         Points(Points const& points) = default;
@@ -74,24 +88,42 @@ namespace mpgl {
         Points& operator= (Points&& points) noexcept = default;
 
         /**
-         * Checks whether the given point is one of the points
+         * Checks whether the given pixel is one of the points
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is one of the points
          */
-        [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
          * Draws the polygon on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
-         * Destroy the Points object
+         * Virtual destructor. Destroys the Points object
          */
-        ~Points(void) noexcept = default;
+        virtual ~Points(void) noexcept = default;
+
+        friend class PointsDrawer<Dim, Spec>;
+        friend class PointsClickChecker<Dim, Spec>;
+        friend class PointsClickCheckerNormalizer<Dim, Spec>;
+    private:
+        using Drawer = PointsDrawer<Dim, Spec>;
+        using Clicker = PointsClickChecker<Dim, Spec>;
+
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
+
+    template class Points<dim::Dim2>;
+    template class Points<dim::Dim3>;
+    template class Points<dim::Dim2, uint8>;
+    template class Points<dim::Dim3, uint8>;
+
+    typedef Points<dim::Dim2>                       Points2D;
+    typedef Points<dim::Dim3>                       Points3D;
 
 }
 

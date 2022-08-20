@@ -129,7 +129,7 @@ namespace mpgl {
      */
     template <class Range, TemplateString Field>
     concept FieldedVertexCollection =
-        std::ranges::input_range<Range>
+        std::ranges::forward_range<Range>
         && VertexField<std::ranges::range_value_t<Range>, Field>;
 
 }

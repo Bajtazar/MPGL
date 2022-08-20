@@ -27,14 +27,24 @@
 
 namespace mpgl {
 
-    template <class ColorTp, AllConvertible<Vector2f>... Vectors>
-        requires std::constructible_from<Color, ColorTp>
-    Points::Points(ColorTp&& color, Vectors&&... vertices)
-        : ResizableAngular{std::forward<ColorTp>(color),
-            std::forward<Vectors>(vertices)...} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <
+        class ColorTp,
+        AllConvertible<
+        typename Points<Dim, Spec>::Vector>... Vectors>
+            requires std::constructible_from<Color, ColorTp>
+    Points<Dim, Spec>::Points(
+        ColorTp&& color,
+        Vectors&&... vertices)
+            : ResizableAngular<Dim, Spec>{
+                std::forward<Color>(color),
+                std::forward<Vectors>(vertices)...} {}
 
-    template <AllConvertible<Vector2f>... Vectors>
-    Points::Points(Vectors&&... vertices)
-        : ResizableAngular{std::forward<Vectors>(vertices)...} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <AllConvertible<
+        typename Points<Dim, Spec>::Vector>... Vectors>
+    Points<Dim, Spec>::Points(Vectors&&... vertices)
+        : ResizableAngular<Dim, Spec>{
+            std::forward<Vectors>(vertices)...} {}
 
 }

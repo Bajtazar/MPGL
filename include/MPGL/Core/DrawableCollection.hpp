@@ -37,14 +37,15 @@ namespace mpgl {
     namespace details {
 
         /**
-         * Checks whether the transformation 2D event extension
+         * Checks whether the transformation event extension
          * can be applied to the given type drawable collection
          *
          * @tparam Base the checked type
          */
         template <typename Base>
-        concept Trans2DDrawable = InstanceOf<Base, Drawable> &&
-            std::derived_from<Base, Transformable2D>;
+        concept TransDrawable = InstanceOf<Base, Drawable> &&
+            InstanceOf<Base, Transformable>;
+
     }
 
     /**
@@ -112,19 +113,21 @@ namespace mpgl {
      * The container that simplifies the common operations
      * on the drawable type. Allows to use the desired
      * collection underneath. Extends the default usage by
-     * providing an aditional Transformable 2D support
+     * providing an aditional Transformable support
      *
      * @tparam Base the drawable type
      * @tparam Range the collection type
      */
-    template <details::Trans2DDrawable Base,
+    template <details::TransDrawable Base,
         std::ranges::input_range Range>
     struct DrawableCollection<Base, Range> :
         public Drawable<DrawableDimensionT<Base>>,
         public Range,
-        public Transformable2D
+        public Transformable<DrawableDimensionT<Base>>
     {
         using Range::Range;
+
+        using Dim = DrawableDimensionT<Base>;
 
         DrawableCollection(
             DrawableCollection const& base) noexcept = default;
@@ -172,7 +175,7 @@ namespace mpgl {
          * transforming object
          */
         void transform(
-            Transformation2D const& transformator) noexcept final;
+            Transformation<Dim> const& transformator) noexcept final;
 
         /**
          * Destroys the Drawable Collection object

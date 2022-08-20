@@ -27,14 +27,24 @@
 
 namespace mpgl {
 
-    template <class ColorTp, AllConvertible<Vector2f>... Vectors>
-        requires std::constructible_from<Color, ColorTp>
-    LineStrip::LineStrip(ColorTp&& color, Vectors&&... vertices)
-        : ResizableAngular{std::forward<Color>(color),
-            std::forward<Vectors>(vertices)...} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <
+        class ColorTp,
+        AllConvertible<
+        typename LineStrip<Dim, Spec>::Vector>... Vectors>
+            requires std::constructible_from<Color, ColorTp>
+    LineStrip<Dim, Spec>::LineStrip(
+        ColorTp&& color,
+        Vectors&&... vertices)
+            : ResizableAngular<Dim, Spec>{
+                std::forward<Color>(color),
+                std::forward<Vectors>(vertices)...} {}
 
-    template <AllConvertible<Vector2f>... Vectors>
-    LineStrip::LineStrip(Vectors&&... vertices)
-        : ResizableAngular{std::forward<Vectors>(vertices)...} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <AllConvertible<
+        typename LineStrip<Dim, Spec>::Vector>... Vectors>
+    LineStrip<Dim, Spec>::LineStrip(Vectors&&... vertices)
+        : ResizableAngular<Dim, Spec>{
+            std::forward<Vectors>(vertices)...} {}
 
 }

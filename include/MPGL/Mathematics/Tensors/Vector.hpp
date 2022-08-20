@@ -110,6 +110,11 @@ namespace mpgl {
         [[nodiscard]] constexpr Up length(void) const noexcept;
 
         /**
+         * Normalizes vector
+         */
+        constexpr Vector& normalize(void) noexcept;
+
+        /**
          * Adds the elements of this vector with
          * the given vector elements
          *
@@ -691,6 +696,19 @@ namespace mpgl {
         Vector<Tp, 2> const& right) noexcept;
 
     /**
+     * Returns the cross product of two three-dimensional vectors
+     *
+     * @tparam Tp the vector's value type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right vector
+     * @return the cross product
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Vector<Tp, 3> cross(
+        Vector<Tp, 3> const& left,
+        Vector<Tp, 3> const& right) noexcept;
+
+    /**
      * Casts the vector elements to the given type
      *
      * @tparam Up the new vector's value type
@@ -738,6 +756,18 @@ namespace mpgl {
     template <std::floating_point Tp, std::size_t Size>
     [[nodiscard]] constexpr Vector<Tp, Size> round(
         Vector<Tp, Size> vector);
+
+    /**
+     * Normalizes vector
+     *
+     * @tparam Tp the vector's type
+     * @tparam Size the vector's type
+     * @param vector the constant reference to the vector
+     * @return the normalized vector
+     */
+    template <std::floating_point Tp, std::size_t Size>
+    [[nodiscard]] constexpr Vector<Tp, Size> normalize(
+        Vector<Tp, Size> const& vector);
 
     /**
      * Adds two vectors together
@@ -1148,6 +1178,8 @@ namespace mpgl {
         Vector<Tp, Size> const& right) noexcept;
 
     template class Vector<float32, 2>;
+    template class Vector<float32, 3>;
+    template class Vector<float32, 4>;
     template class Vector<uint32, 2>;
 
     template <std::size_t Size>
@@ -1256,7 +1288,7 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Mathematics/Vector.tpp>
+#include <MPGL/Mathematics/Tensors/Vector.tpp>
 
 namespace std {
 

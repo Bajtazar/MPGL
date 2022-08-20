@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Mathematics/Vector.hpp>
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
 
 namespace mpgl {
 

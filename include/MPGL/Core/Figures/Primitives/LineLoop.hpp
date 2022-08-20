@@ -25,16 +25,29 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/LineLoopHelpers.hpp>
 #include <MPGL/Core/Figures/ResizableAngular.hpp>
 
 namespace mpgl {
 
     /**
      * Represents a line strip loop on the screen
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    struct LineLoop : public ResizableAngular {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    class LineLoop :
+        public virtual
+            DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>,
+        public ResizableAngular<Dim, Spec>
+    {
+    public:
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vector = VertexTraits::Vector;
+
         /**
-         * Construct a new Line Loop object and initializes the
+         * Constructs a new Line Loop object and initializes the
          * vertices with the given positions and color
          *
          * @tparam ColorTp the color vector type
@@ -42,29 +55,30 @@ namespace mpgl {
          * @param color the color of the vertices
          * @param positions the vertices positions
          */
-        template <class ColorTp, AllConvertible<Vector2f>... Vectors>
+        template <class ColorTp, AllConvertible<Vector>... Vectors>
             requires std::constructible_from<Color, ColorTp>
         LineLoop(ColorTp&& color, Vectors&&... vertices);
 
         /**
-         * Construct a new Line Loop object and initializes the
+         * Constructs a new Line Loop object and initializes the
          * vertices with the given positions
          *
          * @tparam Vectors the parameter pack of 2D vectors
          * @param positions the vertices positions
          */
-        template <AllConvertible<Vector2f>... Vectors>
+        template <AllConvertible<Vector>... Vectors>
         LineLoop(Vectors&&... vertices);
 
         /**
-         * Construct a new Line Loop object with given number
+         * Constructs a new Line Loop object with given number
          * of vertices and the given base color
          *
          * @param vertices the number of the vertices
          * @param color the color of the vertices
          */
-        LineLoop(std::size_t vertices = 0,
-            Color const& color = {});
+        LineLoop(
+            std::size_t vertices = 0,
+            Color const& color = Color::White);
 
         LineLoop(LineLoop const& lineStrip) = default;
         LineLoop(LineLoop&& lineStrip) noexcept = default;
@@ -75,45 +89,40 @@ namespace mpgl {
         /**
          * Draws the polygon on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
-         * Checks whether the given point is located on the line loop
+         * Checks whether the given pixel is located on the line loop
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is on the line loop
          */
-        [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroy the Line Strip object
+         * Virtual destructor. Destroys the Line Strip object
          */
-        ~LineLoop(void) noexcept = default;
+        virtual ~LineLoop(void) noexcept = default;
+
+        friend class LineLoopDrawer<Dim, Spec>;
+        friend class LineLoopClickChecker<Dim, Spec>;
+        friend class LineLoopClickCheckerNormalizer<Dim, Spec>;
     private:
-        /**
-         * Returns whether the given point position is inside
-         * an x-axis interval
-         *
-         * @param position the point position
-         * @param index the second vertex index
-         * @return if point is inside an x-axis interval
-         */
-        [[nodiscard]] bool insideInterval(
-            Vector2f const& position,
-            std::size_t index) const noexcept;
+        using Drawer = LineLoopDrawer<Dim, Spec>;
+        using Clicker = LineLoopClickChecker<Dim, Spec>;
 
-        /**
-         * Checks whether the given point is located on the given line
-         *
-         * @param position the point position
-         * @param index the second vertex index
-         * @return if point is located on the line
-         */
-        [[nodiscard]] bool onLine(
-            Vector2f const& position,
-            std::size_t index) const noexcept;
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
+
+    template class LineLoop<dim::Dim2>;
+    template class LineLoop<dim::Dim3>;
+    template class LineLoop<dim::Dim2, uint8>;
+    template class LineLoop<dim::Dim3, uint8>;
+
+    typedef LineLoop<dim::Dim2>                     LineLoop2D;
+    typedef LineLoop<dim::Dim3>                     LineLoop3D;
 
 }
 

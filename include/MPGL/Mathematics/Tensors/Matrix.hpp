@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Mathematics/Vector.hpp>
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
 #include <MPGL/Mathematics/Ranges.hpp>
 
 #include <optional>
@@ -1492,14 +1492,13 @@ namespace mpgl {
      * Returns the identity matrix of the given size
      *
      * @tparam Tp the type of the matrix element
-     * @tparam Rows the number of matrix rows
-     * @tparam Cols the number of matrix columns
+     * @tparam Rows the number of matrix rows and columns
      * @param diagonal the diagonal values
      * @return the identity matrix
      */
-    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        requires (Rows == Cols && Rows > 1)
-    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols> identityMatrix(
+    template <Arithmetic Tp, std::size_t Rows>
+        requires (Rows > 1)
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Rows> identityMatrix(
         Tp diagonal = {1}) noexcept;
 
     /**
@@ -2277,6 +2276,8 @@ namespace mpgl {
         std::complex<float64>, Rows, Cols>;
 
     template class Matrix<float32, 2, 2>;
+    template class Matrix<float32, 3, 3>;
+    template class Matrix<float32, 4, 4>;
 
     typedef Matrix<float32, 2, 2>           Matrix2f;
     typedef Matrix<int32, 2, 2>             Matrix2i;
@@ -2298,4 +2299,4 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Mathematics/Matrix.tpp>
+#include <MPGL/Mathematics/Tensors/Matrix.tpp>

@@ -41,12 +41,7 @@ namespace mpgl {
     Inflate<Range, Policy>::Iterator
         Inflate<Range, Policy>::getIterator(void)
     {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return Iterator{range.begin(), range.end() - 4};
-        else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return range.begin();
-        else
-            throw SecurityUnknownPolicyException{};
+        return makeIterator<Policy>(range.begin(), range.end() - 4);
     }
 
     template <ByteFlexibleRange Range, security::SecurityPolicy Policy>

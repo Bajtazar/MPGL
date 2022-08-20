@@ -34,15 +34,14 @@
 #include <utility>
 
 class World :
-    public mpgl::ScreenTransformationEvent,
+    public mpgl::Transformable2D,
     public mpgl::Drawable2D
 {
 public:
     explicit World(void);
 
-    virtual void onScreenTransformation(
-        mpgl::Layout& layout,
-        mpgl::Vector2u const& oldDimensions) noexcept;
+    virtual void transform(
+        Transformation2D const& transformator) noexcept;
 
     virtual void draw(void) const noexcept;
 
@@ -54,9 +53,9 @@ public:
     ~World(void) noexcept = default;
 private:
     typedef mpgl::DrawableCollection<
-        mpgl::Line>                             Lines;
+        mpgl::Line2D>                           Lines;
     typedef std::pair<
-        mpgl::Vector2f, mpgl::Tetragon>         AppleTuple;
+        mpgl::Vector2f, mpgl::Tetragon2D>       AppleTuple;
 
     Lines                                       table;
     AppleTuple                                  apple;

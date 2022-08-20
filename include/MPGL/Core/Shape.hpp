@@ -34,15 +34,18 @@ namespace mpgl {
     /**
      * Represents every entity that has to utilize the vertex
      * buffer object and vertex array object
+     *
+     * @tparam Dim the dimension of the space
      */
-    class Shape : virtual public Drawable2D {
+    template <Dimension Dim>
+    class Shape : virtual public Drawable<Dim> {
     public:
         Shape(Shape const& shape) = delete;
 
         Shape& operator=(Shape const& shape) = delete;
 
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;
@@ -73,5 +76,8 @@ namespace mpgl {
 
         mutable bool                            isModified = false;
     };
+
+    typedef Shape<dim::Dim2>                    Shape2D;
+    typedef Shape<dim::Dim3>                    Shape3D;
 
 }

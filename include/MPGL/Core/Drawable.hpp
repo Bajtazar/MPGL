@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 #include <MPGL/Core/Context/Context.hpp>
 #include <MPGL/Core/Dimensions.hpp>
 
@@ -46,8 +47,8 @@ namespace mpgl {
         explicit Drawable(void) noexcept = default;
 
         /**
-         * Pure virtual function. Has to be overloaded.
-         * Allows to draw an object
+         * Pure virtual method. Has to be overloaded.
+         * Allows to draw an object on the screen
          */
         virtual void draw(void) const noexcept = 0;
 

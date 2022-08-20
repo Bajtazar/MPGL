@@ -43,68 +43,6 @@ namespace mpgl {
         WindowPlatform& operator=(WindowPlatform&&) = delete;
 
         /**
-         * The framebuffer callback
-         *
-         * @param window the GLFW window pointer
-         * @param width the new framebuffer width
-         * @param height the new framebuffer height
-         */
-        friend void framebufferCallback(
-            GLFWwindow *window, int32 width, int32 height) noexcept;
-
-        /**
-         * The keyboard callback
-         *
-         * @param window the GLFW window pointer
-         * @param key the key code
-         * @param scancode the scan code
-         * @param action the performed action
-         * @param mods the modifiers
-         */
-        friend void keyCallback(
-            GLFWwindow *window, int32 key, int32 scancode,
-            int32 action, int32 mods) noexcept;
-
-        /**
-         * The text callback
-         *
-         * @param window the GLFW window pointer
-         * @param character the given character code [in unicode]
-         */
-        friend void textCallback(
-            GLFWwindow *window, uint32 character) noexcept;
-
-        /**
-         * The mouse position callback
-         *
-         * @param window the GLFW window pointer
-         * @param xpos the mouse x-axis position
-         * @param ypos the mouse y-axis position
-         */
-        friend void mousePosCallback(
-            GLFWwindow *window, float64 xpos, float64 ypos) noexcept;
-
-        /**
-         * The mouse button callback
-         *
-         * @param window the GLFW window pointer
-         * @param button the mouse button
-         * @param action the performed action
-         * @param mods the modifiers
-         */
-        friend void mouseButtonCallback(
-            GLFWwindow *window, int32 button,
-            int32 action, int32 mods) noexcept;
-
-        /**
-         * The window close callback
-         *
-         * @param window the GLFW window pointer
-         */
-        friend void windowCloseCallback(
-            GLFWwindow *window) noexcept;
-
-        /**
          * Returns the window dimensions vector
          *
          * @return the constaint reference to the window dimensions
@@ -214,6 +152,78 @@ namespace mpgl {
          * @param dim the window dimensions
          */
         void setDimensions(Vector2u const& dim) noexcept;
+
+        /**
+         * The framebuffer callback
+         *
+         * @param window the GLFW window pointer
+         * @param width the new framebuffer width
+         * @param height the new framebuffer height
+         */
+        static void framebufferCallback(
+            GLFWwindow *window,
+            int32 width,
+            int32 height) noexcept;
+
+        /**
+         * The keyboard callback
+         *
+         * @param window the GLFW window pointer
+         * @param key the key code
+         * @param scancode the scan code
+         * @param action the performed action
+         * @param mods the modifiers
+         */
+        static void keyCallback(
+            GLFWwindow *window,
+            int32 key,
+            int32 scancode,
+            int32 action,
+            int32 mods) noexcept;
+
+        /**
+         * The text callback
+         *
+         * @param window the GLFW window pointer
+         * @param character the given character code [in unicode]
+         */
+        static void textCallback(
+            GLFWwindow *window,
+            uint32 character) noexcept;
+
+        /**
+         * The mouse position callback
+         *
+         * @param window the GLFW window pointer
+         * @param xpos the mouse x-axis position
+         * @param ypos the mouse y-axis position
+         */
+        static void mousePosCallback(
+            GLFWwindow *window,
+            float64 xpos,
+            float64 ypos) noexcept;
+
+        /**
+         * The mouse button callback
+         *
+         * @param window the GLFW window pointer
+         * @param button the mouse button
+         * @param action the performed action
+         * @param mods the modifiers
+         */
+        static void mouseButtonCallback(
+            GLFWwindow *window,
+            int32 button,
+            int32 action,
+            int32 mods) noexcept;
+
+        /**
+         * The window close callback
+         *
+         * @param window the GLFW window pointer
+         */
+        static void windowCloseCallback(
+            GLFWwindow *window) noexcept;
     };
 
 }

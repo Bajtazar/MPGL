@@ -40,7 +40,8 @@ namespace mpgl {
      * @tparam Range the compressed data range
      * @tparam Policy the security policy
      */
-    template <ByteFlexibleRange Range,
+    template <
+        ByteFlexibleRange Range,
         security::SecurityPolicy Policy = Secured>
     class GZIPDecoder {
     public:
@@ -150,10 +151,7 @@ namespace mpgl {
          */
         [[nodiscard]] Range operator()(void);
     private:
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<typename Range::iterator>,
-            typename Range::iterator>                   Iterator;
+        typedef PolicyIterRT<Policy, Range>             Iterator;
 
         Range                                           range;
         Iterator                                        rangeIterator;

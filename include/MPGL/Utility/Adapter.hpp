@@ -227,6 +227,7 @@ namespace mpgl {
     };
 
     typedef Adapter<2>                      Adapter2D;
+    typedef Adapter<3>                      Adapter3D;
 
 }
 

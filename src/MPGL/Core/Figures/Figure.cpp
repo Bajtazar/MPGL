@@ -23,30 +23,60 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Figures/Figure.hpp>
 
 namespace mpgl {
 
-    Figure::Figure(std::string const& programName)
-        : Shadeable{programName} {}
+    template <Dimension Dim>
+    Figure<Dim>::Figure(std::string const& programName)
+        : Shadeable{programName}
+    {
+        setLocations();
+    }
 
-    Figure::Figure(std::string const& programName,
-        Executable exec) : Shadeable{programName, exec} {}
+    template <Dimension Dim>
+    Figure<Dim>::Figure(
+        std::string const& programName,
+        Executable exec)
+            : Shadeable{programName, exec}
+    {
+        setLocations();
+    }
 
-    Figure::Figure(Figure const& shape)
-        : Shadeable{shape.shaderProgram} {}
+    template <Dimension Dim>
+    Figure<Dim>::Figure(Figure const& shape)
+        : Shadeable{shape.shaderProgram}
+    {
+        setLocations();
+    }
 
-    Figure& Figure::operator=(Figure const& shape) {
-        shaderProgram = shape.shaderProgram;
-        isModified = true;
+    template <Dimension Dim>
+    Figure<Dim>& Figure<Dim>::operator=(Figure const& shape) {
+        if constexpr (ThreeDimensional<Dim>)
+            Model::operator=(shape);
+        this->shaderProgram = shape.shaderProgram;
+        this->isModified = true;
         return *this;
     }
 
-    Figure& Figure::operator=(Figure&& shape) noexcept {
-        vertexArray = std::move(shape.vertexArray);
-        vertexBuffer = std::move(shape.vertexBuffer);
-        isModified = std::move(shape.isModified);
+    template <Dimension Dim>
+    Figure<Dim>& Figure<Dim>::operator=(Figure&& shape) noexcept {
+        if constexpr (ThreeDimensional<Dim>)
+            Model::operator=(std::move(shape));
+        this->shaderProgram = std::move(shape.shaderProgram);
+        this->isModified = shape.isModified;
         return *this;
+    }
+
+    template <Dimension Dim>
+    void Figure<Dim>::setLocations(void) {
+        if constexpr (ThreeDimensional<Dim>) {
+            Shadeable::setLocations(
+                this->locationSetterBuilder(
+                    this->shaderProgram,
+                    this->locations));
+        }
     }
 
 }

@@ -25,8 +25,8 @@
  */
 #pragma once
 
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 #include <MPGL/Core/Shaders/Shader.hpp>
-#include <MPGL/Mathematics/Matrix.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 #include <MPGL/Core/Color.hpp>
 

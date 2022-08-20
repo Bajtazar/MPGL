@@ -32,31 +32,6 @@
 namespace mpgl {
 
     template <security::SecurityPolicy Policy>
-    [[nodiscard]] SLGZLoader<Policy>::Iter
-        SLGZLoader<Policy>::getIterator(
-            BufferIter const& iter,
-            [[maybe_unused]] BufferIter const& end) const noexcept
-    {
-        if constexpr (security::isSecurePolicy<Policy>) {
-            return Iter{ iter, end };
-        } else {
-            return Iter{ iter };
-        }
-    }
-
-    template <security::SecurityPolicy Policy>
-    void SLGZLoader<Policy>::remove(
-        Iter const& iterator,
-        Buffer& buffer) const noexcept
-    {
-        if constexpr (security::isSecurePolicy<Policy>) {
-            buffer.erase(buffer.begin(), iterator.getIter());
-        } else {
-            buffer.erase(buffer.begin(), iterator);
-        }
-    }
-
-    template <security::SecurityPolicy Policy>
     [[nodiscard]] SLGZLoader<Policy>::ShaderMap
         SLGZLoader<Policy>::operator() (
             std::string const& path) const
@@ -65,9 +40,10 @@ namespace mpgl {
         if (auto file = FileIO::readFileToVec(path)) {
             auto data = GZIPDecoder<
                 Buffer, Policy>(std::move(*file))();
-            auto iter = getIterator(data.begin(), data.end());
+            auto const begin = makeIterator<Policy>(data);
+            auto iter = begin;
             auto table = parseHeader(iter);
-            remove(iter, data);
+            erase(data, begin, iter);
             shaderMap = buildMap(table, data);
         } else
             throw SLGZFileCorruptionException{path};
@@ -97,10 +73,10 @@ namespace mpgl {
     {
         ShaderMap shaderMap;
         for (auto const& [offset, length, name] : records) {
-            auto iter = getIterator(buffer.begin() + offset - OFFSET,
-                buffer.end());
-            auto sent = getIterator(buffer.begin() + offset - OFFSET
-                + length, buffer.end());
+            auto iter = makeIterator<Policy>(buffer.begin() + offset
+                - OFFSET, buffer.end());
+            auto sent = makeIterator<Policy>(buffer.begin() + offset
+                - OFFSET + length, buffer.end());
             shaderMap.emplace(name, Buffer{iter, sent});
         }
         return shaderMap;

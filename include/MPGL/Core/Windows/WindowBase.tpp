@@ -47,7 +47,15 @@ namespace mpgl {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
         addEventIfDerived(ptr);
         addDefaultLayoutIfTransformable(ptr);
-        drawables.push_back(std::move(ptr));
+        drawables2D.push_back(std::move(ptr));
+    }
+
+    template <std::derived_from<Drawable3D> Tp, typename... Args>
+        requires std::constructible_from<Tp, Args...>
+    void WindowBase::emplaceDrawable(Args&&... args) {
+        auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
+        addEventIfDerived(ptr);
+        drawables3D.push_back(std::move(ptr));
     }
 
     template <
@@ -65,7 +73,7 @@ namespace mpgl {
         auto ptr = std::make_shared<Tp>(std::forward<Args>(args)...);
         addEventIfDerived(ptr);
         addLayout(ptr, std::move(layout));
-        drawables.push_back(std::move(ptr));
+        drawables2D.push_back(std::move(ptr));
     }
 
     template <std::derived_from<Drawable2D> Tp>
@@ -74,7 +82,16 @@ namespace mpgl {
     {
         addEventIfDerived(drawable);
         addDefaultLayoutIfTransformable(drawable);
-        drawables.push_back(std::static_pointer_cast<Drawable2D>(
+        drawables2D.push_back(std::static_pointer_cast<Drawable2D>(
+            drawable));
+    }
+
+    template <std::derived_from<Drawable3D> Tp>
+    void WindowBase::pushDrawable(
+        std::shared_ptr<Tp> const& drawable)
+    {
+        addEventIfDerived(drawable);
+        drawables3D.push_back(std::static_pointer_cast<Drawable3D>(
             drawable));
     }
 
@@ -89,7 +106,7 @@ namespace mpgl {
     {
         addEventIfDerived(drawable);
         addLayout(drawable, std::move(tag));
-        drawables.push_back(std::static_pointer_cast<Drawable2D>(
+        drawables2D.push_back(std::static_pointer_cast<Drawable2D>(
             drawable));
     }
 
@@ -99,7 +116,16 @@ namespace mpgl {
     {
         addEventIfDerived(drawable);
         addDefaultLayoutIfTransformable(drawable);
-        drawables.push_back(std::static_pointer_cast<Drawable2D>(
+        drawables2D.push_back(std::static_pointer_cast<Drawable2D>(
+            std::move(drawable)));
+    }
+
+    template <std::derived_from<Drawable3D> Tp>
+    void WindowBase::pushDrawable(
+        std::shared_ptr<Tp>&& drawable)
+    {
+        addEventIfDerived(drawable);
+        drawables3D.push_back(std::static_pointer_cast<Drawable3D>(
             std::move(drawable)));
     }
 
@@ -114,7 +140,7 @@ namespace mpgl {
     {
         addEventIfDerived(drawable);
         addLayout(drawable, std::move(tag));
-        drawables.push_back(std::static_pointer_cast<Drawable2D>(
+        drawables2D.push_back(std::static_pointer_cast<Drawable2D>(
             std::move(drawable)));
     }
 

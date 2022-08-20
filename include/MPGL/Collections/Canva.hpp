@@ -32,7 +32,7 @@
 #include <memory>
 #include <vector>
 
-#include <MPGL/Mathematics/Vector.hpp>
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 
 namespace mpgl {

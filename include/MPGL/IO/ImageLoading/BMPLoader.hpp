@@ -79,19 +79,7 @@ namespace mpgl {
         ~BMPLoader(void) noexcept = default;
     private:
         typedef std::istreambuf_iterator<char>      StreamBuf;
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<StreamBuf>, StreamBuf>     FileIter;
-
-        /**
-         * Returns the iterator behaving with the given policy
-         *
-         * @throw SecurityUnknownPolicyException when security
-         * policy is unknown
-         * @param file the reference to the istream object
-         * @return the iterator behaving with the given policy
-         */
-        FileIter setPolicy(std::istream& file);
+        typedef PolicyIterIT<Policy, StreamBuf>     FileIter;
 
         /**
          * Parses the BMP's header

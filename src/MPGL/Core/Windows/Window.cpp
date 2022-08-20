@@ -45,6 +45,10 @@ namespace mpgl {
         };
     }
 
+    Window::StaticCameraPtr Window::defaultCamera(void) noexcept {
+        return std::make_shared<StaticCamera>();
+    }
+
     Window::Window(
         Vector2u const& dimensions,
         String const& title,
@@ -67,9 +71,16 @@ namespace mpgl {
         context.shaders.setLibrary(shaders);
     }
 
-    void Window::drawDrawables(void) const noexcept {
-        std::ranges::for_each(drawables, [](const auto& drawable)
+    void Window::draw2DDrawables(void) const noexcept {
+        std::ranges::for_each(drawables2D, [](auto const& drawable)
             { drawable->draw(); });
+    }
+
+    void Window::draw3DDrawables(void) const noexcept {
+        glEnable(GL_DEPTH_TEST);
+        std::ranges::for_each(drawables3D, [](auto const& drawable)
+            { drawable->draw(); });
+        glDisable(GL_DEPTH_TEST);
     }
 
     void Window::clear(const Color& color) noexcept{
@@ -99,7 +110,7 @@ namespace mpgl {
         while (!shouldWindowClose()) {
             clear(background);
             eventManager->onTick();
-            drawDrawables();
+            draw2DDrawables();
             draw();
         }
     }
@@ -109,6 +120,11 @@ namespace mpgl {
         glReadPixels(0, 0, image.getWidth(), image.getHeight(),
             GL_RGBA, GL_UNSIGNED_BYTE, image.data());
         return image;
+    }
+
+    void Window::setVPMatrix(CameraPtr const& cameraPtr) noexcept {
+        context.setViewProjection(context.projection *
+            (*cameraPtr)());
     }
 
     Window::~Window(void) noexcept {

@@ -72,6 +72,9 @@ namespace mpgl {
     template <TemplateString... Strings>
     struct TSHolder {};
 
+    /// An empty ts holder
+    using NullTSHolderT = TSHolder<>;
+
 }
 
 #include <MPGL/Traits/TemplateString.tpp>

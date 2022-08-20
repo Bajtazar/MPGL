@@ -25,47 +25,61 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/LineStripHelpers.hpp>
 #include <MPGL/Core/Figures/ResizableAngular.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
 
 namespace mpgl {
 
     /**
      * Represents a line strip on the screen
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    class LineStrip : public ResizableAngular {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    class LineStrip :
+        public virtual
+            DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>,
+        public ResizableAngular<Dim, Spec>
+    {
     public:
+        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
+        using Vector = VertexTraits::Vector;
+
         /**
-         * Construct a new Line Strip object and initializes the
+         * Constructs a new Line Strip object and initializes the
          * vertices with the given positions and color
          *
          * @tparam ColorTp the color vector type
-         * @tparam Vectors the parameter pack of 2D vectors
+         * @tparam Vectors the parameter pack of vectors
          * @param color the color of the vertices
          * @param positions the vertices positions
          */
-        template <class ColorTp, AllConvertible<Vector2f>... Vectors>
+        template <class ColorTp, AllConvertible<Vector>... Vectors>
             requires std::constructible_from<Color, ColorTp>
         LineStrip(ColorTp&& color, Vectors&&... vertices);
 
         /**
-         * Construct a new Line Strip object and initializes the
+         * Constructs a new Line Strip object and initializes the
          * vertices with the given positions
          *
-         * @tparam Vectors the parameter pack of 2D vectors
+         * @tparam Vectors the parameter pack of vectors
          * @param positions the vertices positions
          */
-        template <AllConvertible<Vector2f>... Vectors>
+        template <AllConvertible<Vector>... Vectors>
         LineStrip(Vectors&&... vertices);
 
         /**
-         * Construct a new Line Strip object with given number
+         * Constructs a new Line Strip object with given number
          * of vertices and the given base color
          *
          * @param vertices the number of the vertices
          * @param color the color of the vertices
          */
-        LineStrip(std::size_t vertices = 0,
-            Color const& color = {});
+        LineStrip(
+            std::size_t vertices = 0,
+            Color const& color = Color::White);
 
         LineStrip(LineStrip const& lineStrip) = default;
         LineStrip(LineStrip&& lineStrip) noexcept = default;
@@ -76,45 +90,40 @@ namespace mpgl {
         /**
          * Draws the polygon on the screen
          */
-        void draw(void) const noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
-         * Checks whether the given point is located on the line strip
+         * Checks whether the given pixel is located on the line strip
          *
-         * @param position the point position [pixel position]
+         * @param position the pixel's position
          * @return if the given point is on the line strip
          */
-        [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroy the Line Strip object
+         * Virtual destructor. Destroys the Line Strip object
          */
-        ~LineStrip(void) noexcept = default;
+        virtual ~LineStrip(void) noexcept = default;
+
+        friend class LineStripDrawer<Dim, Spec>;
+        friend class LineStripClickChecker<Dim, Spec>;
+        friend class LineStripClickCheckerNormalizer<Dim, Spec>;
     private:
-        /**
-         * Returns whether the given point position is inside
-         * an x-axis interval
-         *
-         * @param position the point position
-         * @param index the second vertex index
-         * @return if point is inside an x-axis interval
-         */
-        [[nodiscard]] bool insideInterval(
-            Vector2f const& position,
-            std::size_t index) const noexcept;
+        using Drawer = LineStripDrawer<Dim, Spec>;
+        using Clicker = LineStripClickChecker<Dim, Spec>;
 
-        /**
-         * Checks whether the given point is located on the given line
-         *
-         * @param position the point position
-         * @param index the second vertex index
-         * @return if point is located on the line
-         */
-        [[nodiscard]] bool onLine(
-            Vector2f const& position,
-            std::size_t index) const noexcept;
+        static Drawer const                         drawer;
+        static Clicker const                        clicker;
     };
+
+    template class LineStrip<dim::Dim2>;
+    template class LineStrip<dim::Dim3>;
+    template class LineStrip<dim::Dim2, uint8>;
+    template class LineStrip<dim::Dim3, uint8>;
+
+    typedef LineStrip<dim::Dim2>                    LineStrip2D;
+    typedef LineStrip<dim::Dim3>                    LineStrip3D;
 
 }
 
