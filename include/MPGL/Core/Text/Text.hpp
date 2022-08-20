@@ -278,9 +278,10 @@ namespace mpgl {
             GlyphSprite<Dim>::iterator>;
         using const_iterator = Iterator<Color const, typename
             GlyphSprite<Dim>::const_iterator>;
-        using reverse_iterator = std::reverse_iterator<iterator>;
-        using const_reverse_iterator = std::reverse_iterator<
-            const_iterator>;
+        using reverse_iterator = Iterator<Color, typename
+            GlyphSprite<Dim>::reverse_iterator>;
+        using const_reverse_iterator = Iterator<Color const, typename
+            GlyphSprite<Dim>::const_reverse_iterator>;
 
         /**
          * Returns the iterator to the begining of the vertices
@@ -307,7 +308,7 @@ namespace mpgl {
          */
         [[nodiscard]] const_iterator
             begin(void) const noexcept
-                { return const_iterator{ ref.get().begin()}; }
+                { return const_iterator{ ref.get().cbegin() }; }
 
         /**
          * Returns the constant iterator to the end
@@ -317,7 +318,7 @@ namespace mpgl {
          * of the vertices
          */
         [[nodiscard]] const_iterator end(void) const noexcept
-            { return const_iterator{ ref.get().end()}; }
+            { return const_iterator{ ref.get().cend() }; }
 
         /**
          * Returns the constant iterator to the begining
@@ -327,7 +328,7 @@ namespace mpgl {
          * of the vertices
          */
         [[nodiscard]] const_iterator cbegin(void) const noexcept
-            { return const_iterator{ ref.get().cbegin()}; }
+            { return const_iterator{ ref.get().cbegin() }; }
 
         /**
          * Returns the constant iterator to the end
@@ -337,7 +338,7 @@ namespace mpgl {
          * of the vertices
          */
         [[nodiscard]] const_iterator cend(void) const noexcept
-            { return const_iterator{ ref.get().cend()}; }
+            { return const_iterator{ ref.get().cend() }; }
 
         /**
          * Returns the reverse iterator to the end of
@@ -348,7 +349,7 @@ namespace mpgl {
          */
         [[nodiscard]] reverse_iterator
             rbegin(void) noexcept requires (!IsConst)
-                { return std::reverse_iterator{ end() - 1}; }
+                { return reverse_iterator{ ref.get().rbegin() }; }
 
         /**
          * Returns the reverse iterator to the begining of
@@ -359,7 +360,7 @@ namespace mpgl {
          */
         [[nodiscard]] reverse_iterator
             rend(void) noexcept requires (!IsConst)
-                { return std::reverse_iterator{ begin() - 1}; }
+                { return reverse_iterator{ ref.get().rend() }; }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -370,7 +371,7 @@ namespace mpgl {
          */
         [[nodiscard]] const_reverse_iterator
             rbegin(void) const noexcept
-                { return std::reverse_iterator{ end() - 1}; }
+                { return const_reverse_iterator{ ref.get().crbegin() }; }
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -381,7 +382,7 @@ namespace mpgl {
          */
         [[nodiscard]] const_reverse_iterator
             rend(void) const noexcept
-                { return std::reverse_iterator{ begin() - 1}; }
+                { return const_reverse_iterator{ ref.get().crend() }; }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -392,7 +393,7 @@ namespace mpgl {
          */
         [[nodiscard]] const_reverse_iterator
             crbegin(void) const noexcept
-                { return std::reverse_iterator{ end() - 1}; }
+                { return const_reverse_iterator{ ref.get().crbegin() }; }
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -403,7 +404,7 @@ namespace mpgl {
          */
         [[nodiscard]] const_reverse_iterator
             crend(void) const noexcept
-                { return std::reverse_iterator{ begin() - 1}; }
+                { return const_reverse_iterator{ ref.get().crend() }; }
     private:
         GlyphRef                                    ref;
     };

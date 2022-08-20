@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
+#include <MPGL/Iterators/AccessRegisteringIterator.hpp>
 #include <MPGL/Core/Context/Buffers/Vertex.hpp>
 #include <MPGL/Core/Textures/Texturable.hpp>
 #include <MPGL/Core/Shape.hpp>
@@ -192,10 +193,11 @@ namespace mpgl {
         [[nodiscard]] Vertex const& back(void) const noexcept
             { return vertices.back(); }
 
-        using iterator                    = Vertices::iterator;
-        using const_iterator              = Vertices::const_iterator;
-        using reverse_iterator
-            = Vertices::reverse_iterator;
+        using iterator = AccessRegisteringIterator<
+            typename Vertices::iterator>;
+        using const_iterator = Vertices::const_iterator;
+        using reverse_iterator = AccessRegisteringIterator<
+            typename Vertices::reverse_iterator>;
         using const_reverse_iterator
             = Vertices::const_reverse_iterator;
 
@@ -212,16 +214,14 @@ namespace mpgl {
          *
          * @return the iterator to the begining of the vertices
          */
-        [[nodiscard]] iterator begin(void) noexcept
-            { this->isModified = true; return vertices.begin(); }
+        [[nodiscard]] iterator begin(void) noexcept;
 
         /**
          * Returns the iterator to the end of the vertices
          *
          * @return the iterator to the end of the vertices
          */
-        [[nodiscard]] iterator end(void) noexcept
-            { this->isModified = true; return vertices.end(); }
+        [[nodiscard]] iterator end(void) noexcept;
 
         /**
          * Returns the constant iterator to the begining
@@ -230,8 +230,7 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the vertices
          */
-        [[nodiscard]] const_iterator begin(void) const noexcept
-            { return vertices.begin(); }
+        [[nodiscard]] const_iterator begin(void) const noexcept;
 
         /**
          * Returns the constant iterator to the end
@@ -240,8 +239,7 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the vertices
          */
-        [[nodiscard]] const_iterator end(void) const noexcept
-            { return vertices.end(); }
+        [[nodiscard]] const_iterator end(void) const noexcept;
 
         /**
          * Returns the constant iterator to the begining
@@ -250,9 +248,7 @@ namespace mpgl {
          * @return the constant iterator to the begining
          * of the vertices
          */
-        [[nodiscard]] const_iterator cbegin(void) const noexcept
-            { return vertices.begin(); }
-
+        [[nodiscard]] const_iterator cbegin(void) const noexcept;
         /**
          * Returns the constant iterator to the end
          * of the vertices
@@ -260,8 +256,7 @@ namespace mpgl {
          * @return the constant iterator to the end
          * of the vertices
          */
-        [[nodiscard]] const_iterator cend(void) const noexcept
-            { return vertices.end(); }
+        [[nodiscard]] const_iterator cend(void) const noexcept;
 
         /**
          * Returns the reverse iterator to the end of
@@ -270,8 +265,7 @@ namespace mpgl {
          * @return the reverse iterator to the end of
          * the vertices
          */
-        [[nodiscard]] reverse_iterator rbegin(void) noexcept
-            { this->isModified = true; return vertices.rbegin(); }
+        [[nodiscard]] reverse_iterator rbegin(void) noexcept;
 
         /**
          * Returns the reverse iterator to the begining of
@@ -280,8 +274,7 @@ namespace mpgl {
          * @return the reverse iterator to the begining of
          * the vertices
          */
-        [[nodiscard]] reverse_iterator rend(void) noexcept
-            { this->isModified = true; return vertices.rend(); }
+        [[nodiscard]] reverse_iterator rend(void) noexcept;
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -291,8 +284,7 @@ namespace mpgl {
          * the vertices
          */
         [[nodiscard]] const_reverse_iterator
-            rbegin(void) const noexcept
-                { return vertices.rbegin(); }
+            rbegin(void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -302,8 +294,7 @@ namespace mpgl {
          * the vertices
          */
         [[nodiscard]] const_reverse_iterator
-            rend(void) const noexcept
-                { return vertices.rend(); }
+            rend(void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -313,8 +304,7 @@ namespace mpgl {
          * the vertices
          */
         [[nodiscard]] const_reverse_iterator
-            crbegin(void) const noexcept
-                { return vertices.crbegin(); }
+            crbegin(void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the begining of
@@ -324,8 +314,7 @@ namespace mpgl {
          * the vertices
          */
         [[nodiscard]] const_reverse_iterator
-            crend(void) const noexcept
-                { return vertices.crend(); }
+            crend(void) const noexcept;
 
         /**
          * Sets the sprite's color

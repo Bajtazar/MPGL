@@ -119,6 +119,90 @@ namespace mpgl {
     }
 
     template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::iterator
+        GlyphSprite<Dim>::begin(void) noexcept
+    {
+        return iterator{vertices.begin(), this->isModified};
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::iterator
+        GlyphSprite<Dim>::end(void) noexcept
+    {
+        return iterator{vertices.end(), this->isModified};
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_iterator
+        GlyphSprite<Dim>::begin(void) const noexcept
+    {
+        return vertices.begin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_iterator
+        GlyphSprite<Dim>::end(void) const noexcept
+    {
+        return vertices.end();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_iterator
+        GlyphSprite<Dim>::cbegin(void) const noexcept
+    {
+        return vertices.cbegin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_iterator
+        GlyphSprite<Dim>::cend(void) const noexcept
+    {
+        return vertices.cend();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::reverse_iterator
+        GlyphSprite<Dim>::rbegin(void) noexcept
+    {
+        return reverse_iterator{vertices.rbegin(), this->isModified};
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::reverse_iterator
+        GlyphSprite<Dim>::rend(void) noexcept
+    {
+        return reverse_iterator{vertices.rend(), this->isModified};
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_reverse_iterator
+        GlyphSprite<Dim>::rbegin(void) const noexcept
+    {
+        return vertices.rbegin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_reverse_iterator
+        GlyphSprite<Dim>::rend(void) const noexcept
+    {
+        return vertices.rend();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_reverse_iterator
+        GlyphSprite<Dim>::crbegin(void) const noexcept
+    {
+        return vertices.crbegin();
+    }
+
+    template <Dimension Dim>
+    [[nodiscard]] GlyphSprite<Dim>::const_reverse_iterator
+        GlyphSprite<Dim>::crend(void) const noexcept
+    {
+        return vertices.crend();
+    }
+
+    template <Dimension Dim>
     void GlyphSprite<Dim>::setColor(Color const& color) noexcept {
         std::ranges::for_each(this->vertices | views::color,
             [&color](auto& vertexColor){ vertexColor = color; });
