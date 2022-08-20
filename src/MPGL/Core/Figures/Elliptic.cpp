@@ -95,8 +95,8 @@ namespace mpgl {
             std::size_t index
             ) noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        this->isModified = true;
-        return *(iterator{this->vertices.begin() + index});
+        return *(iterator{acr_iterator{this->vertices.begin() + index,
+            this->isModified}});
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -113,8 +113,8 @@ namespace mpgl {
         Elliptic<Dim, Spec>::front(
             void) noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        this->isModified = true;
-        return *(iterator{this->vertices.begin()});
+        return *(iterator{acr_iterator{
+            this->vertices.begin(), this->isModified}});
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -130,8 +130,8 @@ namespace mpgl {
         Elliptic<Dim, Spec>::back(
             void) noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        this->isModified = true;
-        return *(iterator{this->vertices.end() - 1});
+        return *(iterator{acr_iterator{
+            this->vertices.end() - 1, this->isModified}});
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -147,8 +147,8 @@ namespace mpgl {
         Elliptic<Dim, Spec>::begin(
             void) noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        this->isModified = true;
-        return iterator{this->vertices.begin()};
+        return iterator{acr_iterator{
+            this->vertices.begin(), this->isModified}};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -156,8 +156,8 @@ namespace mpgl {
         Elliptic<Dim, Spec>::end(
             void) noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        this->isModified = true;
-        return iterator{this->vertices.end()};
+        return iterator{acr_iterator{
+            this->vertices.end(), this->isModified}};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -197,8 +197,8 @@ namespace mpgl {
         Elliptic<Dim, Spec>::rbegin(
             void) noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        this->isModified = true;
-        return reverse_iterator{iterator{this->vertices.end() - 1}};
+        return reverse_iterator{racr_iterator{this->vertices.rbegin(),
+            this->isModified}};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -206,8 +206,8 @@ namespace mpgl {
         Elliptic<Dim, Spec>::rend(
             void) noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        this->isModified = true;
-        return reverse_iterator{iterator{this->vertices.begin() - 1}};
+        return reverse_iterator{racr_iterator{
+            this->vertices.rend(), this->isModified}};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -215,8 +215,7 @@ namespace mpgl {
         Elliptic<Dim, Spec>::rbegin(
             void) const noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        return const_reverse_iterator{
-            const_iterator{this->vertices.end() - 1}};
+        return const_reverse_iterator{this->vertices.rbegin()};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -224,8 +223,7 @@ namespace mpgl {
         Elliptic<Dim, Spec>::rend(
             void) const noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        return const_reverse_iterator{
-            const_iterator{this->vertices.begin() - 1}};
+        return const_reverse_iterator{this->vertices.rend()};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -233,8 +231,7 @@ namespace mpgl {
         Elliptic<Dim, Spec>::crbegin(
             void) const noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        return const_reverse_iterator{
-            const_iterator{this->vertices.end() - 1}};
+        return const_reverse_iterator{this->vertices.rbegin()};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -242,8 +239,7 @@ namespace mpgl {
         Elliptic<Dim, Spec>::crend(
             void) const noexcept requires Elliptic<Dim, Spec>::Iterable
     {
-        return const_reverse_iterator{
-            const_iterator{this->vertices.begin() - 1}};
+        return const_reverse_iterator{this->vertices.rend()};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>

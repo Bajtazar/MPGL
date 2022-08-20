@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
+#include <MPGL/Iterators/AccessRegisteringIterator.hpp>
 #include <MPGL/Core/Figures/EllipticVertices.hpp>
 #include <MPGL/Core/Figures/Figure.hpp>
 
@@ -46,25 +47,31 @@ namespace mpgl {
     {
     public:
         using VertexTraits = EllipticVertices<Dim, Specifier>;
-    private:
-        constexpr static bool Iterable = !std::same_as<
-            typename VertexTraits::IterableFields, NullTSHolderT>;
-    public:
         /// The vertex used by all elliptic shapes
         using Vertex = typename VertexTraits::Vertex;
         using Vertices = std::vector<Vertex>;
+    private:
+        constexpr static bool Iterable = !std::same_as<
+            typename VertexTraits::IterableFields, NullTSHolderT>;
 
+        using acr_iterator = AccessRegisteringIterator<
+            typename Vertices::iterator>;
+        using racr_iterator = AccessRegisteringIterator<
+            typename Vertices::reverse_iterator>;
+    public:
         using iterator = VertexViewIterFromHolderT<
-            typename Vertices::iterator,
-            typename VertexTraits::IterableFields>;
+            acr_iterator, typename VertexTraits::IterableFields>;
 
         using const_iterator = VertexViewIterFromHolderT<
             typename Vertices::const_iterator,
             typename VertexTraits::IterableFields>;
 
-        using reverse_iterator = std::reverse_iterator<iterator>;
-        using const_reverse_iterator = std::reverse_iterator<
-            const_iterator>;
+        using reverse_iterator = VertexViewIterFromHolderT<
+            racr_iterator, typename VertexTraits::IterableFields>;
+
+        using const_reverse_iterator = VertexViewIterFromHolderT<
+            typename Vertices::const_reverse_iterator,
+            typename VertexTraits::IterableFields>;
 
         using vertex_view = typename iterator::value_type;
         using const_vertex_view = typename const_iterator::value_type;
