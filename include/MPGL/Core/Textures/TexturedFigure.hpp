@@ -193,8 +193,6 @@ namespace mpgl {
     using RingSprite2D = TexturedFigure<Ring<dim::Dim2, uint8>>;
     using RingSprite3D = TexturedFigure<Ring<dim::Dim3, uint8>>;
 
-    using TetrahedronSprite = TexturedFigure<Tetrahedron<uint8>>;
-
 }
 
 #include <MPGL/Core/Textures/TexturedFigure.tpp>

@@ -149,15 +149,4 @@ namespace mpgl {
         get<"texCoords">(ring[3]) = Vector2f{1, 0};
     }
 
-    template <
-        TexturableAngularTraitSpecifier<dim::Dim3> Spec>
-    void TexturedFigurePlacer<Tetrahedron<Spec>>::operator() (
-        Tetrahedron<Spec>& tetrahedron) const noexcept
-    {
-        get<"texCoords">(tetrahedron[0]) = Vector2f{0, 0};
-        get<"texCoords">(tetrahedron[1]) = Vector2f{0, 1};
-        get<"texCoords">(tetrahedron[2]) = Vector2f{1, 1};
-        get<"texCoords">(tetrahedron[3]) = Vector2f{1, 0};
-    }
-
 }
