@@ -127,7 +127,7 @@ namespace mpgl {
 
     template <
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
+        EllipticTraitSpecifier<Dim> Spec>
     void TexturedFigurePlacer<Ellipse<Dim, Spec>>::operator() (
         Ellipse<Dim, Spec>& ellipse) const noexcept
     {
@@ -139,7 +139,7 @@ namespace mpgl {
 
     template <
         Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
+        EllipticTraitSpecifier<Dim> Spec>
     void TexturedFigurePlacer<Ring<Dim, Spec>>::operator() (
         Ring<Dim, Spec>& ring) const noexcept
     {
@@ -147,6 +147,17 @@ namespace mpgl {
         get<"texCoords">(ring[1]) = Vector2f{0, 1};
         get<"texCoords">(ring[2]) = Vector2f{1, 1};
         get<"texCoords">(ring[3]) = Vector2f{1, 0};
+    }
+
+    template <
+        TexturableAngularTraitSpecifier<dim::Dim3> Spec>
+    void TexturedFigurePlacer<Tetrahedron<Spec>>::operator() (
+        Tetrahedron<Spec>& tetrahedron) const noexcept
+    {
+        get<"texCoords">(tetrahedron[0]) = Vector2f{0, 0};
+        get<"texCoords">(tetrahedron[1]) = Vector2f{0, 1};
+        get<"texCoords">(tetrahedron[2]) = Vector2f{1, 1};
+        get<"texCoords">(tetrahedron[3]) = Vector2f{1, 0};
     }
 
 }

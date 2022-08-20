@@ -25,6 +25,7 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Tetrahedron.hpp>
 #include <MPGL/Core/Figures/Primitives/LineStrip.hpp>
 #include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
@@ -202,9 +203,9 @@ namespace mpgl {
      * coordinates for the ellipse
      *
      * @tparam Dim the dimension of the space
-     * @tparam Specifier the angular vertices specifier
+     * @tparam Specifier the elliptic vertices specifier
      */
-    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     struct TexturedFigurePlacer<Ellipse<Dim, Spec>> {
         /**
          * Sets the default texture coordinates for the ellipse
@@ -223,9 +224,9 @@ namespace mpgl {
      * coordinates for the ring
      *
      * @tparam Dim the dimension of the space
-     * @tparam Specifier the angular vertices specifier
+     * @tparam Specifier the elliptic vertices specifier
      */
-    template <Dimension Dim, TexturableAngularTraitSpecifier<Dim> Spec>
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     struct TexturedFigurePlacer<Ring<Dim, Spec>> {
         /**
          * Sets the default texture coordinates for the ring
@@ -238,5 +239,24 @@ namespace mpgl {
 
     template struct TexturedFigurePlacer<Ring<dim::Dim2, uint8>>;
     template struct TexturedFigurePlacer<Ring<dim::Dim3, uint8>>;
+
+    /**
+     * Functor responsible for the default texture
+     * coordinates for the tetrahedron
+     *
+     * @tparam Specifier the angular vertices specifier
+     */
+    template <TexturableAngularTraitSpecifier<dim::Dim3> Spec>
+    struct TexturedFigurePlacer<Tetrahedron<Spec>> {
+        /**
+         * Sets the default texture coordinates for the tetrahedron
+         * ({[0, 0], [0, 1], [1, 1], [1, 0]})
+         *
+         * @param tetrahedron a reference to the ring object
+         */
+        void operator() (Tetrahedron<Spec>& tetrahedron) const noexcept;
+    };
+
+    template struct TexturedFigurePlacer<Tetrahedron<uint8>>;
 
 }
