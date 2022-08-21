@@ -105,7 +105,5 @@ namespace mpgl {
     };
 
     template class ConvexHexahedron<void>;
-    template class ConvexHexahedron<uint8>;
-
 
 }

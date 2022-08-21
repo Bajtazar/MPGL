@@ -105,6 +105,5 @@ namespace mpgl {
     };
 
     template class Tetrahedron<void>;
-    template class Tetrahedron<uint8>;
 
 }
