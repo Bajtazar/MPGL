@@ -254,6 +254,60 @@ namespace mpgl {
     };
 
     /**
+     * Contains informations about vertices of the triangle mesh
+     */
+    template <>
+    struct AngluarVertices<dim::Dim3, uint32> {
+        using Vertex = mpgl::Vertex<
+            VertexComponent<"position", Adapter3D, DataType::Float32>,
+            VertexComponent<"normal", Vector3f, DataType::Float32>,
+            VertexComponent<"texCoords", Vector2f, DataType::Float32>,
+            VertexComponent<"color", Color, DataType::Float32>
+        >;
+
+        using Vector = Vector3f;
+        using Adapter = Adapter3D;
+
+        /**
+         * Returns a shader's name used by the triangle mesh
+         *
+         * @return the shader's name used by the triangle mesh
+         */
+        [[nodiscard]] static std::string shader(void) noexcept;
+
+        /**
+         * Returns a convolution shader's name used by the
+         * triangle mesh
+         *
+         * @return the convolution shader's name used by the
+         * triangle mesh
+         */
+        [[nodiscard]] static std::string
+            convolutionShader(void) noexcept;
+
+        /**
+         * Generates a default vertex
+         *
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex defaultVertex(
+            Color const& color) noexcept;
+
+        /**
+         * Generates vertex
+         *
+         * @param position the constant reference to the position
+         * object
+         * @param color the constant reference to the color object
+         * @return the default vertex
+         */
+        [[nodiscard]] static Vertex buildVertex(
+            Vector const& position,
+            Color const& color) noexcept;
+    };
+
+    /**
      * Checks whether the given specifier is valid textured angular
      * vertices specifier
      *

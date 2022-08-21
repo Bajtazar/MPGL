@@ -27,26 +27,26 @@
 
 namespace mpgl {
 
-    [[nodiscard]] std::string AngluarVertices<dim::Dim2, void>::shader(
-        void) noexcept
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim2, void>::shader(void) noexcept
     {
         return "MPGL/2D/Default";
     }
 
-    [[nodiscard]] std::string AngluarVertices<dim::Dim3, void>::shader(
-        void) noexcept
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim3, void>::shader(void) noexcept
     {
         return "MPGL/3D/Default";
     }
 
-    [[nodiscard]] std::string AngluarVertices<dim::Dim2, uint8>::shader(
-        void) noexcept
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim2, uint8>::shader(void) noexcept
     {
         return "MPGL/2D/Texture";
     }
 
-    [[nodiscard]] std::string AngluarVertices<dim::Dim3, uint8>::shader(
-        void) noexcept
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim3, uint8>::shader(void) noexcept
     {
         return "MPGL/3D/Texture";
     }
@@ -123,6 +123,34 @@ namespace mpgl {
             Color const& color) noexcept
     {
         return Vertex{position, Vector2f{}, color};
+    }
+
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim3, uint32>::shader(void) noexcept
+    {
+        return "MPGL/3D/Mesh";
+    }
+
+    [[nodiscard]] std::string
+        AngluarVertices<dim::Dim3, uint32>::convolutionShader(
+            void) noexcept
+    {
+        return "MPGL/3D/MeshConv";
+    }
+
+    [[nodiscard]] AngluarVertices<dim::Dim3, uint32>::Vertex
+        AngluarVertices<dim::Dim3, uint32>::buildVertex(
+            Vector const& position,
+            Color const& color) noexcept
+    {
+        return Vertex{position, Vector3f{}, Vector2f{}, color};
+    }
+
+    [[nodiscard]] AngluarVertices<dim::Dim3, uint32>::Vertex
+        AngluarVertices<dim::Dim3, uint32>::defaultVertex(
+            Color const& color) noexcept
+    {
+        return Vertex{Vector3f{}, Vector3f{}, Vector2f{}, color};
     }
 
 }
