@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Primitives/LineStrip.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Triangle.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Ring.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Cone.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Cylinder.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Tetrahedron.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Polygon.cpp
