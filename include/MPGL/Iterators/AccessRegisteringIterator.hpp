@@ -69,6 +69,14 @@ namespace mpgl {
             bool& flag) noexcept;
 
         /**
+         * Returns an iterator holded by this object
+         *
+         * @return the iterator holded by this object
+         */
+        [[nodiscard]] Iter const& get(void) const noexcept
+            { return iter; }
+
+        /**
          * Pre-increments the inner iterator by one
          *
          * @return the reference to object
