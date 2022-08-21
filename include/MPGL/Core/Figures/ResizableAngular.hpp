@@ -45,11 +45,13 @@ namespace mpgl {
         public Angular<Dim, Spec>
     {
     public:
-        using VertexTraits = Angular<Dim, Spec>::VertexTraits;
-        using Vertex = VertexTraits::Vertex;
-        using Vector = VertexTraits::Vector;
+        using VertexTraits = typename Angular<Dim, Spec>::VertexTraits;
+        using Vertex = typename VertexTraits::Vertex;
+        using Vector = typename VertexTraits::Vector;
         using Optional = std::optional<Vector>;
         using size_type = std::size_t;
+        using iterator = typename Angular<Dim, Spec>::iterator;
+        using const_iterator = typename Angular<Dim, Spec>::const_iterator;
 
         /**
          * Pure virtual method. Has to be overloaded.
@@ -86,6 +88,25 @@ namespace mpgl {
         void reserve(size_type size);
 
         /**
+         * Removes unused vertice's storage capacity
+         */
+        void shrinkToFit(void);
+
+        /**
+         * Returns vertice's storage capacity
+         *
+         * @return vertice's storage capacity
+         */
+        [[nodiscard]] std::size_t capacity(void) const noexcept;
+
+        /**
+         * Returns whether the vertice's storage is empty
+         *
+         * @return if the vertice's storage is empty
+         */
+        [[nodiscard]] bool empty(void) const noexcept;
+
+        /**
          * Pushes a new vertex into the vertices array
          *
          * @param vertex the new vertex
@@ -103,9 +124,61 @@ namespace mpgl {
             Color const& color);
 
         /**
+         * Emplaces a new vertex into the vertices array
+         *
+         * @tparam Args the types of arguments
+         * @param args the vertex constructor's arguments
+         */
+        template <typename... Args>
+            requires std::constructible_from<Vertex, Args...>
+        void emplace(Args&&... args);
+
+        /**
          * Removes last vertex from the vertices array
          */
         void pop(void) noexcept;
+
+        /**
+         * Removes the vertex lying under the given position
+         *
+         * @param position a constant reference to the iterator
+         * indicating the removed vertex
+         */
+        void erase(iterator const& position);
+
+        /**
+         * Removes the vertex lying under the given position
+         *
+         * @param position a constant reference to the constant iterator
+         * indicating the removed vertex
+         */
+        void erase(const_iterator const& position);
+
+        /**
+         * Removes the vertices lying under the given range indicated
+         * by the iterators
+         *
+         * @param first a constant reference to the iterator
+         * indicating the begining of the removed range
+         * @param last a constant reference to the iterator
+         * indicating the end of the removed range
+         */
+        void erase(
+            iterator const& first,
+            iterator const& last);
+
+        /**
+         * Removes the vertices lying under the given range indicated
+         * by the constant iterators
+         *
+         * @param first a constant reference to the constant iterator
+         * indicating the begining of the removed range
+         * @param last a constant reference to the constant iterator
+         * indicating the end of the removed range
+         */
+        void erase(
+            const_iterator const& first,
+            const_iterator const& last);
 
         /**
          * Returns the center of the angular

@@ -51,6 +51,55 @@ namespace mpgl {
     }
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::shrinkToFit(void) {
+        this->vertices.shrink_to_fit();
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] std::size_t
+        ResizableAngular<Dim, Spec>::capacity(void) const noexcept
+    {
+        return this->vertices.capacity();
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool ResizableAngular<Dim, Spec>::empty(
+        void) const noexcept
+    {
+        return this->vertices.empty();
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        iterator const& position)
+    {
+        this->vertices.erase(position.get());
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        const_iterator const& position)
+    {
+        this->vertices.erase(position);
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        iterator const& first,
+        iterator const& last)
+    {
+        this->vertices.erase(first.get(), last.get());
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        const_iterator const& first,
+        const_iterator const& last)
+    {
+        this->vertices.erase(first, last);
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
     [[nodiscard]] ResizableAngular<Dim, Spec>::Optional
         ResizableAngular<Dim, Spec>::getCenter(void) const noexcept
     {

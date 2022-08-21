@@ -49,5 +49,13 @@ namespace mpgl {
         : Angular<Dim, Spec>{{VertexTraits::buildVertex(
                 std::forward<Args>(positions), Color{})...}} {}
 
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <typename... Args>
+        requires std::constructible_from<
+            typename ResizableAngular<Dim, Spec>::Vertex, Args...>
+    void ResizableAngular<Dim, Spec>::emplace(Args&&... args) {
+        this->vertices.push_back(Vertex{std::forward<Args>(args)...});
+    }
+
 }
 
