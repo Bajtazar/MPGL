@@ -25,7 +25,7 @@
  */
 #include <World.hpp>
 
-#include <MPGL/Core/Context/Buffers/VertexCast.hpp>
+#include <MPGL/Core/Vertex/VertexCast.hpp>
 
 #include <chrono>
 

@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Context/Buffers/VertexTraits.hpp>
+#include <MPGL/Core/Vertex/VertexTraits.hpp>
 #include <MPGL/Core/Context/Context.hpp>
 #include <MPGL/Utility/Adapter.hpp>
 

@@ -27,8 +27,8 @@
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
 #include <MPGL/Iterators/AccessRegisteringIterator.hpp>
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
 #include <MPGL/Core/Textures/Texturable.hpp>
+#include <MPGL/Core/Vertex/Vertex.hpp>
 #include <MPGL/Core/Shape.hpp>
 
 namespace mpgl {

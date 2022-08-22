@@ -486,7 +486,7 @@ namespace mpgl {
 
 }
 
-#include <MPGL/Core/Context/Buffers/Vertex.tpp>
+#include <MPGL/Core/Vertex/Vertex.tpp>
 
 namespace std {
 

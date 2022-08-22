@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Iterators/VertexViewIterator.hpp>
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
+#include <MPGL/Core/Vertex/Vertex.hpp>
 #include <MPGL/Core/Dimensions.hpp>
 #include <MPGL/Utility/Adapter.hpp>
 #include <MPGL/Core/Color.hpp>

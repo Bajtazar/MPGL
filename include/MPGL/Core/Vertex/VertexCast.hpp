@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Context/Buffers/VertexTraits.hpp>
+#include <MPGL/Core/Vertex/VertexTraits.hpp>
 
 namespace mpgl::cast {
 
@@ -102,4 +102,4 @@ namespace mpgl::cast {
 
 }
 
-#include <MPGL/Core/Context/Buffers/VertexCast.tpp>
+#include <MPGL/Core/Vertex/VertexCast.tpp>

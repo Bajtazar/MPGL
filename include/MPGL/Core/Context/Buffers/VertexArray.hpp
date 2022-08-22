@@ -25,8 +25,8 @@
  */
 #pragma once
 
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
 #include <MPGL/Core/Context/Context.hpp>
+#include <MPGL/Core/Vertex/Vertex.hpp>
 
 namespace mpgl {
 

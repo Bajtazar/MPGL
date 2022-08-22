@@ -26,9 +26,9 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
-#include <MPGL/Core/Context/Buffers/VertexCast.hpp>
 #include <MPGL/Core/DrawableCollection.hpp>
 #include <MPGL/Core/Text/GlyphSprite.hpp>
+#include <MPGL/Core/Vertex/VertexCast.hpp>
 #include <MPGL/Traits/DeriveIf.hpp>
 #include <MPGL/Core/Text/Font.hpp>
 #include <MPGL/Core/Model.hpp>
