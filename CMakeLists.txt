@@ -83,6 +83,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Textures/Texturable.cpp
     ${MPGL_SOURCES}/Core/Textures/TexturedFigurePlacer.cpp
     ${MPGL_SOURCES}/Core/Textures/TexturedFigure.cpp
+    ${MPGL_SOURCES}/Core/Vertex/Indicies/IndiciesTetragon.cpp
     ${MPGL_SOURCES}/Core/Shaders/Shadeable.cpp
     ${MPGL_SOURCES}/Core/Shaders/Shader.cpp
     ${MPGL_SOURCES}/Core/Shaders/ShaderLocation.cpp
