@@ -68,7 +68,7 @@ namespace mpgl {
             VRange& vertices,
             Pred predicate)
                 : predicate{std::move(predicate)},
-                counter{vertices.size()},
+                counter{static_cast<uint32>(vertices.size())},
                 vertices{vertices} {}
 
     template <
@@ -140,9 +140,9 @@ namespace mpgl {
             uint32 const new2,
             uint32 const new3) const
     {
-        uint32 const v1 = triangle.firstVertex();
-        uint32 const v2 = triangle.secondVertex();
-        uint32 const v3 = triangle.thirdVertex();
+        uint32 const v1 = triangle.firstVertex;
+        uint32 const v2 = triangle.secondVertex;
+        uint32 const v3 = triangle.thirdVertex;
         indicies.push_back(IndiciesTriangle{v1, new1, new3});
         indicies.push_back(IndiciesTriangle{new1, v2, new2});
         indicies.push_back(IndiciesTriangle{new2, v3, new3});
@@ -172,7 +172,7 @@ namespace mpgl {
         auto id = counter++;
         generateVertex(tag);
         verticesIDs.emplace(tag, id);
-        return tag;
+        return id;
     }
 
     template <
@@ -189,7 +189,7 @@ namespace mpgl {
     void SubdivisionTessellator::Algorithm<VRange, Pred>::
         generateVertex(uint64 tag)
     {
-        uint64 firstVertexID = (tag & UpperMask) >> 32u;
+        uint64 firstVertexID = tag >> 32u;
         uint64 secondVertexID = tag & LowerMask;
         vertices.push_back(std::invoke(predicate,
             vertices[firstVertexID],

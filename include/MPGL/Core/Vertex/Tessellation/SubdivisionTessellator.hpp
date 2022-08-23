@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Vertex/Indicies/IndiciesTriangle.hpp>
+#include <MPGL/Core/Vertex/VertexTraits.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <unordered_map>
@@ -188,8 +189,6 @@ namespace mpgl {
                 uint64 secondVertex) noexcept;
         };
 
-        static constexpr uint64                         UpperMask
-            = 0xFFFFFFFF00000000;
         static constexpr uint64                         LowerMask
             = 0x00000000FFFFFFFF;
     };
