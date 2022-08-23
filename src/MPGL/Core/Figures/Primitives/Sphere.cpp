@@ -33,6 +33,14 @@
 namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
+    Sphere<Spec>::Indicies const Sphere<Spec>::IcosahedronIndicies {{
+        {0, 1, 2}, {0, 2, 3}, {0, 3, 4}, {0, 4, 5}, {0, 5, 1},
+        {1, 7, 2}, {2, 8, 3}, {3, 9, 4}, {4, 10, 5}, {5, 6, 1},
+        {6, 1, 7}, {7, 2, 8}, {8, 3, 9}, {9, 4, 10}, {10, 5, 6},
+        {11, 6, 7}, {11, 7, 8}, {11, 8, 9}, {11, 9, 10}, {11, 10, 6}
+    }};
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
     float64 const Sphere<Spec>::ATan = std::atan(0.5);
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -78,22 +86,24 @@ namespace mpgl {
         float32 radius,
         Color const& color,
         uint8 tessellationSteps)
-            : Angular<dim::Dim3, Spec>{generateIcosahedron(
-                position, radius, color)},
-            indicies{IcosahedronIndicies.begin(),
-                IcosahedronIndicies.end()}
+            : Sphere{tessellateIcosahedron(position, radius, color,
+                tessellationSteps)} {}
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    Sphere<Spec>::Sphere(TessellationResult&& result)
+        : Angular<dim::Dim3, Spec>{std::move(result.first)},
+        indicies{std::move(result.second)}
     {
-        tessellateIcosahedron(position, radius, color, tessellationSteps);
-        reshapeBuffer();
         initElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Sphere<Spec>::tessellateIcosahedron(
-        Vector3f const& position,
-        float32 radius,
-        Color const& color,
-        uint8 steps)
+    [[nodiscard]] Sphere<Spec>::TessellationResult
+        Sphere<Spec>::tessellateIcosahedron(
+            Vector3f const& position,
+            float32 radius,
+            Color const& color,
+            uint8 steps)
     {
         auto predicate = [&position, &radius, &color](
             Vertex const& left, Vertex const& right)
@@ -103,16 +113,9 @@ namespace mpgl {
             inner *= radius / inner.length();
             return VertexTraits::buildVertex(inner + position, color);
         };
-        auto&& [newVertices, newIndicies] = subdivisionTessellator(
-            this->vertices, indicies, steps, predicate);
-        this->vertices = std::move(newVertices);
-        this->indicies = std::move(newIndicies);
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Sphere<Spec>::reshapeBuffer(void) const noexcept {
-        BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
-        this->vertexBuffer.setBufferData(this->vertices);
+        return subdivisionTessellator(
+            generateIcosahedron(position, radius, color),
+            IcosahedronIndicies, steps, predicate);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>

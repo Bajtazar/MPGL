@@ -84,6 +84,15 @@ namespace mpgl {
         using Indicies = std::vector<IndiciesTriangle>;
         using BaseIndicies = std::array<IndiciesTriangle, 20>;
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
+        using TessellationResult = std::pair<Vertices, Indicies>;
+
+        /**
+         * Constructs a new sphere object from a pair of the
+         * vertices and indicies
+         *
+         * @param result a pair of vertices and indicies
+         */
+        explicit Sphere(TessellationResult&& result);
 
         /**
          * Initializes the element buffer object
@@ -102,17 +111,11 @@ namespace mpgl {
          * @param color a color of the sphere
          * @param steps a number of tessellation steps
          */
-        void tessellateIcosahedron(
+        [[nodiscard]] static TessellationResult tessellateIcosahedron(
             Vector3f const& position,
             float32 radius,
             Color const& color,
             uint8 steps);
-
-        /**
-         * Reshapes the vertex buffer to make space for the tessellated
-         * vertices
-         */
-        void reshapeBuffer(void) const noexcept;
 
         /**
          * Generates icosahedron vertices
@@ -141,11 +144,7 @@ namespace mpgl {
             float32 radius,
             Color const& color);
 
-        static constexpr BaseIndicies const         IcosahedronIndicies {{
-            {0, 1, 2}, {0, 2, 3}, {0, 3, 4}, {0, 4, 5}, {0, 5, 1},
-            {1, 7, 2}, {2, 8, 3}, {3, 9, 4}, {4, 10, 5}, {5, 6, 1},
-            {6, 1, 7}, {7, 2, 8}, {8, 3, 9}, {9, 4, 10}, {10, 5, 6},
-            {11, 6, 7}, {11, 7, 8}, {11, 8, 9}, {11, 9, 10}, {11, 10, 6}}};
+        static Indicies const                       IcosahedronIndicies;
         static float64 const                        ATan;
     };
 
