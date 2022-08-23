@@ -155,7 +155,7 @@ namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cone<Spec>::Cone(Cone const& cone)
-        : Angular<dim::Dim3, Spec>{cone}
+        : Angular<dim::Dim3, Spec>{cone}, indicies{cone.indicies}
     {
         initElementBuffer();
     }

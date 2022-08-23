@@ -134,7 +134,7 @@ namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cylinder<Spec>::Cylinder(Cylinder const& cylinder)
-        : Angular<dim::Dim3, Spec>{cylinder}
+        : Angular<dim::Dim3, Spec>{cylinder}, indicies{cylinder.indicies}
     {
         initElementBuffer();
     }
