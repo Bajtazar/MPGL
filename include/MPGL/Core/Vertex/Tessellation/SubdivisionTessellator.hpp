@@ -42,7 +42,10 @@ namespace mpgl {
         /**
          * Performs tessellation on the given triangle mesh by the given
          * number of times and returns the tessellated mesh. Each step
-         * will increase number of verticies by 12
+         * will increase number of indicies by 4 times. Total number
+         * of vertices after tessellation is equal to $$vertices_start
+         * + 0.5 * inidcies_start * [4^(steps) - 1]$$, for steps >= 1
+         * and 0 steps wont affect vertices and indicies at all
          *
          * @tparam VRange the vertices range type
          * @tparam IRange the inidcies range type
@@ -70,6 +73,13 @@ namespace mpgl {
             size_t tessellationSteps,
             Predicate pred) const;
     private:
+        /**
+         * Inner representation of tessellation algorithm that helps
+         * in implementation
+         *
+         * @tparam VRange the type of the vertices range
+         * @tparam Predicate the type of the predicate
+         */
         template <
             FlexibleRange VRange,
             std::invocable<
@@ -83,13 +93,26 @@ namespace mpgl {
                             std::ranges::range_value_t<VRange> const&>>)
         class Algorithm {
         public:
+            /**
+             * Constructs a new algorithm object
+             *
+             * @param vertices a reference to the vertices range
+             * @param predicate the tessellation predicate
+             */
             explicit Algorithm(
                 VRange& vertices,
                 Predicate predicate);
 
+            /**
+             * Performs tessellation on the given indicies and vertices
+             *
+             * @tparam IRange the type of the indicies range
+             * @param indicies a constant reference to the indicies
+             * range
+             * @return a tessellated indicies range
+             */
             template <UnderlyingRange<IndiciesTriangle> IRange>
             [[nodiscard]] IRange operator() (IRange const& indicies);
-
         private:
             using HashMap = std::unordered_map<uint64, uint32>;
 
@@ -98,11 +121,32 @@ namespace mpgl {
             uint32                                      counter;
             VRange&                                     vertices;
 
+            /**
+             * Tessellates face of the triangle mesh
+             *
+             * @tparam IRange the type of the indicies range
+             * @param indicies a constant reference to the indicies
+             * range
+             * @param triangle a constant reference to the face
+             * triangle
+             */
             template <UnderlyingRange<IndiciesTriangle> IRange>
             void tessellateFace(
                 IRange& indicies,
                 IndiciesTriangle const& triangle);
 
+            /**
+             * Adds tessellated triangles to the indicies
+             *
+             * @tparam IRange the type of the indicies range
+             * @param indicies a constant reference to the indicies
+             * range
+             * @param triangle a constant reference to the face
+             * triangle
+             * @param new1 an index of the first tessellated vertex
+             * @param new2 an index of the second tessellated vertex
+             * @param new3 an index of the third tessellated vertex
+             */
             template <UnderlyingRange<IndiciesTriangle> IRange>
             void addTriangles(
                 IRange& indicies,
@@ -111,12 +155,34 @@ namespace mpgl {
                 uint32 const new2,
                 uint32 const new3) const;
 
+            /**
+             * Returns index of already existing vertex lying
+             * on the edge between two vertices or constructs
+             * it and returns its index
+             *
+             * @param firstVertex an index of the first vertex
+             * @param secondVertex an index of the second vertex
+             * @return an index of the desired vertex
+             */
             uint32 getOrConstructVertex(
                 uint32 firstVertex,
                 uint32 secondVertex);
 
+            /**
+             * Generates a new vertex based on the given tag
+             *
+             * @param tag a vetex's edge tag
+             */
             void generateVertex(uint64 tag);
 
+            /**
+             * Constructs a tag of the given edge based on the indicies
+             * of the edge's vertices
+             *
+             * @param firstVertex an index of the first vertex
+             * @param secondVertex an index of the second vertex
+             * @return the edge's tag
+             */
             static uint64 edgeTag(
                 uint64 firstVertex,
                 uint64 secondVertex) noexcept;

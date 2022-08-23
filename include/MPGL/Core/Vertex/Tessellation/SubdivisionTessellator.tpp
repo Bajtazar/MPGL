@@ -86,6 +86,7 @@ namespace mpgl {
     [[nodiscard]] IRange SubdivisionTessellator::
         Algorithm<VRange, Pred>::operator() (IRange const& indicies)
     {
+        vertices.reserve(vertices.size() + indicies.size() / 2);
         IRange newIndicies;
         newIndicies.reserve(4 * indicies.size());
         for (auto const& triangle : indicies)
