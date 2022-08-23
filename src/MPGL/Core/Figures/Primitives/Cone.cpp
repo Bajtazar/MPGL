@@ -154,6 +154,13 @@ namespace mpgl {
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
+    Cone<Spec>::Cone(Cone const& cone)
+        : Angular<dim::Dim3, Spec>{cone}
+    {
+        initElementBuffer();
+    }
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
     void Cone<Spec>::initElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();

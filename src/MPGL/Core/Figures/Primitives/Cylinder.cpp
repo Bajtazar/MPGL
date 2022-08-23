@@ -133,6 +133,13 @@ namespace mpgl {
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
+    Cylinder<Spec>::Cylinder(Cylinder const& cylinder)
+        : Angular<dim::Dim3, Spec>{cylinder}
+    {
+        initElementBuffer();
+    }
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cylinder<Spec>::Cylinder(
         Vector3f const& position,
         Vector3f const& radiusVector,
