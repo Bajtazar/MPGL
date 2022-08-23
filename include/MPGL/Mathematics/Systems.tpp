@@ -250,6 +250,30 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
+    [[nodiscard]] Vector3<Tp> sphericalToCartesian(
+        Vector3<Tp> const& vector)
+    {
+        auto const helper = vector[0] * std::cos(vector[1]);
+        return {
+            helper * std::cos(vector[2]),
+            helper * std::sin(vector[2]),
+            vector[0] * std::sin(vector[1])
+        };
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] Vector3<Tp> cartesianToSpherical(
+        Vector3<Tp> const& vector) noexcept
+    {
+        auto const radius = vector.length();
+        return {
+            radius,
+            std::atan(vector[1] / vector[0]),
+            std::asin(vector[2] / radius)
+        };
+    }
+
+    template <FloatConvertible Tp>
     [[nodiscard]] Matrix2<Tp> rotationMatrix(
         Tp angle) noexcept
     {

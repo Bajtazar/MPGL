@@ -334,6 +334,32 @@ namespace mpgl {
         Vector2<Tp> const& vector) noexcept;
 
     /**
+     * Transform the given vector from the cartesian coordinate
+     * system to the spherical coordinate system. The x-axis represents
+     * the radius, the y-axis represents the phi angle, the z-axis
+     * represents the theta angle in the output vector
+     *
+     * @tparam Tp the vector's type
+     * @param vector the vector in cartesian coordinate system
+     * @return the vector in polar spherical system
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] Vector3<Tp> cartesianToSpherical(
+        Vector3<Tp> const& vector) noexcept;
+
+    /**
+     * Transforms the given vector from the spherical coordinate
+     * system to the cartesian coordinate system
+     *
+     * @tparam Tp the vector's type
+     * @param vector the vector in spherical coordinate system
+     * @return the vector in cartesian coordinate system
+     */
+    template <FloatConvertible Tp>
+    [[nodiscard]] Vector3<Tp> sphericalToCartesian(
+        Vector3<Tp> const& vector);
+
+    /**
      * Calculates the rotation matrix for the given angle.
      * This matrix rotates the two dimensional vector
      * counter-clock-wise
