@@ -28,6 +28,8 @@
 #include <MPGL/Core/Vertex/Indicies/IndiciesTriangle.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 
+#include <unordered_map>
+
 namespace mpgl {
 
     /**
@@ -52,78 +54,81 @@ namespace mpgl {
          */
         template <
             FlexibleRange VRange,
-            FlexibleRange IRange,
-            std::invocable<VRange const&, uint32, uint32> Predicate>
+            UnderlyingRange<IndiciesTriangle> IRange,
+            std::invocable<
+                std::ranges::range_value_t<VRange> const&,
+                std::ranges::range_value_t<VRange> const&> Predicate>
                 requires (
                     VertexType<std::ranges::range_value_t<VRange>>
-                    && SameRangeType<IRange, IndiciesTriangle>
                     && SameRangeType<VRange, std::invoke_result_t<
-                        Predicate, VRange const&, uint32, uint32>>)
+                        Predicate,
+                            std::ranges::range_value_t<VRange> const&,
+                            std::ranges::range_value_t<VRange> const&>>)
         [[nodiscard]] std::pair<VRange, IRange> operator() (
             VRange vertices,
             IRange indicies,
             size_t tessellationSteps,
             Predicate pred) const;
     private:
-        /**
-         * Performs tessellation on the given triangle mesh and
-         * returns the tessellated mesh
-         *
-         * @tparam VRange the vertices range type
-         * @tparam IRange the inidcies range type
-         * @tparam Predicate the tessellation predicate type
-         * @param vertices the vertices range
-         * @param indicies the indicies range
-         * @param pred the tessellation predicate
-         */
         template <
             FlexibleRange VRange,
-            FlexibleRange IRange,
-            std::invocable<VRange const&, uint32, uint32> Predicate>
-                requires (
-                    VertexType<std::ranges::range_value_t<VRange>>
-                    && SameRangeType<IRange, IndiciesTriangle>
-                    && SameRangeType<VRange, std::invoke_result_t<
-                        Predicate, VRange const&, uint32, uint32>>)
-        [[nodiscard]] std::pair<VRange, IRange> tessellate(
-            VRange const& vertices,
-            IRange const& indicies,
-            Predicate pred) const;
-
-        /**
-         * Apends a tessellated vertices to the mesh
-         *
-         * @tparam VRange the vertices range type
-         * @tparam Predicate the tessellation predicate type
-         * @param vertices the old figure vertices
-         * @param newVertices the tessellated figure vertices
-         * @param triangle the tessellated triangle
-         * @param pred the tessellation predicate
-         */
-        template <
-            FlexibleRange VRange,
-            std::invocable<VRange const&, uint32, uint32> Predicate>
+            std::invocable<
+                std::ranges::range_value_t<VRange> const&,
+                std::ranges::range_value_t<VRange> const&> Predicate>
                 requires (
                     VertexType<std::ranges::range_value_t<VRange>>
                     && SameRangeType<VRange, std::invoke_result_t<
-                        Predicate, VRange const&, uint32, uint32>>)
-        void addVertices(
-            VRange const& vertices,
-            VRange& newVertices,
-            IndiciesTriangle const& triangle,
-            Predicate pred) const;
+                        Predicate,
+                            std::ranges::range_value_t<VRange> const&,
+                            std::ranges::range_value_t<VRange> const&>>)
+        class Algorithm {
+        public:
+            explicit Algorithm(
+                VRange& vertices,
+                Predicate predicate);
 
-        /**
-         * Appends a tessellated vertices to the mesh
-         *
-         * @tparam IRange the inidcies range type
-         * @param indicies the tessellated figure vertices
-         * @param index the index of the lastly appended vertex
-         */
-        template <FlexibleRange IRange>
-            requires (SameRangeType<IRange, IndiciesTriangle>)
-        void addIndicies(IRange& indicies, uint32& index) const;
+            template <UnderlyingRange<IndiciesTriangle> IRange>
+            [[nodiscard]] IRange operator() (IRange const& indicies);
+
+        private:
+            using HashMap = std::unordered_map<uint64, uint32>;
+
+            HashMap                                     verticesIDs = {};
+            Predicate                                   predicate;
+            uint32                                      counter;
+            VRange&                                     vertices;
+
+            template <UnderlyingRange<IndiciesTriangle> IRange>
+            void tessellateFace(
+                IRange& indicies,
+                IndiciesTriangle const& triangle);
+
+            template <UnderlyingRange<IndiciesTriangle> IRange>
+            void addTriangles(
+                IRange& indicies,
+                IndiciesTriangle const& triangle,
+                uint32 const new1,
+                uint32 const new2,
+                uint32 const new3) const;
+
+            uint32 getOrConstructVertex(
+                uint32 firstVertex,
+                uint32 secondVertex);
+
+            void generateVertex(uint64 tag);
+
+            static uint64 edgeTag(
+                uint64 firstVertex,
+                uint64 secondVertex) noexcept;
+        };
+
+        static constexpr uint64                         UpperMask
+            = 0xFFFFFFFF00000000;
+        static constexpr uint64                         LowerMask
+            = 0x00000000FFFFFFFF;
     };
+
+    inline constexpr SubdivisionTessellator             subdivisionTessellator;
 
 }
 

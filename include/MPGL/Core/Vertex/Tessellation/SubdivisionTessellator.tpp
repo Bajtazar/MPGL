@@ -31,13 +31,16 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        FlexibleRange IRange,
-        std::invocable<VRange const&, uint32, uint32> Predicate>
+        UnderlyingRange<IndiciesTriangle> IRange,
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
-                && SameRangeType<IRange, IndiciesTriangle>
                 && SameRangeType<VRange, std::invoke_result_t<
-                    Predicate, VRange const&, uint32, uint32>>)
+                    Predicate,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
     [[nodiscard]] std::pair<VRange, IRange>
         SubdivisionTessellator::operator() (
             VRange vertices,
@@ -45,90 +48,172 @@ namespace mpgl {
             size_t tessellationSteps,
             Predicate pred) const
     {
-        for (size_t i = 0; i < tessellationSteps; ++i) {
-            auto&& [vert, ind] = tessellate(vertices, indicies, pred);
-            vertices = std::move(vert);
-            indicies = std::move(ind);
-        }
+        for (size_t i = 0; i < tessellationSteps; ++i)
+            indicies = Algorithm{vertices, pred}(indicies);
         return { vertices, indicies };
     }
 
     template <
         FlexibleRange VRange,
-        FlexibleRange IRange,
-        std::invocable<VRange const&, uint32, uint32> Predicate>
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Pred>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
-                && SameRangeType<IRange, IndiciesTriangle>
                 && SameRangeType<VRange, std::invoke_result_t<
-                    Predicate, VRange const&, uint32, uint32>>)
-    [[nodiscard]] std::pair<VRange, IRange>
-        SubdivisionTessellator::tessellate(
-            VRange const& vertices,
-            IRange const& indicies,
-            Predicate pred) const
+                    Pred,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
+    SubdivisionTessellator::Algorithm<VRange, Pred>::Algorithm(
+            VRange& vertices,
+            Pred predicate)
+                : predicate{std::move(predicate)},
+                counter{vertices.size()},
+                vertices{vertices} {}
+
+    template <
+        FlexibleRange VRange,
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Pred>
+            requires (
+                VertexType<std::ranges::range_value_t<VRange>>
+                && SameRangeType<VRange, std::invoke_result_t<
+                    Pred,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
+    template <UnderlyingRange<IndiciesTriangle> IRange>
+    [[nodiscard]] IRange SubdivisionTessellator::
+        Algorithm<VRange, Pred>::operator() (IRange const& indicies)
     {
-        VRange newVertices;
         IRange newIndicies;
-        newVertices.reserve(12 * vertices.size());
         newIndicies.reserve(4 * indicies.size());
-        size_t index = 0;
-        for (auto const& triangle : indicies) {
-            addVertices(vertices, newVertices, triangle);
-            addIndicies(newIndicies, index);
-        }
-        return { newVertices, newIndicies };
+        for (auto const& triangle : indicies)
+            tessellateFace(newIndicies, triangle);
+        return newIndicies;
     }
 
     template <
         FlexibleRange VRange,
-        std::invocable<VRange const&, uint32, uint32> Predicate>
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Pred>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
                 && SameRangeType<VRange, std::invoke_result_t<
-                    Predicate, VRange const&, uint32, uint32>>)
-    void SubdivisionTessellator::addVertices(
-        VRange const& vertices,
-        VRange& newVertices,
-        IndiciesTriangle const& triangle,
-        Predicate pred) const
+                    Pred,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
+    template <UnderlyingRange<IndiciesTriangle> IRange>
+    void SubdivisionTessellator::Algorithm<VRange, Pred>
+        ::tessellateFace(
+            IRange& indicies,
+            IndiciesTriangle const& triangle)
     {
-        auto const t1 = pred(
-            vertices, triangle.firstVertex, triangle.secondVertex);
-        auto const t2 = pred(
-            vertices, triangle.firstVertex, triangle.thirdVertex);
-        auto const t3 = pred(
-            vertices, triangle.secondVertex, triangle.thirdVertex);
-
-        newVertices.emplace_back(vertices[triangle.firstVertex]);
-        newVertices.emplace_back(t1);
-        newVertices.emplace_back(t2);
-
-        newVertices.emplace_back(t1);
-        newVertices.emplace_back(vertices[triangle.secondVertex]);
-        newVertices.emplace_back(t3);
-
-        newVertices.emplace_back(t2);
-        newVertices.emplace_back(t3);
-        newVertices.emplace_back(vertices[triangle.thirdVertex]);
-
-        newVertices.emplace_back(t1);
-        newVertices.emplace_back(t2);
-        newVertices.emplace_back(t3);
+        uint32 const n1 = getOrConstructVertex(
+            triangle.firstVertex, triangle.secondVertex);;
+        uint32 const n2 = getOrConstructVertex(
+            triangle.secondVertex, triangle.thirdVertex);
+        uint32 const n3 = getOrConstructVertex(
+            triangle.firstVertex, triangle.thirdVertex);
+        addTriangles(indicies, triangle, n1, n2, n3);
     }
 
-    template <FlexibleRange IRange>
-        requires (SameRangeType<IRange, IndiciesTriangle>)
-    void SubdivisionTessellator::addIndicies(
-        IRange& indicies,
-        uint32& index) const
+    template <
+        FlexibleRange VRange,
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Pred>
+            requires (
+                VertexType<std::ranges::range_value_t<VRange>>
+                && SameRangeType<VRange, std::invoke_result_t<
+                    Pred,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
+    template <UnderlyingRange<IndiciesTriangle> IRange>
+    void SubdivisionTessellator::Algorithm<VRange, Pred>
+        ::addTriangles(
+            IRange& indicies,
+            IndiciesTriangle const& triangle,
+            uint32 const new1,
+            uint32 const new2,
+            uint32 const new3) const
     {
-        for (uint8 i = 0; i < 4; ++i)
-            indicies.emplace_back(
-                index + i * 3,
-                index + i * 3 + 1,
-                index + i * 3 + 2);
-        index += 12;
+        uint32 const v1 = triangle.firstVertex();
+        uint32 const v2 = triangle.secondVertex();
+        uint32 const v3 = triangle.thirdVertex();
+        indicies.push_back(IndiciesTriangle{v1, new1, new3});
+        indicies.push_back(IndiciesTriangle{new1, v2, new2});
+        indicies.push_back(IndiciesTriangle{new2, v3, new3});
+        indicies.push_back(IndiciesTriangle{new1, new2, new3});
+    }
+
+    template <
+        FlexibleRange VRange,
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Pred>
+            requires (
+                VertexType<std::ranges::range_value_t<VRange>>
+                && SameRangeType<VRange, std::invoke_result_t<
+                    Pred,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
+    uint32 SubdivisionTessellator::Algorithm<VRange, Pred>
+        ::getOrConstructVertex(
+            uint32 firstVertex,
+            uint32 secondVertex)
+    {
+        uint64 tag = edgeTag(firstVertex, secondVertex);
+        auto iter = verticesIDs.find(tag);
+        if (iter != verticesIDs.end())
+            return iter->second;
+        auto id = counter++;
+        generateVertex(tag);
+        verticesIDs.emplace(tag, id);
+        return tag;
+    }
+
+    template <
+        FlexibleRange VRange,
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Pred>
+            requires (
+                VertexType<std::ranges::range_value_t<VRange>>
+                && SameRangeType<VRange, std::invoke_result_t<
+                    Pred,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
+    void SubdivisionTessellator::Algorithm<VRange, Pred>::
+        generateVertex(uint64 tag)
+    {
+        uint64 firstVertexID = (tag & UpperMask) >> 32u;
+        uint64 secondVertexID = tag & LowerMask;
+        vertices.push_back(std::invoke(predicate,
+            vertices[firstVertexID],
+            vertices[secondVertexID]));
+    }
+
+    template <
+        FlexibleRange VRange,
+        std::invocable<
+            std::ranges::range_value_t<VRange> const&,
+            std::ranges::range_value_t<VRange> const&> Pred>
+            requires (
+                VertexType<std::ranges::range_value_t<VRange>>
+                && SameRangeType<VRange, std::invoke_result_t<
+                    Pred,
+                        std::ranges::range_value_t<VRange> const&,
+                        std::ranges::range_value_t<VRange> const&>>)
+    uint64 SubdivisionTessellator::Algorithm<VRange, Pred>
+        ::edgeTag(
+            uint64 firstVertex,
+            uint64 secondVertex) noexcept
+    {
+        if (firstVertex > secondVertex)
+            return (firstVertex << 32u) | secondVertex;
+        return (secondVertex << 32u) | firstVertex;
     }
 
 }
