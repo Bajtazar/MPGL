@@ -80,6 +80,7 @@ namespace mpgl {
          */
         virtual ~Sphere(void) noexcept = default;
     private:
+        using Vertex = typename VertexTraits::Vertex;
         using Indicies = std::vector<IndiciesTriangle>;
         using BaseIndicies = std::array<IndiciesTriangle, 20>;
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
@@ -92,17 +93,60 @@ namespace mpgl {
         Indicies                                    indicies;
         ElementArrayBuffer                          elementBuffer;
 
+        /**
+         * Tessellates icosahedron ensuring that newly created
+         * vertices will be in valid radius from sphere center
+         *
+         * @param position a position of the sphere
+         * @param radius a radius of the sphere
+         * @param color a color of the sphere
+         * @param steps a number of tessellation steps
+         */
+        void tessellateIcosahedron(
+            Vector3f const& position,
+            float32 radius,
+            Color const& color,
+            uint8 steps);
+
+        /**
+         * Reshapes the vertex buffer to make space for the tessellated
+         * vertices
+         */
+        void reshapeBuffer(void) const noexcept;
+
+        /**
+         * Generates icosahedron vertices
+         *
+         * @param position a position of the origin
+         * @param radius a radius of the icosahedron
+         * @param color a color of the vertices
+         * @return the icosahedron vertices
+         */
         [[nodiscard]] static Vertices generateIcosahedron(
-            Vector3f const& positon,
+            Vector3f const& position,
             float32 radius,
             Color const& color);
 
-        static constexpr BaseIndicies const         IcosahedronIndicies {
+        /**
+         * Generates icosahefron faces
+         *
+         * @param vertices a reference to icosahedron verices
+         * @param position a position of the origin
+         * @param radius a radius of the icosahedron
+         * @param color a color of the vertices
+         */
+        static void generateIcosahedronFaces(
+            Vertices& vertices,
+            Vector3f const& position,
+            float32 radius,
+            Color const& color);
+
+        static constexpr BaseIndicies const         IcosahedronIndicies {{
             {0, 1, 2}, {0, 2, 3}, {0, 3, 4}, {0, 4, 5}, {0, 5, 1},
             {1, 7, 2}, {2, 8, 3}, {3, 9, 4}, {4, 10, 5}, {5, 6, 1},
             {6, 1, 7}, {7, 2, 8}, {8, 3, 9}, {9, 4, 10}, {10, 5, 6},
-            {11, 6, 7}, {11, 7, 8}, {11, 8, 9}, {11, 9, 10}, {11, 10, 6}
-        };
+            {11, 6, 7}, {11, 7, 8}, {11, 8, 9}, {11, 9, 10}, {11, 10, 6}}};
+        static float64 const                        ATan;
     };
 
     template class Sphere<void>;

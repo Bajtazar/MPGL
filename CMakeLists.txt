@@ -34,6 +34,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Figure.cpp
     ${MPGL_SOURCES}/Core/Figures/AngularVertices.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Points.cpp
+    ${MPGL_SOURCES}/Core/Figures/Primitives/Sphere.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/LineStrip.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Triangle.cpp
     ${MPGL_SOURCES}/Core/Figures/Primitives/Ring.cpp
