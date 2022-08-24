@@ -31,6 +31,7 @@
 #include <MPGL/Core/Vertex/VertexCast.hpp>
 
 #include <unordered_map>
+#include <map>
 
 namespace mpgl {
 
@@ -66,16 +67,69 @@ namespace mpgl {
                 VRange const& vertices,
                 IRange const& indicies);
         private:
+            using Vertex = std::ranges::range_value_t<VRange>;
+            using VertexAdapter = decltype(std::declval<Vertex>()
+                | cast::position);
+            using Vector = typename VertexAdapter::value_type;
+
+            struct Edge {
+                Vertex                                  vertex;
+                uint32                                  firstFaceID;
+                uint32                                  secondFaceID;
+            };
+
+            using HashMap = std::unordered_map<uint64, uint32>;
+            using EdgeMap = std::map<uint64, Edge>;
+
             VRange                                      vertices;
             VRange                                      faces;
             IRange                                      indices;
+            EdgeMap                                     edges;
+            HashMap                                     edgeFaces;
             Predicate                                   builder;
 
             void buildFaces(
                 VRange const& vertices,
                 IRange const& indices);
+
+            void buildEdges(
+                VRange const& vertices,
+                IRange const& indices);
+
+            void buildEdge(
+                VRange const& vertices,
+                uint32 tetragonID,
+                uint32 firstVertex,
+                uint32 secondVertex);
+
+            void buildBorderEdges(
+                VRange const& vertices,
+                IRange const& indices);
+
+            [[nodiscard]] static Vertex calculateVertex(
+                VRange const& vertices,
+                uint32 firstIndex,
+                uint32 secondIndex);
+
+            [[nodiscard]] static Vertex calculateVertex(
+                VRange const& vertices,
+                uint32 firstIndex,
+                uint32 secondIndex,
+                uint32 thirdIndex,
+                uint32 fourthIndex);
+
+            [[nodiscard]] static uint64 generateTag(
+                uint64 first,
+                uint64 second) noexcept;
         };
+
+        static constexpr uint64                         LowerMask
+            = 0x00000000FFFFFFFF;
+        static constexpr uint32                         Placeholder
+            = 0xFFFFFFFF;
     };
+
+    inline constexpr CatmullClarkTessellator            catmullClarkTessellator;
 
 }
 
