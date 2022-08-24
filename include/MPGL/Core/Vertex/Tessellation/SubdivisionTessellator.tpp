@@ -45,10 +45,10 @@ namespace mpgl {
         SubdivisionTessellator::operator() (
             VRange vertices,
             IRange indicies,
-            size_t tessellationSteps,
+            uint8 tessellationSteps,
             Predicate pred) const
     {
-        for (size_t i = 0; i < tessellationSteps; ++i)
+        for (uint8 i = 0; i < tessellationSteps; ++i)
             indicies = Algorithm{vertices, pred}(indicies);
         return { vertices, indicies };
     }
@@ -86,7 +86,7 @@ namespace mpgl {
     [[nodiscard]] IRange SubdivisionTessellator::
         Algorithm<VRange, Pred>::operator() (IRange const& indicies)
     {
-        vertices.reserve(vertices.size() + indicies.size() / 2);
+        vertices.reserve(vertices.size() + 3 * indicies.size() / 2);
         IRange newIndicies;
         newIndicies.reserve(4 * indicies.size());
         for (auto const& triangle : indicies)

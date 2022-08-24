@@ -71,7 +71,7 @@ namespace mpgl {
         [[nodiscard]] std::pair<VRange, IRange> operator() (
             VRange vertices,
             IRange indicies,
-            size_t tessellationSteps,
+            uint8 tessellationSteps,
             Predicate pred) const;
     private:
         /**
