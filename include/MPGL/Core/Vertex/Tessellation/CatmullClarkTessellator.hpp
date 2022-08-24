@@ -80,10 +80,13 @@ namespace mpgl {
 
             using HashMap = std::unordered_map<uint64, uint32>;
             using EdgeMap = std::map<uint64, Edge>;
+            using Edges = std::vector<Edge const*>;
+            using VerticesGraph = std::map<uint32, Edges>;
 
             VRange                                      vertices;
             IRange                                      faces;
             IRange                                      indices;
+            VerticesGraph                               graph;
             EdgeMap                                     edges;
             HashMap                                     edgeFaces;
             Predicate                                   builder;
@@ -106,12 +109,36 @@ namespace mpgl {
                 VRange const& vertices,
                 IRange const& indices);
 
-            [[nodiscard]] static Vertex calculateVertex(
+            void generateVerticesDependencies(void);
+
+            void addToGraph(uint32 vertex, Edge const* edgePtr);
+
+            void calculateNewVertices(void);
+
+            [[nodiscard]] Vector averageOfEdges(Edges const& edges);
+
+            [[nodiscard]] Vector averageOfFaces(Edges const& edges);
+
+            void addTetragonVertices(
+                uint32 vertex,
+                Edges& edges);
+
+            void findAndAddTetragon(
+                uint32 vertex,
+                Edges& edges,
+                Edge const* edge);
+
+            void addTetragon(
+                uint32 vertex,
+                Edge const& leftEdge,
+                Edge const& rightEdge);
+
+            [[nodiscard]] Vertex calculateVertex(
                 VRange const& vertices,
                 uint32 firstIndex,
                 uint32 secondIndex);
 
-            [[nodiscard]] static Vertex calculateVertex(
+            [[nodiscard]] Vertex calculateVertex(
                 VRange const& vertices,
                 uint32 firstIndex,
                 uint32 secondIndex,
