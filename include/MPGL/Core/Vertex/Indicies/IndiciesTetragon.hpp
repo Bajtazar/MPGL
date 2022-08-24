@@ -45,7 +45,7 @@ namespace mpgl {
          * @param thirdVertex the third vertex's index
          * @param fourthVertex the fourth vertex's index
          */
-        explicit IndiciesTetragon(
+        IndiciesTetragon(
             uint32 firstVertex,
             uint32 secondVertex,
             uint32 thirdVertex,

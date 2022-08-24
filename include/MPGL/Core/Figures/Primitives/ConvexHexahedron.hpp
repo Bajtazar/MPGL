@@ -24,6 +24,7 @@
  *  distribution
  */
 #pragma once
+
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
