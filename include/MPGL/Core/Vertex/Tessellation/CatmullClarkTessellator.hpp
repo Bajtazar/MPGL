@@ -106,8 +106,8 @@ namespace mpgl {
                 IRange const& indicies);
         private:
             using Vertex = std::ranges::range_value_t<VRange>;
-            using VertexAdapter = decltype(std::declval<Vertex>()
-                | cast::position);
+            using VertexAdapter = std::remove_cvref_t<decltype(
+                std::declval<Vertex>() | cast::position)>;
             using Vector = typename VertexAdapter::value_type;
 
             /**
@@ -119,10 +119,19 @@ namespace mpgl {
                 uint32                                  secondFaceID;
             };
 
+            /**
+             * Represents a token used to find adjacent tetragons
+             */
+            struct Token {
+                Edge const*                         edge;
+                uint32                              face;
+            };
+
             using HashMap = std::unordered_map<uint64, uint32>;
             using EdgeMap = std::map<uint64, Edge>;
             using Edges = std::vector<Edge const*>;
             using VerticesGraph = std::map<uint32, Edges>;
+            using Tokens = std::vector<Token>;
 
             VRange                                      vertices;
             IRange                                      indices;
@@ -193,8 +202,10 @@ namespace mpgl {
 
             /**
              * Calculates tessellated vertices
+             *
+             * @param vertices a constant reference to the vertices range
              */
-            void calculateTessellatedVertices(void);
+            void calculateTessellatedVertices(VRange const& vertices);
 
             /**
              * Calculates an average of edges vertices
@@ -220,33 +231,30 @@ namespace mpgl {
              */
             void addTetragonVertices(
                 uint32 vertex,
-                Edges& edges);
+                Edges const& edges);
 
             /**
-             * Finds second edge and adds one of the tetragons
-             * surrounding the vertex
+             * Generates tokens used to find adjucent tetragons
              *
-             * @param vertex an index of the vertex
              * @param edges a reference to the edges vector
-             * @param edge a pointer to the first edge
+             * @return a token range
              */
-            void findAndAddTetragon(
-                uint32 vertex,
-                Edges& edges,
-                Edge const* edge);
+            [[nodiscard]] Tokens generateTokens(Edges const& edges);
 
             /**
              * Adds tetragon lying between two edges and locked with
              * the vertex
              *
              * @param vertex an index of the vertex
-             * @param leftEdge a constant reference to the left edge
-             * @param rightEdge a constant reference to the right edge
+             * @param firstToken a constant reference to the first
+             * token
+             * @param secondToken a constant reference to the
+             * second token
              */
             void addTetragon(
                 uint32 vertex,
-                Edge const& leftEdge,
-                Edge const& rightEdge);
+                Token const& firstToken,
+                Token const& secondToken);
 
             /**
              * Calculates a position of the vertex lying between

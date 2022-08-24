@@ -80,11 +80,11 @@ namespace mpgl {
                 VRange const& vertices,
                 IRange const& indicies)
     {
-        this->vertices.reserve(3 * indices.size() + vertices.size());
-        buildFaces(vertices, indices);
-        buildEdges(vertices, indices);
+        this->vertices.reserve(3 * indicies.size() + vertices.size());
+        buildFaces(vertices, indicies);
+        buildEdges(vertices, indicies);
         generateVerticesDependencies();
-        calculateTessellatedVertices();
+        calculateTessellatedVertices(vertices);
         return { this->vertices, this->indices };
     }
 
@@ -154,9 +154,10 @@ namespace mpgl {
         uint64 const tag = generateTag(firstVertex, secondVertex);
         auto const iter = edgeFaces.find(tag);
         if (iter != edgeFaces.end()) {
-            edges.emplace(tag, { this->vertices.size(), tetragonID, iter->second });
-            this->vertices.push_back(calculateEdgeVertex(firstVertex,
-                secondVertex, tetragonID, iter->second));
+            edges.emplace(tag, Edge{ static_cast<uint32>(
+                this->vertices.size()), tetragonID, iter->second });
+            this->vertices.push_back(calculateEdgeVertex(vertices,
+                firstVertex, secondVertex, tetragonID, iter->second));
             edgeFaces.erase(iter);
         } else
             edgeFaces.emplace(tag, tetragonID);
@@ -178,7 +179,8 @@ namespace mpgl {
         for (auto const& [tag, id] : edgeFaces) {
             uint32 first = tag >> 32u;
             uint32 second = tag & LowerMask;
-            edges.emplace(tag, { this->vertices.size(), id, Placeholder });
+            edges.emplace(tag, Edge{ static_cast<uint32>(
+                this->vertices.size()), id, Placeholder });
             this->vertices.push_back(calculateVertex(vertices, first, second));
         }
         edgeFaces.clear();
@@ -217,7 +219,7 @@ namespace mpgl {
         if (auto iter = graph.find(vertex); iter != graph.end())
             iter->second.push_back(edgePtr);
         else
-            graph.emplace(vertex, { edgePtr });
+            graph.emplace(vertex, Edges{ { edgePtr } });
     }
 
     template <
@@ -229,13 +231,13 @@ namespace mpgl {
                 && SameRangeType<VRange, std::invoke_result_t<
                     Predicate, Vector3f const&>>)
     void CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
-        ::calculateTessellatedVertices(void)
+        ::calculateTessellatedVertices(VRange const& vertices)
     {
-        for (auto const& [vertex, edges] : graph) {
+        for (auto& [vertex, edges] : graph) {
             auto const middleAvg = averageOfEdges(edges);
             auto const facesAvg = averageOfFaces(edges);
             Vector const& current = (facesAvg + 2.f * middleAvg +
-                Vector{vertex | cast::position}) / 4.f;
+                Vector{vertices[vertex] | cast::position}) / 4.f;
             uint32 id = this->vertices.size();
             this->vertices.push_back(std::invoke(builder, current));
             addTetragonVertices(id, edges);
@@ -250,16 +252,20 @@ namespace mpgl {
                 VertexType<std::ranges::range_value_t<VRange>>
                 && SameRangeType<VRange, std::invoke_result_t<
                     Predicate, Vector3f const&>>)
-    void CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
-        ::addTetragonVertices(
-        uint32 vertex,
-        Edges& edges)
+    [[nodiscard]]
+    CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
+        ::Tokens
+    CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
+        ::generateTokens(Edges const& edges)
     {
-        std::ranges::sort(edges, std::greater{}, &Edge::firstFaceID);
-        if (edges.front()->firstFaceID != Placeholder)
-            findAndAddTetragon(vertex, edges, edges.front());
-        for (Edge const* edge : edges | std::views::drop(1))
-            findAndAddTetragon(vertex, edges, edge);
+        Tokens tokens;
+        tokens.reserve(2 * edges.size());
+        for (Edge const* edge : edges) {
+            tokens.emplace_back(edge, edge->firstFaceID);
+            tokens.emplace_back(edge, edge->secondFaceID);
+        }
+        std::ranges::sort(tokens, std::greater{}, &Token::face);
+        return tokens;
     }
 
     template <
@@ -271,14 +277,15 @@ namespace mpgl {
                 && SameRangeType<VRange, std::invoke_result_t<
                     Predicate, Vector3f const&>>)
     void CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
-        ::findAndAddTetragon(
-            uint32 vertex,
-            Edges& edges,
-            Edge const* edge)
+        ::addTetragonVertices(
+        uint32 vertex,
+        Edges const& edges)
     {
-        auto iter = std::ranges::binary_search(edges,
-            edge->firstFaceID, std::greater{}, &Edge::secondFaceID);
-        addTetragon(vertex, *edge, **iter);
+        auto tokens = generateTokens(edges);
+        if (tokens.front().face != Placeholder)
+            addTetragon(vertex, tokens[0], tokens[1]);
+        for (uint32 i = 1; i < (tokens.size() / 2); ++i)
+            addTetragon(vertex, tokens[2 * i], tokens[2 * i + 1]);
     }
 
     template <
@@ -292,14 +299,14 @@ namespace mpgl {
     void CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
         ::addTetragon(
             uint32 vertex,
-            Edge const& leftEdge,
-            Edge const& rightEdge)
+            Token const& firstToken,
+            Token const& secondToken)
     {
         indices.emplace_back(
             vertex,
-            leftEdge->vertex,
-            leftEdge->firstFaceID,
-            rightEdge->vertex
+            firstToken.edge->vertex,
+            firstToken.face,
+            secondToken.edge->vertex
         );
     }
 
@@ -317,9 +324,12 @@ namespace mpgl {
         ::averageOfEdges(Edges const& edges)
     {
         Vector avg;
-        for (uint32 index : edges | std::views::transform(&Edge::vertex))
+        float32 counter = 0.f;
+        for (uint32 index : edges | std::views::transform(&Edge::vertex)) {
             avg += Vector{vertices[index] | cast::position};
-        return avg / avg.size();
+            ++counter;
+        }
+        return avg / counter;
     }
 
     template <
@@ -336,14 +346,18 @@ namespace mpgl {
         ::averageOfFaces(Edges const& edges)
     {
         Vector avg;
+        float32 counter = 0.f;
         for (Edge const* edge : edges) {
             avg += Vector{vertices[edge->firstFaceID]
                 | cast::position};
-            if (edge->secondFaceID != Placeholder)
+            ++counter;
+            if (edge->secondFaceID != Placeholder) {
                 avg += Vector{vertices[edge->secondFaceID]
                     | cast::position};
+                ++counter;
+            }
         }
-        return avg / avg.size();
+        return avg / counter;
     }
 
     template <
