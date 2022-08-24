@@ -84,7 +84,7 @@ namespace mpgl {
         buildFaces(vertices, indices);
         buildEdges(vertices, indices);
         generateVerticesDependencies();
-        calculateNewVertices();
+        calculateTessellatedVertices();
         return { this->vertices, this->indices };
     }
 
@@ -101,15 +101,12 @@ namespace mpgl {
             VRange const& vertices,
             IRange const& indices)
     {
-        faces.reserve(indices.size());
-        for (IndiciesTetragon const& tetragon : indices) {
-            faces.push_back(this->vertices.size());
+        for (IndiciesTetragon const& tetragon : indices)
             this->vertices.push_back(calculateVertex(vertices,
                 tetragon.getFirstVertex(),
                 tetragon.getSecondVertex(),
                 tetragon.getThirdVertex(),
                 tetragon.getFourthVertex()));
-        }
     }
 
     template <
@@ -158,7 +155,7 @@ namespace mpgl {
         auto const iter = edgeFaces.find(tag);
         if (iter != edgeFaces.end()) {
             edges.emplace(tag, { this->vertices.size(), tetragonID, iter->second });
-            this->vertices.push_back(calculateVertex(firstVertex,
+            this->vertices.push_back(calculateEdgeVertex(firstVertex,
                 secondVertex, tetragonID, iter->second));
             edgeFaces.erase(iter);
         } else
@@ -232,7 +229,7 @@ namespace mpgl {
                 && SameRangeType<VRange, std::invoke_result_t<
                     Predicate, Vector3f const&>>)
     void CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
-        ::calculateNewVertices(void)
+        ::calculateTessellatedVertices(void)
     {
         for (auto const& [vertex, edges] : graph) {
             auto const middleAvg = averageOfEdges(edges);
@@ -373,6 +370,33 @@ namespace mpgl {
             + Vector{vertices[secondIndex] | cast::position}
             + Vector{vertices[thirdIndex] | cast::position}
             + Vector{vertices[fourthIndex] | cast::position}) / 4.f;
+        return std::invoke(builder, facePos);
+    }
+
+    template <
+        FlexibleRange VRange,
+        UnderlyingRange<IndiciesTetragon> IRange,
+        std::invocable<Vector3f const&> Predicate>
+            requires (
+                VertexType<std::ranges::range_value_t<VRange>>
+                && SameRangeType<VRange, std::invoke_result_t<
+                    Predicate, Vector3f const&>>)
+    [[nodiscard]]
+    CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
+        ::Vertex
+    CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
+        ::calculateEdgeVertex(
+            VRange const& vertices,
+            uint32 firstIndex,
+            uint32 secondIndex,
+            uint32 thirdIndex,
+            uint32 fourthIndex)
+    {
+        auto const facePos = (
+            Vector{vertices[firstIndex] | cast::position}
+            + Vector{vertices[secondIndex] | cast::position}
+            + Vector{this->vertices[thirdIndex] | cast::position}
+            + Vector{this->vertices[fourthIndex] | cast::position}) / 4.f;
         return std::invoke(builder, facePos);
     }
 
