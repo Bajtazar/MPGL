@@ -73,7 +73,7 @@ namespace mpgl {
             using Vector = typename VertexAdapter::value_type;
 
             struct Edge {
-                Vertex                                  vertex;
+                uint32                                  vertex;
                 uint32                                  firstFaceID;
                 uint32                                  secondFaceID;
             };
@@ -82,7 +82,7 @@ namespace mpgl {
             using EdgeMap = std::map<uint64, Edge>;
 
             VRange                                      vertices;
-            VRange                                      faces;
+            IRange                                      faces;
             IRange                                      indices;
             EdgeMap                                     edges;
             HashMap                                     edgeFaces;

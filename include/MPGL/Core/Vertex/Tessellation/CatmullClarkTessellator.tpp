@@ -78,7 +78,7 @@ namespace mpgl {
                 VRange const& vertices,
                 IRange const& indicies)
     {
-
+        this->vertices.reserve(3 * indices.size() + vertices.size());
         buildFaces(vertices, indices);
         buildEdges(vertices, indices);
         return { this->vertices, this->indices };
@@ -98,12 +98,14 @@ namespace mpgl {
             IRange const& indices)
     {
         faces.reserve(indices.size());
-        for (IndiciesTetragon const& tetragon : indices)
-            faces.push_back(calculateVertex(vertices,
+        for (IndiciesTetragon const& tetragon : indices) {
+            faces.push_back(this->vertices.size());
+            this->vertices.push_back(calculateVertex(vertices,
                 tetragon.getFirstVertex(),
                 tetragon.getSecondVertex(),
                 tetragon.getThirdVertex(),
                 tetragon.getFourthVertex()));
+        }
     }
 
     template <
@@ -151,9 +153,9 @@ namespace mpgl {
         uint64 const tag = generateTag(firstVertex, secondVertex);
         auto const iter = edgeFaces.find(tag);
         if (iter != edgeFaces.end()) {
-            edges.emplace(tag, { calculateVertex(firstVertex,
-                secondVertex, tetragonID, iter->second),
-                tetragonID, iter->second });
+            edges.emplace(tag, { this->vertices.size(), tetragonID, iter->second });
+            this->vertices.push_back(calculateVertex(firstVertex,
+                secondVertex, tetragonID, iter->second));
             edgeFaces.erase(iter);
         } else
             edgeFaces.emplace(tag, tetragonID);
@@ -175,8 +177,8 @@ namespace mpgl {
         for (auto const& [tag, id] : edgeFaces) {
             uint32 first = tag >> 32u;
             uint32 second = tag & LowerMask;
-            edges.emplace(tag, { calculateVertex(vertices,
-                first, second), id, Placeholder });
+            edges.emplace(tag, { this->vertices.size(), id, Placeholder });
+            this->vertices.push_back(calculateVertex(vertices, first, second));
         }
         edgeFaces.clear();
     }
@@ -204,7 +206,7 @@ namespace mpgl {
             Vector{vertices[firstIndex] | cast::position}
             + Vector{vertices[secondIndex] | cast::position}
             + Vector{vertices[thirdIndex] | cast::position}
-            + Vector{ vertices[fourthIndex] | cast::position}) / 4.f;
+            + Vector{vertices[fourthIndex] | cast::position}) / 4.f;
         return std::invoke(builder, facePos);
     }
 
