@@ -123,8 +123,8 @@ namespace mpgl {
              * Represents a token used to find adjacent tetragons
              */
             struct Token {
-                Edge const*                         edge;
-                uint32                              face;
+                Edge const*                             edge;
+                uint32                                  face;
             };
 
             using HashMap = std::unordered_map<uint64, uint32>;

@@ -26,72 +26,74 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
-#include <MPGL/Core/Vertex/Indicies/IndiciesTriangle.hpp>
+#include <MPGL/Core/Vertex/Indicies/IndiciesTetragon.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
 namespace mpgl {
 
     /**
-     * Represents a sphere figure
+     * Represents a torus figure
      *
      * @tparam Spec the angular vertices specifier
      */
     template <AngularTraitSpecifier<dim::Dim3> Spec = void>
-    class Sphere : public Angular<dim::Dim3, Spec> {
+    class Torus : public Angular<dim::Dim3, Spec> {
     public:
         using VertexTraits = Angular<dim::Dim3, Spec>::VertexTraits;
 
         /**
-         * Constructs a new sphere object
+         * Constructs a new torus object
          *
-         * @param position a position of the sphere
-         * @param radius a radius of the sphere
-         * @param color a color of the sphere
+         * @param position a position of the torus
+         * @param radius a radius of the torus
+         * @param ringRadius a radius of the torus ring
+         * @param color a color of the torus
          * @param tessellationSteps a number of tessellation
-         * steps performed during sphere creation
+         * steps performed during torus creation
          */
-        Sphere(
+        Torus(
             Vector3f const& position,
             float32 radius,
+            float32 ringRadius,
             Color const& color = Color::White,
             uint8 tessellationSteps = 2);
 
         /**
-         * Constructs a new sphere object from the given
+         * Constructs a new torus object from the given
          * constant reference to the other object
          *
-         * @param sphere the constant reference to the other
+         * @param torus the constant reference to the other
          * object
          */
-        Sphere(Sphere const& sphere);
+        Torus(Torus const& torus);
 
-        Sphere(Sphere&& sphere) noexcept = default;
+        Torus(Torus&& torus) noexcept = default;
 
-        Sphere& operator=(Sphere const& sphere) = default;
-        Sphere& operator=(Sphere&& sphere) noexcept = default;
+        Torus& operator=(Torus const& torus) = default;
+        Torus& operator=(Torus&& torus) noexcept = default;
 
         /**
-         * Draws the sphere on the screen
+         * Draws the torus on the screen
          */
         virtual void draw(void) const noexcept;
 
         /**
-         * Virtual destructor. Destroys the sphere object
+         * Virtual destructor. Destroys the torus object
          */
-        virtual ~Sphere(void) noexcept = default;
+        virtual ~Torus(void) noexcept = default;
     private:
         using Vertex = typename VertexTraits::Vertex;
-        using Indicies = std::vector<IndiciesTriangle>;
+        using Indicies = std::vector<IndiciesTetragon>;
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
         using TessellationResult = std::pair<Vertices, Indicies>;
 
         /**
-         * Constructs a new sphere object from a pair of the
+         * Constructs a new torus object from a pair of the
          * vertices and indicies
          *
          * @param result a pair of vertices and indicies
          */
-        explicit Sphere(TessellationResult&& result);
+        explicit Torus(TessellationResult&& result);
 
         /**
          * Initializes the element buffer object
@@ -102,52 +104,59 @@ namespace mpgl {
         ElementArrayBuffer                          elementBuffer;
 
         /**
-         * Tessellates icosahedron ensuring that newly created
-         * vertices will be in valid radius from sphere center
+         * Generates base vertices
          *
-         * @param position a position of the sphere
-         * @param radius a radius of the sphere
-         * @param color a color of the sphere
-         * @param steps a number of tessellation steps
-         * @return a pair of vertices and indicies
+         * @param position a position of the torus
+         * @param radius a radius of the torus
+         * @param ringRadius a radius of the torus ring
+         * @param color a color of the torus
+         * @return the base vertices
          */
-        [[nodiscard]] static TessellationResult tessellateIcosahedron(
+        [[nodiscard]] static Vertices generateBaseVertices(
             Vector3f const& position,
             float32 radius,
-            Color const& color,
-            uint8 steps);
-
-        /**
-         * Generates icosahedron vertices
-         *
-         * @param position a position of the origin
-         * @param radius a radius of the icosahedron
-         * @param color a color of the vertices
-         * @return the icosahedron vertices
-         */
-        [[nodiscard]] static Vertices generateIcosahedron(
-            Vector3f const& position,
-            float32 radius,
+            float32 ringRadius,
             Color const& color);
 
         /**
-         * Generates icosahefron faces
+         * Generates one of the rings used as a base for the torus
          *
-         * @param vertices a reference to icosahedron verices
-         * @param position a position of the origin
-         * @param radius a radius of the icosahedron
-         * @param color a color of the vertices
+         * @param vertices a reference to the vertices range
+         * @param position a position of the torus
+         * @param versor a current ring's versor
+         * @param radius a radius of the torus
+         * @param ringRadius a radius of the torus ring
+         * @param color a color of the torus
          */
-        static void generateIcosahedronFaces(
+        static void generateRing(
             Vertices& vertices,
             Vector3f const& position,
+            Vector3f const& versor,
             float32 radius,
+            float32 ringRadius,
             Color const& color);
 
-        static Indicies const                       IcosahedronIndicies;
-        static float64 const                        ATan;
+        /**
+         * Tessellates the torus base creating a better resolution
+         * torus
+         *
+         * @param position a position of the torus
+         * @param radius a radius of the torus
+         * @param ringRadius a radius of the torus ring
+         * @param color a color of the torus
+         * @param tessellationSteps a number of tessellation steps
+         * @return a pair of vertices and indicies
+         */
+        [[nodiscard]] static TessellationResult tessellateBase(
+            Vector3f const& position,
+            float32 radius,
+            float32 ringRadius,
+            Color const& color,
+            uint8 tessellationSteps);
+
+        static Indicies const                       BaseIndices;
     };
 
-    template class Sphere<void>;
+    template class Torus<void>;
 
 }
