@@ -74,67 +74,67 @@ namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     void Cylinder<Spec>::addTriangle(
-        Indicies& indicies,
+        Indices& indices,
         size_t first,
         size_t second,
         size_t third)
     {
-        indicies.push_back(first);
-        indicies.push_back(second);
-        indicies.push_back(third);
+        indices.push_back(first);
+        indices.push_back(second);
+        indices.push_back(third);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Cylinder<Spec>::generateCircleIndicies(
-        Indicies& indicies,
+    void Cylinder<Spec>::generateCircleIndices(
+        Indices& indices,
         size_t startIndex,
         size_t segments)
     {
         for (auto i = startIndex + 1; i < startIndex + segments; ++i)
-            addTriangle(indicies, startIndex, i, i + 1);
-        addTriangle(indicies, startIndex, startIndex + 1,
+            addTriangle(indices, startIndex, i, i + 1);
+        addTriangle(indices, startIndex, startIndex + 1,
             startIndex + segments);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Cylinder<Spec>::generateFacesIndicies(
-        Indicies& indicies,
+    void Cylinder<Spec>::generateFacesIndices(
+        Indices& indices,
         size_t segments)
     {
         for (size_t i = 0; i < segments - 1; ++i) {
-            addTriangle(indicies, i + 1, i + 2, i + segments + 2);
-            addTriangle(indicies, i + 2, i + segments + 2,
+            addTriangle(indices, i + 1, i + 2, i + segments + 2);
+            addTriangle(indices, i + 2, i + segments + 2,
                 i + segments + 3);
         }
-        addTriangle(indicies, 1, segments, segments + 2);
-        addTriangle(indicies, segments, segments + 2, 2 * segments + 1);
+        addTriangle(indices, 1, segments, segments + 2);
+        addTriangle(indices, segments, segments + 2, 2 * segments + 1);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] Cylinder<Spec>::Indicies
-        Cylinder<Spec>::generateIndicies(size_t segments)
+    [[nodiscard]] Cylinder<Spec>::Indices
+        Cylinder<Spec>::generateIndices(size_t segments)
     {
-        Indicies indicies;
-        indicies.reserve(12 * segments);
-        generateCircleIndicies(indicies, 0, segments);
-        generateCircleIndicies(indicies, segments + 1, segments);
-        generateFacesIndicies(indicies, segments);
-        return indicies;
+        Indices indices;
+        indices.reserve(12 * segments);
+        generateCircleIndices(indices, 0, segments);
+        generateCircleIndices(indices, segments + 1, segments);
+        generateFacesIndices(indices, segments);
+        return indices;
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cylinder<Spec>::Cylinder(
         Color const& color,
         size_t baseSegments) : Angular<dim::Dim3, Spec>{
-            baseSegments * 2 + 2, color}, indicies{
-                generateIndicies(baseSegments)}
+            baseSegments * 2 + 2, color}, indices{
+                generateIndices(baseSegments)}
     {
         reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cylinder<Spec>::Cylinder(Cylinder const& cylinder)
-        : Angular<dim::Dim3, Spec>{cylinder}, indicies{cylinder.indicies}
+        : Angular<dim::Dim3, Spec>{cylinder}, indices{cylinder.indices}
     {
         reloadElementBuffer();
     }
@@ -148,7 +148,7 @@ namespace mpgl {
         size_t baseSegments) : Angular<dim::Dim3, Spec>{
             generateVertices(color, position, radiusVector,
             heightVector, baseSegments)},
-                indicies{generateIndicies(baseSegments)}
+                indices{generateIndices(baseSegments)}
     {
         if (dot(radiusVector, heightVector))
             throw NotPerpendicularException{radiusVector, heightVector};
@@ -164,7 +164,7 @@ namespace mpgl {
         size_t baseSegments) : Angular<dim::Dim3, Spec>{
             generateVertices(color, position, {1._x * radius},
             {1._y * height}, baseSegments)},
-                indicies{generateIndicies(baseSegments)}
+                indices{generateIndices(baseSegments)}
     {
         reloadElementBuffer();
     }
@@ -174,7 +174,7 @@ namespace mpgl {
         Cylinder const& cylinder)
     {
         Angular<dim::Dim3, Spec>::operator=(cylinder);
-        indicies = cylinder.indicies;
+        indices = cylinder.indices;
         reloadElementBuffer();
         return *this;
     }
@@ -183,7 +183,7 @@ namespace mpgl {
     void Cylinder<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
-        elementBuffer.setBufferData(indicies);
+        elementBuffer.setBufferData(indices);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -193,7 +193,7 @@ namespace mpgl {
         this->actualizeLocations();
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         this->vertexArray.drawElements(
-            VertexArray::DrawMode::Triangles, indicies.size(),
+            VertexArray::DrawMode::Triangles, indices.size(),
             DataType::UInt32);
     }
 

@@ -35,7 +35,7 @@ namespace mpgl {
      * Constains informations about vertices that are used
      * to draw the given triangle
      */
-    struct IndiciesTriangle {
+    struct IndicesTriangle {
         uint32                              firstVertex;
         uint32                              secondVertex;
         uint32                              thirdVertex;

@@ -31,7 +31,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -56,7 +56,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -68,7 +68,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -78,11 +78,11 @@ namespace mpgl {
         CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
             ::operator() (
                 VRange const& vertices,
-                IRange const& indicies)
+                IRange const& indices)
     {
-        this->vertices.reserve(3 * indicies.size() + vertices.size());
-        buildFaces(vertices, indicies);
-        buildEdges(vertices, indicies);
+        this->vertices.reserve(3 * indices.size() + vertices.size());
+        buildFaces(vertices, indices);
+        buildEdges(vertices, indices);
         generateVerticesDependencies();
         calculateTessellatedVertices(vertices);
         return { this->vertices, this->indices };
@@ -90,7 +90,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -101,7 +101,7 @@ namespace mpgl {
             VRange const& vertices,
             IRange const& indices)
     {
-        for (IndiciesTetragon const& tetragon : indices)
+        for (IndicesTetragon const& tetragon : indices)
             this->vertices.push_back(calculateVertex(vertices,
                 tetragon.getFirstVertex(),
                 tetragon.getSecondVertex(),
@@ -111,7 +111,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -123,7 +123,7 @@ namespace mpgl {
             IRange const& indices)
     {
         uint32 id = 0;
-        for (IndiciesTetragon const& tetragon : indices) {
+        for (IndicesTetragon const& tetragon : indices) {
             buildEdge(vertices, id, tetragon.getFirstVertex(),
                 tetragon.getSecondVertex());
             buildEdge(vertices, id, tetragon.getSecondVertex(),
@@ -138,7 +138,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -165,7 +165,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -188,7 +188,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -207,7 +207,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -224,7 +224,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -246,7 +246,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -270,7 +270,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -290,7 +290,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -312,7 +312,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -334,7 +334,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -362,7 +362,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -389,7 +389,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -416,7 +416,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>
@@ -439,7 +439,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTetragon> IRange,
+        UnderlyingRange<IndicesTetragon> IRange,
         std::invocable<Vector3f const&> Predicate>
             requires (
                 VertexType<std::ranges::range_value_t<VRange>>

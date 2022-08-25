@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Vertex/Indicies/IndiciesTriangle.hpp>
+#include <MPGL/Core/Vertex/Indices/IndicesTriangle.hpp>
 #include <MPGL/Core/Vertex/VertexTraits.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 
@@ -43,22 +43,22 @@ namespace mpgl {
         /**
          * Performs tessellation on the given triangle mesh by the given
          * number of times and returns the tessellated mesh. Each step
-         * will increase number of indicies by 4 times. Total number
+         * will increase number of indices by 4 times. Total number
          * of vertices after tessellation is equal to $$vertices_start
          * + 0.5 * inidcies_start * [4^(steps) - 1]$$, for steps >= 1
-         * and 0 steps wont affect vertices and indicies at all
+         * and 0 steps wont affect vertices and indices at all
          *
          * @tparam VRange the vertices range type
          * @tparam IRange the inidcies range type
          * @tparam Predicate the tessellation predicate type
          * @param vertices the vertices range
-         * @param indicies the indicies range
+         * @param indices the indices range
          * @param tessellationSteps the number of tessellation steps
          * @param pred the tessellation predicate
          */
         template <
             FlexibleRange VRange,
-            UnderlyingRange<IndiciesTriangle> IRange,
+            UnderlyingRange<IndicesTriangle> IRange,
             std::invocable<
                 std::ranges::range_value_t<VRange> const&,
                 std::ranges::range_value_t<VRange> const&> Predicate>
@@ -70,7 +70,7 @@ namespace mpgl {
                             std::ranges::range_value_t<VRange> const&>>)
         [[nodiscard]] std::pair<VRange, IRange> operator() (
             VRange vertices,
-            IRange indicies,
+            IRange indices,
             uint8 tessellationSteps,
             Predicate pred) const;
     private:
@@ -105,15 +105,15 @@ namespace mpgl {
                 Predicate predicate);
 
             /**
-             * Performs tessellation on the given indicies and vertices
+             * Performs tessellation on the given indices and vertices
              *
-             * @tparam IRange the type of the indicies range
-             * @param indicies a constant reference to the indicies
+             * @tparam IRange the type of the indices range
+             * @param indices a constant reference to the indices
              * range
-             * @return a tessellated indicies range
+             * @return a tessellated indices range
              */
-            template <UnderlyingRange<IndiciesTriangle> IRange>
-            [[nodiscard]] IRange operator() (IRange const& indicies);
+            template <UnderlyingRange<IndicesTriangle> IRange>
+            [[nodiscard]] IRange operator() (IRange const& indices);
         private:
             using HashMap = std::unordered_map<uint64, uint32>;
 
@@ -125,22 +125,22 @@ namespace mpgl {
             /**
              * Tessellates face of the triangle mesh
              *
-             * @tparam IRange the type of the indicies range
-             * @param indicies a constant reference to the indicies
+             * @tparam IRange the type of the indices range
+             * @param indices a constant reference to the indices
              * range
              * @param triangle a constant reference to the face
              * triangle
              */
-            template <UnderlyingRange<IndiciesTriangle> IRange>
+            template <UnderlyingRange<IndicesTriangle> IRange>
             void tessellateFace(
-                IRange& indicies,
-                IndiciesTriangle const& triangle);
+                IRange& indices,
+                IndicesTriangle const& triangle);
 
             /**
-             * Adds tessellated triangles to the indicies
+             * Adds tessellated triangles to the indices
              *
-             * @tparam IRange the type of the indicies range
-             * @param indicies a constant reference to the indicies
+             * @tparam IRange the type of the indices range
+             * @param indices a constant reference to the indices
              * range
              * @param triangle a constant reference to the face
              * triangle
@@ -148,10 +148,10 @@ namespace mpgl {
              * @param new2 an index of the second tessellated vertex
              * @param new3 an index of the third tessellated vertex
              */
-            template <UnderlyingRange<IndiciesTriangle> IRange>
+            template <UnderlyingRange<IndicesTriangle> IRange>
             void addTriangles(
-                IRange& indicies,
-                IndiciesTriangle const& triangle,
+                IRange& indices,
+                IndicesTriangle const& triangle,
                 uint32 const new1,
                 uint32 const new2,
                 uint32 const new3) const;
@@ -177,7 +177,7 @@ namespace mpgl {
             void generateVertex(uint64 tag);
 
             /**
-             * Constructs a tag of the given edge based on the indicies
+             * Constructs a tag of the given edge based on the indices
              * of the edge's vertices
              *
              * @param firstVertex an index of the first vertex

@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Vertex/Indicies/IndiciesTriangle.hpp>
+#include <MPGL/Core/Vertex/Indices/IndicesTriangle.hpp>
 
 namespace mpgl {
 
@@ -35,29 +35,29 @@ namespace mpgl {
      * Constains informations about vertices that are used
      * to draw the given tetragon
      */
-    class IndiciesTetragon {
+    class IndicesTetragon {
     public:
         /**
-         * Constructs a new indicies tetragon object
+         * Constructs a new indices tetragon object
          *
          * @param firstVertex the first vertex's index
          * @param secondVertex the second vertex's index
          * @param thirdVertex the third vertex's index
          * @param fourthVertex the fourth vertex's index
          */
-        IndiciesTetragon(
+        IndicesTetragon(
             uint32 firstVertex,
             uint32 secondVertex,
             uint32 thirdVertex,
             uint32 fourthVertex) noexcept;
 
-        IndiciesTetragon(IndiciesTetragon const&) noexcept = default;
-        IndiciesTetragon(IndiciesTetragon&&) noexcept = default;
+        IndicesTetragon(IndicesTetragon const&) noexcept = default;
+        IndicesTetragon(IndicesTetragon&&) noexcept = default;
 
-        IndiciesTetragon& operator=(
-            IndiciesTetragon const&) noexcept = default;
-        IndiciesTetragon& operator=(
-            IndiciesTetragon&&) noexcept = default;
+        IndicesTetragon& operator=(
+            IndicesTetragon const&) noexcept = default;
+        IndicesTetragon& operator=(
+            IndicesTetragon&&) noexcept = default;
 
         /**
          * Accesses the value of the first tetragon's vertex
@@ -115,10 +115,10 @@ namespace mpgl {
          */
         void setFourthVertex(uint32 value) noexcept;
 
-        ~IndiciesTetragon(void) noexcept = default;
+        ~IndicesTetragon(void) noexcept = default;
     private:
-        IndiciesTriangle                    firstTriangle;
-        IndiciesTriangle                    secondTriangle;
+        IndicesTriangle                    firstTriangle;
+        IndicesTriangle                    secondTriangle;
     };
 
     #pragma pack(pop)

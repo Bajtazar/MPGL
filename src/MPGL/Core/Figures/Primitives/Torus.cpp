@@ -30,7 +30,7 @@
 namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    Torus<Spec>::Indicies const Torus<Spec>::BaseIndices {
+    Torus<Spec>::Indices const Torus<Spec>::BaseIndices {
         {0, 1, 5, 4}, {1, 2, 6, 5}, {2, 3, 7, 6}, {3, 0, 4, 7},
         {4, 5, 9, 8}, {5, 6, 10, 9}, {6, 7, 11, 10}, {7, 4, 8, 11},
         {8, 9, 13, 12}, {9, 10, 14, 13}, {10, 11, 15, 14}, {11, 8, 12, 15},
@@ -87,7 +87,7 @@ namespace mpgl {
         };
         return catmullClarkTessellator(generateBaseVertices(
             position, radius, ringRadius, color),
-            Indicies{BaseIndices}, tessellationSteps, builder);
+            Indices{BaseIndices}, tessellationSteps, builder);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -106,14 +106,14 @@ namespace mpgl {
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Torus<Spec>::Torus(TessellationResult&& result)
         : Angular<dim::Dim3, Spec>{std::move(result.first)},
-        indicies{std::move(result.second)}
+        indices{std::move(result.second)}
     {
         reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Torus<Spec>::Torus(Torus const& torus)
-        : Angular<dim::Dim3, Spec>{torus}, indicies{torus.indicies}
+        : Angular<dim::Dim3, Spec>{torus}, indices{torus.indices}
     {
         reloadElementBuffer();
     }
@@ -121,7 +121,7 @@ namespace mpgl {
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Torus<Spec>& Torus<Spec>::operator=(Torus const& torus) {
         Angular<dim::Dim3, Spec>::operator=(torus);
-        indicies = torus.indicies;
+        indices = torus.indices;
         reloadElementBuffer();
         return *this;
     }
@@ -130,7 +130,7 @@ namespace mpgl {
     void Torus<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
-        elementBuffer.setBufferData(indicies);
+        elementBuffer.setBufferData(indices);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -141,7 +141,7 @@ namespace mpgl {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         this->vertexArray.drawElements(
             VertexArray::DrawMode::Triangles,
-            6 * indicies.size(),
+            6 * indices.size(),
             DataType::UInt32);
     }
 

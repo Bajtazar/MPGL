@@ -31,7 +31,7 @@ namespace mpgl {
 
     template <
         FlexibleRange VRange,
-        UnderlyingRange<IndiciesTriangle> IRange,
+        UnderlyingRange<IndicesTriangle> IRange,
         std::invocable<
             std::ranges::range_value_t<VRange> const&,
             std::ranges::range_value_t<VRange> const&> Predicate>
@@ -44,13 +44,13 @@ namespace mpgl {
     [[nodiscard]] std::pair<VRange, IRange>
         SubdivisionTessellator::operator() (
             VRange vertices,
-            IRange indicies,
+            IRange indices,
             uint8 tessellationSteps,
             Predicate pred) const
     {
         for (uint8 i = 0; i < tessellationSteps; ++i)
-            indicies = Algorithm{vertices, pred}(indicies);
-        return { vertices, indicies };
+            indices = Algorithm{vertices, pred}(indices);
+        return { vertices, indices };
     }
 
     template <
@@ -82,16 +82,16 @@ namespace mpgl {
                     Pred,
                         std::ranges::range_value_t<VRange> const&,
                         std::ranges::range_value_t<VRange> const&>>)
-    template <UnderlyingRange<IndiciesTriangle> IRange>
+    template <UnderlyingRange<IndicesTriangle> IRange>
     [[nodiscard]] IRange SubdivisionTessellator::
-        Algorithm<VRange, Pred>::operator() (IRange const& indicies)
+        Algorithm<VRange, Pred>::operator() (IRange const& indices)
     {
-        vertices.reserve(vertices.size() + 3 * indicies.size() / 2);
-        IRange newIndicies;
-        newIndicies.reserve(4 * indicies.size());
-        for (auto const& triangle : indicies)
-            tessellateFace(newIndicies, triangle);
-        return newIndicies;
+        vertices.reserve(vertices.size() + 3 * indices.size() / 2);
+        IRange newIndices;
+        newIndices.reserve(4 * indices.size());
+        for (auto const& triangle : indices)
+            tessellateFace(newIndices, triangle);
+        return newIndices;
     }
 
     template <
@@ -105,11 +105,11 @@ namespace mpgl {
                     Pred,
                         std::ranges::range_value_t<VRange> const&,
                         std::ranges::range_value_t<VRange> const&>>)
-    template <UnderlyingRange<IndiciesTriangle> IRange>
+    template <UnderlyingRange<IndicesTriangle> IRange>
     void SubdivisionTessellator::Algorithm<VRange, Pred>
         ::tessellateFace(
-            IRange& indicies,
-            IndiciesTriangle const& triangle)
+            IRange& indices,
+            IndicesTriangle const& triangle)
     {
         uint32 const n1 = getOrConstructVertex(
             triangle.firstVertex, triangle.secondVertex);;
@@ -117,7 +117,7 @@ namespace mpgl {
             triangle.secondVertex, triangle.thirdVertex);
         uint32 const n3 = getOrConstructVertex(
             triangle.firstVertex, triangle.thirdVertex);
-        addTriangles(indicies, triangle, n1, n2, n3);
+        addTriangles(indices, triangle, n1, n2, n3);
     }
 
     template <
@@ -131,11 +131,11 @@ namespace mpgl {
                     Pred,
                         std::ranges::range_value_t<VRange> const&,
                         std::ranges::range_value_t<VRange> const&>>)
-    template <UnderlyingRange<IndiciesTriangle> IRange>
+    template <UnderlyingRange<IndicesTriangle> IRange>
     void SubdivisionTessellator::Algorithm<VRange, Pred>
         ::addTriangles(
-            IRange& indicies,
-            IndiciesTriangle const& triangle,
+            IRange& indices,
+            IndicesTriangle const& triangle,
             uint32 const new1,
             uint32 const new2,
             uint32 const new3) const
@@ -143,10 +143,10 @@ namespace mpgl {
         uint32 const v1 = triangle.firstVertex;
         uint32 const v2 = triangle.secondVertex;
         uint32 const v3 = triangle.thirdVertex;
-        indicies.push_back(IndiciesTriangle{v1, new1, new3});
-        indicies.push_back(IndiciesTriangle{new1, v2, new2});
-        indicies.push_back(IndiciesTriangle{new2, v3, new3});
-        indicies.push_back(IndiciesTriangle{new1, new2, new3});
+        indices.push_back(IndicesTriangle{v1, new1, new3});
+        indices.push_back(IndicesTriangle{new1, v2, new2});
+        indices.push_back(IndicesTriangle{new2, v3, new3});
+        indices.push_back(IndicesTriangle{new1, new2, new3});
     }
 
     template <

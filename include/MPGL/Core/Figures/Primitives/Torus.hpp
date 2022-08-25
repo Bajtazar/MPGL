@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
-#include <MPGL/Core/Vertex/Indicies/IndiciesTetragon.hpp>
+#include <MPGL/Core/Vertex/Indices/IndicesTetragon.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
 namespace mpgl {
@@ -91,15 +91,15 @@ namespace mpgl {
         virtual ~Torus(void) noexcept = default;
     private:
         using Vertex = typename VertexTraits::Vertex;
-        using Indicies = std::vector<IndiciesTetragon>;
+        using Indices = std::vector<IndicesTetragon>;
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
-        using TessellationResult = std::pair<Vertices, Indicies>;
+        using TessellationResult = std::pair<Vertices, Indices>;
 
         /**
          * Constructs a new torus object from a pair of the
-         * vertices and indicies
+         * vertices and indices
          *
-         * @param result a pair of vertices and indicies
+         * @param result a pair of vertices and indices
          */
         explicit Torus(TessellationResult&& result);
 
@@ -108,7 +108,7 @@ namespace mpgl {
          */
         void reloadElementBuffer(void) const noexcept;
 
-        Indicies                                    indicies;
+        Indices                                     indices;
         ElementArrayBuffer                          elementBuffer;
 
         /**
@@ -153,7 +153,7 @@ namespace mpgl {
          * @param ringRadius a radius of the torus ring
          * @param color a color of the torus
          * @param tessellationSteps a number of tessellation steps
-         * @return a pair of vertices and indicies
+         * @return a pair of vertices and indices
          */
         [[nodiscard]] static TessellationResult tessellateBase(
             Vector3f const& position,
@@ -162,7 +162,7 @@ namespace mpgl {
             Color const& color,
             uint8 tessellationSteps);
 
-        static Indicies const                       BaseIndices;
+        static Indices const                        BaseIndices;
     };
 
     template class Torus<void>;

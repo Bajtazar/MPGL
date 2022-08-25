@@ -72,53 +72,53 @@ namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     void Cone<Spec>::addTriangle(
-        Indicies& indicies,
+        Indices& indices,
         size_t first,
         size_t second,
         size_t third)
     {
-        indicies.push_back(first);
-        indicies.push_back(second);
-        indicies.push_back(third);
+        indices.push_back(first);
+        indices.push_back(second);
+        indices.push_back(third);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Cone<Spec>::generateCircleIndicies(
-        Indicies& indicies,
+    void Cone<Spec>::generateCircleIndices(
+        Indices& indices,
         size_t segments)
     {
         for (auto i = 1; i < segments; ++i)
-            addTriangle(indicies, 0, i, i + 1);
-        addTriangle(indicies, 0, 1, segments);
+            addTriangle(indices, 0, i, i + 1);
+        addTriangle(indices, 0, 1, segments);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Cone<Spec>::generateFacesIndicies(
-        Indicies& indicies,
+    void Cone<Spec>::generateFacesIndices(
+        Indices& indices,
         size_t segments)
     {
         for (size_t i = 1; i < segments + 1; ++i)
-            addTriangle(indicies, i, i + 1, segments + 1);
-        addTriangle(indicies, segments, 1, segments + 1);
+            addTriangle(indices, i, i + 1, segments + 1);
+        addTriangle(indices, segments, 1, segments + 1);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] Cone<Spec>::Indicies
-        Cone<Spec>::generateIndicies(size_t segments)
+    [[nodiscard]] Cone<Spec>::Indices
+        Cone<Spec>::generateIndices(size_t segments)
     {
-        Indicies indicies;
-        indicies.reserve(6 * segments);
-        generateCircleIndicies(indicies, segments);
-        generateFacesIndicies(indicies, segments);
-        return indicies;
+        Indices indices;
+        indices.reserve(6 * segments);
+        generateCircleIndices(indices, segments);
+        generateFacesIndices(indices, segments);
+        return indices;
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cone<Spec>::Cone(
         Color const& color,
         size_t baseSegments) : Angular<dim::Dim3, Spec>{
-            baseSegments + 2, color}, indicies{
-                generateIndicies(baseSegments)}
+            baseSegments + 2, color}, indices{
+                generateIndices(baseSegments)}
     {
         reloadElementBuffer();
     }
@@ -132,7 +132,7 @@ namespace mpgl {
         size_t baseSegments) : Angular<dim::Dim3, Spec>{
             generateVertices(color, position, radiusVector,
             heightVector, baseSegments)},
-                indicies{generateIndicies(baseSegments)}
+                indices{generateIndices(baseSegments)}
     {
         if (dot(radiusVector, heightVector))
             throw NotPerpendicularException{radiusVector, heightVector};
@@ -148,14 +148,14 @@ namespace mpgl {
         size_t baseSegments) : Angular<dim::Dim3, Spec>{
             generateVertices(color, position, {1._x * radius},
             {1._y * height}, baseSegments)},
-                indicies{generateIndicies(baseSegments)}
+                indices{generateIndices(baseSegments)}
     {
         reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cone<Spec>::Cone(Cone const& cone)
-        : Angular<dim::Dim3, Spec>{cone}, indicies{cone.indicies}
+        : Angular<dim::Dim3, Spec>{cone}, indices{cone.indices}
     {
         reloadElementBuffer();
     }
@@ -163,7 +163,7 @@ namespace mpgl {
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cone<Spec>& Cone<Spec>::operator=(Cone const& cone) {
         Angular<dim::Dim3, Spec>::operator=(cone);
-        indicies = cone.indicies;
+        indices = cone.indices;
         reloadElementBuffer();
         return *this;
     }
@@ -172,7 +172,7 @@ namespace mpgl {
     void Cone<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
-        elementBuffer.setBufferData(indicies);
+        elementBuffer.setBufferData(indices);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -182,7 +182,7 @@ namespace mpgl {
         this->actualizeLocations();
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         this->vertexArray.drawElements(
-            VertexArray::DrawMode::Triangles, indicies.size(),
+            VertexArray::DrawMode::Triangles, indices.size(),
             DataType::UInt32);
     }
 

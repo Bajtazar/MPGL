@@ -26,7 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Context/Buffers/ElementArrayBuffer.hpp>
-#include <MPGL/Core/Vertex/Indicies/IndiciesTriangle.hpp>
+#include <MPGL/Core/Vertex/Indices/IndicesTriangle.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
 namespace mpgl {
@@ -89,15 +89,15 @@ namespace mpgl {
         virtual ~Sphere(void) noexcept = default;
     private:
         using Vertex = typename VertexTraits::Vertex;
-        using Indicies = std::vector<IndiciesTriangle>;
+        using Indices = std::vector<IndicesTriangle>;
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
-        using TessellationResult = std::pair<Vertices, Indicies>;
+        using TessellationResult = std::pair<Vertices, Indices>;
 
         /**
          * Constructs a new sphere object from a pair of the
-         * vertices and indicies
+         * vertices and indices
          *
-         * @param result a pair of vertices and indicies
+         * @param result a pair of vertices and indices
          */
         explicit Sphere(TessellationResult&& result);
 
@@ -106,7 +106,7 @@ namespace mpgl {
          */
         void reloadElementBuffer(void) const noexcept;
 
-        Indicies                                    indicies;
+        Indices                                     indices;
         ElementArrayBuffer                          elementBuffer;
 
         /**
@@ -117,7 +117,7 @@ namespace mpgl {
          * @param radius a radius of the sphere
          * @param color a color of the sphere
          * @param steps a number of tessellation steps
-         * @return a pair of vertices and indicies
+         * @return a pair of vertices and indices
          */
         [[nodiscard]] static TessellationResult tessellateIcosahedron(
             Vector3f const& position,
@@ -152,7 +152,7 @@ namespace mpgl {
             float32 radius,
             Color const& color);
 
-        static Indicies const                       IcosahedronIndicies;
+        static Indices const                        IcosahedronIndices;
         static float64 const                        ATan;
     };
 

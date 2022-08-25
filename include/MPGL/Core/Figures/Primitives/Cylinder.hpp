@@ -126,7 +126,7 @@ namespace mpgl {
          */
         virtual ~Cylinder(void) noexcept = default;
     private:
-        using Indicies = std::vector<uint32>;
+        using Indices = std::vector<uint32>;
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
 
         /**
@@ -134,7 +134,7 @@ namespace mpgl {
          */
         void reloadElementBuffer(void) const noexcept;
 
-        Indicies                                    indicies;
+        Indices                                     indices;
         ElementArrayBuffer                          elementBuffer;
 
         /**
@@ -176,49 +176,49 @@ namespace mpgl {
             size_t segments);
 
         /**
-         * Generates cylinder's indicies
+         * Generates cylinder's indices
          *
          * @param segments a number of vertices that consists of
          * one base circle
-         * @return the cylinder's indicies
+         * @return the cylinder's indices
          */
-        [[nodiscard]] static Indicies generateIndicies(
+        [[nodiscard]] static Indices generateIndices(
             size_t segments);
 
         /**
-         * Generate base circle's indicies
+         * Generate base circle's indices
          *
-         * @param indicies a reference to the indicies vector
-         * @param startIndex a start index of the circile's indicies
+         * @param indices a reference to the indices vector
+         * @param startIndex a start index of the circile's indices
          * @param segments a number of vertices that consists of
          * one base circle
          */
-        static void generateCircleIndicies(
-            Indicies& indicies,
+        static void generateCircleIndices(
+            Indices& indices,
             size_t startIndex,
             size_t segments);
 
         /**
          * Generates cylinder's facade inidices
          *
-         * @param indicies a reference to the indicies vector
+         * @param indices a reference to the indices vector
          * @param segments number of vertices that consists of
          * one base circle
          */
-        static void generateFacesIndicies(
-            Indicies& indicies,
+        static void generateFacesIndices(
+            Indices& indices,
             size_t segments);
 
         /**
-         * Adds trinagle to the indicies vector
+         * Adds trinagle to the indices vector
          *
-         * @param indicies a reference to the indicies vector
+         * @param indices a reference to the indices vector
          * @param first the first trinagle's vertex position
          * @param second the second trinagle's vertex position
          * @param third the third trinagle's vertex position
          */
         static void addTriangle(
-            Indicies& indicies,
+            Indices& indices,
             size_t first,
             size_t second,
             size_t third);

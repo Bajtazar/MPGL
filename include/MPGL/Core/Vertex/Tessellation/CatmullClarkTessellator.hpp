@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Vertex/Indicies/IndiciesTetragon.hpp>
+#include <MPGL/Core/Vertex/Indices/IndicesTetragon.hpp>
 #include <MPGL/Mathematics/Tensors/Vector.hpp>
 #include <MPGL/Core/Vertex/VertexTraits.hpp>
 #include <MPGL/Core/Vertex/VertexCast.hpp>
@@ -50,13 +50,13 @@ namespace mpgl {
          * @tparam IRange the inidcies range type
          * @tparam Predicate the tessellation predicate type
          * @param vertices the vertices range
-         * @param indicies the indicies range
+         * @param indices the indices range
          * @param tessellationSteps the number of tessellation steps
          * @param pred the tessellation predicate
          */
         template <
             FlexibleRange VRange,
-            UnderlyingRange<IndiciesTetragon> IRange,
+            UnderlyingRange<IndicesTetragon> IRange,
             std::invocable<Vector3f const&> Predicate>
                 requires (
                     VertexType<std::ranges::range_value_t<VRange>>
@@ -64,7 +64,7 @@ namespace mpgl {
                         Predicate, Vector3f const&>>)
         [[nodiscard]] std::pair<VRange, IRange> operator() (
             VRange vertices,
-            IRange indicies,
+            IRange indices,
             uint8 tessellationSteps,
             Predicate pred) const;
     private:
@@ -78,7 +78,7 @@ namespace mpgl {
          */
         template <
             FlexibleRange VRange,
-            UnderlyingRange<IndiciesTetragon> IRange,
+            UnderlyingRange<IndicesTetragon> IRange,
             std::invocable<Vector3f const&> Predicate>
                 requires (
                     VertexType<std::ranges::range_value_t<VRange>>
@@ -94,16 +94,16 @@ namespace mpgl {
             explicit Algorithm(Predicate builder);
 
             /**
-             * Performs tessellation on the given indicies and vertices
+             * Performs tessellation on the given indices and vertices
              *
              * @param vertices a constant reference to the vertices range
-             * @param indicies a constant reference to the indicies
+             * @param indices a constant reference to the indices
              * range
              * @return a tessellated tetragon mesh
              */
             [[nodiscard]] std::pair<VRange, IRange> operator() (
                 VRange const& vertices,
-                IRange const& indicies);
+                IRange const& indices);
         private:
             using Vertex = std::ranges::range_value_t<VRange>;
             using VertexAdapter = std::remove_cvref_t<decltype(
@@ -144,7 +144,7 @@ namespace mpgl {
              * Builds a tetragons face vertices
              *
              * @param vertices a constant reference to the vertices range
-             * @param indicies a constant reference to the indicies
+             * @param indices a constant reference to the indices
              * range
              */
             void buildFaces(
@@ -155,7 +155,7 @@ namespace mpgl {
              * Builds a tetragons edge vertices
              *
              * @param vertices a constant reference to the vertices range
-             * @param indicies a constant reference to the indicies
+             * @param indices a constant reference to the indices
              * range
              */
             void buildEdges(
@@ -180,7 +180,7 @@ namespace mpgl {
              * Builds a tetragon edge vertices that lies on the border
              *
              * @param vertices a constant reference to the vertices range
-             * @param indicies a constant reference to the indicies
+             * @param indices a constant reference to the indices
              * range
              */
             void buildBorderEdges(

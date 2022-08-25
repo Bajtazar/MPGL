@@ -33,7 +33,7 @@
 namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    Sphere<Spec>::Indicies const Sphere<Spec>::IcosahedronIndicies {{
+    Sphere<Spec>::Indices const Sphere<Spec>::IcosahedronIndices {{
         {0, 1, 2}, {0, 2, 3}, {0, 3, 4}, {0, 4, 5}, {0, 5, 1},
         {1, 7, 2}, {2, 8, 3}, {3, 9, 4}, {4, 10, 5}, {5, 6, 1},
         {6, 1, 7}, {7, 2, 8}, {8, 3, 9}, {9, 4, 10}, {10, 5, 6},
@@ -92,7 +92,7 @@ namespace mpgl {
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Sphere<Spec>::Sphere(TessellationResult&& result)
         : Angular<dim::Dim3, Spec>{std::move(result.first)},
-        indicies{std::move(result.second)}
+        indices{std::move(result.second)}
     {
         reloadElementBuffer();
     }
@@ -115,12 +115,12 @@ namespace mpgl {
         };
         return subdivisionTessellator(
             generateIcosahedron(position, radius, color),
-            IcosahedronIndicies, steps, predicate);
+            IcosahedronIndices, steps, predicate);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Sphere<Spec>::Sphere(Sphere const& sphere)
-        : Angular<dim::Dim3, Spec>{sphere}, indicies{sphere.indicies}
+        : Angular<dim::Dim3, Spec>{sphere}, indices{sphere.indices}
     {
         reloadElementBuffer();
     }
@@ -128,7 +128,7 @@ namespace mpgl {
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Sphere<Spec>& Sphere<Spec>::operator=(Sphere const& sphere) {
         Angular<dim::Dim3, Spec>::operator=(sphere);
-        indicies = sphere.indicies;
+        indices = sphere.indices;
         reloadElementBuffer();
         return *this;
     }
@@ -137,7 +137,7 @@ namespace mpgl {
     void Sphere<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
-        elementBuffer.setBufferData(indicies);
+        elementBuffer.setBufferData(indices);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -147,7 +147,7 @@ namespace mpgl {
         this->actualizeLocations();
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         this->vertexArray.drawElements(
-            VertexArray::DrawMode::Triangles, 3 * indicies.size(),
+            VertexArray::DrawMode::Triangles, 3 * indices.size(),
             DataType::UInt32);
     }
 
