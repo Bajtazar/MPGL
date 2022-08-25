@@ -93,7 +93,7 @@ namespace mpgl {
 
         /**
          * Draws all of the contained drawables on the screen
-         * with the indexes between the given range
+         * with the indices between the given range
          *
          * @param begin the first index
          * @param end the last index
@@ -158,7 +158,7 @@ namespace mpgl {
 
         /**
          * Draws all of the contained drawables on the screen
-         * with the indexes between the given range
+         * with the indices between the given range
          *
          * @param begin the first index
          * @param end the last index

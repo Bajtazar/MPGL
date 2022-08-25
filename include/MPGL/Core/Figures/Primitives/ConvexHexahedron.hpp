@@ -91,9 +91,9 @@ namespace mpgl {
          */
         virtual ~ConvexHexahedron(void) noexcept = default;
     private:
-        using Indexes = std::array<uint32, 36>;
+        using Indices = std::array<uint32, 36>;
 
-        static constexpr Indexes const              indexes{
+        static constexpr Indices const              indices{
             0, 1, 3, 1, 2, 3, 1, 2, 4, 2, 4, 7, 0, 1, 5, 1, 5, 4,
             4, 5, 7, 7, 5, 6, 0, 3, 5, 3, 5, 6, 3, 2, 6, 2, 6, 7};
 

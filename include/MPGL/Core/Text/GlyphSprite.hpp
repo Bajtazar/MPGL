@@ -329,7 +329,7 @@ namespace mpgl {
         ~GlyphSprite(void) noexcept = default;
     private:
         using Positions = std::array<Vector, 4>;
-        using Indexes = std::array<uint32, 6>;
+        using Indices = std::array<uint32, 6>;
 
         Vertices                                        vertices;
         ElementArrayBuffer                              elementBuffer;
@@ -356,7 +356,7 @@ namespace mpgl {
             Color const& color,
             Positions const& positions = {});
 
-        static constexpr const Indexes                  indexes {
+        static constexpr const Indices                  indices {
             0, 1, 2, 0, 3, 2};
     };
 

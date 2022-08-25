@@ -102,21 +102,21 @@ namespace mpgl {
 
     template <Dimension Dim>
     template <std::derived_from<Transformation<Dim>>... TArgs>
-    template <size_t Index, size_t... Indexes>
+    template <size_t Index, size_t... Indices>
     constexpr decltype(auto)
         ChainTransformation<Dim>::AgregatedTransformation<TArgs...>::
-            findFusionIndexes(std::index_sequence<Indexes...> indexes)
+            findFusionIndices(std::index_sequence<Indices...> indices)
     {
         if constexpr (Index == sizeof...(TArgs)) {
-            return indexes;
+            return indices;
         } else {
             using CurrentTp = std::remove_cvref_t<decltype(
                 std::get<Index>(std::declval<Agregated>()))>;
             using LastTp = std::remove_cvref_t<decltype(
                 std::get<Index - 1>(std::declval<Agregated>()))>;
 
-            return findFusionIndexesHelper<Index, CurrentTp, LastTp>(
-                std::move(indexes));
+            return findFusionIndicesHelper<Index, CurrentTp, LastTp>(
+                std::move(indices));
         }
     }
 
@@ -126,31 +126,31 @@ namespace mpgl {
         size_t Index,
         class CurrentTp,
         class LastTp,
-        size_t... Indexes>
+        size_t... Indices>
     constexpr decltype(auto)
         ChainTransformation<Dim>::AgregatedTransformation<TArgs...>::
-            findFusionIndexesHelper(
-                std::index_sequence<Indexes...> indexes)
+            findFusionIndicesHelper(
+                std::index_sequence<Indices...> indices)
     {
         if constexpr (!InstanceOf<CurrentTp, Fusable>) {
-            return findFusionIndexes<Index + 1>(
-                pushBack<Index>(indexes));
+            return findFusionIndices<Index + 1>(
+                pushBack<Index>(indices));
         } else if constexpr (!IsFusable<LastTp,
             typename CurrentTp::FusionBase>::Value)
         {
-            return findFusionIndexes<Index + 1>(
-                pushBack<Index>(indexes));
+            return findFusionIndices<Index + 1>(
+                pushBack<Index>(indices));
         } else
-            return findFusionIndexes<Index + 1>(std::move(indexes));
+            return findFusionIndices<Index + 1>(std::move(indices));
     }
 
     template <Dimension Dim>
     template <std::derived_from<Transformation<Dim>>... TArgs>
     constexpr decltype(auto)
         ChainTransformation<Dim>::AgregatedTransformation<TArgs...>::
-            findFusionIndexes(void)
+            findFusionIndices(void)
     {
-        return findFusionIndexes<1>(std::index_sequence<0>{});
+        return findFusionIndices<1>(std::index_sequence<0>{});
     }
 
     template <Dimension Dim>
@@ -162,7 +162,7 @@ namespace mpgl {
         fuseInstructions(tuple);
         return [&tuple]<size_t... I>(std::index_sequence<I...>) {
             return std::tuple{ std::get<I>(tuple)... };
-        }(FusionIndexes{});
+        }(FusionIndices{});
     }
 
     template <Dimension Dim>
@@ -172,7 +172,7 @@ namespace mpgl {
             fuseInstructions(Agregated& tuple) noexcept
     {
         using FusionRange = decltype(pushBack<sizeof...(TArgs)>(
-            std::declval<FusionIndexes>()));
+            std::declval<FusionIndices>()));
 
         std::apply([&tuple](auto&&... sequences){
             ([&tuple]<size_t F, size_t... I>(

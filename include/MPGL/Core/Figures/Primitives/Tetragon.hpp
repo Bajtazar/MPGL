@@ -123,9 +123,9 @@ namespace mpgl {
     private:
         using Drawer = TetragonDrawer<Dim, Spec>;
         using Clicker = TetragonClickChecker<Dim, Spec>;
-        using Indexes = std::array<uint32, 6>;
+        using Indices = std::array<uint32, 6>;
 
-        static constexpr const Indexes              indexes{
+        static constexpr const Indices              indices{
             0, 1, 2, 0, 3, 2};
 
         /**

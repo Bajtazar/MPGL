@@ -91,9 +91,9 @@ namespace mpgl {
          */
         virtual ~Tetrahedron(void) noexcept = default;
     private:
-        using Indexes = std::array<uint32, 12>;
+        using Indices = std::array<uint32, 12>;
 
-        static constexpr Indexes const              indexes{
+        static constexpr Indices const              indices{
             0, 1, 2, 0, 2, 3, 0, 1, 3, 1, 2, 3};
 
         /**

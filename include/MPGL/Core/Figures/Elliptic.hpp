@@ -316,7 +316,7 @@ namespace mpgl {
 
         Elliptic& operator=(Elliptic&& shape) noexcept = default;
 
-        typedef std::array<uint32, 6>                   Indexes;
+        typedef std::array<uint32, 6>                   Indices;
 
         ElementArrayBuffer                              elementBuffer;
         Vertices                                        vertices;
@@ -370,7 +370,7 @@ namespace mpgl {
          */
         void initializeBuffers(void) const noexcept;
 
-        static constexpr const Indexes                  indexes {
+        static constexpr const Indices                  indices {
             0, 1, 2, 0, 3, 2};
     };
 

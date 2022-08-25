@@ -33,41 +33,41 @@ namespace mpgl {
      * Adds the given number to the back of index sequence
      *
      * @tparam I the inserted number
-     * @tparam Indexes the index sequence's indexes
+     * @tparam Indices the index sequence's indices
      * @return the index sequence with inserted number
      */
-    template <size_t I, size_t... Indexes>
-    [[nodiscard]] consteval std::index_sequence<Indexes..., I>
-        pushBack(std::index_sequence<Indexes...>) noexcept;
+    template <size_t I, size_t... Indices>
+    [[nodiscard]] consteval std::index_sequence<Indices..., I>
+        pushBack(std::index_sequence<Indices...>) noexcept;
 
     /**
      * Adds the given number to the front of index sequence
      *
      * @tparam I the inserted number
-     * @tparam Indexes the index sequence's indexes
+     * @tparam Indices the index sequence's indices
      * @return the index sequence with inserted number
      */
-    template <size_t I, size_t... Indexes>
-    [[nodiscard]] consteval std::index_sequence<I, Indexes...>
-        pushFront(std::index_sequence<Indexes...>) noexcept;
+    template <size_t I, size_t... Indices>
+    [[nodiscard]] consteval std::index_sequence<I, Indices...>
+        pushFront(std::index_sequence<Indices...>) noexcept;
 
     /**
-     * Produces index sequence that holds only indexes between
+     * Produces index sequence that holds only indices between
      * the Begin index and the End index (excluding End)
      *
      * @tparam Index the current index [begin or continuation of
      * recursive call]
      * @tparam End the end index
-     * @tparam Indexes the current index sequence's indexes
-     * @param indexes the current index sequence
+     * @tparam Indices the current index sequence's indices
+     * @param indices the current index sequence
      * @return the range index sequence
      */
-    template <size_t Index, size_t End, size_t... Indexes>
+    template <size_t Index, size_t End, size_t... Indices>
     [[nodiscard]] consteval decltype(auto) indexSequenceRange(
-        std::index_sequence<Indexes...> indexes) noexcept;
+        std::index_sequence<Indices...> indices) noexcept;
 
     /**
-     * Produces index sequence that holds only indexes between
+     * Produces index sequence that holds only indices between
      * the Begin index and the End index (excluding End)
      *
      * @tparam Begin first index
@@ -82,14 +82,14 @@ namespace mpgl {
      * Splits sequence between the ranges and returns a tuple
      * containing them
      *
-     * @tparam Indexes the index sequence's indexes
-     * @param indexes the index sequence
+     * @tparam Indices the index sequence's indices
+     * @param indices the index sequence
      * @return a tuple containing subranges
      */
-    template <size_t... Indexes>
-        requires (sizeof...(Indexes) > 0)
+    template <size_t... Indices>
+        requires (sizeof...(Indices) > 0)
     [[nodiscard]] consteval decltype(auto) splitIndexSequence(
-        std::index_sequence<Indexes...> indexes) noexcept;
+        std::index_sequence<Indices...> indices) noexcept;
 
     /**
      * Splits sequence between the ranges and returns a tuple

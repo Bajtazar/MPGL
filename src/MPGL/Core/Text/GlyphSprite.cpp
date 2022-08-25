@@ -49,7 +49,7 @@ namespace mpgl {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
         elementBuffer.bind();
-        elementBuffer.setBufferData(indexes);
+        elementBuffer.setBufferData(indices);
         this->vertexBuffer.setBufferData(vertices);
         this->vertexArray.setArrayData(VertexArray::VertexTag<Vertex>{});
     }

@@ -301,10 +301,10 @@ namespace mpgl {
     }
 
     template <Dimension Dim>
-    void Text<Dim>::loadGlyphs(IDArray const& indexes) {
+    void Text<Dim>::loadGlyphs(IDArray const& indices) {
         auto& subfont = font(style);
         auto&& [level, scale] = glyphCoefficients();
-        for (uint16 const& index : indexes)
+        for (uint16 const& index : indices)
             loadGlyph(subfont, level, scale, index);
     }
 
