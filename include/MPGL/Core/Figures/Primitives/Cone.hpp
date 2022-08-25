@@ -104,7 +104,14 @@ namespace mpgl {
 
         Cone(Cone&& cone) noexcept = default;
 
-        Cone& operator=(Cone const& cone) = default;
+        /**
+         * Assigns an other cone object to this object
+         *
+         * @param cone a constant reference to the other object
+         * @return a reference to this object
+         */
+        Cone& operator=(Cone const& cone);
+
         Cone& operator=(Cone&& cone) noexcept = default;
 
         /**
@@ -121,9 +128,9 @@ namespace mpgl {
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
 
         /**
-         * Initializes the element buffer object
+         * Reloads the element array buffer object
          */
-        void initElementBuffer(void) const noexcept;
+        void reloadElementBuffer(void) const noexcept;
 
         Indicies                                    indicies;
         ElementArrayBuffer                          elementBuffer;

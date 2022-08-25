@@ -120,7 +120,7 @@ namespace mpgl {
             baseSegments + 2, color}, indicies{
                 generateIndicies(baseSegments)}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -136,7 +136,7 @@ namespace mpgl {
     {
         if (dot(radiusVector, heightVector))
             throw NotPerpendicularException{radiusVector, heightVector};
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -150,18 +150,26 @@ namespace mpgl {
             {1._y * height}, baseSegments)},
                 indicies{generateIndicies(baseSegments)}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cone<Spec>::Cone(Cone const& cone)
         : Angular<dim::Dim3, Spec>{cone}, indicies{cone.indicies}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Cone<Spec>::initElementBuffer(void) const noexcept {
+    Cone<Spec>& Cone<Spec>::operator=(Cone const& cone) {
+        Angular<dim::Dim3, Spec>::operator=(cone);
+        indicies = cone.indicies;
+        reloadElementBuffer();
+        return *this;
+    }
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void Cone<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
         elementBuffer.setBufferData(indicies);
