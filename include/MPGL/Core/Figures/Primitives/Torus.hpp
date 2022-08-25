@@ -69,7 +69,15 @@ namespace mpgl {
 
         Torus(Torus&& torus) noexcept = default;
 
-        Torus& operator=(Torus const& torus) = default;
+        /**
+         * Assigns an other torus object to this object
+         *
+         * @param torus a constant reference to the other
+         * object
+         * @return a reference to this object
+         */
+        Torus& operator=(Torus const& torus);
+
         Torus& operator=(Torus&& torus) noexcept = default;
 
         /**
@@ -96,9 +104,9 @@ namespace mpgl {
         explicit Torus(TessellationResult&& result);
 
         /**
-         * Initializes the element buffer object
+         * Reloads the element array buffer object
          */
-        void initElementBuffer(void) const noexcept;
+        void reloadElementBuffer(void) const noexcept;
 
         Indicies                                    indicies;
         ElementArrayBuffer                          elementBuffer;

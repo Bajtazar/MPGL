@@ -100,7 +100,7 @@ namespace mpgl {
             : Torus{tessellateBase(position, radius, ringRadius,
                 color, tessellationSteps)}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -108,18 +108,26 @@ namespace mpgl {
         : Angular<dim::Dim3, Spec>{std::move(result.first)},
         indicies{std::move(result.second)}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Torus<Spec>::Torus(Torus const& torus)
         : Angular<dim::Dim3, Spec>{torus}, indicies{torus.indicies}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Torus<Spec>::initElementBuffer(void) const noexcept {
+    Torus<Spec>& Torus<Spec>::operator=(Torus const& torus) {
+        Angular<dim::Dim3, Spec>::operator=(torus);
+        indicies = torus.indicies;
+        reloadElementBuffer();
+        return *this;
+    }
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void Torus<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
         elementBuffer.setBufferData(indicies);
