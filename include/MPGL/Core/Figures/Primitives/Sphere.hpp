@@ -67,7 +67,15 @@ namespace mpgl {
 
         Sphere(Sphere&& sphere) noexcept = default;
 
-        Sphere& operator=(Sphere const& sphere) = default;
+        /**
+         * Assigns an other sphere object to this object
+         *
+         * @param sphere a constant reference to the other
+         * sphere object
+         * @return a reference to this object
+         */
+        Sphere& operator=(Sphere const& sphere);
+
         Sphere& operator=(Sphere&& sphere) noexcept = default;
 
         /**
@@ -94,9 +102,9 @@ namespace mpgl {
         explicit Sphere(TessellationResult&& result);
 
         /**
-         * Initializes the element buffer object
+         * Reloads the element array buffer object
          */
-        void initElementBuffer(void) const noexcept;
+        void reloadElementBuffer(void) const noexcept;
 
         Indicies                                    indicies;
         ElementArrayBuffer                          elementBuffer;

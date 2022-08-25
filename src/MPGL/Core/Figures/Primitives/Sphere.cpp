@@ -94,7 +94,7 @@ namespace mpgl {
         : Angular<dim::Dim3, Spec>{std::move(result.first)},
         indicies{std::move(result.second)}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -122,11 +122,19 @@ namespace mpgl {
     Sphere<Spec>::Sphere(Sphere const& sphere)
         : Angular<dim::Dim3, Spec>{sphere}, indicies{sphere.indicies}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Sphere<Spec>::initElementBuffer(void) const noexcept {
+    Sphere<Spec>& Sphere<Spec>::operator=(Sphere const& sphere) {
+        Angular<dim::Dim3, Spec>::operator=(sphere);
+        indicies = sphere.indicies;
+        reloadElementBuffer();
+        return *this;
+    }
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void Sphere<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
         elementBuffer.setBufferData(indicies);
