@@ -97,15 +97,22 @@ namespace mpgl {
          * Constructs a new cylinder object from the given
          * constant reference to the other object
          *
-         * @param cylinder the constant reference to the other
+         * @param cylinder a constant reference to the other
          * object
          */
         Cylinder(Cylinder const& cylinder);
 
         Cylinder(Cylinder&& cylinder) noexcept = default;
 
-        Cylinder& operator=(
-            Cylinder const& cylinder) = default;
+        /**
+         * Assigns an other cylinder object to this object
+         *
+         * @param cylinder a constant reference to the other
+         * object
+         * @return a reference to this object
+         */
+        Cylinder& operator=(Cylinder const& cylinder);
+
         Cylinder& operator=(
             Cylinder&& cylinder) noexcept = default;
 
@@ -123,9 +130,9 @@ namespace mpgl {
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
 
         /**
-         * Initializes the element buffer object
+         * Reloads the element array buffer object
          */
-        void initElementBuffer(void) const noexcept;
+        void reloadElementBuffer(void) const noexcept;
 
         Indicies                                    indicies;
         ElementArrayBuffer                          elementBuffer;

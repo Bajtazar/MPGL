@@ -129,14 +129,14 @@ namespace mpgl {
             baseSegments * 2 + 2, color}, indicies{
                 generateIndicies(baseSegments)}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     Cylinder<Spec>::Cylinder(Cylinder const& cylinder)
         : Angular<dim::Dim3, Spec>{cylinder}, indicies{cylinder.indicies}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -152,7 +152,7 @@ namespace mpgl {
     {
         if (dot(radiusVector, heightVector))
             throw NotPerpendicularException{radiusVector, heightVector};
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
@@ -166,11 +166,21 @@ namespace mpgl {
             {1._y * height}, baseSegments)},
                 indicies{generateIndicies(baseSegments)}
     {
-        initElementBuffer();
+        reloadElementBuffer();
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Cylinder<Spec>::initElementBuffer(void) const noexcept {
+    Cylinder<Spec>& Cylinder<Spec>::operator=(
+        Cylinder const& cylinder)
+    {
+        Angular<dim::Dim3, Spec>::operator=(cylinder);
+        indicies = cylinder.indicies;
+        reloadElementBuffer();
+        return *this;
+    }
+
+    template <AngularTraitSpecifier<dim::Dim3> Spec>
+    void Cylinder<Spec>::reloadElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
         elementBuffer.setBufferData(indicies);
