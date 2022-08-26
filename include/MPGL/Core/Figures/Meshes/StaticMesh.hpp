@@ -328,10 +328,16 @@ namespace mpgl {
         void reloadElementBuffer(void) const noexcept;
 
         /**
+         * Initializes buffers used by the static mesh
+         */
+        void initializeBuffers(void) const noexcept;
+
+        /**
          * Actualizes vertex buffer before draw
          */
         void actualizeBufferBeforeDraw(void) const noexcept;
 
+        Vertices                                    vertices;
         Indices                                     indices;
         ElementArrayBuffer                          elementBuffer;
     };
@@ -346,3 +352,5 @@ namespace mpgl {
     template class StaticMesh<int64>;
 
 }
+
+#include <MPGL/Core/Figures/Meshes/StaticMesh.tpp>
