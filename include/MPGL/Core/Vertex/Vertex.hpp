@@ -228,6 +228,7 @@ namespace mpgl {
     class Vertex : private ReversedTuple<Components...> {
     private:
         typedef ReversedTuple<Components...>            BaseTuple;
+        typedef std::tuple<Components...>               ArgTuple;
     public:
         /**
          * The tuple containing the size [in represent type] of the
@@ -247,6 +248,7 @@ namespace mpgl {
          * @param args the passed arguments
          */
         template <typename... Args>
+            requires std::constructible_from<ArgTuple, Args...>
         constexpr explicit Vertex(Args&&... args)
             : BaseTuple{tupleReverser(std::forward<Args>(args)...)} {}
 
