@@ -53,20 +53,15 @@ namespace mpgl {
     Model& Model::operator=(Model const& model) {
         this->model = model.model;
         locations = model.locations;
-        hasModelChanged = true;
         return *this;
     }
 
     void Model::setModel(Matrix4f const& model) noexcept {
         this->model = model;
-        hasModelChanged = true;
     }
 
     void Model::actualizeLocations(void) const noexcept {
-        if (hasModelChanged) {
-            locations->model(model.get());
-            hasModelChanged = false;
-        }
+        locations->model(model.get());
         if (context.hasVPChanges())
             locations->viewProjection(context.getViewProjection());
     }

@@ -110,7 +110,6 @@ namespace mpgl {
 
         Matrix4fCRef                            model = defaultModel;
         DelegatePointer<Locations>              locations;
-        bool mutable                            hasModelChanged = true;
     };
 
 }
