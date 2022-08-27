@@ -65,4 +65,22 @@ namespace mpgl {
         buildVertexViews();
     }
 
+    template <MeshTraitSpecifier Spec>
+    template <typename... Args>
+        requires std::constructible_from<
+            typename DynamicMesh<Spec>::Vertex, Args...>
+    void DynamicMesh<Spec>::emplace(Args&&... args) {
+        if (emptyVertices.size()) {
+            vertices[emptyVertices.front()] = Vertex{
+                std::forward<Args>(args)...};
+            verticesView.insert(verticesView.begin()
+                + emptyVertices.front(),
+                VertexView{std::ref(*this), emptyVertices.front()});
+            emptyVertices.pop_front();
+        } else {
+            verticesView.emplace_back(std::ref(*this), vertices.size());
+            vertices.emplace_back(std::forward<Args>(args)...);
+        }
+    }
+
 }

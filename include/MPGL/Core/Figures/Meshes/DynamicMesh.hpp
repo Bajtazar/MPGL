@@ -322,8 +322,6 @@ namespace mpgl {
             requires std::constructible_from<Vertex, Args...>
         void emplace(Args&&... args);
 
-        void pop(void) noexcept;
-
         void erase(iterator const& position);
 
         void erase(const_iterator const& position);
@@ -357,7 +355,7 @@ namespace mpgl {
 
         ~DynamicMesh(void) noexcept = default;
     private:
-        using EmptyVertices = std::vector<uint32>;
+        using EmptyVertices = std::deque<uint32>;
 
         void reloadElementBuffer(void) const noexcept;
 

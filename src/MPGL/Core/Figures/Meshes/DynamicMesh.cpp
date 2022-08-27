@@ -463,4 +463,37 @@ namespace mpgl {
         return vertexID - std::distance(emptyVertices.begin(), iter);
     }
 
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] bool DynamicMesh<Spec>::empty(void) const noexcept {
+        return verticesView.empty();
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::push(Vertex const& vertex) {
+        if (emptyVertices.size()) {
+            vertices[emptyVertices.front()] = vertex;
+            verticesView.insert(verticesView.begin()
+                + emptyVertices.front(),
+                VertexView{std::ref(*this), emptyVertices.front()});
+            emptyVertices.pop_front();
+        } else {
+            verticesView.emplace_back(std::ref(*this), vertices.size());
+            vertices.push_back(vertex);
+        }
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::push(Vertex&& vertex) {
+        if (emptyVertices.size()) {
+            vertices[emptyVertices.front()] = std::move(vertex);
+            verticesView.insert(verticesView.begin()
+                + emptyVertices.front(),
+                VertexView{std::ref(*this), emptyVertices.front()});
+            emptyVertices.pop_front();
+        } else {
+            verticesView.emplace_back(std::ref(*this), vertices.size());
+            vertices.push_back(std::move(vertex));
+        }
+    }
+
 }
