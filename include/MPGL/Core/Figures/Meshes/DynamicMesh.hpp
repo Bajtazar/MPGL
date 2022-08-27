@@ -244,8 +244,9 @@ namespace mpgl {
         private:
             explicit VertexView(
                 DynamicMesh& parent,
-                IndicesList&& indices,
                 uint32 vertexID);
+
+            void emplaceTriangle(uint32 triangleID);
 
             DynamicMesh&                            parent;
             IndicesVector                           indicesIDs;
@@ -254,7 +255,6 @@ namespace mpgl {
     private:
         using VerticesView = std::vector<VertexView>;
     public:
-
         [[nodiscard]] VertexView& operator[] (
             std::size_t index) noexcept;
 
@@ -344,6 +344,8 @@ namespace mpgl {
 
         void actualizeBufferBeforeDraw(void) const noexcept;
 
+        void buildVertexViews(void);
+
         Vertices                                    vertices;
         Indices                                     indices;
         EmptyVerticesList                           emptyVertices;
@@ -351,4 +353,15 @@ namespace mpgl {
         ElementArrayBuffer                          elementBuffer;
     };
 
+    template class DynamicMesh<void>;
+    template class DynamicMesh<uint8>;
+    template class DynamicMesh<uint16>;
+    template class DynamicMesh<uint32>;
+    template class DynamicMesh<int8>;
+    template class DynamicMesh<int16>;
+    template class DynamicMesh<int32>;
+    template class DynamicMesh<int64>;
+
 }
+
+#include <MPGL/Core/Figures/Meshes/DynamicMesh.tpp>
