@@ -99,57 +99,72 @@ namespace mpgl {
 
             [[nodiscard]] Vertex const& getVertex(void) const noexcept;
 
-            template <std::bidirectional_iterator Iter>
+            template <std::bidirectional_iterator Iter, typename Tp>
             class Iterator {
             public:
-                using value_type = typename Iter::value_type;
-                using reference = typename Iter::reference;
-                using pointer = typename Iter::pointer;
+                using value_type = Tp;
+                using reference = Tp&;
+                using pointer = Tp*;
                 using difference_type = typename Iter::difference_type;
                 using iterator_category = std::random_access_iterator_tag;
 
-                explicit Iterator(Iter const& iter);
+                explicit Iterator(Iter const& iter)
+                    : iter{iter} {}
 
                 explicit Iterator(void) noexcept = default;
 
-                Iterator& operator++(void) noexcept;
+                Iterator& operator++(void) noexcept
+                    { ++iter; return *this; }
 
-                [[nodiscard]] Iterator operator++(int) noexcept;
+                [[nodiscard]] Iterator operator++(int) noexcept
+                    { return Iterator{iter--}; }
 
-                Iterator& operator--(void) noexcept;
+                Iterator& operator--(void) noexcept
+                    { --iter; return *this; }
 
-                [[nodiscard]] Iterator operator--(int) noexcept;
+                [[nodiscard]] Iterator operator--(int) noexcept
+                    { return Iterator{iter--}; }
 
-                [[nodiscard]] reference operator*(void) const noexcept;
+                [[nodiscard]] reference operator*(void) const noexcept
+                    { return parent.indices[*iter]; }
 
-                [[nodiscard]] pointer operator->(void) const noexcept;
+                [[nodiscard]] pointer operator->(void) const noexcept
+                    { return &parent.indices[*iter]; }
 
-                Iterator& operator+=(difference_type offset) noexcept;
+                Iterator& operator+=(difference_type offset) noexcept
+                    { iter += offset; return *this; }
 
-                Iterator& operator-=(difference_type offset) noexcept;
+                Iterator& operator-=(difference_type offset) noexcept
+                    { iter += offset; return *this; }
 
                 [[nodiscard]] reference operator[](
-                    difference_type offset) const noexcept;
+                    difference_type offset) const noexcept
+                        { return parent.indices[iter[offset]]; }
 
                 [[nodiscard]] friend Iterator operator+ (
                     Iterator const& left,
-                    difference_type right) noexcept;
+                    difference_type right) noexcept
+                        { return Iterator{left.iter + right}; }
 
                 [[nodiscard]] friend Iterator operator+ (
                     difference_type left,
-                    Iterator const& right) noexcept;
+                    Iterator const& right) noexcept
+                        { return Iterator{left + right.iter}; }
 
                 [[nodiscard]] friend Iterator operator- (
                     Iterator const& left,
-                    difference_type right) noexcept;
+                    difference_type right) noexcept
+                        { return Iterator{left.iter - right}; }
 
                 [[nodiscard]] friend difference_type operator- (
                     Iterator const& left,
-                    Iterator const& right) noexcept;
+                    Iterator const& right) noexcept
+                        { return left.iter - right.iter; }
 
                 [[nodiscard]] friend auto operator<=> (
                     Iterator const& left,
-                    Iterator const& right) noexcept;
+                    Iterator const& right) noexcept
+                        { return left.iter <=> right.iter; }
 
                 [[nodiscard]] friend bool operator== (
                     Iterator const& left,
@@ -173,13 +188,16 @@ namespace mpgl {
 
             [[nodiscard]] Vertex const& back(void) const noexcept;
 
-            using iterator = Iterator<typename IndicesVector::iterator>;
+            using iterator = Iterator<
+                typename IndicesVector::iterator, IndicesTriangle>;
             using const_iterator = Iterator<
-                typename IndicesVector::const_iterator>;
+                typename IndicesVector::const_iterator,
+                IndicesTriangle const>;
             using reverse_iterator = Iterator<
-                typename IndicesVector::reverse_iterator>;
+                typename IndicesVector::reverse_iterator, IndicesTriangle>;
             using const_reverse_iterator = Iterator<
-                typename IndicesVector::const_reverse_iterator>;
+                typename IndicesVector::const_reverse_iterator,
+                IndicesTriangle const>;
 
             [[nodiscard]] std::size_t size(void) const noexcept;
 
