@@ -277,7 +277,8 @@ namespace mpgl {
         using const_reverse_iterator
             = typename VerticesView::const_reverse_iterator;
 
-        [[nodiscard]] std::size_t size(void) const noexcept;
+        [[nodiscard]] std::size_t size(void) const noexcept
+            { return verticesView.size(); }
 
         [[nodiscard]] iterator begin(void) noexcept;
 
