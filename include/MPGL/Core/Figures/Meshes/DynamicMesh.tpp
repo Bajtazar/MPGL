@@ -81,12 +81,18 @@ namespace mpgl {
             verticesView.emplace_back(std::ref(*this), vertices.size());
             vertices.emplace_back(std::forward<Args>(args)...);
         }
+        isExtended = true;
     }
 
     template <MeshTraitSpecifier Spec>
     template <std::random_access_iterator Iter>
     void DynamicMesh<Spec>::eraseViewIndices(Iter const& position) {
-        uint32 id = *position.iter;
+        uint32 id = 0;
+        if constexpr (InstanceOf<Iter, AccessRegisteringIterator>) {
+            id = *position.get().iter;
+        } else {
+            id = *position.iter;
+        }
         indices.erase(indices.begin() + id);
         for (VertexView& view : verticesView)
             for (auto& index : view.indicesIDs)

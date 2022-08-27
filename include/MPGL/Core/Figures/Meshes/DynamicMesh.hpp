@@ -192,14 +192,18 @@ namespace mpgl {
 
             [[nodiscard]] IndicesTriangle const& back(
                 void) const noexcept;
-
-            using iterator = Iterator<
+        private:
+            using base_iterator = Iterator<
                 typename IndicesVector::iterator, IndicesTriangle>;
+            using reverse_base_iterator = Iterator<
+                typename IndicesVector::reverse_iterator, IndicesTriangle>;
+        public:
+            using iterator = AccessRegisteringIterator<base_iterator>;
             using const_iterator = Iterator<
                 typename IndicesVector::const_iterator,
                 IndicesTriangle const>;
-            using reverse_iterator = Iterator<
-                typename IndicesVector::reverse_iterator, IndicesTriangle>;
+            using reverse_iterator = AccessRegisteringIterator<
+                reverse_base_iterator>;
             using const_reverse_iterator = Iterator<
                 typename IndicesVector::const_reverse_iterator,
                 IndicesTriangle const>;
@@ -363,6 +367,10 @@ namespace mpgl {
 
         void reloadElementBuffer(void) const noexcept;
 
+        void reloadVertexBuffer(void) const noexcept;
+
+        void reshapeVertexBuffer(void) const noexcept;
+
         void initializeBuffers(void) const noexcept;
 
         void actualizeBufferBeforeDraw(void) const noexcept;
@@ -383,7 +391,8 @@ namespace mpgl {
         EmptyVertices                               emptyVertices;
         VerticesView                                verticesView;
         ElementArrayBuffer                          elementBuffer;
-        bool mutable                                isExtended;
+        bool mutable                                isExtended = false;
+        bool mutable                                isIndiciesChanged = false;
     };
 
     template class DynamicMesh<void>;

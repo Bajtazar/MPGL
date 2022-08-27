@@ -59,7 +59,7 @@ namespace mpgl {
         vertices = dynamicMesh.vertices;
         indices = dynamicMesh.indices;
         emptyVertices = dynamicMesh.emptyVertices;
-        reloadElementBuffer();
+        isIndiciesChanged = true;
         verticesView.clear();
         buildVertexViews();
         return *this;
@@ -139,6 +139,7 @@ namespace mpgl {
         DynamicMesh<Spec>::VertexView::operator[] (
             std::size_t index) noexcept
     {
+        parent.get().isIndiciesChanged = true;
         return parent.get().indices[indicesIDs[index]];
     }
 
@@ -154,6 +155,7 @@ namespace mpgl {
     [[nodiscard]] IndicesTriangle&
         DynamicMesh<Spec>::VertexView::front(void) noexcept
     {
+        parent.get().isIndiciesChanged = true;
         return parent.get().indices[indicesIDs.front()];
     }
 
@@ -168,6 +170,7 @@ namespace mpgl {
     [[nodiscard]] IndicesTriangle&
         DynamicMesh<Spec>::VertexView::back(void) noexcept
     {
+        parent.get().isIndiciesChanged = true;
         return parent.get().indices[indicesIDs.back()];
     }
 
@@ -182,14 +185,18 @@ namespace mpgl {
     [[nodiscard]] DynamicMesh<Spec>::VertexView::iterator
         DynamicMesh<Spec>::VertexView::begin(void) noexcept
     {
-        return iterator{indicesIDs.begin(), &parent.get()};
+        return iterator{
+            base_iterator{indicesIDs.begin(), &parent.get()},
+            parent.get().isIndiciesChanged};
     }
 
     template <MeshTraitSpecifier Spec>
     [[nodiscard]] DynamicMesh<Spec>::VertexView::iterator
         DynamicMesh<Spec>::VertexView::end(void) noexcept
     {
-        return iterator{indicesIDs.end(), &parent.get()};
+        return iterator{
+            base_iterator{indicesIDs.end(), &parent.get()},
+            parent.get().isIndiciesChanged};
     }
 
     template <MeshTraitSpecifier Spec>
@@ -224,14 +231,18 @@ namespace mpgl {
     [[nodiscard]] DynamicMesh<Spec>::VertexView::reverse_iterator
         DynamicMesh<Spec>::VertexView::rbegin(void) noexcept
     {
-        return reverse_iterator{indicesIDs.rbegin(), &parent.get()};
+        return reverse_iterator{
+            reverse_base_iterator{indicesIDs.rbegin(), &parent.get()},
+            parent.get().isIndiciesChanged};
     }
 
     template <MeshTraitSpecifier Spec>
     [[nodiscard]] DynamicMesh<Spec>::VertexView::reverse_iterator
         DynamicMesh<Spec>::VertexView::rend(void) noexcept
     {
-        return reverse_iterator{indicesIDs.rend(), &parent.get()};
+        return reverse_iterator{
+            reverse_base_iterator{indicesIDs.rend(), &parent.get()},
+            parent.get().isIndiciesChanged};
     }
 
     template <MeshTraitSpecifier Spec>
@@ -481,6 +492,7 @@ namespace mpgl {
                 static_cast<uint32>(vertices.size())});
             vertices.push_back(vertex);
         }
+        isExtended = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -496,6 +508,7 @@ namespace mpgl {
                 static_cast<uint32>(vertices.size())});
             vertices.push_back(std::move(vertex));
         }
+        isExtended = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -511,6 +524,7 @@ namespace mpgl {
         addEmptySpace(id);
         eraseIndex(position->begin(), position->end());
         verticesView.erase(position);
+        isExtended = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -519,6 +533,7 @@ namespace mpgl {
         addEmptySpace(id);
         eraseIndex(position->begin(), position->end());
         verticesView.erase(position);
+        isExtended = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -526,7 +541,7 @@ namespace mpgl {
         VertexView::iterator const& position)
     {
         eraseViewIndices(position);
-        reloadElementBuffer();
+        isIndiciesChanged = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -534,7 +549,7 @@ namespace mpgl {
         VertexView::const_iterator const& position)
     {
         eraseViewIndices(position);
-        reloadElementBuffer();
+        isIndiciesChanged = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -544,7 +559,7 @@ namespace mpgl {
     {
         for (; first != last; ++first)
             eraseViewIndices(first);
-        reloadElementBuffer();
+        isIndiciesChanged = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -554,7 +569,7 @@ namespace mpgl {
     {
         for (; first != last; ++first)
             eraseViewIndices(first);
-        reloadElementBuffer();
+        isIndiciesChanged = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -566,7 +581,7 @@ namespace mpgl {
         verticesView[triangle.secondVertex].emplaceTriangle(id);
         verticesView[triangle.thirdVertex].emplaceTriangle(id);
         indices.push_back(triangle);
-        reloadElementBuffer();
+        isIndiciesChanged = true;
     }
 
     template <MeshTraitSpecifier Spec>
@@ -582,13 +597,29 @@ namespace mpgl {
     void DynamicMesh<Spec>::actualizeBufferBeforeDraw(
         void) const noexcept
     {
-        if (this->isModified) {
-            {
-                BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
-                this->vertexBuffer.changeBufferData(vertices);
-            }
+        if (isExtended) {
+            reshapeVertexBuffer();
+            isExtended = this->isModified = false;
+        } else if (this->isModified) {
+            reloadVertexBuffer();
             this->isModified = false;
         }
+        if (isIndiciesChanged) {
+            reloadElementBuffer();
+            isIndiciesChanged = false;
+        }
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::reshapeVertexBuffer(void) const noexcept {
+        BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
+        this->vertexBuffer.setBufferData(this->vertices);
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::reloadVertexBuffer(void) const noexcept {
+        BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
+        this->vertexBuffer.changeBufferData(vertices);
     }
 
 }
