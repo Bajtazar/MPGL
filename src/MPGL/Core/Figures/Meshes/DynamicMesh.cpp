@@ -417,4 +417,50 @@ namespace mpgl {
         return const_reverse_iterator{verticesView.crend()};
     }
 
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::reserve(std::size_t size) {
+        vertices.reserve(size);
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::shrinkToFit(void) {
+        uint32 counter = 0;
+        for (uint32 element : emptyVertices | std::views::reverse) {
+            vertices[element] = std::move(vertices.back());
+            vertices.pop_back();
+            adjustVertexView(getAddress(vertices.size()) + counter++,
+                element);
+        }
+        emptyVertices.clear();
+        vertices.shrink_to_fit();
+        isExtended = true;
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::adjustVertexView(
+        uint32 oldAddress,
+        uint32 newAddress) noexcept
+    {
+        VertexView view = verticesView[oldAddress];
+        for (IndicesTriangle& triangle : view) {
+            if (triangle.firstVertex == view.vertexID)
+                triangle.firstVertex = newAddress;
+            else if (triangle.secondVertex == view.vertexID)
+                triangle.secondVertex = newAddress;
+            else
+                triangle.thirdVertex = newAddress;
+        }
+        view.vertexID = newAddress;
+        verticesView.erase(verticesView.begin() + oldAddress);
+        verticesView.insert(verticesView.begin() + newAddress, view);
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] uint32 DynamicMesh<Spec>::getAddress(
+        uint32 vertexID) const noexcept
+    {
+        auto iter = std::ranges::lower_bound(emptyVertices, vertexID);
+        return vertexID - std::distance(emptyVertices.begin(), iter);
+    }
+
 }

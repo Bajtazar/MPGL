@@ -31,7 +31,7 @@
 #include <MPGL/Core/Figures/Meshes/MeshVertices.hpp>
 #include <MPGL/Core/Figures/Figure.hpp>
 
-#include <list>
+#include <deque>
 
 namespace mpgl {
 
@@ -254,7 +254,7 @@ namespace mpgl {
             uint32                                  vertexID;
         };
     private:
-        using VerticesView = std::vector<VertexView>;
+        using VerticesView = std::deque<VertexView>;
     public:
         [[nodiscard]] VertexView& operator[] (
             std::size_t index) noexcept;
@@ -308,7 +308,7 @@ namespace mpgl {
         [[nodiscard]] const_reverse_iterator crend(
             void) const noexcept;
 
-        void reserve(size_type size);
+        void reserve(std::size_t size);
 
         void shrinkToFit(void);
 
@@ -357,7 +357,7 @@ namespace mpgl {
 
         ~DynamicMesh(void) noexcept = default;
     private:
-        using EmptyVerticesList = std::list<uint32>;
+        using EmptyVertices = std::vector<uint32>;
 
         void reloadElementBuffer(void) const noexcept;
 
@@ -367,11 +367,16 @@ namespace mpgl {
 
         void buildVertexViews(void);
 
+        void adjustVertexView(uint32 oldAddress, uint32 newAddress) noexcept;
+
+        [[nodiscard]] uint32 getAddress(uint32 vertexID) const noexcept;
+
         Vertices                                    vertices;
         Indices                                     indices;
-        EmptyVerticesList                           emptyVertices;
+        EmptyVertices                               emptyVertices;
         VerticesView                                verticesView;
         ElementArrayBuffer                          elementBuffer;
+        bool mutable                                isExtended;
     };
 
     template class DynamicMesh<void>;
