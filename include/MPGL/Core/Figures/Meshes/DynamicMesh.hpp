@@ -108,8 +108,8 @@ namespace mpgl {
                 using difference_type = typename Iter::difference_type;
                 using iterator_category = std::random_access_iterator_tag;
 
-                explicit Iterator(Iter const& iter)
-                    : iter{iter} {}
+                explicit Iterator(Iter const& iter, DynamicMesh* mesh)
+                    : iter{iter}, parent{mesh} {}
 
                 explicit Iterator(void) noexcept = default;
 
@@ -126,10 +126,10 @@ namespace mpgl {
                     { return Iterator{iter--}; }
 
                 [[nodiscard]] reference operator*(void) const noexcept
-                    { return parent.indices[*iter]; }
+                    { return parent->indices[*iter]; }
 
                 [[nodiscard]] pointer operator->(void) const noexcept
-                    { return &parent.indices[*iter]; }
+                    { return &parent->indices[*iter]; }
 
                 Iterator& operator+=(difference_type offset) noexcept
                     { iter += offset; return *this; }
@@ -139,7 +139,7 @@ namespace mpgl {
 
                 [[nodiscard]] reference operator[](
                     difference_type offset) const noexcept
-                        { return parent.indices[iter[offset]]; }
+                        { return parent->indices[iter[offset]]; }
 
                 [[nodiscard]] friend Iterator operator+ (
                     Iterator const& left,
@@ -172,21 +172,24 @@ namespace mpgl {
                         { return left.iter == right.iter; }
             private:
                 Iter                                iter;
+                DynamicMesh*                        mesh = nullptr;
             };
 
-            [[nodiscard]] Vertex& operator[] (
+            [[nodiscard]] IndicesTriangle& operator[] (
                 std::size_t index) noexcept;
 
-            [[nodiscard]] Vertex const& operator[] (
+            [[nodiscard]] IndicesTriangle const& operator[] (
                 std::size_t index) const noexcept;
 
-            [[nodiscard]] Vertex& front(void) noexcept;
+            [[nodiscard]] IndicesTriangle& front(void) noexcept;
 
-            [[nodiscard]] Vertex const& front(void) const noexcept;
+            [[nodiscard]] IndicesTriangle const& front(
+                void) const noexcept;
 
-            [[nodiscard]] Vertex& back(void) noexcept;
+            [[nodiscard]] IndicesTriangle& back(void) noexcept;
 
-            [[nodiscard]] Vertex const& back(void) const noexcept;
+            [[nodiscard]] IndicesTriangle const& back(
+                void) const noexcept;
 
             using iterator = Iterator<
                 typename IndicesVector::iterator, IndicesTriangle>;
@@ -199,7 +202,8 @@ namespace mpgl {
                 typename IndicesVector::const_reverse_iterator,
                 IndicesTriangle const>;
 
-            [[nodiscard]] std::size_t size(void) const noexcept;
+            [[nodiscard]] std::size_t size(void) const noexcept
+                { return indicesIDs.size(); }
 
             [[nodiscard]] iterator begin(void) noexcept;
 
@@ -229,32 +233,11 @@ namespace mpgl {
             [[nodiscard]] const_reverse_iterator crend(
                 void) const noexcept;
 
-            void reserve(size_type size);
+            void reserve(std::size_t size);
 
             void shrinkToFit(void);
 
             [[nodiscard]] bool empty(void) const noexcept;
-
-            void push(IndicesTriangle const& triangle);
-
-            void emplace(
-                uint32 firstVertex,
-                uint32 secondVertex,
-                uint32 thirdVertex);
-
-            void pop(void) noexcept;
-
-            void erase(iterator const& position);
-
-            void erase(const_iterator const& position);
-
-            void erase(
-                iterator const& first,
-                iterator const& last);
-
-            void erase(
-                const_iterator const& first,
-                const_iterator const& last);
 
             friend class DynamicMesh;
 
@@ -351,6 +334,25 @@ namespace mpgl {
         void erase(
             const_iterator const& first,
             const_iterator const& last);
+
+        void pushTriangle(IndicesTriangle const& triangle);
+
+        void emplaceTriangle(
+            uint32 firstVertex,
+            uint32 secondVertex,
+            uint32 thirdVertex);
+
+        void eraseTriangle(VertexView::iterator const& position);
+
+        void eraseTriangle(VertexView::const_iterator const& position);
+
+        void eraseTriangle(
+            VertexView::iterator const& first,
+            VertexView::iterator const& last);
+
+        void eraseTriangle(
+            VertexView::const_iterator const& first,
+            VertexView::const_iterator const& last);
 
         ~DynamicMesh(void) noexcept = default;
     private:

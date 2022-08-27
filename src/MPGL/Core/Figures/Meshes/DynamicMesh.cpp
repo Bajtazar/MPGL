@@ -98,4 +98,197 @@ namespace mpgl {
             verticesView.erase(verticesView.begin() + removedID);
     }
 
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::draw(void) const noexcept {
+        this->actualizeBufferBeforeDraw();
+        this->shaderProgram->use();
+        this->actualizeLocations();
+        BindGuard<VertexArray> vaoGuard{this->vertexArray};
+        this->vertexArray.drawElements(
+            VertexArray::DrawMode::Triangles, 3 * indices.size(),
+            DataType::UInt32);
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::transform(
+        Transformation3D const& transformator) noexcept
+    {
+        any::InputRange<Adapter3D> positions{
+            vertices | views::position};
+        transformator(positions);
+        this->isModified = true;
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::Vertex&
+        DynamicMesh<Spec>::VertexView::getVertex(void) noexcept
+    {
+        parent.isModified = true;
+        return parent.vertices[vertexID];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::Vertex const&
+        DynamicMesh<Spec>::VertexView::getVertex(void) const noexcept
+    {
+        return parent.vertices[vertexID];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] IndicesTriangle&
+        DynamicMesh<Spec>::VertexView::operator[] (
+            std::size_t index) noexcept
+    {
+        return parent.indices[indicesIDs[index]];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] IndicesTriangle const&
+        DynamicMesh<Spec>::VertexView::operator[] (
+            std::size_t index) const noexcept
+    {
+        return parent.indices[indicesIDs[index]];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] IndicesTriangle&
+        DynamicMesh<Spec>::VertexView::front(void) noexcept
+    {
+        return parent.indices[indicesIDs.front()];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] IndicesTriangle const&
+        DynamicMesh<Spec>::VertexView::front(void) const noexcept
+    {
+        return parent.indices[indicesIDs.front()];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] IndicesTriangle&
+        DynamicMesh<Spec>::VertexView::back(void) noexcept
+    {
+        return parent.indices[indicesIDs.back()];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] IndicesTriangle const&
+        DynamicMesh<Spec>::VertexView::back(void) const noexcept
+    {
+        return parent.indices[indicesIDs.back()];
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::iterator
+        DynamicMesh<Spec>::VertexView::begin(void) noexcept
+    {
+        return iterator{indicesIDs.begin(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::iterator
+        DynamicMesh<Spec>::VertexView::end(void) noexcept
+    {
+        return iterator{indicesIDs.end(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_iterator
+        DynamicMesh<Spec>::VertexView::begin(void) const noexcept
+    {
+        return const_iterator{indicesIDs.begin(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_iterator
+        DynamicMesh<Spec>::VertexView::end(void) const noexcept
+    {
+        return const_iterator{indicesIDs.end(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_iterator
+        DynamicMesh<Spec>::VertexView::cbegin(void) const noexcept
+    {
+        return const_iterator{indicesIDs.cbegin(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_iterator
+        DynamicMesh<Spec>::VertexView::cend(void) const noexcept
+    {
+        return const_iterator{indicesIDs.cend(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::reverse_iterator
+        DynamicMesh<Spec>::VertexView::rbegin(void) noexcept
+    {
+        return reverse_iterator{indicesIDs.rbegin(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::reverse_iterator
+        DynamicMesh<Spec>::VertexView::rend(void) noexcept
+    {
+        return reverse_iterator{indicesIDs.rend(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_reverse_iterator
+        DynamicMesh<Spec>::VertexView::rbegin(void) const noexcept
+    {
+        return const_reverse_iterator{indicesIDs.rbegin(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_reverse_iterator
+        DynamicMesh<Spec>::VertexView::rend(void) const noexcept
+    {
+        return const_reverse_iterator{indicesIDs.rend(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_reverse_iterator
+        DynamicMesh<Spec>::VertexView::crbegin(void) const noexcept
+    {
+        return const_reverse_iterator{indicesIDs.crbegin(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] DynamicMesh<Spec>::VertexView::const_reverse_iterator
+        DynamicMesh<Spec>::VertexView::crend(void) const noexcept
+    {
+        return const_reverse_iterator{indicesIDs.crend(), &parent};
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::VertexView::reserve(std::size_t size) {
+        indicesIDs.reserve(size);
+    }
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::VertexView::shrinkToFit(void) {
+        indicesIDs.shrink_to_fit();
+    }
+
+    template <MeshTraitSpecifier Spec>
+    [[nodiscard]] bool DynamicMesh<Spec>::VertexView::empty(
+        void) const noexcept
+    {
+        return indicesIDs.empty();
+    }
+
+    template <MeshTraitSpecifier Spec>
+    DynamicMesh<Spec>::VertexView::VertexView(
+        DynamicMesh& parent,
+        uint32 vertexID) : parent{parent}, vertexID{vertexID} {}
+
+    template <MeshTraitSpecifier Spec>
+    void DynamicMesh<Spec>::VertexView::emplaceTriangle(
+        uint32 triangleID)
+    {
+        indicesIDs.push_back(triangleID);
+    }
+
 }
