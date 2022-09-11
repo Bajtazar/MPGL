@@ -320,7 +320,10 @@ namespace mpgl {
         [[nodiscard]] const_reverse_iterator crend(
             void) const noexcept;
 
-        virtual ~StaticMesh(void) noexcept = default;
+        /**
+         * Destroys the static mesh object
+         */
+        ~StaticMesh(void) noexcept = default;
     private:
         /**
          * Reloads the element array buffer
