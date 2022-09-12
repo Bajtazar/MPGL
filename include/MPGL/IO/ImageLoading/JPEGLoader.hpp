@@ -405,10 +405,9 @@ namespace mpgl {
         /**
          * Parses the next chunk header
          *
-         * @param file the iterator to the file's data
          * @param signature the chunk's signature
          */
-        void parseNextChunk(FileIter& file, uint16 signature);
+        void parseNextChunk(uint16 signature);
 
         /**
          * Reads the 8x8 matrix from the iterator

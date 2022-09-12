@@ -110,6 +110,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "MPGL_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"")
 
+set(MPGL_RELEASE_FLAGS "-Wall -Wextra -Werror -pedantic -O3")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${MPGL_RELEASE_FLAGS}")
+
 # configure_file(mpgl.pc.in mpgl.pc @ONLY)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)

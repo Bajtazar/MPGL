@@ -68,10 +68,7 @@ namespace mpgl {
         : JPEGLoader{Policy{}, filePath} {}
 
     template <security::SecurityPolicy Policy>
-    void JPEGLoader<Policy>::parseNextChunk(
-        FileIter& file,
-        uint16 signature)
-    {
+    void JPEGLoader<Policy>::parseNextChunk(uint16 signature) {
         if (signature == 0xFFD9) {
             endOfImage = true;
             return;
@@ -86,7 +83,7 @@ namespace mpgl {
         if (readType<uint16, true>(file) != 0xFFD8)
             throw ImageLoadingInvalidTypeException{filePath};
         while (!endOfImage) {
-            parseNextChunk(file, readType<uint16, true>(file));
+            parseNextChunk(readType<uint16, true>(file));
             while (!parsingQueue.empty()) {
                 auto chunk = std::move(parsingQueue.front());
                 parsingQueue.pop();
@@ -276,8 +273,7 @@ namespace mpgl {
             auto byte = readType<uint8>(data);
             if (byte == 0xFF)
                 if (uint8 header = readType<uint8>(data))
-                    return this->loader.parseNextChunk(data,
-                        0xFF00 | header);
+                    return this->loader.parseNextChunk(0xFF00 | header);
             this->loader.imageData.push_back(byte);
         }
     }
