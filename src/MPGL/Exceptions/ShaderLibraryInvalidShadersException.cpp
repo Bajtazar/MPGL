@@ -26,6 +26,7 @@
 #include <MPGL/Exceptions/ShaderLibraryInvalidShadersException.hpp>
 
 #include <algorithm>
+#include <ranges>
 
 namespace mpgl {
 

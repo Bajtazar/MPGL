@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <numbers>
+
 namespace mpgl {
 
     template <FFT::size_type Id, bool Inverse>

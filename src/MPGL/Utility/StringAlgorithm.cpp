@@ -26,6 +26,7 @@
 #include <MPGL/Utility/StringAlgorithm.hpp>
 
 #include <algorithm>
+#include <ranges>
 
 namespace mpgl {
 

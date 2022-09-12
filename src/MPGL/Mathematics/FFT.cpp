@@ -25,6 +25,8 @@
  */
 #include <MPGL/Mathematics/FFT.hpp>
 
+#include <numbers>
+
 #ifdef _MSC_VER
 #include <intrin.h>
 #endif
@@ -40,10 +42,10 @@ namespace mpgl {
     }
     #elif defined(_MSC_VER)
     FFT::size_type FFT::convolutionSize(size_type number) noexcept {
-        uint size = 2 * number + 1;
+        uint32 size = 2 * number + 1;
         if (!(size & (size - 1)))
             return size;
-        DWORD leading = 0;
+        unsigned long leading = 0;
         _BitScanReverse(&leading, size);
         return 1 << (sizeof(long) * CHAR_BIT - leading);
     }
