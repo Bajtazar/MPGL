@@ -35,32 +35,32 @@ namespace mpgl {
      * Defines macro factory which creates requires statements to
      * detect whether the given operation is allowed on the given type
      */
-    #ifndef mpgl_Operable
-    #define mpgl_Operable(Tp, Operator) requires ( Tp a, Tp b ) { \
+#ifndef mpgl_Operable
+#define mpgl_Operable(Tp, Operator) requires ( Tp a, Tp b ) { \
         { a Operator b } -> std::convertible_to< Tp >; \
     }
-    #endif
+#endif
 
-    /**
-     * Checks whether the given type can be used in the basic
-     * arithmetic operations
-     *
-     * @tparam Tp the checked type
-     */
+     /**
+      * Checks whether the given type can be used in the basic
+      * arithmetic operations
+      *
+      * @tparam Tp the checked type
+      */
     template <typename Tp>
     concept Arithmetic =
         requires (Tp left, Tp right)
-        {
-            {left + right} -> std::convertible_to<Tp>;
-            {left - right} -> std::convertible_to<Tp>;
-            {left * right} -> std::convertible_to<Tp>;
-            {left / right} -> std::convertible_to<Tp>;
-        }
-        && requires (std::remove_cv_t<Tp> number)
-        {
-            {number += number} -> std::same_as<std::remove_cv_t<Tp>&>;
-            {number -= number} -> std::same_as<std::remove_cv_t<Tp>&>;
-        };
+    {
+        {left + right} -> std::convertible_to<Tp>;
+        {left - right} -> std::convertible_to<Tp>;
+        {left * right} -> std::convertible_to<Tp>;
+        {left / right} -> std::convertible_to<Tp>;
+    }
+    && requires (std::remove_cv_t<Tp> number)
+    {
+        {number += number} -> std::same_as<std::remove_cv_t<Tp>&>;
+        {number -= number} -> std::same_as<std::remove_cv_t<Tp>&>;
+    };
 
     /**
      * Checks whether an absolute type of the given type is arithmetic
@@ -209,7 +209,7 @@ namespace mpgl {
     template <class Range, typename Tp>
     concept RandomAccessConvertible = std::ranges::random_access_range<
         Range> && std::convertible_to<
-            std::ranges::range_value_t<Range>, Tp>;
+        std::ranges::range_value_t<Range>, Tp>;
 
     /**
      * Checks whether the given iterator returns a byte-like type
@@ -234,8 +234,8 @@ namespace mpgl {
     concept NothrowReadable = std::indirectly_readable<
         std::remove_cvref_t<Iter>> &&
         std::is_nothrow_invocable_v<
-            decltype(&std::remove_cvref_t<Iter>::operator*),
-                std::remove_cvref_t<Iter>>;
+        decltype(&std::remove_cvref_t<Iter>::operator*),
+        std::remove_cvref_t<Iter>>;
 
     /**
      * Returns the constexpr result of a binary logarithm
@@ -299,12 +299,12 @@ namespace mpgl {
             std::remove_cvref_t<Range> range,
             std::size_t size,
             std::ranges::range_value_t<Range> value)
-        {
-            range.reserve(size);
-            range.resize(size, value);
-            range.push_back(value);
-            range.push_back(std::move(value));
-        };
+    {
+        range.reserve(size);
+        range.resize(size, value);
+        range.push_back(value);
+        range.push_back(std::move(value));
+    };
 
     /**
      * Checks whether the given range value type is a byte-like type
@@ -314,9 +314,9 @@ namespace mpgl {
     template <class Range>
     concept ByteFlexibleRange = FlexibleRange<Range>
         && requires { typename Range::iterator; }
-        && requires (typename Range::iterator iter)
-            { {*iter} -> SameSize<std::byte>; }
-        && std::default_initializable<Range>;
+    && requires (typename Range::iterator iter)
+        { {*iter} -> SameSize<std::byte>; }
+    && std::default_initializable<Range>;
 
     /**
      * Checks whether the given type is absolute and it has
@@ -326,7 +326,7 @@ namespace mpgl {
      */
     template <typename Tp>
     concept DefaultBaseType = Absolute<Tp>
-        &&  std::is_default_constructible_v<Tp>;
+        && std::is_default_constructible_v<Tp>;
 
     /**
      * Checks whether the given range value type is same as the
@@ -379,7 +379,7 @@ namespace mpgl {
     template <class... Classes>
     concept NothrowDefaultConstructible = (
         std::is_nothrow_default_constructible_v<Classes> && ...
-    );
+        );
 
     /**
      * Checks whether the given classes are nothrow copy
@@ -390,7 +390,7 @@ namespace mpgl {
     template <class... Classes>
     concept NothrowCopyConstructible = (
         std::is_nothrow_copy_constructible_v<Classes> && ...
-    );
+        );
 
     /**
      * Checks whether the given classes are nothrow move
@@ -401,7 +401,7 @@ namespace mpgl {
     template <class... Classes>
     concept NothrowMoveConstructible = (
         std::is_nothrow_move_constructible_v<Classes> && ...
-    );
+        );
 
     /**
      * Checks whether the given classes are nothrow copy
@@ -412,7 +412,7 @@ namespace mpgl {
     template <class... Classes>
     concept NothrowCopyAssignable = (
         std::is_nothrow_copy_assignable_v<Classes> && ...
-    );
+        );
 
     /**
      * Checks whether the given classes are nothrow move
@@ -423,7 +423,7 @@ namespace mpgl {
     template <class... Classes>
     concept NothrowMoveAssignable = (
         std::is_nothrow_move_assignable_v<Classes> && ...
-    );
+        );
 
     /**
      * Checks whether the given classes are nothrow destructible
@@ -433,7 +433,7 @@ namespace mpgl {
     template <class... Classes>
     concept NothrowDestructible = (
         std::is_nothrow_destructible_v<Classes> && ...
-    );
+        );
 
     /**
      * Checks whether the given classes are default constructible
@@ -443,7 +443,7 @@ namespace mpgl {
     template <class... Classes>
     concept DefaultConstructible = (
         std::is_default_constructible_v<Classes> && ...
-    );
+        );
 
     /**
      * Checks whether the given type is nothrow constructible
@@ -467,7 +467,7 @@ namespace mpgl {
     concept SizedRange = std::ranges::random_access_range<Range> &&
         SameRangeType<Range, Tp> &&
         requires { { Range::size() } -> std::convertible_to<std::size_t>;  }
-        && Range::size() == Size;
+    && Range::size() == Size;
 
     /**
      * Checks whether the given type is an allocator of a given type
@@ -480,8 +480,8 @@ namespace mpgl {
         typename Alloc::value_type;
         typename Alloc::size_type;
     } && std::same_as<typename Alloc::value_type, Tp>
-      && std::integral<typename Alloc::size_type>
-      && requires (
+        && std::integral<typename Alloc::size_type>
+        && requires (
             Alloc alloc,
             Alloc ralloc,
             typename Alloc::size_type size,
@@ -492,13 +492,13 @@ namespace mpgl {
         { alloc == ralloc } -> std::same_as<bool>;
         { alloc != ralloc } -> std::same_as<bool>;
     } && std::copy_constructible<Alloc>
-     && NothrowCopyConstructible<Alloc>
-     && std::is_copy_assignable_v<Alloc>
-     && NothrowCopyAssignable<Alloc>
-     && std::move_constructible<Alloc>
-     && NothrowMoveConstructible<Alloc>
-     && std::is_move_assignable_v<Alloc>
-     && NothrowMoveAssignable<Alloc>;
+        && NothrowCopyConstructible<Alloc>
+        && std::is_copy_assignable_v<Alloc>
+        && NothrowCopyAssignable<Alloc>
+        && std::move_constructible<Alloc>
+        && NothrowMoveConstructible<Alloc>
+        && std::is_move_assignable_v<Alloc>
+        && NothrowMoveAssignable<Alloc>;
 
     /**
      * Checks whether the given type is bindable
@@ -552,8 +552,8 @@ namespace mpgl {
     template <typename Range>
     concept FixedSizeRange = std::ranges::random_access_range<Range>
         && IsConstexprEvaluableV<
-            std::size_t(*)(void) noexcept,
-            &std::remove_cvref_t<Range>::size>;
+        std::size_t(*)(void) noexcept,
+        &std::remove_cvref_t<Range>::size>;
 
     /**
      * Checks whether the type can be used to high-precision
@@ -582,8 +582,8 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <typename Tp>
-    concept Clonable = std::convertible_to<Tp, std::remove_pointer_t<
-        decltype(std::declval<Tp>().clone())>>;
+    concept Clonable = std::convertible_to<Tp&, std::remove_pointer_t<
+        decltype(std::declval<Tp>().clone())>&>;
 
     /**
      * Checks whether the type underlying pointer can be cloned
@@ -592,10 +592,9 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <class Pointer>
-    concept ClonablePointer = std::convertible_to<
-        decltype(*std::declval<Pointer>()),
-        std::remove_pointer_t<decltype(
-        std::declval<Pointer>()->clone())>>
+    concept ClonablePointer = std::convertible_to <
+        std::remove_cvref_t<decltype(*std::declval<Pointer>())>*,
+        decltype(std::declval<Pointer>()->clone())>
     && requires (Pointer const& ptr) { bool(ptr); };
 
 }
