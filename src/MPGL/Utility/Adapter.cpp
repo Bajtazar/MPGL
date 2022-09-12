@@ -28,33 +28,33 @@
 namespace mpgl {
 
     Adapter<2>::Adapter(const_reference value) noexcept
-        : value{value / static_cast<Vector2f>(context.windowDimensions)
+        : value{value / vectorCast<float32>(context.windowDimensions)
             * 2.f - 1.f} {}
 
     Adapter<2>::Adapter(value_type&& value) noexcept
         : value{std::move(value)
-            / static_cast<Vector2f>(context.windowDimensions)
+            / vectorCast<float32>(context.windowDimensions)
                 * 2.f - 1.f} {}
 
     Adapter<2>& Adapter<2>::operator= (
         const_reference factor) noexcept
     {
         value = factor
-            / static_cast<Vector2f>(context.windowDimensions)
+            / vectorCast<float32>(context.windowDimensions)
                 * 2.f - 1.f;
         return *this;
     }
 
     Adapter<2>& Adapter<2>::operator= (value_type&& factor) noexcept {
         value = std::move(factor)
-            / static_cast<Vector2f>(context.windowDimensions)
+            / vectorCast<float32>(context.windowDimensions)
                 * 2.f - 1.f;
         return *this;
     }
 
     [[nodiscard]] Adapter<2>::operator value_type() const noexcept {
         return (value + 1.f)
-            * static_cast<Vector2f>(context.windowDimensions) / 2.f;
+            * vectorCast<float32>(context.windowDimensions) / 2.f;
     }
 
 }

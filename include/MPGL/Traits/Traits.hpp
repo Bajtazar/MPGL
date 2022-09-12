@@ -122,7 +122,7 @@ namespace mpgl {
          * compilation time
          */
         static constexpr bool value = std::same_as<
-            decltype(helper([]{ std::invoke(Function, std::declval<Args>()...); })), std::true_type>;
+            decltype(helper([] { (void)Function(std::declval<Args>()...); })), std::true_type > ;
     };
 
     /**

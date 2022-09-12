@@ -24,7 +24,6 @@
  *  distribution
  */
 #include <MPGL/Exceptions/ShaderCompilationException.hpp>
-
 #include <MPGL/Core/Shaders/Shader.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 #include <MPGL/IO/FileIO.hpp>
@@ -47,7 +46,7 @@ namespace mpgl {
 
     template <bool ShaderType>
     void Shader<ShaderType>::verifyCompilationStatus(
-        std::string const& filePath) const
+        std::string const& programName) const
     {
         int32 status = 0;
         glGetProgramiv(shaderID, GL_COMPILE_STATUS, &status);
@@ -58,7 +57,7 @@ namespace mpgl {
             if (!accumulate(info, 0u))
                 return;
             throw ShaderCompilationException{
-                "[" + filePath + "]\t" + info};
+                "[" + programName + "]\t" + info};
         }
     }
 
