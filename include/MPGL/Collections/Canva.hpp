@@ -707,7 +707,7 @@ namespace mpgl {
              * @return the pointer to the row
              */
             [[nodiscard]] constexpr pointer operator->(void) noexcept
-                { return static_cast<pointer>(*iter); }
+                { return static_cast<pointer>(&(*iter)); }
 
             /**
              * Increments iterator by the given distance
@@ -715,7 +715,7 @@ namespace mpgl {
              * @param offset the incremented distance
              * @return reference to this object
              */
-            [[nodiscard]] constexpr Iterator& operator+=
+            constexpr Iterator& operator+=
                 (difference_type offset) noexcept
                     { iter += offset; return *this; }
 
@@ -725,7 +725,7 @@ namespace mpgl {
              * @param offset the decremented distance
              * @return reference to this object
              */
-            [[nodiscard]] constexpr Iterator& operator-=(
+            constexpr Iterator& operator-=(
                 difference_type offset) noexcept
                     { iter -= offset; return *this; }
 
