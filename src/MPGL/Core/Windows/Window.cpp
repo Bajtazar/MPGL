@@ -25,17 +25,39 @@
  */
 #include <MPGL/Core/Windows/Window.hpp>
 
+#ifndef MPGL_SOURCE_DIR
+#define MPGL_SOURCE_DIR "."
+#endif
+
 namespace mpgl {
 
     using std::operator""us;
 
+    Window::EventManagerPtr Window::defaultManager(void) noexcept {
+        return std::make_unique<BasicWindowEventManager>();
+    }
+
+    Window::Paths Window::defaultShaderDirs(void) noexcept {
+        return {
+            "shaders",
+            "shaders.sl.gz",
+            String(MPGL_SOURCE_DIR) + "/shaders.sl.gz"
+        };
+    }
+
+    Window::StaticCameraPtr Window::defaultCamera(void) noexcept {
+        return std::make_shared<StaticCamera>();
+    }
+
     Window::Window(
         Vector2u const& dimensions,
-        std::string const& title,
+        String const& title,
         Options const& options,
-        EventManagerPtr eventManager)
+        EventManagerPtr eventManager,
+        Paths const& shaderDirectories)
             : WindowPlatform{dimensions, title, options,
-                std::move(eventManager)}, sleepTime{0us}, lastTime{0us}
+                std::move(eventManager)},
+            shaders{shaderDirectories}, sleepTime{0us}, lastTime{0us}
     {
         glEnable(GL_BLEND);
         glEnable(GL_MULTISAMPLE);
@@ -49,9 +71,16 @@ namespace mpgl {
         context.shaders.setLibrary(shaders);
     }
 
-    void Window::drawDrawables(void) const noexcept {
-        std::ranges::for_each(drawables, [](const auto& drawable)
+    void Window::draw2DDrawables(void) const noexcept {
+        std::ranges::for_each(drawables2D, [](auto const& drawable)
             { drawable->draw(); });
+    }
+
+    void Window::draw3DDrawables(void) const noexcept {
+        glEnable(GL_DEPTH_TEST);
+        std::ranges::for_each(drawables3D, [](auto const& drawable)
+            { drawable->draw(); });
+        glDisable(GL_DEPTH_TEST);
     }
 
     void Window::clear(const Color& color) noexcept{
@@ -81,7 +110,7 @@ namespace mpgl {
         while (!shouldWindowClose()) {
             clear(background);
             eventManager->onTick();
-            drawDrawables();
+            draw2DDrawables();
             draw();
         }
     }
@@ -91,6 +120,11 @@ namespace mpgl {
         glReadPixels(0, 0, image.getWidth(), image.getHeight(),
             GL_RGBA, GL_UNSIGNED_BYTE, image.data());
         return image;
+    }
+
+    void Window::setVPMatrix(CameraPtr const& cameraPtr) noexcept {
+        context.setViewProjection(context.projection *
+            (*cameraPtr)());
     }
 
     Window::~Window(void) noexcept {

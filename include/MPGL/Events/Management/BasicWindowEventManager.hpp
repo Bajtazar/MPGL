@@ -54,25 +54,9 @@ namespace mpgl {
          * Informs screen transformation event observers that the
          * screen dimensions has been changed
          *
-         * @param layout the layout of the figure
          * @param oldDimensions the old dimensions of the screen
          */
         void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept final;
-
-        /**
-         * Informs screen transformation event observers that the
-         * screen dimensions has been changed. Propagates
-         * the given layouts among the corresponding event
-         * observers
-         *
-         * @param layouts the reference to the vector that
-         * contains layouts
-         * @param oldDimensions the old window dimensions
-         */
-        void onScreenTransformation(
-            std::vector<std::unique_ptr<Layout>>& layouts,
             Vector2u const& oldDimensions) noexcept final;
 
         /**

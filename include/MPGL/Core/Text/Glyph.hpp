@@ -25,8 +25,8 @@
  */
 #pragma once
 
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
 #include <MPGL/Core/Textures/Texture.hpp>
-#include <MPGL/Mathematics/Vector.hpp>
 
 #include <optional>
 

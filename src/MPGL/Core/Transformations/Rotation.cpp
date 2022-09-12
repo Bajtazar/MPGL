@@ -28,42 +28,68 @@
 
 namespace mpgl {
 
-    Rotation<dim::Dim2>::Rotation(
-        Matrix2f const& rotationMatrix,
-        Vector2f const& rotationCenter) noexcept
-            : rotationMatrix{rotationMatrix},
-            rotationCenter{rotationCenter} {}
-
-    Rotation<dim::Dim2>::Rotation(
-        Matrix2f&& rotationMatrix,
-        Vector2f&& rotationCenter) noexcept
-            : rotationMatrix{std::move(rotationMatrix)},
-            rotationCenter{std::move(rotationCenter)} {}
-
-    Rotation<dim::Dim2>::Rotation(
+    [[nodiscard]] Rotation2D makeRotation(
         float32 angle,
         Vector2f const& rotationCenter) noexcept
-            : rotationMatrix{mpgl::rotationMatrix<float32>(angle)},
-            rotationCenter{rotationCenter} {}
-
-    Rotation<dim::Dim2>::Rotation(
-        float32 angle,
-        Vector2f&& rotationCenter) noexcept
-            : rotationMatrix{mpgl::rotationMatrix<float32>(angle)},
-            rotationCenter{std::move(rotationCenter)} {}
-
-    void Rotation<dim::Dim2>::operator() (
-        any::InputRange<TransformedType>& coords) const noexcept
     {
-        for (auto& coord : coords)
-            (*this)(coord);
+        return Rotation2D {
+            mpgl::rotationMatrix(angle),
+            rotationCenter
+        };
     }
 
-    void Rotation<dim::Dim2>::operator() (
-        TransformedType& coord) const noexcept
+    [[nodiscard]] Rotation2D makeRotation(
+        float32 angle,
+        Vector2f&& rotationCenter) noexcept
     {
-        Vector2f radius = Vector2f(coord) - rotationCenter;
-        coord = rotationMatrix * radius + rotationCenter;
+        return Rotation2D {
+            mpgl::rotationMatrix(angle),
+            std::move(rotationCenter)
+        };
+    }
+
+    [[nodiscard]] Rotation3D makeRotation(
+        float32 yaw,
+        float32 pitch,
+        float32 roll,
+        Vector3f const& rotationCenter) noexcept
+    {
+        return Rotation3D {
+            mpgl::rotationMatrix(yaw, pitch, roll),
+            rotationCenter
+        };
+    }
+
+    [[nodiscard]] Rotation3D makeRotation(
+        float32 yaw,
+        float32 pitch,
+        float32 roll,
+        Vector3f&& rotationCenter) noexcept
+    {
+        return Rotation3D {
+            mpgl::rotationMatrix(yaw, pitch, roll),
+            std::move(rotationCenter)
+        };
+    }
+
+    [[nodiscard]] Rotation3D makeRotation(
+        Vector3f const& angles,
+        Vector3f const& rotationCenter) noexcept
+    {
+        return Rotation3D {
+            mpgl::rotationMatrix(angles),
+            rotationCenter
+        };
+    }
+
+    [[nodiscard]] Rotation3D makeRotation(
+        Vector3f const& angles,
+        Vector3f&& rotationCenter) noexcept
+    {
+        return Rotation3D {
+            mpgl::rotationMatrix(angles),
+            std::move(rotationCenter)
+        };
     }
 
 }

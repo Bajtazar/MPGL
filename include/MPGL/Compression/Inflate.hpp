@@ -25,8 +25,8 @@
  */
 #pragma once
 
+#include <MPGL/Exceptions/Inflate/InflateDataCorruptionException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
-#include <MPGL/Exceptions/InflateDataCorruptionException.hpp>
 #include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Compression/HuffmanTree.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>
@@ -64,10 +64,7 @@ namespace mpgl {
          */
         [[nodiscard]] Range operator()(void);
     private:
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<typename Range::iterator>,
-            typename Range::iterator>                   Iterator;
+        typedef PolicyIterRT<Policy, Range>             Iterator;
         typedef LittleEndianInputBitIter<Iterator>      BitIter;
         typedef HuffmanTree<uint16>::Decoder            Decoder;
         typedef std::vector<uint16>                     VectorU16;

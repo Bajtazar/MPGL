@@ -24,80 +24,258 @@
  *  distribution
  */
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
 #include <MPGL/Core/Figures/Elliptic.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
 
 namespace mpgl {
 
-    Elliptic::Vertices Elliptic::ellipseVertices(Vector2f const& center,
-        Vector2f const& semiAxis, float32 angle)
-    {
-        Matrix2f rotation = rotationMatrix<float32>(angle);
-        Vector2f rot1 = rotation * semiAxis;
-        Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
-        return {
-            Vertex{center - rot2},
-            Vertex{center + rot1},
-            Vertex{center + rot2},
-            Vertex{center - rot1}
-        };
-    }
-
-    Elliptic::Vertices Elliptic::circleVertices(Vector2f const& center,
-        float32 radius)
-    {
-        Vector2f semiMajor = Vector2f{radius, 0.f};
-        Vector2f semiMinor = Vector2f{0.f, radius};
-        return {
-            Vertex{center - semiMajor + semiMinor},
-            Vertex{center + semiMajor + semiMinor},
-            Vertex{center + semiMajor - semiMinor},
-            Vertex{center - semiMajor - semiMinor}
-        };
-    }
-
-    Elliptic::Elliptic(Vertices vertices,
-        std::string const& programName, Executable exec,
-        Color const& color)
-            : Figure{programName, std::move(exec)},
-            color{color}, vertices{std::move(vertices)}
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Elliptic(
+        Vertices vertices,
+        std::string const& programName,
+        Executable exec)
+            : Figure<Dim>{programName, std::move(exec)},
+            vertices{std::move(vertices)}
     {
         initializeBuffers();
     }
 
-    Elliptic::Elliptic(Elliptic const& shape)
-        : Figure{shape}, vertices{shape.vertices}
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Elliptic(Elliptic const& shape)
+        : Figure<Dim>{shape}, vertices{shape.vertices}
     {
         initializeBuffers();
     }
 
-    void Elliptic::initializeBuffers(void) const noexcept {
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        BindGuard<VertexBuffer> vboGuard{vertexBuffer};
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Elliptic<Dim, Spec>::initializeBuffers(void) const noexcept {
+        BindGuard<VertexArray> vaoGuard{this->vertexArray};
+        BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
         elementBuffer.bind();
-        elementBuffer.setBufferData(indexes);
-        vertexBuffer.setBufferData(vertices);
-        vertexArray.setArrayData(vertices.front());
+        elementBuffer.setBufferData(indices);
+        this->vertexBuffer.setBufferData(vertices);
+        this->vertexArray.setArrayData(
+            VertexArray::VertexTag<Vertex>{});
     }
 
-    Elliptic& Elliptic::operator=(Elliptic const& shape) {
-        Figure::operator=(shape);
-        color = shape.color;
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>& Elliptic<Dim, Spec>::operator=(
+        Elliptic const& shape)
+    {
+        Figure<Dim>::operator=(shape);
         vertices.clear();
         vertices.reserve(shape.vertices.size());
         std::ranges::copy(shape.vertices, std::back_inserter(vertices));
         return *this;
     }
 
-    void Elliptic::actualizeBufferBeforeDraw(void) const noexcept {
-        if (isModified) {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Elliptic<Dim, Spec>::actualizeBufferBeforeDraw(
+        void) const noexcept
+    {
+        if (this->isModified) {
             {
-                BindGuard<VertexBuffer> vboGuard{vertexBuffer};
-                vertexBuffer.changeBufferData(vertices);
+                BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
+                this->vertexBuffer.changeBufferData(vertices);
             }
-            isModified = false;
+            this->isModified = false;
         }
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Elliptic<Dim, Spec>::actualizeLocations(void) const noexcept {
+        if constexpr (ThreeDimensional<Dim>) {
+            Figure3D::actualizeLocations();
+        }
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::vertex_view
+        Elliptic<Dim, Spec>::operator[] (
+            std::size_t index
+            ) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(iterator{acr_iterator{this->vertices.begin() + index,
+            this->isModified}});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_vertex_view
+        Elliptic<Dim, Spec>::operator[] (
+            std::size_t index
+            ) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(const_iterator{this->vertices.cbegin() + index});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::vertex_view
+        Elliptic<Dim, Spec>::front(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(iterator{acr_iterator{
+            this->vertices.begin(), this->isModified}});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_vertex_view
+        Elliptic<Dim, Spec>::front(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(const_iterator{this->vertices.begin()});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::vertex_view
+        Elliptic<Dim, Spec>::back(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(iterator{acr_iterator{
+            this->vertices.end() - 1, this->isModified}});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_vertex_view
+        Elliptic<Dim, Spec>::back(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return *(const_iterator{this->vertices.end() - 1});
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::iterator
+        Elliptic<Dim, Spec>::begin(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return iterator{acr_iterator{
+            this->vertices.begin(), this->isModified}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::iterator
+        Elliptic<Dim, Spec>::end(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return iterator{acr_iterator{
+            this->vertices.end(), this->isModified}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::begin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.begin()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::end(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.end()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::cbegin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.cbegin()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_iterator
+        Elliptic<Dim, Spec>::cend(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_iterator{this->vertices.cend()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::reverse_iterator
+        Elliptic<Dim, Spec>::rbegin(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return reverse_iterator{racr_iterator{this->vertices.rbegin(),
+            this->isModified}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::reverse_iterator
+        Elliptic<Dim, Spec>::rend(
+            void) noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return reverse_iterator{racr_iterator{
+            this->vertices.rend(), this->isModified}};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::rbegin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{this->vertices.rbegin()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::rend(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{this->vertices.rend()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::crbegin(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{this->vertices.rbegin()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Elliptic<Dim, Spec>::const_reverse_iterator
+        Elliptic<Dim, Spec>::crend(
+            void) const noexcept requires Elliptic<Dim, Spec>::Iterable
+    {
+        return const_reverse_iterator{this->vertices.rend()};
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Vertices
+        Elliptic<Dim, Spec>::ellipseVertices(
+            Vector2f const& center,
+            Vector2f const& semiAxis,
+            float32 angle,
+            Color const& color) requires TwoDimensional<Dim>
+    {
+        Matrix2f rotation = rotationMatrix<float32>(angle);
+        Vector2f rot1 = rotation * semiAxis;
+        Vector2f rot2 = rotation * Vector2f{semiAxis[0], -semiAxis[1]};
+        return {
+            VertexTraits::buildVertex(center - rot2, color),
+            VertexTraits::buildVertex(center + rot1, color),
+            VertexTraits::buildVertex(center + rot2, color),
+            VertexTraits::buildVertex(center - rot1, color)
+        };
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Elliptic<Dim, Spec>::Vertices
+        Elliptic<Dim, Spec>::circleVertices(
+            Vector2f const& center,
+            float32 radius,
+            Color const& color) requires TwoDimensional<Dim>
+    {
+        Vector2f semiMajor = Vector2f{radius, 0.f};
+        Vector2f semiMinor = Vector2f{0.f, radius};
+        return {
+            VertexTraits::buildVertex(center - semiMajor + semiMinor, color),
+            VertexTraits::buildVertex(center + semiMajor + semiMinor, color),
+            VertexTraits::buildVertex(center + semiMajor - semiMinor, color),
+            VertexTraits::buildVertex(center - semiMajor - semiMinor, color)
+        };
     }
 
 }

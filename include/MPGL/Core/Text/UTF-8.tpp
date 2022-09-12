@@ -40,7 +40,7 @@ namespace mpgl {
     }
 
     template <std::integral Tp, std::size_t Index>
-        requires ConstexprConstructible<std::string>
+        requires ConstevalType<std::string>
     constexpr std::string ToUTF8Converter::convert(
         Tp unicodeID) const
     {
@@ -57,7 +57,7 @@ namespace mpgl {
     }
 
     template <std::integral Tp, std::size_t Index>
-        requires (!ConstexprConstructible<std::string>)
+        requires (!ConstevalType<std::string>)
     std::string ToUTF8Converter::convert(
         Tp unicodeID) const
     {
@@ -74,7 +74,7 @@ namespace mpgl {
     }
 
     template <std::integral Tp>
-        requires ConstexprConstructible<std::string>
+        requires ConstevalType<std::string>
     [[nodiscard]] constexpr std::string ToUTF8Converter::operator() (
         Tp unicodeID) const
     {
@@ -87,7 +87,7 @@ namespace mpgl {
     }
 
     template <std::integral Tp>
-        requires (!ConstexprConstructible<std::string>)
+        requires (!ConstevalType<std::string>)
     [[nodiscard]] std::string ToUTF8Converter::operator() (
         Tp unicodeID) const
     {
@@ -100,7 +100,7 @@ namespace mpgl {
     }
 
     template <std::integral Tp, uint8 Length>
-        requires ConstexprConstructible<std::string>
+        requires ConstevalType<std::string>
     constexpr std::string ToUTF8Converter::addTail(
         std::string string,
         Tp unicodeID) const
@@ -112,7 +112,7 @@ namespace mpgl {
     }
 
     template <std::integral Tp, uint8 Length>
-        requires (!ConstexprConstructible<std::string>)
+        requires (!ConstevalType<std::string>)
     std::string ToUTF8Converter::addTail(
         std::string string,
         Tp unicodeID)  const

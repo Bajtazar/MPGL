@@ -23,15 +23,15 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ImageLoadingFileCorruptionException.hpp>
-#include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileCorruptionException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileOpenException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
-#include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
 #include <MPGL/Utility/Deferred/DeferredConstructor.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
 #include <MPGL/IO/ImageLoading/ZigZacRange.hpp>
+#include <MPGL/Mathematics/Transforms/IFCT.hpp>
 #include <MPGL/IO/ImageLoading/JPEGLoader.hpp>
-#include <MPGL/Mathematics/IFCT.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 #include <MPGL/IO/FileIO.hpp>
 
@@ -52,7 +52,7 @@ namespace mpgl {
     {
         if (auto file = FileIO::readFileToVec(this->filePath)) {
             try {
-                setPolicy(*file);
+                parseChunks(makeIterator<Policy>(file->cbegin(), file->cend()));
                 decodeImage();
             } catch (std::out_of_range const&) {
                 throw ImageLoadingFileCorruptionException{this->filePath};
@@ -66,16 +66,6 @@ namespace mpgl {
     template <security::SecurityPolicy Policy>
     JPEGLoader<Policy>::JPEGLoader(Path const& filePath)
         : JPEGLoader{Policy{}, filePath} {}
-
-    template <security::SecurityPolicy Policy>
-    void JPEGLoader<Policy>::setPolicy(FileBuffer const& file) {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return parseChunks(FileIter{file.begin(), file.end()});
-        else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return parseChunks(FileIter{file.begin()});
-        else
-            throw SecurityUnknownPolicyException{};
-    }
 
     template <security::SecurityPolicy Policy>
     void JPEGLoader<Policy>::parseNextChunk(
@@ -131,35 +121,22 @@ namespace mpgl {
         QuantizationTablePtr const& quant,
         Iter& iter)
     {
-        uint16 bits;
-        for (uint8 length = 1u, code; (code = table->decoder(iter));
-            ++length)
+        for (uint8 length = 1u, code; length < 64u && (
+            code = table->decoder(iter)); ++length)
         {
-            if (code > 15) {
-                length += code >> 4;
-                code &= 0xF;
+            if (code > 0x0F) {
+                if ((length += code >> 4) >= 64u)
+                    return;
+                code &= 0x0F;
             }
-            bits = readRNBits<uint16>(code, iter);
-            if (length >= 64)
-                return;
-            data[length] = decodeNumber(code, bits)
-                * quant->information.at(length);
+            data[length] = decodeNumber(code, readRNBits<uint16>(
+                code, iter)) * quant->information.at(length);
         }
     }
 
     template <security::SecurityPolicy Policy>
-    JPEGLoader<Policy>::Iter JPEGLoader<Policy>::getDecodeIterator(
-        void) noexcept
-    {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return Iter{SafeIter{imageData.begin(), imageData.end()}};
-        else
-            return Iter{SafeIter{imageData.begin()}};
-    }
-
-    template <security::SecurityPolicy Policy>
     void JPEGLoader<Policy>::decodeImage(void) {
-        Iter iter{getDecodeIterator()};
+        Iter iter{makeIterator<Policy>(imageData.cbegin(), imageData.cend())};
         Channels channels;
         channels.resize(componentsTable.size(), 0);
         for (size_type i = 0; i < getBoundry(pixels.getWidth()); ++i) {
@@ -179,10 +156,9 @@ namespace mpgl {
         Channels& channels)
     {
         MatricesMap matrices;
-        auto coef = channels.begin();
         for (const auto& [id, component] : componentsTable)
-            matrices[id] = std::move(readMatrix(iter,
-                component->tableNumber, *coef++));
+            matrices[id] = readMatrix(iter, component->tableNumber,
+                channels[id]);
         drawYCbCrOnImage(matrices, y, x);
     }
 
@@ -293,20 +269,10 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    bool JPEGLoader<Policy>::SOSChunk::iterable(
-        FileIter& data) const noexcept
-    {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return data.isSafe();
-        else
-            return data != FileIter{};
-    }
-
-    template <security::SecurityPolicy Policy>
     void JPEGLoader<Policy>::SOSChunk::operator() (FileIter& data) {
         uint16 length = readType<uint16, true>(data) - 2;
         std::advance(data, length); // progressive jpegs are not used
-        while (iterable(data)) {
+        while (true) {
             auto byte = readType<uint8>(data);
             if (byte == 0xFF)
                 if (uint8 header = readType<uint8>(data))
@@ -359,8 +325,9 @@ namespace mpgl {
         uint8 code,
         uint16 bits) noexcept
     {
-        uint16 coeff = (1 << code) - 1;
-        return bits >= coeff ? bits : (int32) bits - (2 * coeff - 1);
+        int32 coeff = 1 << (code - 1);
+        return bits >= coeff ? bits : int32(bits)
+            - int32(2 * coeff - 1);
     }
 
     template <security::SecurityPolicy Policy>

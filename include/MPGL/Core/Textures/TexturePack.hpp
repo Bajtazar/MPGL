@@ -57,7 +57,7 @@ namespace mpgl {
             = typename TextureMap::const_reverse_iterator;
 
         /**
-         * Construct a new Texture Pack object from the given
+         * Constructs a new Texture Pack object from the given
          * range and allows to set the default texture
          *
          * @tparam Range the type of copyied range
@@ -70,7 +70,7 @@ namespace mpgl {
             Value const& defaultTexture = Value::defaultTexture());
 
         /**
-         * Construct a new Texture Pack object from the given
+         * Constructs a new Texture Pack object from the given
          * iterators range and allows to set the default texture
          *
          * @tparam Iter the range iterator type
@@ -88,7 +88,7 @@ namespace mpgl {
             Value const& defaultTexture = Value::defaultTexture());
 
         /**
-         * Construct a new empty Texture Pack object with
+         * Constructs a new empty Texture Pack object with
          * given default texture
          *
          * @param defaultTexture the default texture
@@ -96,11 +96,18 @@ namespace mpgl {
         explicit TexturePack(Value const& defaultTexture
             = Value::defaultTexture());
 
-        TexturePack(TexturePack const&) = default;
-        TexturePack(TexturePack&&) = default;
+        TexturePack(TexturePack const&) = delete;
+        TexturePack(TexturePack&&) noexcept = default;
 
         TexturePack& operator=(TexturePack const&) = delete;
-        TexturePack& operator=(TexturePack&&) = delete;
+
+        /**
+         * Assigns an other Texture Pack object to this object
+         *
+         * @param other the rvalue reference to the other object
+         * @return the reference to this object
+         */
+        TexturePack& operator=(TexturePack&& other) noexcept;
 
         /**
          * Returns the iterator to the begining of the texture map

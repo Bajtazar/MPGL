@@ -24,7 +24,6 @@
  *  distribution
  */
 #include <MPGL/Mathematics/FastFunctions.hpp>
-
 #include <MPGL/Core/Text/FontRasterizer.hpp>
 
 #include <math.h>
@@ -228,12 +227,14 @@ namespace mpgl {
         for (size_type i = 0; i != canva.getHeight(); ++i) {
             auto& row = canva[i];
             if (auto pixels = rasterizeLine(row))
-                std::copy(pixels->begin(), pixels->end(), row.begin());
+                std::ranges::copy(*pixels, row.begin());
             else {  // slow but i have no time to fix this
                 tryRepairBrokenPixel(row, i);
                 if (auto pixels = rasterizeLine(row))
-                    std::copy(pixels->begin(), pixels->end(),
-                        row.begin());
+                    std::ranges::copy(*pixels, row.begin());
+                else
+                    std::ranges::copy(canva[i == 0 ? i + 1 :
+                        i - 1], row.begin());
             }
         }
     }

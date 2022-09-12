@@ -26,6 +26,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <concepts>
 #include <string>
 
 #include <MPGL/Traits/Types.hpp>
@@ -50,6 +51,23 @@ namespace mpgl {
          * with shader's path
          */
         explicit Shader(std::string shaderPath);
+
+        /**
+         * Constructs a new Shader object. Loads the shader from
+         * the given range. The last element in range has to be 0!
+         *
+         * @throw ShaderCompilationError when shader cannot be
+         * loaded from file or shader cannot be compiled
+         * @throw ShaderMissingSentinelException when the last
+         * element in the range is not 0
+         * @tparam Range the range's type
+         * @param range the universal reference to the range with
+         * shader
+         */
+        template <std::ranges::contiguous_range Range>
+            requires std::same_as<std::ranges::range_value_t<Range>,
+                char>
+        explicit Shader(Range&& range);
 
         Shader(Shader const& shader) noexcept = delete;
 
@@ -100,10 +118,22 @@ namespace mpgl {
          *
          * @throw ShaderCompilationException when compilation
          * failed
-         * @param programName the shader program name
          */
-        void verifyCompilationStatus(
-            std::string const& programName) const;
+        void verifyCompilationStatus(void) const;
+
+        /**
+         * Loads shader from the given range
+         *
+         * @throw ShaderCompilationError when shader cannot be
+         * loaded from file or shader cannot be compiled
+         * @tparam Range the range's type
+         * @param range the universal reference to the range with
+         * shader
+         */
+        template <std::ranges::contiguous_range Range>
+            requires std::same_as<std::ranges::range_value_t<Range>,
+                char>
+        void loadShader(Range&& range);
     };
 
     template class Shader<true>;
@@ -113,3 +143,6 @@ namespace mpgl {
     typedef Shader<false>               FragmentShader;
 
 }
+
+#include <MPGL/Core/Shaders/Shader.ipp>
+#include <MPGL/Core/Shaders/Shader.tpp>

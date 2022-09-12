@@ -25,8 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Core/Layouts/Layout.hpp>
-#include <MPGL/Mathematics/Vector.hpp>
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
 #include <MPGL/Events/Event.hpp>
 
 namespace mpgl {
@@ -48,11 +47,9 @@ namespace mpgl {
          * Pure virtual method. Has to be overloaded.
          * Notifies when window changes its shape
          *
-         * @param layout the layout of the object
          * @param oldDimensions the old window dimensions
          */
         virtual void onScreenTransformation(
-            Layout& layout,
             Vector2u const& oldDimensions) noexcept = 0;
 
         /**

@@ -25,8 +25,8 @@
  */
 #pragma once
 
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
 #include <MPGL/Core/Context/Context.hpp>
+#include <MPGL/Core/Vertex/Vertex.hpp>
 
 namespace mpgl {
 
@@ -107,13 +107,22 @@ namespace mpgl {
         void unbind(void) const noexcept;
 
         /**
+         * Holds a type of vertex
+         *
+         * @tparam Tp the vertex type
+         */
+        template <InstanceOf<Vertex> Tp>
+        struct VertexTag {};
+
+        /**
          * Utilizes given vertex type to copy the memory layout
          * to the vertex array object
          *
-         * @tparam Components the components of the vertex
+         * @tparam Tp the vertex type
          */
-        template <VertexComponents... Components>
-        void setArrayData(Vertex<Components...>) const noexcept;
+        template <InstanceOf<Vertex> Tp>
+        void setArrayData(
+            [[maybe_unused]] VertexTag<Tp>) const noexcept;
 
         /**
          * Draws the attached vertex buffer on the screen

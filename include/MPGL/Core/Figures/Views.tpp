@@ -25,6 +25,32 @@
  */
 #pragma once
 
+#include <MPGL/Mathematics/Systems.hpp>
+
+namespace mpgl {
+
+    template <std::ranges::view Range>
+        requires (std::same_as<std::remove_cvref_t<
+            std::ranges::range_value_t<Range>>, Adapter3D>)
+    Matrix4f const ProjectedPositionView<Range>::Default
+        = identityMatrix<float32, 4>();
+
+    template <std::ranges::view Range>
+        requires (std::same_as<std::remove_cvref_t<
+            std::ranges::range_value_t<Range>>, Adapter3D>)
+    [[nodiscard]] Vector2f
+        ProjectedPositionView<Range>::iterator::operator*(
+            void) const noexcept
+    {
+        Vector4f projected = context.getViewProjection() * matrix.get()
+            * extend(Vector3f(*iter));
+        Vector2f result{ projected[0], projected[1] };
+        return vectorCast<float32>(context.windowDimensions) * (
+            result / projected[3] + 1.f) / 2.f;
+    }
+
+}
+
 namespace mpgl::details {
 
     template <TemplateString Field>
@@ -36,6 +62,16 @@ namespace mpgl::details {
         return VertexComponentView<Field,
             std::views::all_t<Range>>{
                 std::forward<Range>(range) };
+    }
+
+    template <std::ranges::viewable_range Range>
+    requires (std::same_as<std::remove_cvref_t<
+        std::ranges::range_value_t<Range>>, Adapter3D>)
+    [[nodiscard]] auto ProjectedPositionViewAdaptorClosure::operator() (
+        Range&& range) const noexcept
+    {
+        return ProjectedPositionView<std::views::all_t<Range>>{
+            range, matrix};
     }
 
     template <TemplateString Field>
@@ -57,6 +93,17 @@ namespace mpgl::details {
         return VertexComponentViewAdaptorClosure<Field>{};
     }
 
+    template <std::ranges::viewable_range Range>
+    requires (std::same_as<std::remove_cvref_t<
+        std::ranges::range_value_t<Range>>, Adapter3D>)
+    [[nodiscard]] auto ProjectedPositionViewAdaptor::operator() (
+        Range&& range,
+        Matrix4f const& matrix) const noexcept
+    {
+        return ProjectedPositionView<std::views::all_t<Range>>{
+            range, matrix};
+    }
+
     template <std::ranges::viewable_range Range,
         TemplateString Field>
     [[nodiscard]] constexpr auto operator | (
@@ -67,11 +114,32 @@ namespace mpgl::details {
         return closure(std::forward<Range>(range));
     }
 
+    template <std::ranges::viewable_range Range>
+    requires (std::same_as<std::remove_cvref_t<
+        std::ranges::range_value_t<Range>>, Adapter3D>)
+    [[nodiscard]] auto operator | (
+        Range&& range,
+        ProjectedPositionViewAdaptorClosure const& closure
+        ) noexcept
+    {
+        return closure(std::forward<Range>(range));
+    }
+
     template <std::ranges::viewable_range Range,
         TemplateString Field>
     [[nodiscard]] constexpr auto operator | (
         Range&& range,
         VertexComponentViewAdaptor<Field> const& adaptor) noexcept
+    {
+        return adaptor(std::forward<Range>(range));
+    }
+
+    template <std::ranges::viewable_range Range>
+    requires (std::same_as<std::remove_cvref_t<
+        std::ranges::range_value_t<Range>>, Adapter3D>)
+    [[nodiscard]] constexpr auto operator | (
+        Range&& range,
+        ProjectedPositionViewAdaptor const& adaptor) noexcept
     {
         return adaptor(std::forward<Range>(range));
     }

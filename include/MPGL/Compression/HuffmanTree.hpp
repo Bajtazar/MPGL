@@ -25,8 +25,8 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/HuffmanTreeEmptyMapException.hpp>
-#include <MPGL/Exceptions/HuffmanTreeUnknownToken.hpp>
+#include <MPGL/Exceptions/HuffmanTree/HuffmanTreeEmptyMapException.hpp>
+#include <MPGL/Exceptions/HuffmanTree/HuffmanTreeUnknownToken.hpp>
 #include <MPGL/Collections/MinHeap.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 #include <MPGL/Utility/Ranges.hpp>

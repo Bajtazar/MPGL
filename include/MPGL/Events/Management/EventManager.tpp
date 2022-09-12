@@ -50,17 +50,6 @@ namespace mpgl {
                 this->push(std::static_pointer_cast<Ep>(event));
         }
 
-        template <Event Ep>
-        void EventManagerBase<ScreenTransformationEvent>::pushIfDerived(
-            std::shared_ptr<Ep> const& event)
-        {
-            if constexpr (std::same_as<Ep, ScreenTransformationEvent>)
-                this->push(event);
-            else if constexpr (std::derived_from<Ep,
-                ScreenTransformationEvent>)
-                    this->push(std::static_pointer_cast<Ep>(event));
-        }
-
     }
 
     template <Event... Events>

@@ -23,12 +23,12 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ImageLoadingFileCorruptionException.hpp>
-#include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileCorruptionException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileOpenException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
-#include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
+#include <MPGL/Exceptions/Inflate/InflateException.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
-#include <MPGL/Exceptions/InflateException.hpp>
 #include <MPGL/Compression/Checksums/CRC32.hpp>
 #include <MPGL/IO/ImageLoading/PNGLoader.hpp>
 #include <MPGL/Compression/ZlibDecoder.hpp>
@@ -51,7 +51,8 @@ namespace mpgl {
     {
         if (auto file = FileIO::readFileToVec(this->filePath)) {
             try {
-                setPolicy(*file, policy);
+                readImage(policy, makeIterator<Policy>(file->cbegin(),
+                    file->cend()));
             } catch (std::out_of_range&) {
                 throw ImageLoadingFileCorruptionException{this->filePath};
             } catch (InflateException&) {
@@ -64,20 +65,6 @@ namespace mpgl {
     template <security::SecurityPolicy Policy>
     PNGLoader<Policy>::PNGLoader(Path const& filePath)
         : PNGLoader{Policy{}, filePath} {}
-
-    template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::setPolicy(
-        DataBuffer const& file,
-        Policy policy)
-    {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return readImage(policy, FileIter{file.begin(),
-               file.end()});
-        else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return readImage(policy, FileIter{file.begin()});
-        else
-            throw SecurityUnknownPolicyException{};
-    }
 
     template <security::SecurityPolicy Policy>
     void PNGLoader<Policy>::checkCRCCode(
@@ -102,19 +89,9 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    PNGLoader<Policy>::FileIter PNGLoader<Policy>::decompresedIter(
-        DataBuffer const& buffer) const noexcept
-    {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return FileIter{buffer.begin(), buffer.end()};
-        else
-            return FileIter{buffer.begin()};
-    }
-
-    template <security::SecurityPolicy Policy>
     void PNGLoader<Policy>::chooseInterlance(Policy policy) {
         auto decoded = ZlibDecoder{std::move(rawFileData), policy}();
-        auto iter = decompresedIter(decoded);
+        auto iter = makeIterator<Policy>(decoded.cbegin(), decoded.cend());
         if (headerData.interlance)
             return interlance(policy, iter);
         Filters{pixels, *this}(iter);

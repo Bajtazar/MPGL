@@ -46,6 +46,14 @@ namespace mpgl {
         return static_cast<std::byte>(*iter++);
     }
 
+    template <ByteInputIterator Iter>
+    [[nodiscard]] constexpr bool
+        LittleEndianInputBitIter<Iter>::equal(
+            LittleEndianInputBitIter const& other) const noexcept
+    {
+        return iter == other.iter && bitIter == other.bitIter;
+    }
+
     template <ByteOutputIterator Iter>
     constexpr LittleEndianOutputBitIter<Iter>&
         LittleEndianOutputBitIter<Iter>::operator=(bit value) noexcept
@@ -75,6 +83,14 @@ namespace mpgl {
         *iter++ = byte;
     }
 
+    template <ByteOutputIterator Iter>
+    [[nodiscard]] constexpr bool
+        LittleEndianOutputBitIter<Iter>::equal(
+            LittleEndianOutputBitIter const& other) const noexcept
+    {
+        return iter == other.iter && bitIter == other.bitIter;
+    }
+
     template <ByteInputIterator Iter>
     constexpr BigEndianInputBitIter<Iter>&
         BigEndianInputBitIter<Iter>::operator++ (void) noexcept
@@ -92,6 +108,14 @@ namespace mpgl {
     {
         bitIter = 7;
         return static_cast<std::byte>(*iter++);
+    }
+
+    template <ByteInputIterator Iter>
+    [[nodiscard]] constexpr bool
+        BigEndianInputBitIter<Iter>::equal(
+            BigEndianInputBitIter const& other) const noexcept
+    {
+        return iter == other.iter && bitIter == other.bitIter;
     }
 
     template <ByteOutputIterator Iter>
@@ -124,6 +148,14 @@ namespace mpgl {
         temporary = 0;
         bitIter = 7;
         *iter++ = byte;
+    }
+
+    template <ByteOutputIterator Iter>
+    [[nodiscard]] constexpr bool
+        BigEndianOutputBitIter<Iter>::equal(
+            BigEndianOutputBitIter const& other) const noexcept
+    {
+        return iter == other.iter && bitIter == other.bitIter;
     }
 
 }

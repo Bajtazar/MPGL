@@ -25,31 +25,30 @@
  */
 #include <MPGL/Core/Figures/Primitives/Points.hpp>
 
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
-#include <MPGL/Utility/Ranges.hpp>
-
 namespace mpgl {
 
-    Points::Points(std::size_t vertices, Color const& color)
-        : ResizableAngular{vertices, color} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Drawer const
+        Points<Dim, Spec>::drawer = {};
 
-    void Points::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::Points,
-            vertices.size());
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Clicker const
+        Points<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Points(std::size_t vertices, Color const& color)
+        : ResizableAngular<Dim, Spec>{vertices, color} {}
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void Points<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
     }
 
-    [[nodiscard]] bool Points::contains(
-        Vector2f const& position) const noexcept
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Points<Dim, Spec>::contains(
+        Vector2u const& position) const noexcept
     {
-        Vector2f normalized = Adapter2D{position}.get();
-        for (auto const& pointPos : vertices | views::position)
-            if (std::ranges::equal(pointPos.get(), normalized))
-                return true;
-        return false;
+        return clicker(*this, position);
     }
 
 }

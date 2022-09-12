@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Mathematics/Matrix.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 
 #include <istream>
 #include <ostream>
@@ -37,6 +37,7 @@ namespace mpgl {
      *
      * @tparam Tp the type of the vector elements
      * @tparam Size the size of the vector
+     * @return a reference to ostream
      */
     template <Arithmetic Tp, std::size_t Size>
         requires (Size > 0)
@@ -50,6 +51,7 @@ namespace mpgl {
      * @tparam Tp the type of the matrix elements
      * @tparam Rows the number of matrix's rows
      * @tparam Cols the number of matrix's columns
+     * @return a reference to ostream
      */
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
@@ -62,6 +64,7 @@ namespace mpgl {
      *
      * @tparam Tp the type of the vector elements
      * @tparam Size the size of the vector
+     * @return a reference to istream
      */
     template <Arithmetic Tp, std::size_t Size>
         requires (Size > 0)
@@ -75,12 +78,38 @@ namespace mpgl {
      * @tparam Tp the type of the matrix elements
      * @tparam Rows the number of matrix's rows
      * @tparam Cols the number of matrix's columns
+     * @return a reference to istream
      */
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
     std::istream& operator>> (
         std::istream& is,
         Matrix<Tp, Rows, Cols>& matrix);
+
+    /**
+     * Writes the given vector to the string
+     *
+     * @tparam Tp the type of the vector elements
+     * @tparam Size the size of the vector
+     * @return the string with encoded vector
+     */
+    template <Arithmetic Tp, std::size_t Size>
+        requires (Size > 0)
+    [[nodiscard]] std::string toString(
+        Vector<Tp, Size> const& vector);
+
+    /**
+     * Writes the given matrix to the string
+     *
+     * @tparam Tp the type of the matrix elements
+     * @tparam Rows the number of matrix's rows
+     * @tparam Cols the number of matrix's columns
+     * @return the string with encoded matrix
+     */
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    [[nodiscard]] std::string toString(
+        Matrix<Tp, Rows, Cols> const& matrix);
 
 }
 

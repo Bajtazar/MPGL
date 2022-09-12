@@ -242,7 +242,7 @@ namespace mpgl {
             using Agregated = std::tuple<TArgs...>;
 
             /**
-             * A helper function used by the find fusion indexes
+             * A helper function used by the find fusion indices
              * method. Determines which function should be call
              * next based if it can be fused with the previous
              * one or not
@@ -250,9 +250,9 @@ namespace mpgl {
              * @tparam Index the current transformation index
              * @tparam CurrentTp the current transformation type
              * @tparam LastTp the last transformation type
-             * @tparam Indexes the allready gathered indexes
-             * @param indexes the allready gathered indexes
-             * @return the index sequence with the indexes of
+             * @tparam Indices the allready gathered indices
+             * @param indices the allready gathered indices
+             * @return the index sequence with the indices of
              * transformations which will be present in the final
              * tuple. The rest will be fused with them
              */
@@ -260,35 +260,35 @@ namespace mpgl {
                 size_t Index,
                 class CurrentTp,
                 class LastTp,
-                size_t... Indexes>
-            constexpr static decltype(auto) findFusionIndexesHelper(
-                std::index_sequence<Indexes...> indexes);
+                size_t... Indices>
+            constexpr static decltype(auto) findFusionIndicesHelper(
+                std::index_sequence<Indices...> indices);
 
             /**
              * Recursively searches for transformations which can
              * be fused with the previous ones
              *
              * @tparam Index the current transformation index
-             * @tparam Indexes the allready gathered indexes
-             * @param indexes the allready gathered indexes
-             * @return the index sequence with the indexes of
+             * @tparam Indices the allready gathered indices
+             * @param indices the allready gathered indices
+             * @return the index sequence with the indices of
              * transformations which will be present in the final
              * tuple. The rest will be fused with them
              */
-            template <size_t Index, size_t... Indexes>
-            constexpr static decltype(auto) findFusionIndexes(
-                std::index_sequence<Indexes...> indexes);
+            template <size_t Index, size_t... Indices>
+            constexpr static decltype(auto) findFusionIndices(
+                std::index_sequence<Indices...> indices);
 
             /**
              * Searches for transformations that cannot be fused
-             * together and saves their indexes in the index
+             * together and saves their indices in the index
              * sequence
              *
-             * @return the index sequence with the indexes of
+             * @return the index sequence with the indices of
              * transformations which will be present in the final
              * tuple. The rest will be fused with them
              */
-            constexpr static decltype(auto) findFusionIndexes(void);
+            constexpr static decltype(auto) findFusionIndices(void);
 
             /**
              * Checks whether the first type is fusable with the
@@ -335,7 +335,7 @@ namespace mpgl {
              */
             static void fuseInstructions(Agregated& tuple) noexcept;
 
-            using FusionIndexes = decltype(findFusionIndexes());
+            using FusionIndices = decltype(findFusionIndices());
             using FusedTuple = decltype(constructFusedTuple(
                 std::declval<Agregated>()));
 

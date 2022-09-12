@@ -23,8 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/FramedWindowCompileException.hpp>
-
+#include <MPGL/Exceptions/Window/RenderWindowCompileException.hpp>
 #include <MPGL/Core/Windows/RenderWindow.hpp>
 
 namespace mpgl {
@@ -46,7 +45,7 @@ namespace mpgl {
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER)
             != GL_FRAMEBUFFER_COMPLETE)
-                throw FramedWindowCompileException{};
+                throw RenderWindowCompileException{};
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -120,11 +119,16 @@ namespace mpgl {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void RenderWindow::render(CleaningOptions const& cleaning,
+    void RenderWindow::render(
+        CleaningOptions const& cleaning,
         Color const& color) noexcept
     {
         bind(cleaning, color);
-        std::ranges::for_each(drawables,
+        glEnable(GL_DEPTH_TEST);
+        std::ranges::for_each(drawables3D,
+            [](auto const& drawable){ drawable->draw(); });
+        glDisable(GL_DEPTH_TEST);
+        std::ranges::for_each(drawables2D,
             [](auto const& drawable){ drawable->draw(); });
         unbind();
     }
@@ -132,14 +136,7 @@ namespace mpgl {
     void RenderWindow::onScreenTransformation(
         Vector2u const& oldDimensions) noexcept
     {
-        eventManager->onScreenTransformation(layouts, oldDimensions);
-    }
-
-    void RenderWindow::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        eventManager->onScreenTransformation(layout, oldDimensions);
+        eventManager->onScreenTransformation(oldDimensions);
     }
 
     void RenderWindow::onMouseRelease(

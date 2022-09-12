@@ -101,7 +101,7 @@ namespace mpgl {
          *
          * @return the reference to the scaling factor
          */
-        [[nodiscard]] float32& getFactor(void) noexcept
+        [[nodiscard]] VectorDf& getFactor(void) noexcept
             { return factor; }
 
         /**
@@ -109,7 +109,7 @@ namespace mpgl {
          *
          * @return the constant reference to the scaling factor
          */
-        [[nodiscard]] float32 const& getFactor(
+        [[nodiscard]] VectorDf const& getFactor(
             void) const noexcept
                 { return factor; }
 
@@ -120,6 +120,9 @@ namespace mpgl {
     private:
         VectorDf                                    factor;
     };
+
+    template class Scaling<dim::Dim2>;
+    template class Scaling<dim::Dim3>;
 
     typedef Scaling<dim::Dim2>                      Scaling2D;
     typedef Scaling<dim::Dim3>                      Scaling3D;

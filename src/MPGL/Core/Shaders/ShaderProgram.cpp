@@ -23,8 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ShaderProgramLinkingException.hpp>
-
+#include <MPGL/Exceptions/Shader/ShaderProgramLinkingException.hpp>
 #include <MPGL/Core/Shaders/ShaderProgram.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 
@@ -67,8 +66,6 @@ namespace mpgl {
             info.resize(512);
             glGetProgramInfoLog(*shaderProgramID, 512, nullptr,
                 info.data());
-            if (!accumulate(info, 0u))
-                return;
             throw ShaderProgramLinkingException{
                 "[" + programName + "]\t" + info};
         }

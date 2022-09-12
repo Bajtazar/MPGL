@@ -26,26 +26,22 @@
 #pragma once
 
 #include <MPGL/Core/Transformations/Transformation.hpp>
-#include <MPGL/Mathematics/Matrix.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 
 namespace mpgl {
 
     /**
-     * Rotates the given coordinates
+     * Rotates the given coordiantes in the given space using
+     * rotation matrix and rotation center
      *
      * @tparam Dim the transformed space's dimensions
      */
     template <Dimension Dim>
-    class Rotation;
-
-    /**
-     * Rotates the given coordiantes in the 2D space using rotation
-     * matrix and rotation center
-     */
-    template <>
-    class Rotation<dim::Dim2> : public Transformation<dim::Dim2> {
+    class Rotation : public Transformation<Dim> {
     public:
-        using TransformedType = Adapter2D;
+        using TransformedType = Transformation<Dim>::TransformedType;
+        using VectorDf = Vector<float32, Dim::orthogonal_space_degree>;
+        using MatrixDf = SquareMatrix<float32, VectorDf::size()>;
 
         /**
          * Constructs a new rotation object
@@ -57,8 +53,8 @@ namespace mpgl {
          * is performed]
          */
         Rotation(
-            Matrix2f const& rotationMatrix,
-            Vector2f const& rotationCenter) noexcept;
+            MatrixDf const& rotationMatrix,
+            VectorDf const& rotationCenter) noexcept;
 
         /**
          * Constructs a new rotation object
@@ -70,34 +66,8 @@ namespace mpgl {
          * is performed]
          */
         Rotation(
-            Matrix2f&& rotationMatrix,
-            Vector2f&& rotationCenter) noexcept;
-
-        /**
-         * Constructs a new rotation object
-         *
-         * @param angle the radial angle which is used to rotate
-         * coordinates around the rotation center [counterclockwisely]
-         * @param rotationCenter the constant reference to the
-         * rotation center [the point around which the rotation
-         * is performed]
-         */
-        Rotation(
-            float32 angle,
-            Vector2f const& rotationCenter) noexcept;
-
-        /**
-         * Constructs a new rotation object
-         *
-         * @param angle the radial angle which is used to rotate
-         * coordinates around the rotation center [counterclockwisely]
-         * @param rotationCenter the rvalue reference to the
-         * rotation center [the point around which the rotation
-         * is performed]
-         */
-        Rotation(
-            float32 angle,
-            Vector2f&& rotationCenter) noexcept;
+            MatrixDf&& rotationMatrix,
+            VectorDf&& rotationCenter) noexcept;
 
         Rotation(Rotation const&) noexcept = default;
         Rotation(Rotation&&) noexcept = default;
@@ -132,7 +102,7 @@ namespace mpgl {
          *
          * @return the reference to the rotation center
          */
-        [[nodiscard]] Vector2f& getCenter(void) noexcept
+        [[nodiscard]] VectorDf& getCenter(void) noexcept
             { return rotationCenter; }
 
         /**
@@ -140,7 +110,7 @@ namespace mpgl {
          *
          * @return the constant reference to the rotation center
          */
-        [[nodiscard]] Vector2f const& getCenter(
+        [[nodiscard]] VectorDf const& getCenter(
             void) const noexcept
                 { return rotationCenter; }
 
@@ -149,7 +119,7 @@ namespace mpgl {
          *
          * @return the reference to the rotation matrix
          */
-        [[nodiscard]] Matrix2f& getMatrix(void) noexcept
+        [[nodiscard]] MatrixDf& getMatrix(void) noexcept
             { return rotationMatrix; }
 
         /**
@@ -157,16 +127,112 @@ namespace mpgl {
          *
          * @return the constant reference to the rotation matrix
          */
-        [[nodiscard]] Matrix2f const& getMatrix(
+        [[nodiscard]] MatrixDf const& getMatrix(
             void) const noexcept
                 { return rotationMatrix; }
 
         ~Rotation(void) noexcept = default;
     private:
-        Matrix2f                                rotationMatrix;
-        Vector2f                                rotationCenter;
+        MatrixDf                                rotationMatrix;
+        VectorDf                                rotationCenter;
     };
 
+    template class Rotation<dim::Dim2>;
+    template class Rotation<dim::Dim3>;
+
     typedef Rotation<dim::Dim2>                 Rotation2D;
+    typedef Rotation<dim::Dim3>                 Rotation3D;
+
+    /**
+     * Constructs a new rotation object
+     *
+     * @param angle the radial angle which is used to rotate
+     * coordinates around the rotation center [counterclockwisely]
+     * @param rotationCenter the constant reference to the
+     * rotation center [the point around which the rotation
+     * is performed]
+     * @return the 2D rotation transformation
+     */
+    [[nodiscard]] Rotation2D makeRotation(
+        float32 angle,
+        Vector2f const& rotationCenter) noexcept;
+
+    /**
+     * Constructs a new rotation object
+     *
+     * @param angle the radial angle which is used to rotate
+     * coordinates around the rotation center [counterclockwisely]
+     * @param rotationCenter the rvalue reference to the
+     * rotation center [the point around which the rotation
+     * is performed]
+     * @return the 2D rotation transformation
+     */
+    [[nodiscard]] Rotation2D makeRotation(
+        float32 angle,
+        Vector2f&& rotationCenter) noexcept;
+
+    /**
+     * Constructs a new rotation object
+     *
+     * @param yaw the angle of rotation around the x axis [in Rads]
+     * @param pitch the angle of rotation around the y axis [in Rads]
+     * @param roll the angle of rotation around the z axis [in Rads]
+     * @param rotationCenter the constant reference to the
+     * rotation center [the point around which the rotation
+     * is performed]
+     * @return the 3D rotation transformation
+     */
+    [[nodiscard]] Rotation3D makeRotation(
+        float32 yaw,
+        float32 pitch,
+        float32 roll,
+        Vector3f const& rotationCenter) noexcept;
+
+    /**
+     * Constructs a new rotation object
+     *
+     * @param yaw the angle of rotation around the x axis [in Rads]
+     * @param pitch the angle of rotation around the y axis [in Rads]
+     * @param roll the angle of rotation around the z axis [in Rads]
+     * @param rotationCenter the rvalue reference to the
+     * rotation center [the point around which the rotation
+     * is performed]
+     * @return the 3D rotation transformation
+     */
+    [[nodiscard]] Rotation3D makeRotation(
+        float32 yaw,
+        float32 pitch,
+        float32 roll,
+        Vector3f&& rotationCenter) noexcept;
+
+    /**
+     * Constructs a new rotation object
+     *
+     * @param angles a constant reference to the vector object
+     * containing angles
+     * @param rotationCenter the constant reference to the
+     * rotation center [the point around which the rotation
+     * is performed]
+     * @return the 3D rotation transformation
+     */
+    [[nodiscard]] Rotation3D makeRotation(
+        Vector3f const& angles,
+        Vector3f const& rotationCenter) noexcept;
+
+    /**
+     * Constructs a new rotation object
+     *
+     * @param angles a constant reference to the vector object
+     * containing angles
+     * @param rotationCenter the rvalue reference to the
+     * rotation center [the point around which the rotation
+     * is performed]
+     * @return the 3D rotation transformation
+     */
+    [[nodiscard]] Rotation3D makeRotation(
+        Vector3f const& angles,
+        Vector3f&& rotationCenter) noexcept;
 
 }
+
+#include <MPGL/Core/Transformations/Rotation.tpp>

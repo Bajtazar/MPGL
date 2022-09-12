@@ -24,6 +24,8 @@
  *  distribution
  */
 #include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
+#include <MPGL/Exceptions/NotPerpendicularException.hpp>
+#include <MPGL/Exceptions/DifferentPlanesException.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Figures/Primitives/Ring.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
@@ -31,9 +33,24 @@
 
 namespace mpgl {
 
-    Ring::InnerEllipse::Vertices
-        Ring::InnerEllipse::ellipseVertices(Vector2f const& center,
-            Vector2f const& semiAxis, float32 angle)
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::OutlineCalculator const
+        Ring<Dim, Spec>::outlineCalc = {};
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::Clicker const
+        Ring<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::ShaderManager const
+        Ring<Dim, Spec>::shaderManager = {};
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::InnerEllipse::Vertices
+        Ring<Dim, Spec>::InnerEllipse::ellipseVertices(
+            Vector2f const& center,
+            Vector2f const& semiAxis,
+            float32 angle) requires TwoDimensional<Dim>
     {
         Matrix2f rotation = rotationMatrix<float32>(angle);
         Vector2f rot1 = rotation * semiAxis;
@@ -46,9 +63,11 @@ namespace mpgl {
         };
     }
 
-    Ring::InnerEllipse::Vertices
-        Ring::InnerEllipse::circleVertices(Vector2f const& center,
-            float32 radius)
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::InnerEllipse::Vertices
+        Ring<Dim, Spec>::InnerEllipse::circleVertices(
+            Vector2f const& center,
+            float32 radius) requires TwoDimensional<Dim>
     {
         Vector2f semiMajor = Vector2f{radius, 0.f};
         Vector2f semiMinor = Vector2f{0.f, radius};
@@ -60,79 +79,82 @@ namespace mpgl {
         };
     }
 
-    Ring::InnerEllipse::InnerEllipse(Vector2f const& center,
-        Vector2f const& semiAxis, float32 angle)
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::InnerEllipse::InnerEllipse(
+        Vector2f const& center,
+        Vector2f const& semiAxis,
+        float32 angle) requires TwoDimensional<Dim>
             : vertices{ellipseVertices(center, semiAxis, angle)}
     {
         actualizeMatrices();
     }
 
-    Ring::InnerEllipse::InnerEllipse(Vector2f const& center,
-        float radius)
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::InnerEllipse::InnerEllipse(
+        Vector2f const& center,
+        float radius) requires TwoDimensional<Dim>
             : vertices{circleVertices(center, radius)}
     {
         actualizeMatrices();
     }
 
-    std::optional<Matrix2f> Ring::InnerEllipse::calculateNewOutline(
-        void) const noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::InnerEllipse::InnerEllipse(
+        Vector3f const& center,
+        Vector3f const& minorAxis,
+        Vector3f const& majorAxis) requires ThreeDimensional<Dim>
+            : vertices{
+                center - majorAxis - minorAxis,
+                center - majorAxis + minorAxis,
+                center + majorAxis + minorAxis,
+                center + majorAxis - minorAxis
+            }
     {
-        return invert(transpose(
-            Matrix2f{
-                Vector2f{vertices[1]} - Vector2f{vertices[0]},
-                Vector2f{vertices[3]} - Vector2f{vertices[0]}
-            }));
-    }
-
-    void Ring::InnerEllipse::actualizeMatrices(void) noexcept {
-        if (auto outline = calculateNewOutline())
-            this->outline = *outline;
-    }
-
-    [[nodiscard]] Vector2f
-        Ring::InnerEllipse::getCenter(void) const noexcept
-    {
-        return (Vector2f{vertices[3]} + Vector2f{vertices[1]}) / 2.f;
-    }
-
-    [[nodiscard]] Vector2f
-        Ring::InnerEllipse::getSemiAxis(void) const noexcept
-    {
-        return {
-            (Vector2f{vertices[1]} - Vector2f{vertices[0]}).length(),
-            (Vector2f{vertices[3]} - Vector2f{vertices[0]}).length()
-        };
-    }
-
-    void Ring::InnerEllipse::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        any::InputRange<Adapter2D> positions{vertices};
-        layout(positions, oldDimensions);
+        if (dot(minorAxis, majorAxis))
+            throw NotPerpendicularException{minorAxis, majorAxis};
         actualizeMatrices();
     }
 
-    void Ring::InnerEllipse::transform(
-        Transformation2D const& transformator) noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::InnerEllipse::actualizeMatrices(
+        void) noexcept
     {
-        any::InputRange<Adapter2D> positions{vertices};
+        if (auto outline = outlineCalc(vertices))
+            this->outline = *outline;
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Ring<Dim, Spec>::Vector
+        Ring<Dim, Spec>::InnerEllipse::getCenter(void) const noexcept
+    {
+        return (Vector{vertices[3]} + Vector{vertices[1]}) / 2.f;
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Vector2f
+        Ring<Dim, Spec>::InnerEllipse::getSemiAxis(void) const noexcept
+    {
+        return {
+            (Vector{vertices[1]} - Vector{vertices[0]}).length(),
+            (Vector{vertices[3]} - Vector{vertices[0]}).length()
+        };
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::InnerEllipse::transform(
+        Transformation<Dim> const& transformator) noexcept
+    {
+        any::InputRange<Adapter> positions{vertices};
         transformator(positions);
         actualizeMatrices();
     }
 
-    Ring::Executable const Ring::shaderExec
-        = [](ShaderProgram const& program)
-    {
-        ShaderLocation{program, "aafactor"}(
-            float32(context.windowOptions.antiAliasingSamples) / 4.f);
-    };
-
-    void Ring::setLocations(void) {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::setLocations(void) {
         Shadeable::setLocations(DeferredExecutionWrapper{
-            shaderProgram, locations}([](auto program, auto locations)
+            this->shaderProgram, locations}(
+                [](auto program, auto locations)
         {
-            locations->color = ShaderLocation{*program, "color"};
             locations->outerShift
                 = ShaderLocation{*program, "outerShift"};
             locations->innerShift
@@ -144,156 +166,181 @@ namespace mpgl {
         }));
     }
 
-    Ring::Ring(
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::Ring(
         Vector2f const& center,
         Vector2f const& semiAxis,
         InnerEllipse const& innerEllipse,
         Color const& color,
-        float32 angle)
-            : Elliptic{ellipseVertices(center, semiAxis, angle),
-                "MPGL/2D/Ring", shaderExec, color},
+        float32 angle) requires TwoDimensional<Dim>
+            : Elliptic<Dim, Spec>{Elliptic<Dim, Spec>::ellipseVertices(
+                center, semiAxis, angle, color),
+                shaderManager.shader, shaderManager},
             locations{new Locations}, innerEllipse{innerEllipse}
     {
         actualizeMatrices();
         setLocations();
     }
 
-    Ring::Ring(
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::Ring(
         Vector2f const& center,
         float32 radius,
         InnerEllipse const& innerEllipse,
-        Color const& color)
-            : Elliptic{circleVertices(center, radius),
-                "MPGL/2D/Ring", shaderExec, color},
+        Color const& color) requires TwoDimensional<Dim>
+            : Elliptic<Dim, Spec>{Elliptic<Dim, Spec>::circleVertices(
+                center, radius, color),
+                shaderManager.shader, shaderManager},
             locations{new Locations}, innerEllipse{innerEllipse}
     {
         actualizeMatrices();
         setLocations();
     }
 
-    Ring::Ring(
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::Ring(
+        Vector3f const& center,
+        Vector3f const& minorAxis,
+        Vector3f const& majorAxis,
+        InnerEllipse const& innerEllipse,
+        Color const& color) requires ThreeDimensional<Dim>
+            : Elliptic<Dim, Spec>{{
+                VertexTraits::buildVertex(center - majorAxis - minorAxis, color),
+                VertexTraits::buildVertex(center - majorAxis + minorAxis, color),
+                VertexTraits::buildVertex(center + majorAxis + minorAxis, color),
+                VertexTraits::buildVertex(center + majorAxis - minorAxis, color)
+            }, shaderManager.shader, shaderManager},
+            locations{new Locations}, innerEllipse{innerEllipse}
+    {
+        if (dot(minorAxis, majorAxis))
+            throw NotPerpendicularException{minorAxis, majorAxis};
+        checkInnerAndOuterPlanes();
+        actualizeMatrices();
+        setLocations();
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::Ring(
         Vector2f const& center,
         Vector2f const& outerSemiAxis,
         Vector2f const& innerSemiAxis,
         Color const& color,
-        float32 angle) : Ring{center, outerSemiAxis,
-            InnerEllipse{center, innerSemiAxis,
+        float32 angle) requires TwoDimensional<Dim>
+            : Ring<Dim, Spec>{center, outerSemiAxis,
+                InnerEllipse{center, innerSemiAxis,
                 angle}, color, angle} {}
 
-    Ring::Ring(
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    Ring<Dim, Spec>::Ring(
         Vector2f const& center,
         float32 outerRadius,
         float32 innerRadius,
-        Color const& color) : Ring{center, outerRadius,
-            InnerEllipse{center, innerRadius}, color} {}
+        Color const& color) requires TwoDimensional<Dim>
+            : Ring{center, outerRadius, InnerEllipse{
+                center, innerRadius}, color} {}
 
-    std::optional<Matrix2f> Ring::calculateNewOutline(
-        void) const noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::checkInnerAndOuterPlanes(
+        void) const requires ThreeDimensional<Dim>
     {
-        return invert(transpose(
-            Matrix2f{Vector2f{get<"position">(vertices[1])}
-                - Vector2f{get<"position">(vertices[0])},
-            Vector2f{get<"position">(vertices[3])}
-                - Vector2f{get<"position">(vertices[0])}}));
+        Vector4f coeffs = planeCoefficients<float32>(
+            get<"position">(this->vertices[0]),
+            get<"position">(this->vertices[1]),
+            get<"position">(this->vertices[3]));
+        for (uint8 i = 0; i < 3; ++i) {
+            Vector3f const vertex = innerEllipse.vertices[i];
+            if (!isOnPlane(coeffs, vertex))
+                throw DifferentPlanesException{coeffs, vertex};
+        }
     }
 
-    void Ring::actualizeMatrices(void) noexcept {
-        if (auto outline = calculateNewOutline())
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::actualizeMatrices(void) noexcept {
+        if (auto outline = outlineCalc(this->vertices | views::position))
             this->outline = *outline;
     }
 
-    [[nodiscard]] Vector2f Ring::getCenter(void) const noexcept {
-        return (Vector2f{get<"position">(vertices[3])}
-            + Vector2f{get<"position">(vertices[1])}) / 2.f;
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Ring<Dim, Spec>::Vector
+        Ring<Dim, Spec>::getCenter(void) const noexcept
+    {
+        return (Vector{get<"position">(this->vertices[3])}
+            + Vector{get<"position">(this->vertices[1])}) / 2.f;
     }
 
-    [[nodiscard]] Vector2f Ring::getOuterSemiAxis(
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] Vector2f Ring<Dim, Spec>::getOuterSemiAxis(
         void) const noexcept
     {
         return {
-            (Vector2f{get<"position">(vertices[1])}
-                - Vector2f{get<"position">(vertices[0])}).length(),
-            (Vector2f{get<"position">(vertices[3])}
-                - Vector2f{get<"position">(vertices[0])}).length()
+            (Vector{get<"position">(this->vertices[1])}
+                - Vector{get<"position">(this->vertices[0])}).length(),
+            (Vector{get<"position">(this->vertices[3])}
+                - Vector{get<"position">(this->vertices[0])}).length()
         };
     }
 
-    void Ring::onScreenTransformation(
-        Layout& layout,
-        Vector2u const& oldDimensions) noexcept
-    {
-        innerEllipse.onScreenTransformation(layout, oldDimensions);
-        any::InputRange<Adapter2D> positions{
-            vertices | views::position};
-        layout(positions, oldDimensions);
-        actualizeMatrices();
-        isModified = true;
-    }
-
-    void Ring::transform(
-        Transformation2D const& transformator) noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::transform(
+        Transformation<Dim> const& transformator) noexcept
     {
         innerEllipse.transform(transformator);
-        any::InputRange<Adapter2D> positions{
-            vertices | views::position};
+        any::InputRange<Adapter> positions{
+            this->vertices | views::position};
         transformator(positions);
         actualizeMatrices();
-        isModified = true;
+        this->isModified = true;
     }
 
-    void Ring::setUniforms(void) const noexcept {
-        locations->color(color);
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::actualizeLocations(void) const noexcept {
+        Elliptic<Dim, Spec>::actualizeLocations();
         locations->outerShift(
-            Vector2f{get<"position">(vertices.front())});
+            Vector{get<"position">(this->vertices.front())});
         locations->innerShift(
-            Vector2f{innerEllipse.vertices.front()});
+            Vector{innerEllipse.vertices.front()});
         locations->outerTransform(outline);
         locations->innerTransform(innerEllipse.outline);
     }
 
-    void Ring::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        setUniforms();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawElements(VertexArray::DrawMode::Triangles,
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::draw(void) const noexcept {
+        this->actualizeBufferBeforeDraw();
+        this->shaderProgram->use();
+        actualizeLocations();
+        BindGuard<VertexArray> vaoGuard{this->vertexArray};
+        this->vertexArray.drawElements(
+            VertexArray::DrawMode::Triangles,
             6, DataType::UInt32);
     }
 
-    void Ring::setShader(ShaderProgram const& program) noexcept {
-        Shadeable::setShader(program);
-        shaderExec(program);
-        setLocations();
-    }
-
-    void Ring::setShader(ShaderProgram&& program) noexcept {
-        Shadeable::setShader(std::move(program));
-        shaderExec(*this->shaderProgram);
-        setLocations();
-    }
-
-    void Ring::setShader(std::string const& name) {
-        Shadeable::setShader(name, shaderExec);
-        setLocations();
-    }
-
-    [[nodiscard]] bool Ring::insideSystem(
-            Vector2f const& position,
-            Vector2f const& shift,
-            Matrix2f const& transform) const noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::setShader(
+        ShaderProgram const& program) noexcept
     {
-        Vector2f local = transform * (position - shift);
-        return (local - 0.5f).length() <= 0.5;
+        Elliptic<Dim, Spec>::setShader(program);
+        shaderManager(program);
+        setLocations();
     }
 
-    [[nodiscard]] bool Ring::contains(
-        Vector2f const& position) const noexcept
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::setShader(ShaderProgram&& program) noexcept {
+        Elliptic<Dim, Spec>::setShader(std::move(program));
+        shaderManager(*this->shaderProgram);
+        setLocations();
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    void Ring<Dim, Spec>::setShader(std::string const& name) {
+        Elliptic<Dim, Spec>::setShader(name, shaderManager);
+        setLocations();
+    }
+
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Ring<Dim, Spec>::contains(
+        Vector2u const& position) const noexcept
     {
-        bool outring = insideSystem(position,
-            get<"position">(vertices.front()), this->outline);
-        bool inring = insideSystem(position,
-            innerEllipse.vertices.front(), innerEllipse.outline);
-        return outring && (!inring);
+        return clicker(*this, position);
     }
 
 }

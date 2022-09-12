@@ -33,7 +33,7 @@
 #include <list>
 
 class Snake :
-    public mpgl::ScreenTransformationEvent,
+    public mpgl::Transformable2D,
     public mpgl::KeyPressEvent,
     public mpgl::Drawable2D,
     public mpgl::TickEvent
@@ -43,9 +43,8 @@ public:
 
     virtual void onKeyPress(mpgl::Key const& key) noexcept;
 
-    virtual void onScreenTransformation(
-        mpgl::Layout& layout,
-        mpgl::Vector2u const& oldDimensions) noexcept;
+    virtual void transform(
+        Transformation2D const& transformator) noexcept;
 
     virtual void draw(void) const noexcept;
 
@@ -56,7 +55,8 @@ public:
 private:
     typedef std::list<mpgl::Vector2f>               Modules;
     typedef mpgl::DrawableCollection<
-        mpgl::Tetragon, std::list<mpgl::Tetragon>>  SnakeModules;
+        mpgl::Tetragon2D,
+        std::list<mpgl::Tetragon2D>>                SnakeModules;
 
     SnakeModules                                    snakeModules;
     Modules                                         modules;
@@ -68,6 +68,6 @@ private:
 
     bool onFreeze(void) noexcept;
 
-    mpgl::Tetragon returnModule(
+    mpgl::Tetragon2D returnModule(
         mpgl::Vector2si const& vector) const noexcept;
 };

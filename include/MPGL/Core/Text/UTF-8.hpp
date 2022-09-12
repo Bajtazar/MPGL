@@ -47,7 +47,7 @@ namespace mpgl {
          * @return the string with the utf-8 representation
          */
         template <std::integral Tp>
-            requires ConstexprConstructible<std::string>
+            requires ConstevalType<std::string>
         [[nodiscard]] constexpr std::string
             operator() (Tp unicodeID) const;
 
@@ -60,7 +60,7 @@ namespace mpgl {
          * @return the string with the utf-8 representation
          */
         template <std::integral Tp>
-            requires (!ConstexprConstructible<std::string>)
+            requires (!ConstevalType<std::string>)
         [[nodiscard]] std::string
             operator() (Tp unicodeID) const;
     private:
@@ -78,7 +78,7 @@ namespace mpgl {
          * @return the string with the utf-8 representation
          */
         template <std::integral Tp, uint8 Length>
-            requires ConstexprConstructible<std::string>
+            requires ConstevalType<std::string>
         constexpr std::string addTail(
             std::string string,
             Tp unicodeID) const;
@@ -94,7 +94,7 @@ namespace mpgl {
          * @return the string with the utf-8 representation
          */
         template <std::integral Tp, uint8 Length>
-            requires (!ConstexprConstructible<std::string>)
+            requires (!ConstevalType<std::string>)
         std::string addTail(
             std::string string,
             Tp unicodeID) const;
@@ -109,7 +109,7 @@ namespace mpgl {
          * @return the string with the utf-8 representation
          */
         template <std::integral Tp, std::size_t Index>
-            requires ConstexprConstructible<std::string>
+            requires ConstevalType<std::string>
         constexpr std::string convert(Tp unicodeID) const;
 
         /**
@@ -122,7 +122,7 @@ namespace mpgl {
          * @return the string with the utf-8 representation
          */
         template <std::integral Tp, std::size_t Index>
-            requires (!ConstexprConstructible<std::string>)
+            requires (!ConstevalType<std::string>)
         std::string convert(Tp unicodeID) const;
 
         /**

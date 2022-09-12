@@ -27,14 +27,25 @@
 
 namespace mpgl {
 
-    template <class ColorTp, AllConvertible<Vector2f>... Vectors>
-        requires std::constructible_from<Color, ColorTp>
-    Polygon::Polygon(ColorTp&& color, Vectors&&... vertices)
-        : ResizableAngular{std::forward<ColorTp>(color),
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <
+        class ColorTp,
+        AllConvertible<
+        typename Polygon<Dim, Spec>::Vector>... Vectors>
+            requires std::constructible_from<Color, ColorTp>
+    Polygon<Dim, Spec>::Polygon(
+        ColorTp&& color,
+        Vectors&&... vertices)
+            : ResizableAngular<Dim, Spec>{
+                std::forward<Color>(color),
+                std::forward<Vectors>(vertices)...} {}
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    template <AllConvertible<
+        typename Polygon<Dim, Spec>::Vector>... Vectors>
+    Polygon<Dim, Spec>::Polygon(Vectors&&... vertices)
+        : ResizableAngular<Dim, Spec>{
             std::forward<Vectors>(vertices)...} {}
 
-    template <AllConvertible<Vector2f>... Vectors>
-    Polygon::Polygon(Vectors&&... vertices)
-        : ResizableAngular{std::forward<Vectors>(vertices)...} {}
 
 }

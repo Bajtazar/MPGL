@@ -30,67 +30,131 @@
 
 namespace mpgl {
 
-    ResizableAngular::ResizableAngular(size_t size,
-        Color const& color) : Angular{size, color} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    ResizableAngular<Dim, Spec>::ResizableAngular(
+        size_t size,
+        Color const& color)
+            : Angular<Dim, Spec>{size, color} {}
 
-    ResizableAngular::ResizableAngular(Vertices vertices)
-        : Angular{vertices} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    ResizableAngular<Dim, Spec>::ResizableAngular(Vertices vertices)
+        : Angular<Dim, Spec>{vertices} {}
 
-    ResizableAngular& ResizableAngular::operator= (
-        ResizableAngular const& shape)
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    ResizableAngular<Dim, Spec>&
+        ResizableAngular<Dim, Spec>::operator= (
+            ResizableAngular const& shape)
     {
-        Angular::operator=(shape);
+        Angular<Dim, Spec>::operator=(shape);
         isExtended = true;
         return *this;
     }
 
-    [[nodiscard]] ResizableAngular::OptionalVec2f
-        ResizableAngular::getCenter(void) const noexcept
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::shrinkToFit(void) {
+        this->vertices.shrink_to_fit();
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] std::size_t
+        ResizableAngular<Dim, Spec>::capacity(void) const noexcept
     {
-        if (!vertices.size())
+        return this->vertices.capacity();
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool ResizableAngular<Dim, Spec>::empty(
+        void) const noexcept
+    {
+        return this->vertices.empty();
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        iterator const& position)
+    {
+        this->vertices.erase(position.get());
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        const_iterator const& position)
+    {
+        this->vertices.erase(position);
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        iterator const& first,
+        iterator const& last)
+    {
+        this->vertices.erase(first.get(), last.get());
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::erase(
+        const_iterator const& first,
+        const_iterator const& last)
+    {
+        this->vertices.erase(first, last);
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] ResizableAngular<Dim, Spec>::Optional
+        ResizableAngular<Dim, Spec>::getCenter(void) const noexcept
+    {
+        if (!this->vertices.size())
             return {};
-        return { accumulate(*this | views::position, Vector2f{},
-            [](auto const& x){ return std::forward<Vector2f>(x); })
-                / static_cast<float32>(vertices.size()) };
+        return { accumulate(this->vertices | views::position, Vector{},
+            [](auto const& x){ return std::forward<Vector>(x); })
+                / static_cast<float32>(this->vertices.size()) };
     }
 
-    void ResizableAngular::resize(size_type size) {
-        vertices.resize(size, Vertex{Vector2f{}, Color{}});
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::resize(size_type size) {
+        this->vertices.resize(size, VertexTraits::buildVertex({}, {}));
         isExtended = true;
     }
 
-    void ResizableAngular::reserve(size_type size) {
-        vertices.reserve(size);
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::reserve(size_type size) {
+        this->vertices.reserve(size);
     }
 
-    void ResizableAngular::push(Vertex vertex) {
-        vertices.push_back(std::move(vertex));
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::push(Vertex vertex) {
+        this->vertices.push_back(std::move(vertex));
         isExtended = true;
     }
 
-    void ResizableAngular::emplace(Vector2f const& position,
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::emplace(
+        Vector const& position,
         Color const& color)
     {
-        vertices.emplace_back(position, color);
+        this->vertices.emplace_back(VertexTraits::buildVertex(
+            position, color));
         isExtended = true;
     }
 
-    void ResizableAngular::pop(void) noexcept {
-        vertices.pop_back();
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::pop(void) noexcept {
+        this->vertices.pop_back();
         isExtended = true;
     }
 
-    void ResizableAngular::actualizeBufferBeforeDraw(
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void ResizableAngular<Dim, Spec>::actualizeBufferBeforeDraw(
         void) const noexcept
     {
         if (isExtended) {
             {
-                BindGuard<VertexBuffer> vboGuard{vertexBuffer};
-                vertexBuffer.setBufferData(vertices);
+                BindGuard<VertexBuffer> vboGuard{this->vertexBuffer};
+                this->vertexBuffer.setBufferData(this->vertices);
             }
-            isExtended = isModified = false;
+            isExtended = this->isModified = false;
         } else
-            Angular::actualizeBufferBeforeDraw();
+            Angular<Dim, Spec>::actualizeBufferBeforeDraw();
     }
 
 }

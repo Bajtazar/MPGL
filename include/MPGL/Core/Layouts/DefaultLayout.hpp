@@ -38,8 +38,12 @@ namespace mpgl {
     public:
         /**
          * Constructs a new Default Layout object
+         *
+         * @param oldDimensions the dimensions of the window
+         * before screen transformation event
          */
-        explicit DefaultLayout(void) noexcept = default;
+        explicit DefaultLayout(
+            Vector2u const& oldDimensions) noexcept;
 
         DefaultLayout(DefaultLayout const&) noexcept = default;
         DefaultLayout(DefaultLayout&&) noexcept = default;
@@ -51,21 +55,30 @@ namespace mpgl {
             DefaultLayout&&) noexcept = default;
 
         /**
-         * Ensures that the object will be intact by the
+         * Ensures that the coordinates will be intact by the
          * screen transformation event
          *
-         * @param range the reference to the position range object
-         * @param oldDimensions the constant reference to the old
-         * window dimensions
+         * @param coords the reference to the coordinates object
          */
         void operator() (
-            any::InputRange<Adapter2D>& range,
-            Vector2u const& oldDimensions) const noexcept final;
+            any::InputRange<Adapter2D>& coords) const noexcept final;
+
+        /**
+         * Ensures that the coordinate will be intact by the
+         * screen transformation event
+         *
+         * @param coord the reference to the coordinate object
+         */
+        void operator() (Adapter2D& coord) const noexcept final;
 
         /**
          * Destroys the Default Layout object
          */
         ~DefaultLayout(void) noexcept = default;
+    private:
+        using Vector2uR = std::reference_wrapper<Vector2u const>;
+
+        Vector2uR                               dimensions;
     };
 
 }

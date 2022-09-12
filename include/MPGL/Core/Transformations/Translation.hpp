@@ -123,6 +123,9 @@ namespace mpgl {
         VectorDf                                translation;
     };
 
+    template class Translation<dim::Dim2>;
+    template class Translation<dim::Dim3>;
+
     typedef Translation<dim::Dim2>              Translation2D;
     typedef Translation<dim::Dim3>              Translation3D;
 

@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Exceptions/InflateInvalidHeaderException.hpp>
+#include <MPGL/Exceptions/Inflate/InflateInvalidHeaderException.hpp>
 #include <MPGL/Exceptions/NotSupportedException.hpp>
 #include <MPGL/Compression/Checksums/Adler32.hpp>
 #include <MPGL/Compression/Inflate.hpp>
@@ -93,10 +93,7 @@ namespace mpgl {
          */
         [[nodiscard]] Range operator()(void);
     private:
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<typename Range::iterator>,
-            typename Range::iterator>                   Iterator;
+        typedef PolicyIterRT<Policy, Range>             Iterator;
 
         Range                                           range;
         Iterator                                        rangeIterator;

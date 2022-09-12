@@ -23,11 +23,10 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ImageLoadingFileCorruptionException.hpp>
-
-#include <MPGL/Exceptions/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileCorruptionException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingInvalidTypeException.hpp>
+#include <MPGL/Exceptions/ImageLoading/ImageLoadingFileOpenException.hpp>
 #include <MPGL/Exceptions/SecurityUnknownPolicyException.hpp>
-#include <MPGL/Exceptions/ImageLoadingFileOpenException.hpp>
 #include <MPGL/IO/ImageLoading/BMPLoader.hpp>
 
 namespace mpgl {
@@ -44,7 +43,7 @@ namespace mpgl {
         std::ifstream file{this->filePath.c_str(), std::ios::binary};
         if (!file.good() || !file.is_open())
             throw ImageLoadingFileOpenException{this->filePath};
-        FileIter iter = setPolicy(file);
+        FileIter iter = makeIterator<Policy>(StreamBuf{file});
         try {
             readHeader(iter);
             readImage(iter);
@@ -56,18 +55,6 @@ namespace mpgl {
     template <security::SecurityPolicy Policy>
     BMPLoader<Policy>::BMPLoader(Path const& filePath)
         : BMPLoader{Policy{}, filePath} {}
-
-    template <security::SecurityPolicy Policy>
-    BMPLoader<Policy>::FileIter BMPLoader<Policy>::setPolicy(
-        std::istream& file)
-    {
-        if constexpr (security::isSecurePolicy<Policy>)
-            return FileIter{StreamBuf{file}, StreamBuf{}};
-        else if constexpr (security::isUnsecuredPolicy<Policy>)
-            return FileIter{file};
-        else
-            throw SecurityUnknownPolicyException{};
-    }
 
     template <security::SecurityPolicy Policy>
     void BMPLoader<Policy>::readHeader(FileIter& file) {

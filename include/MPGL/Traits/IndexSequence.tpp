@@ -27,40 +27,40 @@
 
 namespace mpgl {
 
-    template <size_t I, size_t... Indexes>
-    [[nodiscard]] consteval std::index_sequence<Indexes..., I>
-        pushBack(std::index_sequence<Indexes...>) noexcept
-            { return std::index_sequence<Indexes..., I>{}; }
+    template <size_t I, size_t... Indices>
+    [[nodiscard]] consteval std::index_sequence<Indices..., I>
+        pushBack(std::index_sequence<Indices...>) noexcept
+            { return std::index_sequence<Indices..., I>{}; }
 
-    template <size_t I, size_t... Indexes>
-    [[nodiscard]] consteval std::index_sequence<I, Indexes...>
-        pushFront(std::index_sequence<Indexes...>) noexcept
-            { return std::index_sequence<I, Indexes...>{}; }
+    template <size_t I, size_t... Indices>
+    [[nodiscard]] consteval std::index_sequence<I, Indices...>
+        pushFront(std::index_sequence<Indices...>) noexcept
+            { return std::index_sequence<I, Indices...>{}; }
 
-    template <size_t Index, size_t End, size_t... Indexes>
+    template <size_t Index, size_t End, size_t... Indices>
     [[nodiscard]] consteval decltype(auto) indexSequenceRange(
-        std::index_sequence<Indexes...> indexes) noexcept
+        std::index_sequence<Indices...> indices) noexcept
     {
         if constexpr (Index == End)
-            return indexes;
+            return indices;
         else
             return indexSequenceRange<Index + 1, End>(
-                pushBack<Index>(std::move(indexes)));
+                pushBack<Index>(std::move(indices)));
     }
 
-    template <size_t... Indexes>
-        requires (sizeof...(Indexes) > 0)
+    template <size_t... Indices>
+        requires (sizeof...(Indices) > 0)
     [[nodiscard]] consteval decltype(auto) splitIndexSequence(
-        std::index_sequence<Indexes...> indexes) noexcept
+        std::index_sequence<Indices...> indices) noexcept
     {
-        if constexpr (sizeof...(Indexes) == 1)
-            return std::tuple{indexes};
+        if constexpr (sizeof...(Indices) == 1)
+            return std::tuple{indices};
         else
             return []<size_t... I>(std::index_sequence<I...>) {
-                constexpr std::index_sequence<Indexes...> indexes;
+                constexpr std::index_sequence<Indices...> indices;
                 return std::tuple{ makeIndexSequenceRange<
-                    get<I>(indexes), get<I+1>(indexes)>{}... };
-            }(std::make_index_sequence<sizeof...(Indexes) - 1>{});
+                    get<I>(indices), get<I+1>(indices)>{}... };
+            }(std::make_index_sequence<sizeof...(Indices) - 1>{});
     }
 
     template <size_t I, size_t N, size_t C, size_t... Index>

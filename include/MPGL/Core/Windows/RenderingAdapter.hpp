@@ -79,11 +79,9 @@ namespace mpgl {
          * Calls the onScreenTransformation method on the
          * Render Window reference
          *
-         * @param layout the layout of the figure (unused)
          * @param oldDimensions the old dimensions of the screen
          */
         void onScreenTransformation(
-            [[maybe_unused]] Layout& layout,
             Vector2u const& oldDimensions) noexcept final;
 
         /**

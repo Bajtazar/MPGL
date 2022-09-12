@@ -27,8 +27,8 @@
 
 namespace mpgl {
 
-    template <bool IsColorable>
-    void Text<IsColorable>::setColorOnJoinableRange(
+    template <Dimension Dim>
+    void Text<Dim>::setColorOnJoinableRange(
         std::ranges::forward_range auto&& range,
         Color const& color) noexcept
     {

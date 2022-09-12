@@ -26,10 +26,10 @@
 #pragma once
 
 #include <MPGL/IO/ImageLoading/LoaderInterface.hpp>
+#include <MPGL/Mathematics/Tensors/Matrix.hpp>
 #include <MPGL/Compression/HuffmanTree.hpp>
 #include <MPGL/Utility/Tokens/Security.hpp>
 #include <MPGL/Iterators/SafeIterator.hpp>
-#include <MPGL/Mathematics/Matrix.hpp>
 
 #include <functional>
 #include <memory>
@@ -87,15 +87,8 @@ namespace mpgl {
         typedef typename DataBuffer::const_iterator DataIter;
         typedef std::vector<char>                   FileBuffer;
         typedef FileBuffer::const_iterator          StreamIter;
-
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<DataIter>,
-            DataIter>                               SafeIter;
-
-        typedef std::conditional_t<
-            security::isSecurePolicy<Policy>,
-            SafeIterator<StreamIter>, StreamIter>   FileIter;
+        typedef PolicyIterIT<Policy, DataIter>      SafeIter;
+        typedef PolicyIterIT<Policy, StreamIter>    FileIter;
 
         /**
          * Interface for all types of the JPEG data chunks
@@ -251,14 +244,6 @@ namespace mpgl {
              * Destroys the SOSChunk object
              */
             ~SOSChunk(void) noexcept = default;
-        private:
-            /**
-             * Returns whether the iterator is in the safe range
-             *
-             * @param data the reference to the file's iterator
-             * @return if the iterator is in the safe range
-             */
-            bool iterable(FileIter& data) const noexcept;
         };
 
        /**
@@ -411,15 +396,6 @@ namespace mpgl {
         static int32 decodeNumber(uint8 code, uint16 bits) noexcept;
 
         /**
-         * Sets the secure policy
-         *
-         * @throw SecurityUnknownPolicyException when the security
-         * policy token is unknown
-         * @param file the constant reference to the file data object
-         */
-        void setPolicy(FileBuffer const& file);
-
-        /**
          * Determines which chunk is parsed now and parses it
          *
          * @param file the iterator to the file's data
@@ -461,14 +437,6 @@ namespace mpgl {
             HuffmanTablePtr const& table,
             QuantizationTablePtr const& quant,
             Iter& iter);
-
-        /**
-         * Returns the iterator to the decoded data in the given
-         * security manner
-         *
-         * @return the iterator to the decoded data
-         */
-        Iter getDecodeIterator(void) noexcept;
 
         /**
          * Decodes the parsed image

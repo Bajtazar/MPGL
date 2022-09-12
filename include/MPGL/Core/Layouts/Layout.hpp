@@ -25,10 +25,8 @@
  */
 #pragma once
 
-#include <MPGL/Collections/Erasers/InputRange.hpp>
-#include <MPGL/Core/Context/Buffers/Vertex.hpp>
+#include <MPGL/Core/Transformations/Transformation.hpp>
 #include <MPGL/Core/Context/Context.hpp>
-#include <MPGL/Utility/Adapter.hpp>
 
 namespace mpgl {
 
@@ -36,7 +34,10 @@ namespace mpgl {
      * An interface for all layouts. Layout allows to determine
      * the behavior of the screen transformation event
      */
-    class Layout : protected GraphicalObject {
+    class Layout :
+        public Transformation2D,
+        protected GraphicalObject
+    {
     public:
         /**
          * Constructs a new Layout object
@@ -44,16 +45,22 @@ namespace mpgl {
         explicit Layout(void) noexcept = default;
 
         /**
-         * Pure virtual method. Has to be overloaded. Determines
-         * the behavior of the screen transformation event
+         * Pure virtual method. Has to be overloaded. Perfoms
+         * transformation on the input range of coordinates
          *
-         * @param range the reference to the position range object
-         * @param oldDimensions the constant reference to the old
-         * window dimensions
+         * @param coords the reference to the input range
+         * of coordinates
          */
         virtual void operator() (
-            any::InputRange<Adapter2D>& range,
-            Vector2u const& oldDimensions) const noexcept = 0;
+           any::InputRange<Adapter2D>& coords) const noexcept = 0;
+
+        /**
+         * Pure virtual method. Has to be overloaded. Perfoms
+         * transformation on the coodinate
+         *
+         * @param coord the reference to the coordinate object
+         */
+        virtual void operator() (Adapter2D& coord) const noexcept = 0;
 
         /**
          * Virtual destructor. Destroys the Layout object

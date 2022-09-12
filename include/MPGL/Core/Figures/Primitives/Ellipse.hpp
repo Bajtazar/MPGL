@@ -25,46 +25,73 @@
  */
 #pragma once
 
+#include <MPGL/Core/Figures/Primitives/Helpers/EllipseHelpers.hpp>
 #include <MPGL/Utility/Deferred/DelegatePointer.hpp>
-#include <MPGL/Core/Shaders/ShaderLocation.hpp>
-#include <MPGL/Core/Figures/Elliptic.hpp>
 
 namespace mpgl {
 
     /**
      * Represents an ellipse shape
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    class Ellipse : public Elliptic {
+    template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
+    class Ellipse : public Elliptic<Dim, Spec> {
     public:
+        using VertexTraits = typename Elliptic<Dim, Spec>::VertexTraits;
+        using Vector = typename VertexTraits::Vector;
+        using Adapter = typename VertexTraits::Adapter;
+        using ShaderManager = EllipseShader<Dim, Spec>;
+
         /**
-         * Constructs a new ellipse with given center,
+         * Constructs a new 2D ellipse with given center,
          * color and semi-axis. The angle specifies
          * a counterclockwise angle bewteen the x-axis
          * and x-semi-axis component
          *
-         * @param center the center of the ellipse
-         * @param semiAxis the semi-axis of the ellipse
-         * @param color the color of the ellipse
+         * @param center the center of the 2D ellipse
+         * @param semiAxis the semi-axis of the 2D ellipse
+         * @param color the color of the 2D ellipse
          * @param angle the angle between x-axis and semi-axis
          */
         Ellipse(
             Vector2f const& center = {},
             Vector2f const& semiAxis = {},
-            Color const& color = {},
-            float32 angle = 0.f);
+            Color const& color = Color::White,
+            float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
-         * Constructs a new circle with given center,
+         * Constructs a new 2D circle with given center,
          * radius and color
          *
-         * @param center the center of the circle
-         * @param radius the radius of the circle
-         * @param color the color of the circle
+         * @param center the center of the 2D circle
+         * @param radius the radius of the 2D circle
+         * @param color the color of the 2D circle
          */
         Ellipse(
             Vector2f const& center,
             float radius,
-            Color const& color = {});
+            Color const& color = Color::White
+            ) requires TwoDimensional<Dim>;
+
+        /**
+         * Constructs a new 2D ellipse object with given center
+         * and with semiaxises lying on the designated vectors
+         *
+         * @throws NotPerpendicularException when the minor and
+         * major axis are not perpendicular
+         * @param center the center of the 3D ellipse
+         * @param minorAxis the minor axise's vector
+         * @param majorAxis the major axise's vector
+         * @param color the color of the 3D ellipse
+         */
+        Ellipse(
+            Vector3f const& center,
+            Vector3f const& minorAxis,
+            Vector3f const& majorAxis,
+            Color const& color = Color::White
+            ) requires ThreeDimensional<Dim>;
 
         Ellipse(Ellipse const& ellipse) = default;
         Ellipse(Ellipse&& ellipse) noexcept = default;
@@ -75,18 +102,7 @@ namespace mpgl {
         /**
          * Draws the circle on the screen
          */
-        void draw(void) const noexcept final;
-
-        /**
-         * Transforms the ellipse during the screen
-         * transformation event
-         *
-         * @param layout the layout of the ellipse
-         * @param oldDimensions the old screen dimensions
-         */
-        void onScreenTransformation(
-            Layout& layout,
-            Vector2u const& oldDimensions) noexcept final;
+        virtual void draw(void) const noexcept;
 
         /**
          * Performs transformation on the figure
@@ -94,8 +110,8 @@ namespace mpgl {
          * @param transformator the constant reference to the
          * transforming object
          */
-        void transform(
-            Transformation2D const& transformator) noexcept final;
+        virtual void transform(
+            Transformation<Dim> const& transformator) noexcept;
 
         /**
          * Sets the given shader program
@@ -103,8 +119,8 @@ namespace mpgl {
          * @param program the constant reference to the shader program
          * object
          */
-        void setShader(
-            ShaderProgram const& program) noexcept override final;
+        virtual void setShader(
+            ShaderProgram const& program) noexcept override;
 
         /**
          * Sets the given shader program
@@ -112,22 +128,22 @@ namespace mpgl {
          * @param program the rvalue reference to the shader program
          * object
          */
-        void setShader(
-            ShaderProgram&& program) noexcept override final;
+        virtual void setShader(
+            ShaderProgram&& program) noexcept override;
 
         /**
          * Sets the given shader program
          *
          * @param name the name of the shader program
          */
-        void setShader(std::string const& name) override final;
+        virtual void setShader(std::string const& name) override;
 
         /**
          * Returns the position of the center of the ellipse
          *
          * @return the position of the center of the ellipse
          */
-        [[nodiscard]] Vector2f getCenter(void) const noexcept;
+        [[nodiscard]] Vector getCenter(void) const noexcept;
 
         /**
          * Returns the semi-axis of the ellipse. If they are
@@ -138,19 +154,26 @@ namespace mpgl {
         [[nodiscard]] Vector2f getSemiAxis(void) const noexcept;
 
         /**
-         * Checks whether the given point is located inside the ellipse
+         * Checks whether the given pixel is located inside the ellipse
          *
          * @param position the point position [pixel position]
          * @return if the given point is inside the ellipse
          */
-        [[nodiscard]] bool contains(
-            Vector2f const& position) const noexcept final;
+        [[nodiscard]] virtual bool contains(
+            Vector2u const& position) const noexcept;
 
         /**
-         * Destroys the Ellipse object
+         * Virtual destructor. Destroys the Ellipse object
          */
-        ~Ellipse(void) noexcept = default;
+        virtual ~Ellipse(void) noexcept = default;
+
+        friend class EllipseClickChecker<Dim, Spec>;
+        friend class EllipseOutlineCalculator<Dim, Spec>;
     private:
+        using OutlineCalculator = EllipseOutlineCalculator<Dim, Spec>;
+        using Clicker = EllipseClickChecker<Dim, Spec>;
+        using MatrixT = typename OutlineCalculator::MatrixT;
+
         /**
          * Collection of all shader location's pointers
          */
@@ -161,10 +184,11 @@ namespace mpgl {
         };
 
         DelegatePointer<Locations>                      locations;
-        Matrix2f                                        outlineTransform;
+        MatrixT                                         outlineTransform;
 
-        /// Loads the shader's constant variables
-        static const Executable                         shaderExec;
+        static OutlineCalculator const                  outlineCalc;
+        static Clicker const                            clicker;
+        static ShaderManager const                      shaderManager;
 
         /**
          * Sets the shader locations
@@ -177,12 +201,17 @@ namespace mpgl {
         void actualizeMatrices(void) noexcept final;
 
         /**
-         * Calculates the new outline transformation matrix
-         *
-         * @return the optional with the matrix. If the matrix does not
-         * exist then returns std::nullopt
+         * Actualizes shader's locations before draw
          */
-        std::optional<Matrix2f> calculateNewOutline(void) const noexcept;
+        void actualizeLocations(void) const noexcept override final;
     };
+
+    template class Ellipse<dim::Dim2>;
+    template class Ellipse<dim::Dim3>;
+    template class Ellipse<dim::Dim2, uint8>;
+    template class Ellipse<dim::Dim3, uint8>;
+
+    typedef Ellipse<dim::Dim2>                      Ellipse2D;
+    typedef Ellipse<dim::Dim3>                      Ellipse3D;
 
 }

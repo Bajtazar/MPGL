@@ -43,12 +43,12 @@ Snake::Snake(World& world)
     }
 }
 
-Tetragon Snake::returnModule(Vector2si const& vector) const noexcept {
-    return Tetragon{
+Tetragon2D Snake::returnModule(Vector2si const& vector) const noexcept {
+    return Tetragon2D(
         {117 + 36 * vector[0], 36 * (vector[1] + 3) + 9},
         {18, 18},
         Color::Green
-    };
+    );
 }
 
 bool Snake::isFreeze(void) noexcept {
@@ -109,11 +109,10 @@ void Snake::onKeyPress(Key const& key) noexcept {
     }
 }
 
-void Snake::onScreenTransformation(
-    Layout& layout,
-    Vector2u const& oldDimensions) noexcept
+void Snake::transform(
+    Transformation2D const& transformator) noexcept
 {
-    snakeModules.onScreenTransformation(layout, oldDimensions);
+    snakeModules.transform(transformator);
 }
 
 void Snake::draw(void) const noexcept {

@@ -71,7 +71,7 @@ namespace mpgl {
         float32 end, Function function) noexcept
     {
         for (int32 x = std::round(begin);
-            x != int32(std::round(end) - 1); --x)
+            x != int32(std::round(end)) - 1; --x)
                 function(static_cast<uint16>(x));
     }
 

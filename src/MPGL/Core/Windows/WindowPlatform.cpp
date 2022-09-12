@@ -23,9 +23,8 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/WindowInvalidArgsException.hpp>
-
-#include <MPGL/Exceptions/WindowGladException.hpp>
+#include <MPGL/Exceptions/Window/WindowInvalidArgsException.hpp>
+#include <MPGL/Exceptions/Window/WindowGladException.hpp>
 #include <MPGL/Core/Windows/WindowPlatform.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 
@@ -61,7 +60,9 @@ namespace mpgl {
         context.windowDimensions = dimensions = dim;
     }
 
-    void framebufferCallback(GLFWwindow* window, int32 width,
+    void WindowPlatform::framebufferCallback(
+        GLFWwindow* window,
+        int32 width,
         int32 height) noexcept
     {
         WindowPlatform* render = static_cast<WindowPlatform*>(
@@ -70,12 +71,14 @@ namespace mpgl {
         Vector2u oldDimensions = render->dimensions;
         render->setDimensions(vectorCast<uint32>(
             Vector2i{width, height}));
-        render->eventManager->onScreenTransformation(
-            render->layouts, oldDimensions);
+        render->eventManager->onScreenTransformation(oldDimensions);
     }
 
-    void keyCallback(GLFWwindow* window, int32 key,
-        [[maybe_unused]] int32 scancode, int32 action,
+    void WindowPlatform::keyCallback(
+        GLFWwindow* window,
+        int32 key,
+        [[maybe_unused]] int32 scancode,
+        int32 action,
         [[maybe_unused]] int32 mods) noexcept
     {
         WindowPlatform* render = static_cast<WindowPlatform*>(
@@ -87,8 +90,11 @@ namespace mpgl {
             render->eventManager->onKeyRelease(keyCode);
     }
 
-    void mouseButtonCallback(GLFWwindow* window, int32 button,
-        int32 action, [[maybe_unused]] int32 mods) noexcept
+    void WindowPlatform::mouseButtonCallback(
+        GLFWwindow* window,
+        int32 button,
+        int32 action,
+        [[maybe_unused]] int32 mods) noexcept
     {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
@@ -100,25 +106,34 @@ namespace mpgl {
             render->eventManager->onMouseRelease(buttonCode);
     }
 
-    void textCallback(GLFWwindow* window, uint32 character) noexcept {
+    void WindowPlatform::textCallback(
+        GLFWwindow* window,
+        uint32 character) noexcept
+    {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         render->eventManager->onTextWrite(toUTF8(character));
     }
 
-    void windowCloseCallback(GLFWwindow* window) noexcept {
+    void WindowPlatform::windowCloseCallback(
+        GLFWwindow* window) noexcept
+    {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
         render->eventManager->onWindowClose();
     }
 
-    void mousePosCallback(GLFWwindow* window, float64 xpos,
+    void WindowPlatform::mousePosCallback(
+        GLFWwindow* window,
+        float64 xpos,
         float64 ypos) noexcept
     {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
-        render->eventManager->onMouseMotion(Vector2f{xpos,
-            GraphicalObject::context.windowDimensions[1] - ypos});
+        Vector2d position{xpos, context.windowDimensions[1] - ypos};
+        render->eventManager->onMouseMotion(position);
+        const_cast<Vector2u&>(context.mousePosition)
+            = vectorCast<uint32>(position);
     }
 
     void WindowPlatform::setCallbacks(void) noexcept {

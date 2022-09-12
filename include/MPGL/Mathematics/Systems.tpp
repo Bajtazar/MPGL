@@ -25,6 +25,9 @@
  */
 #pragma once
 
+#include <numbers>
+#include <limits>
+
 namespace mpgl {
 
     template <std::signed_integral Tp>
@@ -58,12 +61,12 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr std::optional<Vector2<Tp>>
-        intersectionOf(
+    [[nodiscard]] constexpr std::optional<Vector2<Tp>>
+        IntersectionOfFn::operator() (
             Vector2<Tp> const& firstPoint,
             Vector2<Tp> const& firstVersor,
             Vector2<Tp> const& secondPoint,
-            Vector2<Tp> const& secondVersor) noexcept
+            Vector2<Tp> const& secondVersor) const noexcept
     {
         if (auto matrix = invert(transpose(Matrix2f{firstVersor,
             -secondVersor})))
@@ -75,14 +78,171 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Vector2<Tp> cartesianToPolar(
+    [[nodiscard]] constexpr std::optional<Vector3<Tp>>
+        IntersectionOfFn::operator() (
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& firstVersor,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& secondVersor) const noexcept
+    {
+        if (auto system = findValidSystem(firstVersor, secondVersor)) {
+            auto [matrix, d1, d2, dt] = *system;
+            auto const result = buildResultVector(firstPoint, secondPoint, d1, d2);
+            if (auto perms = lupDecomposition(matrix)) {
+                auto const solution = lupSolve(matrix, *perms, result);
+                if (validSolution(solution, firstPoint, firstVersor,
+                    secondPoint, secondVersor, dt))
+                        return {firstVersor * solution[0] + firstPoint};
+            }
+        }
+        return std::nullopt;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr bool
+        IntersectionOfFn::validSolution(
+            Vector2<Tp> const& solution,
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& firstVersor,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& secondVersor,
+            uint8 testDim) const noexcept
+    {
+        return (firstVersor[testDim] * solution[0]
+                - secondVersor[testDim] * solution[1])
+            == (secondPoint[testDim] - firstPoint[testDim]);
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Vector2<Tp>
+        IntersectionOfFn::buildResultVector(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            uint8 firstDim,
+            uint8 secondDim) const noexcept
+    {
+        return {
+            secondPoint[firstDim] - firstPoint[firstDim],
+            secondPoint[secondDim] - firstPoint[secondDim]
+        };
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr std::optional<Matrix2<Tp>>
+        IntersectionOfFn::getMatrix(
+            Vector3<Tp> const& firstVersor,
+            Vector3<Tp> const& secondVersor,
+            uint8 firstDim,
+            uint8 secondDim) const noexcept
+    {
+        Vector2<Tp> const v1{firstVersor[firstDim], -secondVersor[firstDim]};
+        Vector2<Tp> const v2{firstVersor[secondDim], -secondVersor[secondDim]};
+        if (cross(v1, v2))
+            return {{v1, v2}};
+        return std::nullopt;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr std::optional<
+        IntersectionOfFn::SystemTuple<Tp>>
+    IntersectionOfFn::findValidSystem(
+        Vector3<Tp> const& firstVersor,
+        Vector3<Tp> const& secondVersor) const noexcept
+    {
+        if (auto matrix = getMatrix(firstVersor, secondVersor, 0, 1))
+            return {SystemTuple{*matrix, 0, 1, 2}};
+        if (auto matrix = getMatrix(firstVersor, secondVersor, 0, 2))
+            return {SystemTuple{*matrix, 0, 2, 1}};
+        if (auto matrix = getMatrix(firstVersor, secondVersor, 1, 2))
+            return {SystemTuple{*matrix, 1, 2, 0}};
+        return std::nullopt;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr bool
+        isInsideTriangle(
+            Vector2<Tp> const& position,
+            Vector2<Tp> const& firstVertex,
+            Vector2<Tp> const& secondVertex,
+            Vector2<Tp> const& thirdVertex) noexcept
+    {
+        Vector2<Tp> v1 = secondVertex - firstVertex;
+        Vector2<Tp> v2 = thirdVertex - firstVertex;
+        Tp base = cross(v1, v2);
+        Tp a = (cross(position, v2) - cross(firstVertex, v2)) / base;
+        Tp b = (cross(firstVertex, v1) - cross(position, v1)) / base;
+        return (a >= 0.f) && (b >= 0.f) && (a + b <= 1.f);
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr bool
+        isOnLine(
+            Vector2<Tp> const& position,
+            Vector2<Tp> const& firstVertex,
+            Vector2<Tp> const& secondVertex) noexcept
+    {
+        if (!between(firstVertex, secondVertex, position))
+            return false;
+        return std::fabs(cross(position - firstVertex,
+            secondVertex - firstVertex))
+                < std::numeric_limits<float>::epsilon();
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] inline constexpr Vector3<Tp>
+        planeNormalVector(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& thirdPoint) noexcept
+    {
+        return cross(secondPoint - firstPoint,
+            thirdPoint - secondPoint);
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Vector4<Tp>
+        planeCoefficients(
+            Vector3<Tp> const& firstPoint,
+            Vector3<Tp> const& secondPoint,
+            Vector3<Tp> const& thirdPoint) noexcept
+    {
+        Vector3<Tp> normal = planeNormalVector(firstPoint,
+            secondPoint, thirdPoint);
+        Vector4<Tp> result{normal};
+        result[3] = -dot(normal, firstPoint);
+        return result;
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr bool isOnPlane(
+        Vector4<Tp> const& coefficients,
+        Vector3<Tp> const& point) noexcept
+    {
+        Vector3<Tp> normal{coefficients[0], coefficients[1],
+            coefficients[2]};
+        return dot(normal, point) == -coefficients[3];
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] constexpr Tp distance(
+        Vector4<Tp> const& coefficients,
+        Vector3<Tp> const& point) noexcept
+    {
+        Vector3<Tp> normal{coefficients[0], coefficients[1],
+            coefficients[2]};
+        return std::abs(dot(normal, point) + coefficients[3])
+            / normal.length();
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] Vector2<Tp> cartesianToPolar(
         Vector2<Tp> const& vector) noexcept
     {
         return { norm(vector), std::atan2(vector[1], vector[0]) };
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Vector2<Tp> polarToCartesian(
+    [[nodiscard]] Vector2<Tp> polarToCartesian(
         Vector2<Tp> const& vector) noexcept
     {
         return { vector[0] * std::cos(vector[1]),
@@ -90,8 +250,32 @@ namespace mpgl {
     }
 
     template <FloatConvertible Tp>
-    [[nodiscard]] inline constexpr Matrix2<Tp> rotationMatrix(
-        float32 angle) noexcept
+    [[nodiscard]] Vector3<Tp> sphericalToCartesian(
+        Vector3<Tp> const& vector)
+    {
+        auto const helper = vector[0] * std::cos(vector[1]);
+        return {
+            helper * std::cos(vector[2]),
+            helper * std::sin(vector[2]),
+            vector[0] * std::sin(vector[1])
+        };
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] Vector3<Tp> cartesianToSpherical(
+        Vector3<Tp> const& vector) noexcept
+    {
+        auto const radius = vector.length();
+        return {
+            radius,
+            std::atan(vector[1] / vector[0]),
+            std::asin(vector[2] / radius)
+        };
+    }
+
+    template <FloatConvertible Tp>
+    [[nodiscard]] Matrix2<Tp> rotationMatrix(
+        Tp angle) noexcept
     {
         return {Vector2<Tp>{std::cos(angle), -std::sin(angle)},
             Vector2<Tp>{std::sin(angle), std::cos(angle)}};
@@ -110,5 +294,58 @@ namespace mpgl {
         return output;
     }
 
+    template <class Tp>
+        requires std::convertible_to<int32, Tp>
+    [[nodiscard]] constexpr Matrix4<Tp> extend(
+        Matrix3<Tp> const& matrix) noexcept
+    {
+        Matrix4<Tp> result = static_cast<Matrix4<Tp>>(matrix);
+        result[3][3] = static_cast<Tp>(1);
+        return result;
+    }
+
+    template <class Tp>
+        requires std::convertible_to<int32, Tp>
+    [[nodiscard]] constexpr Vector4<Tp> extend(
+        Vector3<Tp> const& vector) noexcept
+    {
+        Vector4<Tp> result = static_cast<Vector4<Tp>>(vector);
+        result[3] = static_cast<Tp>(1);
+        return result;
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Matrix3<Tp> rotationMatrix(
+        Tp yaw,
+        Tp pitch,
+        Tp roll) noexcept
+    {
+        auto cy = std::cos(yaw), cp = std::cos(pitch), cr = std::cos(roll);
+        auto sy = std::sin(yaw), sp = std::sin(pitch), sr = std::sin(roll);
+        return {
+            Vector3<Tp>{ cp*cr, sy*sp*cr - cy*sr, cy*sp*cr + sy*sr },
+            Vector3<Tp>{ cp*sr, sy*sp*sr + cy*cr, cy*sp*sr - sy*cr },
+            Vector3<Tp>{ -sp, sy*cp, cy*cp }
+        };
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Matrix3<Tp> rotationMatrix(
+        Vector3<Tp> const& angles) noexcept
+    {
+        return rotationMatrix(angles[0], angles[1], angles[2]);
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Tp toRadians(Tp angle) noexcept {
+        return std::numbers::pi_v<Tp> * angle /
+            static_cast<Tp>(180.);
+    }
+
+    template <std::floating_point Tp>
+    [[nodiscard]] Tp fromRadians(Tp angle) noexcept {
+        return static_cast<Tp>(180.) * angle /
+            std::numbers::pi_v<Tp>;
+    }
 
 }

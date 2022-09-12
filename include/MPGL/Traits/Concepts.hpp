@@ -268,14 +268,15 @@ namespace mpgl {
     concept PureType = !std::is_reference_v<Tp>;
 
     /**
-     * Checks whether the given type is a constexpr constructible
+     * Checks whether the given type can be constructed and
+     * destroied at compilation time
      *
      * @tparam Tp the type to check
      * @tparam Args the constructor arguments types
      */
     template <typename Tp, typename... Args>
-    concept ConstexprConstructible =
-        IsConstexprConstructibleV<Tp, Args...>;
+    concept ConstevalType =
+        IsConstevalType<Tp, Args...>::value;
 
     /**
      * Checks whether the given type is an instance of the given
@@ -596,5 +597,15 @@ namespace mpgl {
         std::remove_cvref_t<decltype(*std::declval<Pointer>())>*,
         decltype(std::declval<Pointer>()->clone())>
     && requires (Pointer const& ptr) { bool(ptr); };
+
+    /**
+     * Checks whether the given range can be erased
+     *
+     * @tparam Range the checked range type
+     */
+    template <class Range>
+    concept ErasableRange = std::ranges::range<Range> &&
+        requires (Range range, std::ranges::iterator_t<Range> iter)
+            { range.erase(iter, iter); };
 
 }

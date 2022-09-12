@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Angular.hpp>
+#include <MPGL/Traits/DeriveIf.hpp>
 
 #include <optional>
 
@@ -33,29 +34,43 @@ namespace mpgl {
 
     /**
      * Base class for all resizable angular shapes
+     *
+     * @tparam Dim the dimension of the space
+     * @tparam Spec the angular vertices specifier
      */
-    class ResizableAngular : public Angular {
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec = void>
+    class ResizableAngular :
+        public virtual
+            DeriveIfT<Dim::orthogonal_space_degree == 3, Clickable>,
+        public Angular<Dim, Spec>
+    {
     public:
-        typedef std::size_t                 size_type;
-        typedef std::optional<Vector2f>     OptionalVec2f;
+        using VertexTraits = typename Angular<Dim, Spec>::VertexTraits;
+        using Vertex = typename VertexTraits::Vertex;
+        using Vector = typename VertexTraits::Vector;
+        using Optional = std::optional<Vector>;
+        using size_type = std::size_t;
+        using iterator = typename Angular<Dim, Spec>::iterator;
+        using const_iterator = typename Angular<Dim, Spec>::const_iterator;
 
         /**
-         * Pure virtual function. Has to be overloaded.
+         * Pure virtual method. Has to be overloaded.
          * Allows to draw an object
          */
         virtual void draw(void) const noexcept = 0;
 
         /**
-         * Pure virtual function. Has to be overloaded.
-         * Checks whether given point position is located
+         * Pure virtual method. Has to be overloaded.
+         * Checks whether the given pixel is located
          * inside of the figure [boundry is concidered
-         * as a part of the figure]
+         * as a part of the figure, the 3D figures are
+         * projected onto screen and then checked]
          *
-         * @param position the point position
+         * @param position the pixel's position
          * @return if point is inside figure
          */
         [[nodiscard]] virtual bool contains(
-            Vector2f const& position) const noexcept = 0;
+            Vector2u const& position) const noexcept = 0;
 
         /**
          * Changes size of the vertices array
@@ -73,6 +88,25 @@ namespace mpgl {
         void reserve(size_type size);
 
         /**
+         * Removes unused vertice's storage capacity
+         */
+        void shrinkToFit(void);
+
+        /**
+         * Returns vertice's storage capacity
+         *
+         * @return vertice's storage capacity
+         */
+        [[nodiscard]] std::size_t capacity(void) const noexcept;
+
+        /**
+         * Returns whether the vertice's storage is empty
+         *
+         * @return if the vertice's storage is empty
+         */
+        [[nodiscard]] bool empty(void) const noexcept;
+
+        /**
          * Pushes a new vertex into the vertices array
          *
          * @param vertex the new vertex
@@ -85,8 +119,19 @@ namespace mpgl {
          * @param position the position of the vertex
          * @param color the color of the vertex
          */
-        void emplace(Vector2f const& position,
+        void emplace(
+            Vector const& position,
             Color const& color);
+
+        /**
+         * Emplaces a new vertex into the vertices array
+         *
+         * @tparam Args the types of arguments
+         * @param args the vertex constructor's arguments
+         */
+        template <typename... Args>
+            requires std::constructible_from<Vertex, Args...>
+        void emplace(Args&&... args);
 
         /**
          * Removes last vertex from the vertices array
@@ -94,17 +139,61 @@ namespace mpgl {
         void pop(void) noexcept;
 
         /**
+         * Removes the vertex lying under the given position
+         *
+         * @param position a constant reference to the iterator
+         * indicating the removed vertex
+         */
+        void erase(iterator const& position);
+
+        /**
+         * Removes the vertex lying under the given position
+         *
+         * @param position a constant reference to the constant iterator
+         * indicating the removed vertex
+         */
+        void erase(const_iterator const& position);
+
+        /**
+         * Removes the vertices lying under the given range indicated
+         * by the iterators
+         *
+         * @param first a constant reference to the iterator
+         * indicating the begining of the removed range
+         * @param last a constant reference to the iterator
+         * indicating the end of the removed range
+         */
+        void erase(
+            iterator const& first,
+            iterator const& last);
+
+        /**
+         * Removes the vertices lying under the given range indicated
+         * by the constant iterators
+         *
+         * @param first a constant reference to the constant iterator
+         * indicating the begining of the removed range
+         * @param last a constant reference to the constant iterator
+         * indicating the end of the removed range
+         */
+        void erase(
+            const_iterator const& first,
+            const_iterator const& last);
+
+        /**
          * Returns the center of the angular
          *
          * @return the vector containing center
          */
-        [[nodiscard]] OptionalVec2f getCenter(void) const noexcept;
+        [[nodiscard]] Optional getCenter(void) const noexcept;
 
         /**
          * Virtual Destructor. Destroys the Resizable Angular object
          */
         virtual ~ResizableAngular(void) noexcept = default;
     protected:
+        using Vertices = typename Angular<Dim, Spec>::Vertices;
+
         /**
          * Construct a new Resizable Angular object with the given
          * size vertices array
@@ -132,23 +221,24 @@ namespace mpgl {
          * vertices positions and their common color
          *
          * @tparam ColorTp the type of the color vector
-         * @tparam Args the parameter pack of 2D vectors
+         * @tparam Args the parameter pack of vectors
          * @param color the color of the vertices
          * @param positions the positions of the vertices
          */
-        template <class ColorTp, AllConvertible<Vector2f>... Args>
+        template <class ColorTp, AllConvertible<Vector>... Args>
             requires std::constructible_from<Color, ColorTp>
-        explicit ResizableAngular(ColorTp&& color,
+        explicit ResizableAngular(
+            ColorTp&& color,
             Args&&... positions);
 
         /**
          * Construct a new Resizable Angular object from the given
          * vertices positions
          *
-         * @tparam Args the parameter pack of 2D vectors
+         * @tparam Args the parameter pack of vectors
          * @param positions the positions of the vertices
          */
-        template <AllConvertible<Vector2f>... Args>
+        template <AllConvertible<Vector>... Args>
         explicit ResizableAngular(Args&&... positions);
 
         ResizableAngular& operator= (
@@ -170,8 +260,16 @@ namespace mpgl {
         void actualizeBufferBeforeDraw(
             void) const noexcept override final;
 
-        mutable bool                                    isExtended = false;
+        bool mutable                                isExtended = false;
     };
+
+    template class ResizableAngular<dim::Dim2>;
+    template class ResizableAngular<dim::Dim3>;
+    template class ResizableAngular<dim::Dim2, uint8>;
+    template class ResizableAngular<dim::Dim3, uint8>;
+
+    typedef ResizableAngular<dim::Dim2>             ResizableAngular2D;
+    typedef ResizableAngular<dim::Dim3>             ResizableAngular3D;
 
 }
 

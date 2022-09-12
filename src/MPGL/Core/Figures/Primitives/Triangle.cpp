@@ -25,39 +25,41 @@
  */
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
 
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-
 namespace mpgl {
 
-    Triangle::Triangle(Vector2f const& firstVertex,
-        Vector2f const& secondVertex,
-        Vector2f const& thirdVertex,
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Drawer const
+        Triangle<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Clicker const
+        Triangle<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Triangle(
+        Vector const& firstVertex,
+        Vector const& secondVertex,
+        Vector const& thirdVertex,
         Color const& color)
-            : Angular{{Vertex{firstVertex, color},
-                Vertex{secondVertex, color},
-                Vertex{thirdVertex, color}}} {}
+            : Angular<Dim, Spec>{{
+                VertexTraits::buildVertex(firstVertex, color),
+                VertexTraits::buildVertex(secondVertex, color),
+                VertexTraits::buildVertex(thirdVertex, color)}} {}
 
-    Triangle::Triangle(Color const& color)
-        : Angular{3, color} {}
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Triangle<Dim, Spec>::Triangle(Color const& color)
+        : Angular<Dim, Spec>{3, color} {}
 
-    void Triangle::draw(void) const noexcept {
-        actualizeBufferBeforeDraw();
-        shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{vertexArray};
-        vertexArray.drawArrays(VertexArray::DrawMode::Triangles, 3);
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void Triangle<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
     }
 
-    [[nodiscard]] bool Triangle::contains(
-        Vector2f const& position) const noexcept
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Triangle<Dim, Spec>::contains(
+        Vector2u const& position) const noexcept
     {
-        Vector2d v = Adapter2D{position}.get();
-        Vector2d v0 = get<"position">(vertices[0]).get();
-        Vector2d v1 = Vector2d{get<"position">(vertices[1]).get()} - v0;
-        Vector2d v2 = Vector2d{get<"position">(vertices[2]).get()} - v0;
-        double base = cross(v1, v2);
-        double a = (cross(v, v2) - cross(v0, v2)) / base;
-        double b = (cross(v0, v1) - cross(v, v1)) / base;
-        return (a >= 0) && (b >= 0) && (a + b <= 1);
+        return clicker(*this, position);
     }
 
 }

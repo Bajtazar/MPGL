@@ -27,16 +27,26 @@
 
 namespace mpgl {
 
+    DefaultLayout::DefaultLayout(
+        Vector2u const& oldDimensions) noexcept
+            : dimensions{oldDimensions} {}
+
     void DefaultLayout::operator() (
-        any::InputRange<Adapter2D>& range,
-        Vector2u const& oldDimensions) const noexcept
+        any::InputRange<Adapter2D>& coords) const noexcept
     {
         Vector2f newDim{context.windowDimensions};
-        Vector2f oldDim{oldDimensions};
-        for (Adapter2D& vertexPosition : range) {
+        Vector2f oldDim{dimensions.get()};
+        for (Adapter2D& vertexPosition : coords) {
             Vector2f& position = vertexPosition.get();
             position = (position + 1.f) * oldDim / newDim - 1.f;
         }
+    }
+
+    void DefaultLayout::operator() (Adapter2D& coord) const noexcept {
+        Vector2f newDim{context.windowDimensions};
+        Vector2f oldDim{dimensions.get()};
+        Vector2f& position = coord.get();
+        position = (position + 1.f) * oldDim / newDim - 1.f;
     }
 
 }

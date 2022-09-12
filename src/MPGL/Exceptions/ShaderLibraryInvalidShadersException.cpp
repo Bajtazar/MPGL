@@ -23,7 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Exceptions/ShaderLibraryInvalidShadersException.hpp>
+#include <MPGL/Exceptions/Shader/ShaderLibraryInvalidShadersException.hpp>
 
 #include <algorithm>
 #include <ranges>

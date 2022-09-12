@@ -85,10 +85,7 @@ namespace mpgl {
     private:
         typedef std::vector<char>                   DataBuffer;
         typedef DataBuffer::const_iterator          CharIter;
-
-        typedef std::conditional_t<
-        security::isSecurePolicy<Policy>,
-            SafeIterator<CharIter>, CharIter>       FileIter;
+        typedef PolicyIterIT<Policy, CharIter>      FileIter;
 
         /**
          * Filters the given image
@@ -431,16 +428,6 @@ namespace mpgl {
         };
 
         /**
-         * Sets the secure policy
-         *
-         * @throw SecurityUnknownPolicyException when the security
-         * policy token is unknown
-         * @param file the reference to the string object
-         * @param policy the secure policy token
-         */
-        void setPolicy(DataBuffer const& file, Policy policy = {});
-
-        /**
          * Parses image from the given iterator
          *
          * @param policy the secure policy token
@@ -466,17 +453,6 @@ namespace mpgl {
          * @param length the length of the chunk
          */
         void parseChunk(FileIter& file, size_type length);
-
-        /**
-         * Returns an iterator to the decompressed data in the
-         * given security manner
-         *
-         * @param buffer the constant reference to the buffer with
-         * decompressed data
-         * @return the iterator to the buffer
-         */
-        FileIter decompresedIter(
-            DataBuffer const& buffer) const noexcept;
 
         /**
          * Chooses the interlancing method
