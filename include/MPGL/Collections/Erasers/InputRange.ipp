@@ -122,7 +122,7 @@ namespace mpgl::any {
     template <PureType Tp>
     InputRange<Tp>::InterfacePtr::InterfacePtr(
         InterfacePtr const& interfacePtr)
-            : std::unique_ptr<RangeInterface>{(*this)->clone()} {}
+            : std::unique_ptr<RangeInterface>{interfacePtr->clone()} {}
 
     template <PureType Tp>
     InputRange<Tp>::InterfacePtr&

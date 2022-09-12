@@ -180,12 +180,8 @@ namespace mpgl {
              * Builds a tetragon edge vertices that lies on the border
              *
              * @param vertices a constant reference to the vertices range
-             * @param indices a constant reference to the indices
-             * range
              */
-            void buildBorderEdges(
-                VRange const& vertices,
-                IRange const& indices);
+            void buildBorderEdges(VRange const& vertices);
 
             /**
              * Generates vertices dependencies graph

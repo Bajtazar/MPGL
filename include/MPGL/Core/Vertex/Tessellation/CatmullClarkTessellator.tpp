@@ -133,7 +133,7 @@ namespace mpgl {
             buildEdge(vertices, id++, tetragon.getFourthVertex(),
                 tetragon.getFirstVertex());
         }
-        buildBorderEdges(vertices, indices);
+        buildBorderEdges(vertices);
     }
 
     template <
@@ -172,9 +172,7 @@ namespace mpgl {
                 && SameRangeType<VRange, std::invoke_result_t<
                     Predicate, Vector3f const&>>)
     void CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
-        ::buildBorderEdges(
-            VRange const& vertices,
-            IRange const& indices)
+        ::buildBorderEdges(VRange const& vertices)
     {
         for (auto const& [tag, id] : edgeFaces) {
             uint32 first = tag >> 32u;

@@ -1196,15 +1196,8 @@ namespace mpgl {
 
         /**
          * Loads the newline into the memory
-         *
-         * @param subfont the reference to the subfont object
-         * @param level the projection level
-         * @param scale the text's scale factor
          */
-        void loadNewline(
-            Subfont& subfont,
-            uint8 level,
-            float32 scale);
+        void loadNewline(void);
 
         /**
          * Returns the dimensions of the glyph

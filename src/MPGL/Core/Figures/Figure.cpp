@@ -44,9 +44,16 @@ namespace mpgl {
         setLocations();
     }
 
-    template <Dimension Dim>
-    Figure<Dim>::Figure(Figure const& shape)
+    template <>
+    Figure<dim::Dim2>::Figure(Figure const& shape)
         : Shadeable{shape.shaderProgram}
+    {
+        setLocations();
+    }
+
+    template <>
+    Figure<dim::Dim3>::Figure(Figure const& shape)
+        : Shadeable{shape.shaderProgram}, Model{shape}
     {
         setLocations();
     }

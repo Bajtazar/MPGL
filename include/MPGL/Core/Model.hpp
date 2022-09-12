@@ -36,7 +36,7 @@ namespace mpgl {
     /**
      * Interface for all 3D objects that can be drawn
      */
-    class Model : private GraphicalObject {
+    class Model : virtual protected GraphicalObject {
     public:
         /**
          * Sets the inner figure system model. Matrix has to exist
