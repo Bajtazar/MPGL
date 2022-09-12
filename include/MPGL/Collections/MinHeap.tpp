@@ -29,8 +29,9 @@ namespace mpgl {
 
     template <typename Tp, std::predicate<Tp, Tp> Compare,
         std::ranges::forward_range Sequence>
+    template <std::enable_if_t<std::copyable<Tp>, int32>>
     void MinHeap<Tp, Compare, Sequence>::push(
-        const_reference element) requires std::copyable<value_type>
+        const_reference element)
     {
         sequence.push_back(element);
         std::ranges::push_heap(sequence, compare);
@@ -38,8 +39,9 @@ namespace mpgl {
 
     template <typename Tp, std::predicate<Tp, Tp> Compare,
         std::ranges::forward_range Sequence>
+    template <std::enable_if_t<std::movable<Tp>, int32>>
     void MinHeap<Tp, Compare, Sequence>::push(
-        value_type&& element) requires std::movable<value_type>
+        value_type&& element)
     {
         sequence.push_back(std::move(element));
         std::ranges::push_heap(sequence, compare);

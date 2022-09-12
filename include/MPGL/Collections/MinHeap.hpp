@@ -111,16 +111,16 @@ namespace mpgl {
          *
          * @param element the constant reference to the element
          */
-        void push(const_reference element) requires (
-            std::copyable<value_type>);
+        template <std::enable_if_t<std::copyable<Tp>, int32> = 0>
+        void push(const_reference element);
 
         /**
          * Pushes the element into the heap
          *
          * @param element the rvalue reference to the element
          */
-        void push(value_type&& element) requires (
-            std::movable<value_type>);
+        template <std::enable_if_t<std::movable<Tp>, int32> = 0>
+        void push(value_type&& element);
 
         /**
          * Emplaces the element in the heap
