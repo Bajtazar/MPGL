@@ -74,7 +74,7 @@ namespace mpgl {
         static Context                              context;
 
         /// Forces context initialization before any other object
-        static_assert(((void)context, true));
+        // static_assert(((void)context, true));
     };
 
 }
