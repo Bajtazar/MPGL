@@ -48,7 +48,7 @@ namespace mpgl {
 
     template <std::ranges::input_range Range>
         requires (std::invocable<std::ranges::range_value_t<Range>>
-            && std::same_as<Threadpool::ResultOfRange<Range>, void>)
+            && std::same_as<typename Threadpool::ResultOfRange<Range>, void>)
     void Threadpool::performTasks(Range&& tasks) {
         std::vector<std::future<void>> futures;
         if constexpr (std::ranges::sized_range<Range>)

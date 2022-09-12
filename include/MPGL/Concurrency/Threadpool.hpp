@@ -44,11 +44,11 @@ namespace mpgl {
     class Threadpool {
     public:
         template <std::invocable Func>
-        using FutureOf = std::future<std::result_of_t<Func()>>;
+        using FutureOf = std::future<std::invoke_result_t<Func>>;
 
         template <std::ranges::input_range Range>
-        using ResultOfRange = std::result_of_t<
-            std::ranges::range_value_t<Range>()>;
+        using ResultOfRange = std::invoke_result_t<
+            std::ranges::range_value_t<Range>>;
 
         template <std::ranges::input_range Range>
         using ResultVector = std::vector<ResultOfRange<Range>>;
@@ -116,7 +116,7 @@ namespace mpgl {
             { stopSource.request_stop(); }
     private:
         template <std::invocable Func>
-        using Package = std::packaged_task<std::result_of_t<Func()>()>;
+        using Package = std::packaged_task<std::invoke_result_t<Func>>;
 
         template <std::ranges::input_range Range>
         using FutureOfRange = FutureOf<
@@ -125,7 +125,104 @@ namespace mpgl {
         template <std::ranges::input_range Range>
         using FutureVector = std::vector<FutureOfRange<Range>>;
 
-        class TaskWrapper;
+        /**
+         * Wraps tasks and serves as an unified task container
+         */
+        class TaskWrapper {
+        public:
+            /**
+             * Construct a new Task Wrapper object. Wraps the given
+             * task package
+             *
+             * @tparam Func the type of package
+             * @param function the package
+             */
+            template <std::invocable Func>
+            explicit TaskWrapper(Func&& function) noexcept
+                : workerPtr{ std::make_unique<TaskWorker<Func>>(
+                    std::move(function)) } {}
+
+            /**
+             * Construct a new Task Wrapper object
+             */
+            TaskWrapper(void) noexcept = default;
+
+            /**
+             * Calls the operator() on the wrapped object
+             */
+            void operator() (void) noexcept
+                { workerPtr->operator()(); }
+
+            TaskWrapper(TaskWrapper&&) noexcept = default;
+            TaskWrapper(TaskWrapper const&) = delete;
+
+            TaskWrapper& operator=(TaskWrapper&&) noexcept = default;
+            TaskWrapper& operator=(TaskWrapper const&) = delete;
+
+            /**
+             * Destroy the Task Wrapper object
+             */
+            ~TaskWrapper(void) = default;
+        private:
+            /**
+             * Interface of the working task
+             */
+            struct Worker {
+                /**
+                 * Construct a new Worker object
+                 */
+                explicit Worker(void) noexcept = default;
+
+                /**
+                 * Pure virtual operator() which has to be
+                 * implemented in derived class. Should
+                 * call the wrapped function operator()
+                 */
+                virtual void operator() (void) noexcept = 0;
+
+                /**
+                 * Destroy the Worker object
+                 */
+                virtual ~Worker(void) noexcept = default;
+            };
+
+            /**
+             * Wraper which allows to save multiple different
+             * invocables in the same collection using
+             * Worker interface
+             *
+             * @tparam Func the wrapped invocable type
+             */
+            template <std::invocable Func>
+            class TaskWorker : public Worker {
+            public:
+                /**
+                 * Construct a new Task Worker object which
+                 * wrapps the given invocable
+                 *
+                 * @param function the given invocable object
+                 */
+                explicit TaskWorker(Func&& function) noexcept
+                    : function{ std::move(function) } {}
+
+                /**
+                 * Class the operator() on the wrapped object
+                 */
+                void operator() (void) noexcept
+                { function(); }
+
+                /**
+                 * Destroy the Task Worker object
+                 */
+                ~TaskWorker(void) noexcept = default;
+            private:
+                Func                                function;
+            };
+
+            typedef std::unique_ptr<Worker>         WorkerPtr;
+
+            WorkerPtr                               workerPtr;
+        };
 
         typedef std::vector<std::jthread>           Threads;
         typedef QueueMonitor<TaskWrapper>           TaskQueue;
@@ -202,105 +299,6 @@ namespace mpgl {
         ThreadsQueues                               queues;
         QueueLink                                   link;
         StopSource                                  stopSource;
-    };
-
-    /**
-     * Wraps tasks and serves as an unified task container
-     */
-    class Threadpool::TaskWrapper {
-    public:
-        /**
-         * Construct a new Task Wrapper object. Wraps the given
-         * task package
-         *
-         * @tparam Func the type of package
-         * @param function the package
-         */
-        template <std::invocable Func>
-        explicit TaskWrapper(Func&& function) noexcept
-            : workerPtr{std::make_unique<TaskWorker<Func>>(
-                std::move(function))} {}
-
-        /**
-         * Construct a new Task Wrapper object
-         */
-        TaskWrapper(void) noexcept = default;
-
-        /**
-         * Calls the operator() on the wrapped object
-         */
-        void operator() (void) noexcept
-            { workerPtr->operator()(); }
-
-        TaskWrapper(TaskWrapper&&) noexcept = default;
-        TaskWrapper(TaskWrapper const&) = delete;
-
-        TaskWrapper& operator=(TaskWrapper&&) noexcept = default;
-        TaskWrapper& operator=(TaskWrapper const&) = delete;
-
-        /**
-         * Destroy the Task Wrapper object
-         */
-        ~TaskWrapper(void) = default;
-    private:
-        /**
-         * Interface of the working task
-         */
-        struct Worker {
-            /**
-             * Construct a new Worker object
-             */
-            explicit Worker(void) noexcept = default;
-
-            /**
-             * Pure virtual operator() which has to be
-             * implemented in derived class. Should
-             * call the wrapped function operator()
-             */
-            virtual void operator() (void) noexcept = 0;
-
-            /**
-             * Destroy the Worker object
-             */
-            virtual ~Worker(void) noexcept = default;
-        };
-
-        /**
-         * Wraper which allows to save multiple different
-         * invocables in the same collection using
-         * Worker interface
-         *
-         * @tparam Func the wrapped invocable type
-         */
-        template <std::invocable Func>
-        class TaskWorker : public Worker {
-        public:
-            /**
-             * Construct a new Task Worker object which
-             * wrapps the given invocable
-             *
-             * @param function the given invocable object
-             */
-            explicit TaskWorker(Func&& function) noexcept
-                : function{std::move(function)} {}
-
-            /**
-             * Class the operator() on the wrapped object
-             */
-            void operator() (void) noexcept
-                { function(); }
-
-            /**
-             * Destroy the Task Worker object
-             */
-            ~TaskWorker(void) noexcept = default;
-        private:
-            Func                                function;
-        };
-
-        typedef std::unique_ptr<Worker>         WorkerPtr;
-
-        WorkerPtr                               workerPtr;
     };
 
 }
