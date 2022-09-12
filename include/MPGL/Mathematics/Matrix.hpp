@@ -650,7 +650,9 @@ namespace mpgl {
          */
         template <AllAbsolutelySame<value_type>... Rws>
             requires (sizeof...(Rws) == Rows)
-        constexpr Matrix(Rws&&... rows) noexcept;
+        constexpr Matrix(Rws&&... rows) noexcept
+            : normalBase{ tupleBuilder(std::forward<Rws>(rows)...) }
+                { if (!std::is_constant_evaluated()) reverse(begin(), end()); }
 
         /**
          * Constructs a new matrix object from the given

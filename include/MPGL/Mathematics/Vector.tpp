@@ -28,19 +28,6 @@
 namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
-    template <AbsolutelyArithmetic... Args>
-        requires (sizeof...(Args) == Size && AllConvertible<
-            typename Vector<Tp, Size>::value_type,
-            std::remove_cvref_t<Args>...>)
-    constexpr Vector<Tp, Size>::Vector(Args&&... args) noexcept
-        : UniformTuple<Tp, Size>{tupleBuilder(
-            std::forward<Args>(args)...)}
-    {
-        if (!std::is_constant_evaluated())
-            reverse(*this);
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
     template <typename... Args>
     constexpr UniformTuple<Tp, Size>
         Vector<Tp, Size>::tupleBuilder(Args&&... args) const noexcept

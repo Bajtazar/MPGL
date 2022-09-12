@@ -28,6 +28,7 @@
 namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
         Matrix<Tp, Rows, Cols>::operator-(void) const noexcept
     {
@@ -39,6 +40,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator=(
             Vector<Tp, Rows> const& vec) noexcept
@@ -48,24 +50,13 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>::Column::operator
         Vector<Tp, Rows>() const noexcept
     {
         Vector<Tp, Rows> vector;
         std::ranges::copy(*this, vector.begin());
         return vector;
-    }
-
-    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
-        requires (Rows > 1 && Cols > 1)
-    template <AllAbsolutelySame<typename
-        Matrix<Tp, Rows, Cols>::value_type>... Args>
-            requires (sizeof...(Args) == Rows)
-    constexpr Matrix<Tp, Rows, Cols>::Matrix(Args&&... args) noexcept
-        : normalBase{tupleBuilder(std::forward<Args>(args)...)}
-    {
-        if (!std::is_constant_evaluated())
-            reverse(begin(), end());
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
@@ -125,6 +116,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     template <Arithmetic Up>
     [[nodiscard]] constexpr Up Matrix<Tp, Rows, Cols>::Column::length(
         Up init) const noexcept
@@ -134,6 +126,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator+=(
             Column const& right)
@@ -145,6 +138,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator-=(
             Column const& right)
@@ -156,6 +150,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator*=(
             Column const& right)
@@ -167,6 +162,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator/=(
             Column const& right)
@@ -178,6 +174,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator%=(
             Column const& right) requires mpgl_Operable(Tp, %)
@@ -189,6 +186,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator^=(
             Column const& right) requires mpgl_Operable(Tp, ^)
@@ -200,6 +198,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
          Matrix<Tp, Rows, Cols>::Column::operator&=(
             Column const& right) requires mpgl_Operable(Tp, &)
@@ -211,6 +210,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator|=(
             Column const& right) requires mpgl_Operable(Tp, |)
@@ -222,6 +222,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator+=(
             Tp const& right)
@@ -232,6 +233,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator-=(
             Tp const& right)
@@ -242,6 +244,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator*=(
             Tp const& right)
@@ -252,6 +255,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator/=(
             Tp const& right)
@@ -262,6 +266,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator%=(
             Tp const& right) requires mpgl_Operable(Tp, %)
@@ -272,6 +277,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator^=(
             Tp const& right) requires mpgl_Operable(Tp, ^)
@@ -282,6 +288,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator&=(
             Tp const& right) requires mpgl_Operable(Tp, &)
@@ -292,6 +299,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>::Column&
         Matrix<Tp, Rows, Cols>::Column::operator|=(
             Tp const& right) requires mpgl_Operable(Tp, |)
@@ -519,6 +527,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     template <Arithmetic Up>
     [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>::operator
         Matrix<Up, Rows, Cols>() const noexcept
@@ -529,6 +538,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     template <std::size_t URows, std::size_t UCols>
         requires (URows >= Rows && UCols >= Cols &&
             (URows != Rows || UCols != Cols))
@@ -541,6 +551,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator+=(
             Matrix<Tp, Rows, Cols> const& right)
@@ -552,6 +563,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator-=(
             Matrix<Tp, Rows, Cols> const& right)
@@ -563,6 +575,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator*=(
             Matrix<Tp, Rows, Cols> const& right)
@@ -574,6 +587,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator/=(
              Matrix<Tp, Rows, Cols> const& right)
@@ -585,6 +599,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator%=(
             Matrix<Tp, Rows, Cols> const& right)
@@ -597,6 +612,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator^=(
             Matrix<Tp, Rows, Cols> const& right)
@@ -609,6 +625,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator&=(
             Matrix<Tp, Rows, Cols> const& right)
@@ -621,6 +638,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator|=(
             Matrix<Tp, Rows, Cols> const& right)
@@ -633,6 +651,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator+=(
             Tp const& right)
@@ -643,6 +662,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator-=(
             Tp const& right)
@@ -653,6 +673,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator*=(
             Tp const& right)
@@ -663,6 +684,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator/=(
             Tp const& right)
@@ -673,6 +695,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator%=(
             Tp const& right) requires mpgl_Operable(Tp, %)
@@ -683,6 +706,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator^=(
             Tp const& right) requires mpgl_Operable(Tp, ^)
@@ -693,6 +717,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator&=(
             Tp const& right) requires mpgl_Operable(Tp, &)
@@ -703,6 +728,7 @@ namespace mpgl {
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     constexpr Matrix<Tp, Rows, Cols>&
         Matrix<Tp, Rows, Cols>::operator|=(
             Tp const& right) requires mpgl_Operable(Tp, |)
@@ -1088,9 +1114,8 @@ namespace mpgl {
         return x;
     }
 
-    template <Arithmetic Tp, std::size_t Rows,
-        Arithmetic Up = Tp>
-            requires (Rows > 1)
+    template <Arithmetic Tp, std::size_t Rows, Arithmetic Up>
+        requires (Rows > 1)
     [[nodiscard]] constexpr std::optional<Matrix<Up, Rows, Rows>>
         invert(Matrix<Tp, Rows, Rows> const& matrix) noexcept
     {
@@ -1104,8 +1129,8 @@ namespace mpgl {
         return {};
     }
 
-    template <Arithmetic Tp, std::size_t Rows, Arithmetic Up = Tp>
-            requires (Rows > 1)
+    template <Arithmetic Tp, std::size_t Rows, Arithmetic Up>
+        requires (Rows > 1)
     [[nodiscard]] constexpr Up det(
         Matrix<Tp, Rows, Rows> const& matrix) noexcept
     {

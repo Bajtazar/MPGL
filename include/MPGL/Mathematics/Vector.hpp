@@ -62,7 +62,9 @@ namespace mpgl {
             requires (sizeof...(Args) == Size
                 && AllConvertible<value_type,
                     std::remove_cvref_t<Args>...>)
-        constexpr Vector(Args&&... args) noexcept;
+        constexpr Vector(Args&&... args) noexcept
+            : Base{ tupleBuilder(std::forward<Args>(args)...) }
+                { if (!std::is_constant_evaluated()) reverse(*this); }
 
         /**
          * Constructs a new vector object from the given
