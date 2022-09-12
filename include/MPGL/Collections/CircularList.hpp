@@ -29,6 +29,7 @@
 #include <MPGL/Traits/Concepts.hpp>
 
 #include <optional>
+#include <memory>
 
 namespace mpgl {
 
@@ -400,12 +401,10 @@ namespace mpgl {
          */
         constexpr ~CircularList(void) noexcept;
     private:
-        typedef std::allocator_traits<Alloc>        TpAllocTraits;
-        typedef typename
-            TpAllocTraits::rebind_alloc<Node>       NodeAllocType;
-        typedef typename
-            TpAllocTraits::rebind_traits<Node>      NodeAllocTraits;
-        typedef typename Node::NodePtr              NodePtr;
+        using TpAllocTraits = std::allocator_traits<Alloc>;
+        using NodeAllocType = typename TpAllocTraits::template rebind_alloc<Node>;
+        using NodeAllocTraits = typename TpAllocTraits::template rebind_traits<Node>;
+        using NodePtr = typename Node::NodePtr;
 
         /**
          * Constructs a new node from the given arguments
