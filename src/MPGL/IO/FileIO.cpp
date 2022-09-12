@@ -28,10 +28,27 @@
 #include <filesystem>
 #include <algorithm>
 #include <iterator>
+#include <codecvt>
 #include <ranges>
+#include <locale>
 
 namespace mpgl {
 
+    #ifdef _MSC_VER
+    [[nodiscard]] std::vector<FileIO::Path>
+        FileIO::getAllDirectoryFiles(Path const& dirPath)
+    {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+        auto transformer = [&converter](auto const& path) -> std::string {
+            return converter.to_bytes(path.path());
+        };
+        std::vector<std::string> files;
+        std::ranges::transform(
+            std::filesystem::directory_iterator(dirPath),
+            std::back_inserter(files), transformer);
+        return files;
+    }
+    #else 
     [[nodiscard]] std::vector<FileIO::Path>
         FileIO::getAllDirectoryFiles(Path const& dirPath)
     {
@@ -39,9 +56,10 @@ namespace mpgl {
         std::ranges::transform(
             std::filesystem::directory_iterator(dirPath),
             std::back_inserter(files),
-            [](auto& path){ return path.path(); });
+            [](auto const& path) -> std::string { return path.path(); });
         return files;
     }
+    #endif
 
     [[nodiscard]] std::vector<FileIO::Path>
         FileIO::getRecursiveDirFiles(Path const& dirPath)
