@@ -251,7 +251,7 @@ namespace mpgl {
         /**
          * Base class that extends the polymorpher implementation
          * by providing the backward compatybility with the
-         * key release event interface
+         * mouse motion event interface
          *
          * @tparam Tp the type of the wrapped object
          */
@@ -281,6 +281,39 @@ namespace mpgl {
                 void) noexcept override = default;
         };
 
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * mouse press event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <std::derived_from<MousePressEvent> Tp>
+        struct MousePressEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public MousePressEvent
+        {
+            /**
+             * Constructs a new mouse motion press polymorpher object
+             */
+            explicit MousePressEventPolymorpher(void) noexcept = default;
+
+            /**
+             * Notifies when mousr button is pressed
+             *
+             * @param button the pressed mouse button
+             */
+            void onMousePress(MouseButton const& button) noexcept
+                { this->get()->onMousePress(button); }
+
+            /**
+             * Virtual destructor. Destroys the mouse press event
+             * polymorpher object
+             */
+            virtual ~MousePressEventPolymorpher(
+                void) noexcept override = default;
+        };
+
     }
 
     /**
@@ -299,7 +332,8 @@ namespace mpgl {
         public DeriveIfT<InstanceOf<Tp, Transformable>, details::TransformablePolymorpher<Tp>>,
         public DeriveIfT<std::derived_from<Tp, KeyPressEvent>, details::KeyPressEventPolymorpher<Tp>>,
         public DeriveIfT<std::derived_from<Tp, KeyReleaseEvent>, details::KeyReleaseEventPolymorpher<Tp>>,
-        public DeriveIfT<std::derived_from<Tp, MouseMotionEvent>, details::MouseMotionEventPolymorpher<Tp>>
+        public DeriveIfT<std::derived_from<Tp, MouseMotionEvent>, details::MouseMotionEventPolymorpher<Tp>>,
+        public DeriveIfT<std::derived_from<Tp, MousePressEvent>, details::MousePressEventPolymorpher<Tp>>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 
