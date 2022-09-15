@@ -27,7 +27,7 @@
 
 #include <MPGL/Core/Transformations/Transformable.hpp>
 #include <MPGL/Mathematics/Systems.hpp>
-#include <MPGL/Core/DrawableTraits.hpp>
+#include <MPGL/Core/DimensionTraits.hpp>
 
 #include <algorithm>
 #include <vector>
@@ -59,7 +59,7 @@ namespace mpgl {
     template <InstanceOf<Drawable> Base,
         std::ranges::input_range Range = std::vector<Base>>
     struct DrawableCollection :
-        public Drawable<DrawableDimensionT<Base>>,
+        public Drawable<DimensionOfT<Drawable, Base>>,
         public Range
     {
         using Range::Range;
@@ -121,13 +121,13 @@ namespace mpgl {
     template <details::TransDrawable Base,
         std::ranges::input_range Range>
     struct DrawableCollection<Base, Range> :
-        public Drawable<DrawableDimensionT<Base>>,
+        public Drawable<DimensionOfT<Drawable, Base>>,
         public Range,
-        public Transformable<DrawableDimensionT<Base>>
+        public Transformable<DimensionOfT<Drawable, Base>>
     {
         using Range::Range;
 
-        using Dim = DrawableDimensionT<Base>;
+        using Dim = DimensionOfT<Drawable, Base>;
 
         DrawableCollection(
             DrawableCollection const& base) noexcept = default;

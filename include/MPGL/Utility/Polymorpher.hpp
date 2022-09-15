@@ -27,7 +27,7 @@
 
 #include <MPGL/Events/Types/KeyPressEvent.hpp>
 #include <MPGL/Core/Transformations/Transformable.hpp>
-#include <MPGL/Core/DrawableTraits.hpp>
+#include <MPGL/Core/DimensionTraits.hpp>
 #include <MPGL/Traits/DeriveIf.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 #include <MPGL/Core/Drawable.hpp>
@@ -115,7 +115,7 @@ namespace mpgl {
         template <InstanceOf<Drawable> Tp>
         struct DrawablePolymorpher :
             private virtual PolymorpherBase<Tp>,
-            public Drawable<DrawableDimensionT<Tp>>
+            public Drawable<DimensionOfT<Drawable, Tp>>
         {
             /**
              * Constructs a new drawable polymorpher object
