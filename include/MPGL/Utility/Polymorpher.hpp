@@ -383,6 +383,39 @@ namespace mpgl {
                 void) noexcept override = default;
         };
 
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * scroll event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <class Tp>
+        struct ScrollEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public ScrollEvent
+        {
+            /**
+             * Constructs a new scroll release polymorpher object
+             */
+            explicit ScrollEventPolymorpher(void) noexcept = default;
+
+            /**
+             * Notifies when user uses mouse scroll
+             *
+             * @param scroll the scroll position
+             */
+            void onScroll(Vector2f const& scroll) noexcept
+                { this->get()->onScroll(scroll); }
+
+            /**
+             * Virtual destructor. Destroys the scroll event
+             * polymorpher object
+             */
+            virtual ~ScrollEventPolymorpher(
+                void) noexcept override = default;
+        };
+
     }
 
     /**
@@ -404,7 +437,8 @@ namespace mpgl {
         public DeriveIfTN<std::derived_from<Tp, MouseMotionEvent>, details::MouseMotionEventPolymorpher<Tp>, 4>,
         public DeriveIfTN<std::derived_from<Tp, MousePressEvent>, details::MousePressEventPolymorpher<Tp>, 5>,
         public DeriveIfTN<std::derived_from<Tp, MouseReleaseEvent>, details::MouseReleaseEventPolymorpher<Tp>, 6>,
-        public DeriveIfTN<std::derived_from<Tp, ScreenTransformationEvent>, details::ScreenTransformationEventPolymorpher<Tp>, 7>
+        public DeriveIfTN<std::derived_from<Tp, ScreenTransformationEvent>, details::ScreenTransformationEventPolymorpher<Tp>, 7>,
+        public DeriveIfTN<std::derived_from<Tp, ScrollEvent>, details::ScrollEventPolymorpher<Tp>, 7>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 
