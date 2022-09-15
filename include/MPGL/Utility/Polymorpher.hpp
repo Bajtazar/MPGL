@@ -483,6 +483,37 @@ namespace mpgl {
                 void) noexcept override = default;
         };
 
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * window close event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <class Tp>
+        struct WindowCloseEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public WindowCloseEvent
+        {
+            /**
+             * Constructs a new window close event polymorpher object
+             */
+            explicit WindowCloseEventPolymorpher(void) noexcept = default;
+
+            /**
+             * Notifies when the window is being closed
+             */
+            void onWindowClose(void) noexcept
+                { this->get()->onWindowClose(); }
+
+            /**
+             * Virtual destructor. Destroys the window close event
+             * polymorpher object
+             */
+            virtual ~WindowCloseEventPolymorpher(
+                void) noexcept override = default;
+        };
+
     }
 
     /**
@@ -507,7 +538,8 @@ namespace mpgl {
         public DeriveIfTN<std::derived_from<Tp, ScreenTransformationEvent>, details::ScreenTransformationEventPolymorpher<Tp>, 7>,
         public DeriveIfTN<std::derived_from<Tp, ScrollEvent>, details::ScrollEventPolymorpher<Tp>, 8>,
         public DeriveIfTN<std::derived_from<Tp, TextWriteEvent>, details::TextWriteEventPolymorpher<Tp>, 9>,
-        public DeriveIfTN<std::derived_from<Tp, TickEvent>, details::TickEventPolymorpher<Tp>, 9>
+        public DeriveIfTN<std::derived_from<Tp, TickEvent>, details::TickEventPolymorpher<Tp>, 10>,
+        public DeriveIfTN<std::derived_from<Tp, WindowCloseEvent>, details::WindowCloseEventPolymorpher<Tp>, 11>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 
