@@ -48,8 +48,8 @@ namespace mpgl {
             uint8 green,
             uint8 blue,
             uint8 alpha=0xFF) noexcept
-                : Vector4f{red / 0xFF, green / 0xFF,
-                    blue / 0xFF, alpha / 0xff} {}
+                : Vector4f{float32(red) / 0xFF, float32(green) / 0xFF,
+                    float32(blue) / 0xFF, float32(alpha) / 0xff} {}
 
         /**
          * Constructs a new color object from the given
