@@ -215,6 +215,39 @@ namespace mpgl {
                 void) noexcept override = default;
         };
 
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * key release event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <std::derived_from<KeyPressEvent> Tp>
+        struct KeyReleaseEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public KeyReleaseEvent
+        {
+            /**
+             * Constructs a new key release event polymorpher object
+             */
+            explicit KeyReleaseEventPolymorpher(void) noexcept = default;
+
+            /**
+             * Notifies when the key is released
+             *
+             * @param key the released key
+             */
+            void onKeyRelease(Key const& key) noexcept
+                { this->get()->onKeyRelease(key); }
+
+            /**
+             * Virtual destructor. Destroys the key release event
+             * polymorpher object
+             */
+            virtual ~KeyReleaseEventPolymorpher(
+                void) noexcept override = default;
+        };
+
     }
 
     /**
@@ -231,7 +264,8 @@ namespace mpgl {
         private virtual details::PolymorpherBase<Tp>,
         public DeriveIfT<InstanceOf<Tp, Drawable>, details::DrawablePolymorpher<Tp>>,
         public DeriveIfT<InstanceOf<Tp, Transformable>, details::TransformablePolymorpher<Tp>>,
-        public DeriveIfT<std::derived_from<Tp, KeyPressEvent>, details::KeyPressEventPolymorpher<Tp>>
+        public DeriveIfT<std::derived_from<Tp, KeyPressEvent>, details::KeyPressEventPolymorpher<Tp>>,
+        public DeriveIfT<std::derived_from<Tp, KeyReleaseEvent>, details::KeyReleaseEventPolymorpher<Tp>>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 
