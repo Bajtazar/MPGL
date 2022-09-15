@@ -396,7 +396,7 @@ namespace mpgl {
             public ScrollEvent
         {
             /**
-             * Constructs a new scroll release polymorpher object
+             * Constructs a new scroll polymorpher object
              */
             explicit ScrollEventPolymorpher(void) noexcept = default;
 
@@ -413,6 +413,40 @@ namespace mpgl {
              * polymorpher object
              */
             virtual ~ScrollEventPolymorpher(
+                void) noexcept override = default;
+        };
+
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * text write event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <class Tp>
+        struct TextWriteEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public TextWriteEvent
+        {
+            /**
+             * Constructs a new text write event polymorpher object
+             */
+            explicit TextWriteEventPolymorpher(void) noexcept = default;
+
+            /**
+             * Notifies when user writes text
+             *
+             * @param unicodeString the unicode character saved in
+             * UTF-8 format
+             */
+            void onTextWrite(std::string const& unicodeString) noexcept
+                { this->get()->onTextWrite(unicodeString); }
+
+            /**
+             * Virtual destructor. Destroys the text write event
+             * polymorpher object
+             */
+            virtual ~TextWriteEventPolymorpher(
                 void) noexcept override = default;
         };
 
@@ -438,7 +472,8 @@ namespace mpgl {
         public DeriveIfTN<std::derived_from<Tp, MousePressEvent>, details::MousePressEventPolymorpher<Tp>, 5>,
         public DeriveIfTN<std::derived_from<Tp, MouseReleaseEvent>, details::MouseReleaseEventPolymorpher<Tp>, 6>,
         public DeriveIfTN<std::derived_from<Tp, ScreenTransformationEvent>, details::ScreenTransformationEventPolymorpher<Tp>, 7>,
-        public DeriveIfTN<std::derived_from<Tp, ScrollEvent>, details::ScrollEventPolymorpher<Tp>, 7>
+        public DeriveIfTN<std::derived_from<Tp, ScrollEvent>, details::ScrollEventPolymorpher<Tp>, 8>,
+        public DeriveIfTN<std::derived_from<Tp, TextWriteEvent>, details::TextWriteEventPolymorpher<Tp>, 9>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 
