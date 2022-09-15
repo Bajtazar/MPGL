@@ -332,9 +332,9 @@ namespace mpgl {
             explicit MouseReleaseEventPolymorpher(void) noexcept = default;
 
             /**
-         * Notifies when mouse button is released
-         *
-         * @param button the released mouse button
+             * Notifies when mouse button is released
+             *
+             * @param button the released mouse button
              */
             void onMouseRelease(MouseButton const& button) noexcept
                 { this->get()->onMouseRelease(button); }
@@ -344,6 +344,42 @@ namespace mpgl {
              * polymorpher object
              */
             virtual ~MouseReleaseEventPolymorpher(
+                void) noexcept override = default;
+        };
+
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * screen trnasformation event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <class Tp>
+        struct ScreenTransformationEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public ScreenTransformationEvent
+        {
+            /**
+             * Constructs a new screen transfromation event
+             * polymorpher object
+             */
+            explicit ScreenTransformationEventPolymorpher(
+                void) noexcept = default;
+
+            /**
+             * Notifies when window changes its shape
+             *
+             * @param oldDimensions the old window dimensions
+             */
+            void onScreenTransformation(
+                Vector2u const& oldDimensions) noexcept
+                    { this->get()->onScreenTransformation(oldDimensions); }
+
+            /**
+             * Virtual destructor. Destroys the screen transformation
+             * event polymorpher object
+             */
+            virtual ~ScreenTransformationEventPolymorpher(
                 void) noexcept override = default;
         };
 
@@ -367,7 +403,8 @@ namespace mpgl {
         public DeriveIfTN<std::derived_from<Tp, KeyReleaseEvent>, details::KeyReleaseEventPolymorpher<Tp>, 3>,
         public DeriveIfTN<std::derived_from<Tp, MouseMotionEvent>, details::MouseMotionEventPolymorpher<Tp>, 4>,
         public DeriveIfTN<std::derived_from<Tp, MousePressEvent>, details::MousePressEventPolymorpher<Tp>, 5>,
-        public DeriveIfTN<std::derived_from<Tp, MouseReleaseEvent>, details::MouseReleaseEventPolymorpher<Tp>, 6>
+        public DeriveIfTN<std::derived_from<Tp, MouseReleaseEvent>, details::MouseReleaseEventPolymorpher<Tp>, 6>,
+        public DeriveIfTN<std::derived_from<Tp, ScreenTransformationEvent>, details::ScreenTransformationEventPolymorpher<Tp>, 7>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 
