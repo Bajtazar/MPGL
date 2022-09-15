@@ -450,6 +450,39 @@ namespace mpgl {
                 void) noexcept override = default;
         };
 
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * tick event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <class Tp>
+        struct TickEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public TickEvent
+        {
+            /**
+             * Constructs a new tick event polymorpher object
+             */
+            explicit TickEventPolymorpher(void) noexcept = default;
+
+            /**
+             * Notifies when new tick occurs
+             *
+             * @param delta the time between last and current tick
+             */
+            void onTick(std::chrono::milliseconds const& delta) noexcept
+                { this->get()->onTick(delta); }
+
+            /**
+             * Virtual destructor. Destroys the tick event
+             * polymorpher object
+             */
+            virtual ~TickEventPolymorpher(
+                void) noexcept override = default;
+        };
+
     }
 
     /**
@@ -473,7 +506,8 @@ namespace mpgl {
         public DeriveIfTN<std::derived_from<Tp, MouseReleaseEvent>, details::MouseReleaseEventPolymorpher<Tp>, 6>,
         public DeriveIfTN<std::derived_from<Tp, ScreenTransformationEvent>, details::ScreenTransformationEventPolymorpher<Tp>, 7>,
         public DeriveIfTN<std::derived_from<Tp, ScrollEvent>, details::ScrollEventPolymorpher<Tp>, 8>,
-        public DeriveIfTN<std::derived_from<Tp, TextWriteEvent>, details::TextWriteEventPolymorpher<Tp>, 9>
+        public DeriveIfTN<std::derived_from<Tp, TextWriteEvent>, details::TextWriteEventPolymorpher<Tp>, 9>,
+        public DeriveIfTN<std::derived_from<Tp, TickEvent>, details::TickEventPolymorpher<Tp>, 9>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 
