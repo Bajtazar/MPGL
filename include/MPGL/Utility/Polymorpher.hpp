@@ -25,8 +25,17 @@
  */
 #pragma once
 
-#include <MPGL/Events/Types/KeyPressEvent.hpp>
+#include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Core/Transformations/Transformable.hpp>
+#include <MPGL/Events/Types/MouseReleaseEvent.hpp>
+#include <MPGL/Events/Types/WindowCloseEvent.hpp>
+#include <MPGL/Events/Types/MouseMotionEvent.hpp>
+#include <MPGL/Events/Types/KeyReleaseEvent.hpp>
+#include <MPGL/Events/Types/MousePressEvent.hpp>
+#include <MPGL/Events/Types/TextWriteEvent.hpp>
+#include <MPGL/Events/Types/KeyPressEvent.hpp>
+#include <MPGL/Events/Types/ScrollEvent.hpp>
+#include <MPGL/Events/Types/TickEvent.hpp>
 #include <MPGL/Core/DimensionTraits.hpp>
 #include <MPGL/Traits/DeriveIf.hpp>
 #include <MPGL/Traits/Concepts.hpp>
@@ -139,6 +148,43 @@ namespace mpgl {
         /**
          * Base class that extends the polymorpher implementation
          * by providing the backward compatybility with the
+         * transformable interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <InstanceOf<Transformable> Tp>
+        struct TransformablePolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public Transformable<DimensionOfT<Transformable, Tp>>
+        {
+            using Transformator = Transformation<
+                DimensionOfT<Transformable, Tp>>;
+
+            /**
+             * Constructs a new transformable polymorpher object
+             */
+            explicit TransformablePolymorpher(void) noexcept = default;
+
+            /**
+             * Performs transformation on this object
+             *
+             * @param transformator the constant reference to the object
+             * perfoming a transformation
+             */
+            void transform(Transformator const& transformator) noexcept
+                { this->get()->transform(transformator); }
+
+            /**
+             * Virtual destructor. Destroys the transformable
+             * polymorpher object
+             */
+            virtual ~TransformablePolymorpher(
+                void) noexcept override = default;
+        };
+
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
          * key press event interface
          *
          * @tparam Tp the type of the wrapped object
@@ -184,6 +230,7 @@ namespace mpgl {
     struct Polymorpher :
         private virtual details::PolymorpherBase<Tp>,
         public DeriveIfT<InstanceOf<Tp, Drawable>, details::DrawablePolymorpher<Tp>>,
+        public DeriveIfT<InstanceOf<Tp, Transformable>, details::TransformablePolymorpher<Tp>>,
         public DeriveIfT<std::derived_from<Tp, KeyPressEvent>, details::KeyPressEventPolymorpher<Tp>>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
