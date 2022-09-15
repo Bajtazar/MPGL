@@ -78,7 +78,7 @@ namespace mpgl {
          */
         LineLoop(
             std::size_t vertices = 0,
-            Color const& color = Color::White);
+            Color const& color = colors::white);
 
         LineLoop(LineLoop const& lineStrip) = default;
         LineLoop(LineLoop&& lineStrip) noexcept = default;

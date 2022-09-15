@@ -46,7 +46,7 @@ namespace mpgl {
          *
          * @param color the color of the hexahedron (optional)
          */
-        ConvexHexahedron(Color const& color = Color::White);
+        ConvexHexahedron(Color const& color = colors::white);
 
         /**
          * Constructs a new convex hexahedron from a point and
@@ -63,7 +63,7 @@ namespace mpgl {
             Vector3f const& firstVersor,
             Vector3f const& secondVersor,
             Vector3f const& thirdVersor,
-            Color const& color = Color::White);
+            Color const& color = colors::white);
 
         /**
          * Constructs a new convex hexahedron object from the given

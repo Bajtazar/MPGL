@@ -58,7 +58,7 @@ namespace mpgl {
         Line(
             Vector const& firstVertex,
             Vector const& secondVertex,
-            Color const& color = Color::White);
+            Color const& color = colors::white);
 
         /**
          * Construct a new Line object with the
@@ -66,7 +66,7 @@ namespace mpgl {
          *
          * @param color the color of the line (optional)
          */
-        Line(Color const& color = Color::White);
+        Line(Color const& color = colors::white);
 
         Line(Line const& line) = default;
         Line(Line&& line) noexcept = default;

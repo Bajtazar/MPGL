@@ -55,7 +55,7 @@ namespace mpgl {
             Vector3f const& position,
             float32 radius,
             float32 ringRadius,
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             uint8 tessellationSteps = 2);
 
         /**

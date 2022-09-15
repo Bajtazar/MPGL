@@ -58,7 +58,7 @@ namespace mpgl {
         Ellipse(
             Vector2f const& center = {},
             Vector2f const& semiAxis = {},
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
@@ -72,7 +72,7 @@ namespace mpgl {
         Ellipse(
             Vector2f const& center,
             float radius,
-            Color const& color = Color::White
+            Color const& color = colors::white
             ) requires TwoDimensional<Dim>;
 
         /**
@@ -90,7 +90,7 @@ namespace mpgl {
             Vector3f const& center,
             Vector3f const& minorAxis,
             Vector3f const& majorAxis,
-            Color const& color = Color::White
+            Color const& color = colors::white
             ) requires ThreeDimensional<Dim>;
 
         Ellipse(Ellipse const& ellipse) = default;

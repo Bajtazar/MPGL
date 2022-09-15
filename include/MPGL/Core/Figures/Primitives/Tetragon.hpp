@@ -53,7 +53,7 @@ namespace mpgl {
          *
          * @param color the color of the tetragon (optional)
          */
-        Tetragon(Color const& color = Color::White);
+        Tetragon(Color const& color = colors::white);
 
         /**
          * Constructs a new Parallelogram from a three
@@ -68,7 +68,7 @@ namespace mpgl {
             Vector const& firstVertex,
             Vector const& secondVertex,
             Vector const& thirdVertex,
-            Color const& color = Color::White);
+            Color const& color = colors::white);
 
         /**
          * Constructs a new rectangle parallel to
@@ -81,7 +81,7 @@ namespace mpgl {
         Tetragon(
             Vector2f const& firstVertex,
             Vector2f const& dimensions,
-            Color const& color = Color::White
+            Color const& color = colors::white
             ) requires TwoDimensional<Dim>;
 
         /**

@@ -93,7 +93,7 @@ namespace mpgl {
          * @param background a background color
          */
         void windowLoop(
-            Color const& background = Color::Black) noexcept;
+            Color const& background = colors::black) noexcept;
 
         /**
          * Draws frames until the window has to be closed. Draws
@@ -110,7 +110,7 @@ namespace mpgl {
         template <std::derived_from<Camera> CameraTp = StaticCamera>
         void windowLoop(
             Matrix4f const& projection,
-            Color const& background = Color::Black,
+            Color const& background = colors::black,
             std::shared_ptr<CameraTp> cameraPtr = defaultCamera()
             ) noexcept;
 

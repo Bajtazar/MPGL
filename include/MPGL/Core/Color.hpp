@@ -182,40 +182,42 @@ namespace mpgl {
             void) const& noexcept
                 { return (*this)[Index]; }
 
-        /// The embeded colors
-        static constexpr Vector4f           Red
-            {1.f, 0.f, 0.f, 1.f};
-        static constexpr Vector4f           Green
-            {0.f, 1.f, 0.f, 1.f};
-        static constexpr Vector4f           Blue
-            {0.f, 0.f, 1.f, 1.f};
-        static constexpr Vector4f           White
-            {1.f, 1.f, 1.f, 1.f};
-        static constexpr Vector4f           Black
-            {0.f, 0.f, 0.f, 1.f};
-        static constexpr Vector4f           Yellow
-            {1.f, 1.f, 0.f, 1.f};
-        static constexpr Vector4f           Magenta
-            {1.f, 0.f, 1.f, 1.f};
-        static constexpr Vector4f           Cyan
-            {0.f, 1.f, 1.f, 1.f};
-        static constexpr Vector4f           Purple
-            {0.5f, 0.f, 0.5f, 1.f};
-        static constexpr Vector4f           Orange
-            {1.f, 0.64f, 0.f, 1.f};
-        static constexpr Vector4f           Violet
-            {0.92f, 0.5f, 0.92f, 1.f};
-        static constexpr Vector4f           Silver
-            {0.75f, 0.75f, 0.75f, 1.f};
-        static constexpr Vector4f           Gold
-            {1.f, 0.83f, 0.f, 1.f};
-        static constexpr Vector4f           Gray
-            {0.5f, 0.5f, 0.5f, 1.f};
-        static constexpr Vector4f           Pink
-            {1.f, 0.75f, 0.79f, 1.f};
-        static constexpr Vector4f           MPGLBlue
-            {0.f, 0.63f, 0.91f, 1.f};
     };
+
+    namespace colors {
+        inline constexpr Color              red
+            {1.f, 0.f, 0.f, 1.f};
+        inline constexpr Color              green
+            {0.f, 1.f, 0.f, 1.f};
+        inline constexpr Color              blue
+            {0.f, 0.f, 1.f, 1.f};
+        inline constexpr Color              white
+            {1.f, 1.f, 1.f, 1.f};
+        inline constexpr Color              black
+            {0.f, 0.f, 0.f, 1.f};
+        inline constexpr Color              yellow
+            {1.f, 1.f, 0.f, 1.f};
+        inline constexpr Color              magenta
+            {1.f, 0.f, 1.f, 1.f};
+        inline constexpr Color              cyan
+            {0.f, 1.f, 1.f, 1.f};
+        inline constexpr Color              purple
+            {0.5f, 0.f, 0.5f, 1.f};
+        inline constexpr Color              orange
+            {1.f, 0.64f, 0.f, 1.f};
+        inline constexpr Color              violet
+            {0.92f, 0.5f, 0.92f, 1.f};
+        inline constexpr Color              silver
+            {0.75f, 0.75f, 0.75f, 1.f};
+        inline constexpr Color              gold
+            {1.f, 0.83f, 0.f, 1.f};
+        inline constexpr Color              gray
+            {0.5f, 0.5f, 0.5f, 1.f};
+        inline constexpr Color              pink
+            {1.f, 0.75f, 0.79f, 1.f};
+        inline constexpr Color              mpglBlue
+            {0.f, 0.63f, 0.91f, 1.f};
+    }
 
 }
 

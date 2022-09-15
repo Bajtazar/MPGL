@@ -53,7 +53,7 @@ namespace mpgl {
         Sphere(
             Vector3f const& position,
             float32 radius,
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             uint8 tessellationSteps = 2);
 
         /**
