@@ -52,12 +52,13 @@ namespace mpgl {
 
     void WindowPlatform::setContextWindow(void) noexcept {
         glfwMakeContextCurrent(window);
-        context.windowDimensions = dimensions;
-        context.windowOptions = options;
+        const_cast<Vector2u&>(context.windowDimensions) = dimensions;
+        const_cast<Options&>(context.windowOptions) = options;
     }
 
     void WindowPlatform::setDimensions(Vector2u const& dim) noexcept {
-        context.windowDimensions = dimensions = dim;
+        const_cast<Vector2u&>(context.windowDimensions)
+            = dimensions = dim;
     }
 
     void WindowPlatform::framebufferCallback(
@@ -132,7 +133,7 @@ namespace mpgl {
             glfwGetWindowUserPointer(window));
         Vector2d position{xpos, context.windowDimensions[1] - ypos};
         render->eventManager->onMouseMotion(position);
-        const_cast<Vector2u&>(context.mousePosition)
+        const_cast<Vector2u&>(context.relativeMousePosition)
             = vectorCast<uint32>(position);
     }
 
