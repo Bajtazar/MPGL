@@ -85,6 +85,8 @@ namespace mpgl {
         Vector2u oldPosition = render->context.windowPosition;
         const_cast<Vector2u&>(render->context.windowPosition)
             = Vector2u{xPos, yPos};
+        const_cast<Vector2u&>(render->context.absoluteMousePosition)
+            = render->context.windowPosition + render->context.relativeMousePosition;
         render->eventManager->onWindowMotion(oldPosition);
     }
 
@@ -148,6 +150,8 @@ namespace mpgl {
         render->eventManager->onMouseMotion(position);
         const_cast<Vector2u&>(context.relativeMousePosition)
             = vectorCast<uint32>(position);
+        const_cast<Vector2u&>(render->context.absoluteMousePosition)
+            = render->context.windowPosition + render->context.relativeMousePosition;
     }
 
     void WindowPlatform::setCallbacks(void) noexcept {
@@ -198,14 +202,6 @@ namespace mpgl {
 
     void WindowPlatform::closeWindow(void) noexcept {
         glfwSetWindowShouldClose(window, true);
-    }
-
-    [[nodiscard]] Vector2f WindowPlatform::getMousePosition(
-        void) const noexcept
-    {
-        Vector2d position;
-        glfwGetCursorPos(window, &position[0], &position[1]);
-        return position;
     }
 
 }

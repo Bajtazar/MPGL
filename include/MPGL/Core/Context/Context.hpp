@@ -65,6 +65,8 @@ namespace mpgl {
         Vector2u const                          relativeMousePosition;
         /// Current window's position on the screen
         Vector2u const                          windowPosition;
+        /// Current mouse position absolute to the window
+        Vector2u const                          absoluteMousePosition;
 
         /**
          * Ckecks whether the view-projection matrix has changed

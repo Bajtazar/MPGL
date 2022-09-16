@@ -63,13 +63,6 @@ namespace mpgl {
                 { return title; }
 
         /**
-         * Returns a mouse position in the window
-         *
-         * @return the mouse position in the window
-         */
-        [[nodiscard]] Vector2f getMousePosition(void) const noexcept;
-
-        /**
          * Closes the window
          */
         void closeWindow(void) noexcept;
