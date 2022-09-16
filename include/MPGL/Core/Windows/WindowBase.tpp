@@ -38,7 +38,7 @@ namespace mpgl {
     template <Event Tp, typename... Args>
         requires std::constructible_from<Tp, Args...>
     void WindowBase::emplaceEvent(Args&&... args) {
-        eventManager->emplace(std::forward(args)...);
+        eventManager->emplace<Tp>(std::forward(args)...);
     }
 
     template <std::derived_from<Drawable2D> Tp, typename... Args>
