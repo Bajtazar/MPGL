@@ -27,34 +27,38 @@
 
 namespace mpgl {
 
+    Adapter<2>::value_type Adapter<2>::cast(
+        const_reference value) noexcept
+    {
+        return value_type{
+            value[0],
+            float32(context.windowDimensions[1]) - value[1]
+        } / vectorCast<float32>(context.windowDimensions) * 2.f - 1.f;
+    }
+
     Adapter<2>::Adapter(const_reference value) noexcept
-        : value{value / vectorCast<float32>(context.windowDimensions)
-            * 2.f - 1.f} {}
+        : value{cast(value)} {}
 
     Adapter<2>::Adapter(value_type&& value) noexcept
-        : value{std::move(value)
-            / vectorCast<float32>(context.windowDimensions)
-                * 2.f - 1.f} {}
+        : value{cast(value)} {}
 
     Adapter<2>& Adapter<2>::operator= (
         const_reference factor) noexcept
     {
-        value = factor
-            / vectorCast<float32>(context.windowDimensions)
-                * 2.f - 1.f;
+        value = cast(factor);
         return *this;
     }
 
     Adapter<2>& Adapter<2>::operator= (value_type&& factor) noexcept {
-        value = std::move(factor)
-            / vectorCast<float32>(context.windowDimensions)
-                * 2.f - 1.f;
+        value = cast(factor);
         return *this;
     }
 
     [[nodiscard]] Adapter<2>::operator value_type() const noexcept {
-        return (value + 1.f)
-            * vectorCast<float32>(context.windowDimensions) / 2.f;
+        auto inverted = (value + 1.f) * vectorCast<float32>(
+            context.windowDimensions) / 2.f;
+        return {inverted[0],
+            float32(context.windowDimensions[1]) + inverted[1]};
     }
 
 }

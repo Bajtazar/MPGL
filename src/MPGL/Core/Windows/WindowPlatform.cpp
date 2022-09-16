@@ -144,7 +144,7 @@ namespace mpgl {
     {
         WindowPlatform* render = static_cast<WindowPlatform*>(
             glfwGetWindowUserPointer(window));
-        Vector2d position{xpos, context.windowDimensions[1] - ypos};
+        Vector2d position{xpos, ypos};
         render->eventManager->onMouseMotion(position);
         const_cast<Vector2u&>(context.relativeMousePosition)
             = vectorCast<uint32>(position);

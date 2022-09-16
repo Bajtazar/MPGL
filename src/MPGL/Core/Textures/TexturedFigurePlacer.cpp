@@ -34,9 +34,9 @@ namespace mpgl {
     void TexturedFigurePlacer<Triangle<Dim, Spec>>::operator() (
         Triangle<Dim, Spec>& triangle) const noexcept
     {
-        get<"texCoords">(triangle[0]) = Vector2f{0, 0};
-        get<"texCoords">(triangle[1]) = Vector2f{1, 0};
-        get<"texCoords">(triangle[2]) = Vector2f{0.5, 1.};
+        get<"texCoords">(triangle[0]) = Vector2f{0, 1};
+        get<"texCoords">(triangle[1]) = Vector2f{1, 1};
+        get<"texCoords">(triangle[2]) = Vector2f{0.5, 0.};
     }
 
     template <
@@ -45,10 +45,10 @@ namespace mpgl {
     void TexturedFigurePlacer<Tetragon<Dim, Spec>>::operator() (
         Tetragon<Dim, Spec>& tetragon) const noexcept
     {
-        get<"texCoords">(tetragon[0]) = Vector2f{0, 0};
-        get<"texCoords">(tetragon[1]) = Vector2f{0, 1};
-        get<"texCoords">(tetragon[2]) = Vector2f{1, 1};
-        get<"texCoords">(tetragon[3]) = Vector2f{1, 0};
+        get<"texCoords">(tetragon[0]) = Vector2f{0, 1};
+        get<"texCoords">(tetragon[1]) = Vector2f{0, 0};
+        get<"texCoords">(tetragon[2]) = Vector2f{1, 0};
+        get<"texCoords">(tetragon[3]) = Vector2f{1, 1};
     }
 
     template <
@@ -131,10 +131,10 @@ namespace mpgl {
     void TexturedFigurePlacer<Ellipse<Dim, Spec>>::operator() (
         Ellipse<Dim, Spec>& ellipse) const noexcept
     {
-        get<"texCoords">(ellipse[0]) = Vector2f{0, 0};
-        get<"texCoords">(ellipse[1]) = Vector2f{0, 1};
-        get<"texCoords">(ellipse[2]) = Vector2f{1, 1};
-        get<"texCoords">(ellipse[3]) = Vector2f{1, 0};
+        get<"texCoords">(ellipse[0]) = Vector2f{0, 1};
+        get<"texCoords">(ellipse[1]) = Vector2f{0, 0};
+        get<"texCoords">(ellipse[2]) = Vector2f{1, 0};
+        get<"texCoords">(ellipse[3]) = Vector2f{1, 1};
     }
 
     template <
@@ -143,10 +143,10 @@ namespace mpgl {
     void TexturedFigurePlacer<Ring<Dim, Spec>>::operator() (
         Ring<Dim, Spec>& ring) const noexcept
     {
-        get<"texCoords">(ring[0]) = Vector2f{0, 0};
-        get<"texCoords">(ring[1]) = Vector2f{0, 1};
-        get<"texCoords">(ring[2]) = Vector2f{1, 1};
-        get<"texCoords">(ring[3]) = Vector2f{1, 0};
+        get<"texCoords">(ring[0]) = Vector2f{0, 1};
+        get<"texCoords">(ring[1]) = Vector2f{0, 0};
+        get<"texCoords">(ring[2]) = Vector2f{1, 0};
+        get<"texCoords">(ring[3]) = Vector2f{1, 1};
     }
 
 }
