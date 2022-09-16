@@ -63,6 +63,8 @@ namespace mpgl {
         Matrix4f                                projection;
         /// Current mouse position relative to the window
         Vector2u const                          relativeMousePosition;
+        /// Current window's position on the screen
+        Vector2u const                          windowPosition;
 
         /**
          * Ckecks whether the view-projection matrix has changed

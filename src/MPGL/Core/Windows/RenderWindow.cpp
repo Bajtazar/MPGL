@@ -139,6 +139,12 @@ namespace mpgl {
         eventManager->onScreenTransformation(oldDimensions);
     }
 
+    void RenderWindow::onWindowMotion(
+        Vector2u const& oldPosition) noexcept
+    {
+        eventManager->onWindowMotion(oldPosition);
+    }
+
     void RenderWindow::onMouseRelease(
         MouseButton const& button) noexcept
     {

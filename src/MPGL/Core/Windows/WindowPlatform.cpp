@@ -75,6 +75,19 @@ namespace mpgl {
         render->eventManager->onScreenTransformation(oldDimensions);
     }
 
+    void WindowPlatform::windowPositionCallback(
+        GLFWwindow *window,
+        int32 xPos,
+        int32 yPos) noexcept
+    {
+        WindowPlatform* render = static_cast<WindowPlatform*>(
+            glfwGetWindowUserPointer(window));
+        Vector2u oldPosition = render->context.windowPosition;
+        const_cast<Vector2u&>(render->context.windowPosition)
+            = Vector2u{xPos, yPos};
+        render->eventManager->onWindowMotion(oldPosition);
+    }
+
     void WindowPlatform::keyCallback(
         GLFWwindow* window,
         int32 key,
@@ -145,6 +158,7 @@ namespace mpgl {
         glfwSetCursorPosCallback(window, mousePosCallback);
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
         glfwSetWindowCloseCallback(window, windowCloseCallback);
+        glfwSetWindowPosCallback(window, windowPositionCallback);
     }
 
     void WindowPlatform::setWindowOptions(void) const noexcept {

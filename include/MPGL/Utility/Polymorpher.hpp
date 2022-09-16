@@ -27,6 +27,7 @@
 
 #include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Core/Transformations/Transformable.hpp>
+#include <MPGL/Events/Types/WindowMotionEvent.hpp>
 #include <MPGL/Events/Types/MouseReleaseEvent.hpp>
 #include <MPGL/Events/Types/WindowCloseEvent.hpp>
 #include <MPGL/Events/Types/MouseMotionEvent.hpp>
@@ -514,6 +515,39 @@ namespace mpgl {
                 void) noexcept override = default;
         };
 
+        /**
+         * Base class that extends the polymorpher implementation
+         * by providing the backward compatybility with the
+         * window motion event interface
+         *
+         * @tparam Tp the type of the wrapped object
+         */
+        template <class Tp>
+        struct WindowMotionEventPolymorpher :
+            private virtual PolymorpherBase<Tp>,
+            public WindowMotionEvent
+        {
+            /**
+             * Constructs a new window motion event polymorpher object
+             */
+            explicit WindowMotionEventPolymorpher(void) noexcept = default;
+
+            /**
+             * Notifies when the window is being moved
+             *
+             * @param oldPosition the old window position
+             */
+            void onWindowMotion(Vector2u const& oldPosition) noexcept
+                { this->get()->onWindowMotion(oldPosition); }
+
+            /**
+             * Virtual destructor. Destroys the window motion event
+             * polymorpher object
+             */
+            virtual ~WindowMotionEventPolymorpher(
+                void) noexcept override = default;
+        };
+
     }
 
     /**
@@ -539,7 +573,8 @@ namespace mpgl {
         public DeriveIfTN<std::derived_from<Tp, ScrollEvent>, details::ScrollEventPolymorpher<Tp>, 8>,
         public DeriveIfTN<std::derived_from<Tp, TextWriteEvent>, details::TextWriteEventPolymorpher<Tp>, 9>,
         public DeriveIfTN<std::derived_from<Tp, TickEvent>, details::TickEventPolymorpher<Tp>, 10>,
-        public DeriveIfTN<std::derived_from<Tp, WindowCloseEvent>, details::WindowCloseEventPolymorpher<Tp>, 11>
+        public DeriveIfTN<std::derived_from<Tp, WindowCloseEvent>, details::WindowCloseEventPolymorpher<Tp>, 11>,
+        public DeriveIfTN<std::derived_from<Tp, WindowMotionEvent>, details::WindowMotionEventPolymorpher<Tp>, 12>
     {
         using pointer = typename details::PolymorpherBase<Tp>::pointer;
 

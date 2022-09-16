@@ -166,6 +166,18 @@ namespace mpgl {
             int32 height) noexcept;
 
         /**
+         * The window position callback
+         *
+         * @param window the GLFW window pointer
+         * @param xPos the window's new positon's x-axis coordinate
+         * @param yPos the window's new positon's y-axis coordinate
+         */
+        static void windowPositionCallback(
+            GLFWwindow *window,
+            int32 xPos,
+            int32 yPos) noexcept;
+
+        /**
          * The keyboard callback
          *
          * @param window the GLFW window pointer

@@ -38,6 +38,7 @@ namespace mpgl {
      */
     class RenderingAdapter :
         public ScreenTransformationEvent,
+        public WindowMotionEvent,
         public MouseReleaseEvent,
         public WindowCloseEvent,
         public MouseMotionEvent,
@@ -91,6 +92,12 @@ namespace mpgl {
          * @param button the released button
          */
         void onMouseRelease(MouseButton const& button) noexcept final;
+
+        /**
+         * Informs contained objects that window has been moved
+         */
+        void onWindowMotion(
+            Vector2u const& oldPosition) noexcept final;
 
         /**
          * Calls the onWindowClose method on the Render Window
