@@ -176,6 +176,7 @@ namespace mpgl {
         glfwWindowHint(GLFW_FLOATING, options.floating);
         glfwWindowHint(GLFW_DECORATED, !options.clean);
         glfwWindowHint(GLFW_SAMPLES, options.antiAliasingSamples);
+        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, options.transparent);
     }
 
     void WindowPlatform::draw(void) const noexcept {

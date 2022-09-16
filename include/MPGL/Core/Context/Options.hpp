@@ -54,7 +54,8 @@ namespace mpgl {
         /// Specifies whether the window should be displayed
         /// without os-related decorations
         bool                clean : 1                 = false;
-        // bool                            transparent : 1;
+        /// Specifies whether the window should be transparent
+        bool                transparent : 1           = false;
     };
 
 }
