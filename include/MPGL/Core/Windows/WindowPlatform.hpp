@@ -112,6 +112,24 @@ namespace mpgl {
         void draw(void) const noexcept;
 
         /**
+         * Sets the position of the window on the screen
+         *
+         * @param position a constant reference to the
+         * new position vector
+         */
+        void setPosition(Vector2u const& position) noexcept;
+
+        /**
+         * Minimizes the window
+         */
+        void minimize(void) noexcept;
+
+        /**
+         * Maximizes the window
+         */
+        void maximize(void) noexcept;
+
+        /**
          * Pure virtual method. Has to be overloaded. Saves the
          * current window screen to the image
          *

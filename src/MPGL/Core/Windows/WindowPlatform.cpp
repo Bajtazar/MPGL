@@ -204,4 +204,18 @@ namespace mpgl {
         glfwSetWindowShouldClose(window, true);
     }
 
+    void WindowPlatform::setPosition(
+        Vector2u const& position) noexcept
+    {
+        glfwSetWindowPos(window, position[0], position[1]);
+    }
+
+    void WindowPlatform::minimize(void) noexcept {
+        glfwIconifyWindow(window);
+    }
+
+    void WindowPlatform::maximize(void) noexcept {
+        glfwRestoreWindow(window);
+    }
+
 }
