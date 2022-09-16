@@ -30,10 +30,7 @@ namespace mpgl {
     Adapter<2>::value_type Adapter<2>::cast(
         const_reference value) noexcept
     {
-        return value_type{
-            value[0],
-            float32(context.windowDimensions[1]) - value[1]
-        } / vectorCast<float32>(context.windowDimensions) * 2.f - 1.f;
+        return value / vectorCast<float32>(context.windowDimensions) * 2.f - 1.f;
     }
 
     Adapter<2>::Adapter(const_reference value) noexcept
@@ -55,10 +52,8 @@ namespace mpgl {
     }
 
     [[nodiscard]] Adapter<2>::operator value_type() const noexcept {
-        auto inverted = (value + 1.f) * vectorCast<float32>(
+        return (value + 1.f) * vectorCast<float32>(
             context.windowDimensions) / 2.f;
-        return {inverted[0],
-            float32(context.windowDimensions[1]) + inverted[1]};
     }
 
 }

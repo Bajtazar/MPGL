@@ -247,6 +247,11 @@ namespace mpgl {
          */
         static void windowCloseCallback(
             GLFWwindow *window) noexcept;
+
+        /**
+         * Actualizes absolut mouse position
+         */
+        static void actualizeAbsolutePosition(void) noexcept;
     };
 
 }

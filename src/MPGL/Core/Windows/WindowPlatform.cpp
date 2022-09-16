@@ -30,6 +30,8 @@
 
 namespace mpgl {
 
+
+
     WindowPlatform::WindowPlatform(
         Vector2u dimensions,
         std::string title,
@@ -75,6 +77,14 @@ namespace mpgl {
         render->eventManager->onScreenTransformation(oldDimensions);
     }
 
+    void WindowPlatform::actualizeAbsolutePosition(void) noexcept {
+        const_cast<Vector2u&>(context.absoluteMousePosition)
+            = context.windowPosition +
+            Vector2u{context.relativeMousePosition[0],
+            context.windowDimensions[1] -
+                context.relativeMousePosition[1]};
+    }
+
     void WindowPlatform::windowPositionCallback(
         GLFWwindow *window,
         int32 xPos,
@@ -85,8 +95,7 @@ namespace mpgl {
         Vector2u oldPosition = render->context.windowPosition;
         const_cast<Vector2u&>(render->context.windowPosition)
             = Vector2u{xPos, yPos};
-        const_cast<Vector2u&>(render->context.absoluteMousePosition)
-            = render->context.windowPosition + render->context.relativeMousePosition;
+        actualizeAbsolutePosition();
         render->eventManager->onWindowMotion(oldPosition);
     }
 
@@ -148,9 +157,8 @@ namespace mpgl {
             glfwGetWindowUserPointer(window));
         Vector2f oldPosition = context.relativeMousePosition;
         const_cast<Vector2u&>(context.relativeMousePosition)
-            = Vector2u{xpos, ypos};
-        const_cast<Vector2u&>(render->context.absoluteMousePosition)
-            = render->context.windowPosition + render->context.relativeMousePosition;
+            = Vector2u{xpos, context.windowDimensions[1] - ypos};
+        actualizeAbsolutePosition();
         render->eventManager->onMouseMotion(oldPosition);
     }
 

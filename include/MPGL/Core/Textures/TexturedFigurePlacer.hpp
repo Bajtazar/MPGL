@@ -57,7 +57,7 @@ namespace mpgl {
     struct TexturedFigurePlacer<Triangle<Dim, Spec>> {
         /**
          * Sets the default texture coordinates for the triangle
-         * ({[0, 1], [1, 1], [0.5, 0]} by default)
+         * ({[0, 0], [1, 0], [0.5, 1]} by default)
          *
          * @param triangle a reference to the triangle object
          */
@@ -78,7 +78,7 @@ namespace mpgl {
     struct TexturedFigurePlacer<Tetragon<Dim, Spec>> {
         /**
          * Sets the default texture coordinates for the tetragon
-         * ({[0, 1], [0, 0], [1, 0], [1, 1]} by default)
+         * ({[0, 0], [0, 1], [1, 1], [1, 0]} by default)
          *
          * @param tetragon a reference to the tetragon object
          */
@@ -208,7 +208,7 @@ namespace mpgl {
     struct TexturedFigurePlacer<Ellipse<Dim, Spec>> {
         /**
          * Sets the default texture coordinates for the ellipse
-         * ({[0, 1], [0, 0], [1, 0], [1, 1]})
+         * ({[0, 0], [0, 1], [1, 1], [1, 0]})
          *
          * @param ellipse a reference to the ellipse object
          */
@@ -229,7 +229,7 @@ namespace mpgl {
     struct TexturedFigurePlacer<Ring<Dim, Spec>> {
         /**
          * Sets the default texture coordinates for the ring
-         * ({[0, 1], [0, 0], [1, 0], [1, 1]})
+         * ({[0, 0], [0, 1], [1, 1], [1, 0]})
          *
          * @param ring a reference to the ring object
          */
