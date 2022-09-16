@@ -207,6 +207,7 @@ namespace mpgl {
     void WindowPlatform::setPosition(
         Vector2u const& position) noexcept
     {
+        const_cast<Vector2u&>(context.windowPosition) = position;
         glfwSetWindowPos(window, position[0], position[1]);
     }
 
