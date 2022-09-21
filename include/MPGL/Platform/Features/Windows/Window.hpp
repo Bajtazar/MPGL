@@ -23,12 +23,17 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#pragma once
+
 #include <MPGL/Events/Management/EventManager.hpp>
 #include <MPGL/Core/Context/Context.hpp>
 #include <MPGL/Collections/Image.hpp>
 
 namespace mpgl::platform {
 
+    /**
+     * Interface for the window's platfrom dependent implementations
+     */
     class Window : protected GraphicalObject {
     public:
         /**
@@ -37,13 +42,11 @@ namespace mpgl::platform {
          * @param dimensions the window's dimensions
          * @param title the window's title
          * @param options the window's options
-         * @param eventManager the window's event manager
          */
         explicit Window(
             Vector2u dimensions,
             std::string title,
-            Options const& options,
-            WindowEventManager& eventManager);
+            Options const& options);
 
         /**
          * Returns the window dimensions vector
@@ -143,6 +146,12 @@ namespace mpgl::platform {
         virtual void setContextWindow(void) noexcept = 0;
 
         /**
+         * Pure virtual method. Has to be overloaded. Sets
+         * the Window options
+         */
+        virtual void setWindowOptions(void) const noexcept = 0;
+
+        /**
          * Virtual destructor. Destroys the window object
          */
         virtual ~Window(void) noexcept = default;
@@ -156,13 +165,7 @@ namespace mpgl::platform {
         Vector2u                                dimensions;
         Options                                 options;
         std::string                             title;
-        WindowEventManager*                     eventManager;
-
-        /**
-         * Pure virtual method. Has to be overloaded. Sets
-         * the Window options
-         */
-        virtual void setWindowOptions(void) const noexcept = 0;
+        WindowEventManager*                     eventManager = nullptr;
 
         /**
          * Sets the window dimensions

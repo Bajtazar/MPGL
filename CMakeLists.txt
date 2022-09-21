@@ -103,6 +103,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Iterators/SafeIterator.cpp
     ${MPGL_SOURCES}/Events/Registers/TickRegister.cpp
     ${MPGL_SOURCES}/Events/Management/BasicWindowEventManager.cpp
+    ${MPGL_SOURCES}/Platform/Features/Windows/Window.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
