@@ -36,7 +36,8 @@ namespace mpgl::platform {
         Vector2u dimensions,
         std::string title,
         Options const& options)
-            : Window{dimensions, title, options}, window{nullptr}
+            : WindowPlatform{dimensions, title, options},
+            window{nullptr}
     {
         setWindowOptions();
         window = glfwCreateWindow(dimensions[0], dimensions[1],

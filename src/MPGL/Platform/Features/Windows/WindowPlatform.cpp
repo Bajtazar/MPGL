@@ -23,18 +23,20 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Platform/Features/Windows/Window.hpp>
+#include <MPGL/Platform/Features/Windows/WindowPlatform.hpp>
 
 namespace mpgl::platform {
 
-    Window::Window(
+    WindowPlatform::WindowPlatform(
         Vector2u dimensions,
         std::string title,
         Options const& options)
             : dimensions{std::move(dimensions)},
             options{options}, title{std::move(title)} {}
 
-    void Window::setDimensions(Vector2u const& dimensions) noexcept {
+    void WindowPlatform::setDimensions(
+        Vector2u const& dimensions) noexcept
+    {
         const_cast<Vector2u&>(context.windowDimensions)
             = this->dimensions = dimensions;
     }

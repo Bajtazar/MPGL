@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Platform/Features/Windows/Window.hpp>
+#include <MPGL/Platform/Features/Windows/WindowPlatform.hpp>
 
 #include <memory>
 
@@ -38,7 +38,7 @@ namespace mpgl::platform {
      */
     class PlatformHandler {
     public:
-        using WindowPtr = std::unique_ptr<Window>;
+        using WindowPtr = std::unique_ptr<WindowPlatform>;
 
         /**
          * Constructs a new platfrom handler object

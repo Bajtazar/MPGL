@@ -25,7 +25,7 @@
  */
 #pragma once
 
-#include <MPGL/Platform/Features/Windows/Window.hpp>
+#include <MPGL/Platform/Features/Windows/WindowPlatform.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -34,7 +34,7 @@ namespace mpgl::platform {
     /**
      * Implements the window using the GLFW3 library
      */
-    class GLFWWindow : public Window {
+    class GLFWWindow : public WindowPlatform {
     public:
         /**
          * Constructs a new GLFW window object

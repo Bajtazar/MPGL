@@ -34,16 +34,16 @@ namespace mpgl::platform {
     /**
      * Interface for the window's platfrom dependent implementations
      */
-    class Window : protected GraphicalObject {
+    class WindowPlatform : protected GraphicalObject {
     public:
         /**
-         * Constructs a new window object
+         * Constructs a new window platform object
          *
          * @param dimensions the window's dimensions
          * @param title the window's title
          * @param options the window's options
          */
-        explicit Window(
+        explicit WindowPlatform(
             Vector2u dimensions,
             std::string title,
             Options const& options);
@@ -146,15 +146,15 @@ namespace mpgl::platform {
         virtual void setContextWindow(void) noexcept = 0;
 
         /**
-         * Virtual destructor. Destroys the window object
+         * Virtual destructor. Destroys the window platform object
          */
-        virtual ~Window(void) noexcept = default;
+        virtual ~WindowPlatform(void) noexcept = default;
     protected:
-        Window(Window const&) = default;
-        Window(Window&&) = default;
+        WindowPlatform(WindowPlatform const&) = default;
+        WindowPlatform(WindowPlatform&&) = default;
 
-        Window& operator=(Window const&) = default;
-        Window& operator=(Window&&) = default;
+        WindowPlatform& operator=(WindowPlatform const&) = default;
+        WindowPlatform& operator=(WindowPlatform&&) = default;
 
         Vector2u                                dimensions;
         Options                                 options;
