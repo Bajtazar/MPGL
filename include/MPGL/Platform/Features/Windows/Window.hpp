@@ -37,7 +37,7 @@ namespace mpgl::platform {
     class Window : protected GraphicalObject {
     public:
         /**
-         * Construct a new Window object
+         * Constructs a new window object
          *
          * @param dimensions the window's dimensions
          * @param title the window's title
@@ -146,12 +146,6 @@ namespace mpgl::platform {
         virtual void setContextWindow(void) noexcept = 0;
 
         /**
-         * Pure virtual method. Has to be overloaded. Sets
-         * the Window options
-         */
-        virtual void setWindowOptions(void) const noexcept = 0;
-
-        /**
          * Virtual destructor. Destroys the window object
          */
         virtual ~Window(void) noexcept = default;
@@ -166,6 +160,12 @@ namespace mpgl::platform {
         Options                                 options;
         std::string                             title;
         WindowEventManager*                     eventManager = nullptr;
+
+        /**
+         * Pure virtual method. Has to be overloaded. Sets
+         * the Window options
+         */
+        virtual void setWindowOptions(void) const noexcept = 0;
 
         /**
          * Sets the window dimensions
