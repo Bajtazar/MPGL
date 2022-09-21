@@ -62,11 +62,11 @@ namespace mpgl {
             EventManagerPtr eventManager = defaultManager(),
             Paths const& shaderDirectories = defaultShaderDirs());
 
-        Window(Window const& window) noexcept = delete;
-        Window(Window&& window) noexcept = delete;
+        Window(Window const& window) = delete;
+        Window(Window&& window) noexcept = default;
 
-        Window& operator= (Window const& window) noexcept = delete;
-        Window& operator= (Window&& window) noexcept = delete;
+        Window& operator= (Window const& window) = delete;
+        Window& operator= (Window&& window) noexcept = default;
 
         /**
          * Sets this window as a context one
