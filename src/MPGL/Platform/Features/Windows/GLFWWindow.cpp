@@ -48,6 +48,10 @@ namespace mpgl::platform {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
             throw WindowGladException{title};
         setCallbacks();
+        setWindowAttributes();
+    }
+
+    void GLFWWindow::setWindowAttributes(void) const noexcept {
         glEnable(GL_BLEND);
         glEnable(GL_MULTISAMPLE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

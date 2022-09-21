@@ -119,9 +119,14 @@ namespace mpgl::platform {
         GLFWwindow*                             window;
 
         /**
-         * Sets the Window options
+         * Sets the window options
          */
         void setWindowOptions(void) const noexcept final;
+
+        /**
+         * Sets the window invariant attribibutes
+         */
+        void setWindowAttributes(void) const noexcept;
 
         /**
          * Sets the window callbacks
