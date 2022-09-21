@@ -36,7 +36,7 @@ namespace mpgl::platform {
      * the window implementation thus enforcing the initialization
      * and destruction order
      */
-    class PlatfromHandler {
+    class PlatformHandler {
     public:
         using WindowPtr = std::unique_ptr<Window>;
 
@@ -46,105 +46,23 @@ namespace mpgl::platform {
          * @param windowPtr a rvalue reference to the window's
          * unique pointer
          */
-        explicit PlatfromHandler(WindowPtr&& windowPtr) noexcept
-            : handler{std::move(windowPtr)} {}
+        explicit PlatformHandler(WindowPtr&& windowPtr) noexcept
+            : windowImpl{std::move(windowPtr)} {}
 
-        /**
-         * Returns the window title
-         *
-         * @return the constant reference to the window title
-         * string
-         */
-        [[nodiscard]] std::string const&
-            getWindowTitle(void) const noexcept
-                { return handler->getWindowTitle(); }
+        PlatformHandler(PlatformHandler const& window) noexcept = delete;
+        PlatformHandler(PlatformHandler&& window) noexcept = default;
 
-        /**
-         * Sets the event manager used by the window
-         *
-         * @param eventManager a non-handling pointer to the
-         * event manager object
-         */
-        void setEventManager(
-            WindowEventManager* eventManager) noexcept
-                { handler->setEventManager(eventManager); }
-
-        /**
-         * Closes the window
-         */
-        void closeWindow(void) noexcept
-            { handler->closeWindow(); }
-
-        /**
-         * Opens the window
-         */
-        void openWindow(void) noexcept
-            { handler->openWindow(); }
-
-        /**
-         * Sets the position of the window on the screen
-         *
-         * @param position a constant reference to the
-         * new position vector
-         */
-        void setPosition(Vector2u const& position) noexcept
-            { handler->setPosition(position); }
-
-        /**
-         * Minimizes the window
-         */
-        void minimize(void) noexcept
-            { handler->minimize(); }
-
-        /**
-         * Maximizes the window
-         */
-        void maximize(void) noexcept
-            { handler->maximize(); }
-
-        /**
-         * Returns whether the window should be closed
-         *
-         * @return if the window should be closed
-         */
-        [[nodiscard]] bool shouldWindowClose(
-            void) const noexcept
-                { handler->shouldWindowClose(); }
-
-        /**
-         * Clears the framebuffer
-         *
-         * @param color the background color
-         */
-        void clear(Color const& color) const noexcept
-            { handler->clear(color); }
-
-        /**
-         * Draws the framebuffer in the window
-         */
-        void draw(void) const noexcept
-            { handler->draw(); }
-
-        /**
-         * Saves the current window screen to the image
-         *
-         * @return the window screen shot
-         */
-        [[nodiscard]] Image saveWindowScreen(void) const
-            { return handler->saveWindowScreen(); }
-
-        /**
-         * Sets the window as the current one
-         */
-        void setContextWindow(void) noexcept
-            { handler->setContextWindow(); }
+        PlatformHandler& operator= (
+            PlatformHandler const& window) noexcept = delete;
+        PlatformHandler& operator= (
+            PlatformHandler&& window) noexcept = default;
 
         /**
          * Destroys the platfrom handler object
          */
-        ~PlatfromHandler(void) noexcept = default;
-    private:
-        WindowPtr                       handler;
+        ~PlatformHandler(void) noexcept = default;
+    protected:
+        WindowPtr                       windowImpl;
     };
 
 }

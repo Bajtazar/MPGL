@@ -23,6 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Platform/Features/Windows/GLFWWindow.hpp>
 #include <MPGL/Core/Windows/Window.hpp>
 
 #ifndef MPGL_SOURCE_DIR
@@ -49,25 +50,67 @@ namespace mpgl {
         return std::make_shared<StaticCamera>();
     }
 
+    Window::WindowPtr Window::defaultWindowPlatfrom(
+        Vector2u const& dimensions,
+        String const& title,
+        Options const& options)
+    {
+        return std::make_unique<platform::GLFWWindow>(
+            dimensions,
+            title,
+            options
+        );
+    }
+
     Window::Window(
         Vector2u const& dimensions,
         String const& title,
         Options const& options,
         EventManagerPtr eventManager,
         Paths const& shaderDirectories)
-            : WindowPlatform{dimensions, title, options,
-                std::move(eventManager)},
+            : platform::PlatformHandler{defaultWindowPlatfrom(
+                dimensions, title, options)},
+            WindowBase{std::move(eventManager)},
             shaders{shaderDirectories}, sleepTime{0us}, lastTime{0us}
     {
-        glEnable(GL_BLEND);
-        glEnable(GL_MULTISAMPLE);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        windowImpl->setEventManager(this->eventManager.get());
         context.shaders.setLibrary(shaders);
     }
 
+    [[nodiscard]] Vector2u const&
+        Window::getWindowDimensions(void) const noexcept
+    {
+        return windowImpl->getWindowDimensions();
+    }
+
+    [[nodiscard]] std::string const&
+        Window::getWindowTitle(void) const noexcept
+    {
+        return windowImpl->getWindowTitle();
+    }
+
+    void Window::closeWindow(void) noexcept {
+        windowImpl->closeWindow();
+    }
+
+    void Window::openWindow(void) noexcept {
+        windowImpl->openWindow();
+    }
+
+    void Window::setPosition(Vector2u const& position) noexcept {
+        windowImpl->setPosition(position);
+    }
+
+    void Window::minimize(void) noexcept {
+        windowImpl->minimize();
+    }
+
+    void Window::maximize(void) noexcept {
+        windowImpl->maximize();
+    }
+
     void Window::setContextWindow(void) noexcept {
-        WindowPlatform::setContextWindow();
+        windowImpl->setContextWindow();
         context.shaders.setLibrary(shaders);
     }
 
@@ -84,12 +127,12 @@ namespace mpgl {
     }
 
     void Window::clear(const Color& color) noexcept{
-        WindowPlatform::clear(color);
+        windowImpl->clear(color);
         lastTime = ThreadClock::now();
     }
 
     void Window::draw(void) noexcept {
-        WindowPlatform::draw();
+        windowImpl->draw();
         std::this_thread::sleep_until(lastTime + sleepTime);
     }
 
@@ -106,20 +149,17 @@ namespace mpgl {
     }
 
     void Window::windowLoop(const Color& background) noexcept {
-        openWindow();
-        while (!shouldWindowClose()) {
-            clear(background);
+        windowImpl->openWindow();
+        while (!windowImpl->shouldWindowClose()) {
+            windowImpl->clear(background);
             eventManager->onTick();
             draw2DDrawables();
-            draw();
+            windowImpl->draw();
         }
     }
 
     Image Window::saveWindowScreen(void) const {
-        Image image{getWindowDimensions()};
-        glReadPixels(0, 0, image.getWidth(), image.getHeight(),
-            GL_RGBA, GL_UNSIGNED_BYTE, image.data());
-        return image;
+        return windowImpl->saveWindowScreen();
     }
 
     void Window::setVPMatrix(CameraPtr const& cameraPtr) noexcept {
