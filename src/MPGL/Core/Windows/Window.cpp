@@ -115,14 +115,12 @@ namespace mpgl {
     }
 
     void Window::draw2DDrawables(void) const noexcept {
-        std::ranges::for_each(drawables2D, [](auto const& drawable)
-            { drawable->draw(); });
+        std::ranges::for_each(drawables2D, Drawer);
     }
 
     void Window::draw3DDrawables(void) const noexcept {
         glEnable(GL_DEPTH_TEST);
-        std::ranges::for_each(drawables3D, [](auto const& drawable)
-            { drawable->draw(); });
+        std::ranges::for_each(drawables3D, Drawer);
         glDisable(GL_DEPTH_TEST);
     }
 
