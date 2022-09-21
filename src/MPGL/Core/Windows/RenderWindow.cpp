@@ -125,11 +125,9 @@ namespace mpgl {
     {
         bind(cleaning, color);
         glEnable(GL_DEPTH_TEST);
-        std::ranges::for_each(drawables3D,
-            [](auto const& drawable){ drawable->draw(); });
+        std::ranges::for_each(drawables3D, Drawer);
         glDisable(GL_DEPTH_TEST);
-        std::ranges::for_each(drawables2D,
-            [](auto const& drawable){ drawable->draw(); });
+        std::ranges::for_each(drawables2D, Drawer);
         unbind();
     }
 

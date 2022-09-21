@@ -242,6 +242,9 @@ namespace mpgl {
          * Unbinds the current framebuffer
          */
         void unbind(void) noexcept;
+
+        static auto constexpr                       Drawer =
+            [](auto const& drawable){ drawable->draw(); };
     };
 
 }

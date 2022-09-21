@@ -274,8 +274,8 @@ namespace mpgl {
          */
         static StaticCameraPtr defaultCamera(void) noexcept;
 
-        static auto constexpr Drawer = [](auto const& drawable)
-            { drawable->draw(); };
+        static auto constexpr                       Drawer =
+            [](auto const& drawable){ drawable->draw(); };
     };
 
 }
