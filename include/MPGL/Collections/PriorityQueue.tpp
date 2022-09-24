@@ -65,7 +65,7 @@ namespace mpgl {
         std::predicate<Tp, Tp> Comparator,
         std::ranges::forward_range Sequence>
     [[nodiscard]] PriorityQueue<Tp, Comparator, Sequence>::value_type
-        PriorityQueue<Tp, Compare, Sequence>::pop(
+        PriorityQueue<Tp, Comparator, Sequence>::pop(
             void) requires std::movable<value_type>
     {
         std::ranges::pop_heap(sequence, comparator);
