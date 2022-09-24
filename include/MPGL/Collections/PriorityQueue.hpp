@@ -34,7 +34,7 @@ namespace mpgl {
     /**
      * Improved version of the std::priority_queue that conects
      * access to the top element and its removal thus allowing
-     * to move popped element
+     * to move popped element. Works as minimum queue by default
      *
      * @tparam Tp the element type
      * @tparam Comparator the comparator functor
