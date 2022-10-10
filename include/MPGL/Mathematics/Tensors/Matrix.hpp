@@ -45,6 +45,7 @@ namespace mpgl {
     class Matrix {
     public:
         using value_type = Vector<Tp, Cols>;
+        using element_type = Tp;
         using container = std::array<value_type, Rows>;
 
         /**

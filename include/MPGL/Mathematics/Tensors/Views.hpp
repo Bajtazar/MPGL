@@ -34,8 +34,8 @@ namespace mpgl {
         ColumnView<MatrixTp>>
     {
     public:
-        using value_type = std::remove_cvref_t<decltype(
-            std::declval<MatrixTp>()[std::declval<Vector2i>()])>;
+        using value_type = std::remove_cvref_t<MatrixTp>::
+            element_type;
         using vector_form = Vector<value_type,
             std::remove_cvref_t<MatrixTp>::height()>;
 
@@ -173,7 +173,7 @@ namespace mpgl {
 
         [[nodiscard]] constexpr iterator end(
             void) const noexcept
-                { return iterator{ *this, matrix.height() }; }
+                { return iterator{ *this, matrix.size() }; }
 
         [[nodiscard]] constexpr reverse_iterator
             rbegin(void) const noexcept
@@ -184,7 +184,7 @@ namespace mpgl {
                 { return reverse_iterator{ begin() - 1 }; }
 
         [[nodiscard]] constexpr auto size(void) const noexcept
-                { return matrix.height(); }
+                { return matrix.size(); }
     private:
         MatrixTp                            matrix;
         std::size_t                         columnID;
@@ -193,6 +193,62 @@ namespace mpgl {
     template <MatrixType MatrixTp>
     ColumnView(MatrixTp&& base, size_t rowID) ->
         ColumnView<std::views::all_t<MatrixTp>>;
+
+    template <MatrixType Tp>
+    class ColumnRangeView : public std::ranges::view_interface<
+        ColumnRangeView<Tp>>
+    {
+    public:
+        constexpr ColumnRangeView(Tp&& matrix) noexcept
+            : matrix{matrix} {}
+
+        class iterator {
+        public:
+            using value_type = ColumnView<Tp>;
+            using difference_type = std::ptrdiff_t;
+            using iterator_category = std::output_iterator_tag;
+
+            constexpr explicit iterator(void) noexcept = default;
+
+            constexpr explicit iterator(
+                ColumnRangeView* ownerPtr,
+                std::size_t columnID = 0) noexcept
+                    : ownerPtr{ownerPtr}, columnID{columnID} {}
+
+            constexpr iterator& operator++(void) noexcept;
+
+            [[nodiscard]] constexpr iterator operator++(
+                int) noexcept;
+
+            [[nodiscard]] constexpr value_type operator*(
+                void) const noexcept;
+
+            [[nodiscard]] friend bool operator== (
+                iterator const& left,
+                iterator const& right) noexcept
+                    { return left.columnID == right.columnID; }
+        private:
+            ColumnRangeView*                ownerPtr = nullptr;
+            std::size_t                     columnID = 0;
+        };
+
+        [[nodiscard]] constexpr Tp const& base(void) const & noexcept
+            { return matrix; }
+
+        [[nodiscard]] constexpr Tp&& base(void) && noexcept
+            { return std::move(matrix); }
+
+        [[nodiscard]] constexpr iterator begin(void) const noexcept
+            { return iterator{this}; }
+
+        [[nodiscard]] constexpr iterator end(void) const noexcept
+            { return iterator{this, matrix.height()}; }
+
+        [[nodiscard]] constexpr auto size(void) const noexcept
+                { return matrix.height(); }
+    private:
+        Tp                                  matrix;
+    };
 
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
