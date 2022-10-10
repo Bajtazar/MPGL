@@ -617,3 +617,53 @@ namespace mpgl {
     }
 
 }
+
+namespace mpgl::details {
+
+    template <MatrixType Tp>
+    [[nodiscard]] constexpr auto
+        ColumnViewAdaptorClosure::operator() (
+            Tp&& matrix) const noexcept
+    {
+        return ColumnView{std::forward<Tp>(matrix), rowID};
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] constexpr auto ColumnViewAdaptor::operator() (
+        Tp&& matrix,
+        std::size_t rowID) const noexcept
+    {
+        return ColumnView{std::forward<Tp>(matrix), rowID};
+    }
+
+    [[nodiscard]] constexpr ColumnViewAdaptorClosure
+        ColumnViewAdaptor::operator() (
+            std::size_t rowID) const noexcept
+    {
+        return ColumnViewAdaptorClosure{rowID};
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] constexpr auto
+        ColumnRangeViewAdaptorClosure::operator() (
+            Tp&& matrix) const noexcept
+    {
+        return ColumnRangeView{std::forward<Tp>(matrix)};
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] constexpr auto
+        ColumnRangeViewAdaptor::operator() (
+            Tp&& matrix) const noexcept
+    {
+        return ColumnRangeView{std::forward<Tp>(matrix)};
+    }
+
+    [[nodiscard]] constexpr ColumnRangeViewAdaptorClosure
+        ColumnRangeViewAdaptor::operator() (
+            void) const noexcept
+    {
+        return ColumnRangeViewAdaptorClosure{};
+    }
+
+}
