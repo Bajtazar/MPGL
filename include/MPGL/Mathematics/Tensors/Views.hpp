@@ -392,6 +392,28 @@ namespace mpgl {
 
         };
 
+        struct ColumnRangeViewAdaptorClosure {
+
+            constexpr ColumnRangeViewAdaptorClosure(
+                void) noexcept = default;
+
+            template <MatrixType Tp>
+            [[nodiscard]] constexpr auto operator() (
+                Tp&& matrix) const noexcept;
+
+        };
+
+        struct ColumnRangeViewAdaptor {
+
+            template <MatrixType Tp>
+            [[nodiscard]] constexpr auto operator() (
+                Tp&& matrix) const noexcept;
+
+            [[nodiscard]] constexpr ColumnRangeViewAdaptorClosure
+                operator() (void) const noexcept;
+
+        };
+
         template <MatrixType Tp>
         [[nodiscard]] auto operator | (
             Tp&& matrix,
@@ -402,12 +424,25 @@ namespace mpgl {
             Tp&& matrix,
             ColumnViewAdaptor const& adaptor) noexcept;
 
+        template <MatrixType Tp>
+        [[nodiscard]] auto operator | (
+            Tp&& matrix,
+            ColumnRangeViewAdaptorClosure const& closure) noexcept;
+
+        template <MatrixType Tp>
+        [[nodiscard]] auto operator | (
+            Tp&& matrix,
+            ColumnRangeViewAdaptor const& adaptor) noexcept;
+
     }
 
     namespace views {
 
         /// The singular column view
-        inline constexpr details::ColumnViewAdaptor     column;
+        inline constexpr details::ColumnViewAdaptor         column;
+
+        /// The column range view
+        inline constexpr details::ColumnRangeViewAdaptor    columns;
 
     }
 
