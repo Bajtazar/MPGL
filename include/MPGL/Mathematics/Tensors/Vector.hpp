@@ -465,6 +465,47 @@ namespace mpgl {
         [[nodiscard]] constexpr const_reference at(
             std::size_t index) const
                 { return data.at(index); }
+
+        /**
+         * Returns a reference to the vector's element with
+         * the given index
+         *
+         * @tparam N the element's index
+         * @return the reference to the element with
+         * the given index
+         */
+        template<std::size_t N>
+            requires (N < Size)
+        std::tuple_element_t<N, Vector>& get(void) & noexcept
+            { return data[N]; }
+
+        /**
+         * Returns a constant reference to the vector's element
+         * with the given index
+         *
+         * @tparam N the element's index
+         * @return the constant reference to the element with
+         * the given index
+         */
+        template<std::size_t N>
+            requires (N < Size)
+        std::tuple_element_t<N, Vector> const& get(
+            void) const& noexcept
+                { return data[N]; }
+
+        /**
+         * Returns a rvalue reference to the vector's element
+         * with the given index
+         *
+         * @tparam N the element's index
+         * @return the rvalue reference to the element with
+         * the given index
+         */
+        template<std::size_t N>
+            requires (N < Size)
+        std::tuple_element_t<N, Vector>&& get(
+            void) && noexcept
+                { return std::move(data[N]); }
     private:
         std::array<Tp, Size>                    data;
     };
