@@ -129,25 +129,39 @@ namespace mpgl {
 
         using reverse_itertor = std::reverse_iterator<iterator>;
 
-        constexpr ColumnView& operator+=(ColumnView const& right);
+        [[nodiscard]] constexpr value_type& operator[] (
+            std::size_t index) noexcept;
 
-        constexpr ColumnView& operator-=(ColumnView const& right);
+        [[nodiscard]] constexpr value_type const& operator[] (
+            std::size_t index) const noexcept;
 
-        constexpr ColumnView& operator*=(ColumnView const& right);
+        constexpr ColumnView& operator+=(
+            ColumnView const& right) noexcept;
 
-        constexpr ColumnView& operator/=(ColumnView const& right);
+        constexpr ColumnView& operator-=(
+            ColumnView const& right) noexcept;
+
+        constexpr ColumnView& operator*=(
+            ColumnView const& right) noexcept;
+
+        constexpr ColumnView& operator/=(
+            ColumnView const& right) noexcept;
 
         constexpr ColumnView& operator%=(
-            ColumnView const& right) requires mpgl_Operable(Tp, %);
+            ColumnView const& right
+            ) noexcept requires mpgl_Operable(value_type, %);
 
         constexpr ColumnView& operator^=(
-            ColumnView const& right) requires mpgl_Operable(Tp, ^);
+            ColumnView const& right
+            ) noexcept requires mpgl_Operable(value_type, ^);
 
         constexpr ColumnView& operator&=(
-            ColumnView const& right) requires mpgl_Operable(Tp, &);
+            ColumnView const& right
+            ) noexcept requires mpgl_Operable(value_type, &);
 
         constexpr ColumnView& operator|=(
-            ColumnView const& right) requires mpgl_Operable(Tp, |);
+            ColumnView const& right
+            ) noexcept requires mpgl_Operable(value_type, |);
 
         constexpr ColumnView& operator+=(value_type const& right);
 
