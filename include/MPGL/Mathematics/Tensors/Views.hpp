@@ -46,7 +46,8 @@ namespace mpgl {
         constexpr ColumnView& operator=(
             vector_form const& vector) noexcept;
 
-        [[nodiscard]] operator vector_form() const noexcept;
+        [[nodiscard]] constexpr operator
+            vector_form() const noexcept;
 
         class iterator {
         public:
@@ -93,28 +94,34 @@ namespace mpgl {
 
             [[nodiscard]] friend constexpr iterator operator+ (
                 iterator const& left,
-                difference_type right) noexcept;
+                difference_type right) noexcept
+                    { return iterator{left.ownerPtr, left.rowId + right}; }
 
             [[nodiscard]] friend constexpr iterator operator+ (
                 difference_type left,
-                iterator const& right) noexcept;
+                iterator const& right) noexcept
+                    { return iterator{right.ownerPtr, right.rowId + left}; }
 
             [[nodiscard]] friend constexpr iterator operator- (
                 iterator const& left,
-                difference_type right) noexcept;
+                difference_type right) noexcept
+                    { return iterator{left.ownerPtr, left.rowId - right}; }
 
             [[nodiscard]] friend constexpr difference_type
                 operator- (
                     iterator const& left,
-                    iterator const& right) noexcept;
+                    iterator const& right) noexcept
+                        { return (difference_type)left.rowID - right.rowID; }
 
             [[nodiscard]] friend constexpr auto operator<=> (
                 iterator const& left,
-                iterator const& right) noexcept;
+                iterator const& right) noexcept
+                    { return left.rowID <=> right.rowID; }
 
             [[nodiscard]] friend constexpr bool operator== (
                 iterator const& left,
-                iterator const& right) noexcept;
+                iterator const& right) noexcept
+                    { return left.rowID == right.rowID; }
         private:
             std::size_t                     rowID = 0;
             owner                           ownerPtr = nullptr;
@@ -170,11 +177,11 @@ namespace mpgl {
 
         [[nodiscard]] constexpr iterator begin(
             void) const noexcept
-                { return iterator{ *this }; }
+                { return iterator{ this }; }
 
         [[nodiscard]] constexpr iterator end(
             void) const noexcept
-                { return iterator{ *this, matrix.size() }; }
+                { return iterator{ this, matrix.size() }; }
 
         [[nodiscard]] constexpr reverse_iterator
             rbegin(void) const noexcept

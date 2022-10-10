@@ -46,12 +46,95 @@ namespace mpgl {
     }
 
     template <MatrixType MatrixTp>
-    [[nodiscard]] ColumnView<MatrixTp>::operator
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::operator
         vector_form() const noexcept
     {
         vector_form vector;
         std::ranges::copy(*this, vector.begin());
         return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    constexpr ColumnView<MatrixTp>::iterator::iterator(
+        owner const& ownerPtr,
+        std::size_t rowID) noexcept
+            : ownerPtr{ownerPtr}, rowID{rowID} {}
+
+    template <MatrixType MatrixTp>
+    constexpr ColumnView<MatrixTp>::iterator&
+        ColumnView<MatrixTp>::iterator::operator++(void) noexcept
+    {
+        ++rowID;
+        return *this;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::iterator
+        ColumnView<MatrixTp>::iterator::operator++(int) noexcept
+    {
+        auto temp = *this;
+        ++rowID;
+        return temp;
+    }
+
+    template <MatrixType MatrixTp>
+    constexpr ColumnView<MatrixTp>::iterator&
+        ColumnView<MatrixTp>::iterator::operator--(void) noexcept
+    {
+        --rowID;
+        return *this;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::iterator
+        ColumnView<MatrixTp>::iterator::operator--(int) noexcept
+    {
+        auto temp = *this;
+        --rowID;
+        return temp;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::iterator::reference
+        ColumnView<MatrixTp>::iterator::operator*(
+            void) const noexcept
+    {
+        return ownerPtr->matrix[rowID][ownerPtr->columnID];
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::iterator::pointer
+        ColumnView<MatrixTp>::iterator::operator->(
+            void) const noexcept
+    {
+        return std::addressof(
+            ownerPtr->matrix[rowID][ownerPtr->columnID]);
+    }
+
+    template <MatrixType MatrixTp>
+    constexpr ColumnView<MatrixTp>::iterator&
+        ColumnView<MatrixTp>::iterator::operator+=(
+            difference_type offset) noexcept
+    {
+        rowID += offset;
+        return *this;
+    }
+
+    template <MatrixType MatrixTp>
+    constexpr ColumnView<MatrixTp>::iterator&
+        ColumnView<MatrixTp>::iterator::operator+=(
+            difference_type offset) noexcept
+    {
+        rowID -= offset;
+        return *this;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::iterator::reference
+        ColumnView<MatrixTp>::iterator::operator[](
+            difference_type offset) const noexcept
+    {
+        return ownerPtr->matrix[rowID + offset][ownerPtr->columnID];
     }
 
 }
