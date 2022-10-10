@@ -360,4 +360,260 @@ namespace mpgl {
         return value_type{ownerPtr->matrix, columnID};
     }
 
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator+(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left + right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator-(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left - right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator*(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left * right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator/(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left / right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator%(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+                requires mpgl_Operable(
+                    typename ColumnView<MatrixTp>::value_type, %)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left % right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator^(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+                requires mpgl_Operable(
+                    typename ColumnView<MatrixTp>::value_type, ^)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left ^ right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator&(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+                requires mpgl_Operable(
+                    typename ColumnView<MatrixTp>::value_type, &)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left & right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator|(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept
+                requires mpgl_Operable(
+                    typename ColumnView<MatrixTp>::value_type, |)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left | right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator+(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left + right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator-(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left - right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator*(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left * right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator/(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right) noexcept
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left / right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator%(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, %)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left % right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator^(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, ^)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left ^ right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator&(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, &)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left & right;
+            }
+        );
+        return vector;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator|(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, |)
+    {
+        typename ColumnView<MatrixTp>::vector_form vector;
+        std::ranges::transform(left, right, vector.begin(),
+            [](auto const& left, auto const& right) {
+                return left | right;
+            }
+        );
+        return vector;
+    }
+
 }
