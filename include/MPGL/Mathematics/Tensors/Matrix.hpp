@@ -435,6 +435,92 @@ namespace mpgl {
         container                           base;
     };
 
+    template <typename MatrixTp>
+    class ColumnView : public std::ranges::view_interface<
+        ColumnView<Tp, Rows, Cols>>
+    {
+    public:
+        constexpr explicit ColumnView(
+            MatrixTp&& matrix,
+            std::size_t columnID) noexcept;
+
+        class iterator {
+        public:
+            using owner = ColumnView*;
+
+            using reference = decltype(
+                std::declval<MatrixTp>()[std::declval<Vector2i>()]);
+            using value_type = std::remove_cvref_t<reference>;
+            using pointer = std::remove_reference_t<reference>*;
+            using difference_type = std::ptrdiff_t;
+            using iterator_category = std::random_access_iterator_tag;
+
+            constexpr explicit iterator(void) noexcept = default;
+
+            constexpr explicit iterator(
+                owner const& ownerPtr,
+                std::size_t rowID = 0) noexcept;
+
+            constexpr iterator& operator++(void) noexcept;
+
+            [[nodiscard]] constexpr iterator operator++(
+                int) noexcept;
+
+            constexpr iterator& operator--(void) noexcept;
+
+            [[nodiscard]] constexpr iterator operator--(
+                int) noexcept;
+
+            [[nodiscard]] constexpr reference operator*(
+                void) const noexcept;
+
+            [[nodiscard]] constexpr pointer operator->(
+                void) const noexcept;
+
+            constexpr iterator& operator+=(difference_type offset
+                ) noexcept;
+
+            constexpr iterator& operator-=(difference_type offset
+                ) noexcept;
+
+            [[nodiscard]] constexpr reference
+                operator[](difference_type offset
+                    ) const noexcept;
+
+            [[nodiscard]] friend constexpr iterator operator+ (
+                iterator const& left,
+                difference_type right) noexcept;
+
+            [[nodiscard]] friend constexpr iterator operator+ (
+                difference_type left,
+                iterator const& right) noexcept;
+
+            [[nodiscard]] friend constexpr iterator operator- (
+                iterator const& left,
+                difference_type right) noexcept;
+
+            [[nodiscard]] friend constexpr difference_type
+                operator- (
+                    iterator const& left,
+                    iterator const& right) noexcept;
+
+            [[nodiscard]] friend constexpr auto operator<=> (
+                iterator const& left,
+                iterator const& right) noexcept;
+
+            [[nodiscard]] friend constexpr bool operator== (
+                iterator const& left,
+                iterator const& right) noexcept;
+        private:
+            std::size_t                     rowID = 0;
+            owner                           ownerPtr = nullptr;
+        };
+
+    private:
+        MatrixTp                            matrix;
+        std::size_t                         columnID;
+    };
+
     /**
      * Returns the identity matrix of the given size
      *
