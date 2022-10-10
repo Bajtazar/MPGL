@@ -666,4 +666,36 @@ namespace mpgl::details {
         return ColumnRangeViewAdaptorClosure{};
     }
 
+    template <MatrixType Tp>
+    [[nodiscard]] auto operator | (
+        Tp&& matrix,
+        ColumnViewAdaptorClosure const& closure) noexcept
+    {
+        return closure(std::forward<Tp>(matrix));
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] auto operator | (
+        Tp&& matrix,
+        ColumnViewAdaptor const& adaptor) noexcept
+    {
+        return adaptor(std::forward<Tp>(matrix));
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] auto operator | (
+        Tp&& matrix,
+        ColumnRangeViewAdaptorClosure const& closure) noexcept
+    {
+        return closure(std::forward<Tp>(matrix));
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] auto operator | (
+        Tp&& matrix,
+        ColumnRangeViewAdaptor const& adaptor) noexcept
+    {
+        return adaptor(std::forward<Tp>(matrix));
+    }
+
 }
