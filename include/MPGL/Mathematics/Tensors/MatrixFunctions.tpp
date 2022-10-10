@@ -35,12 +35,10 @@ namespace mpgl {
         Matrix<Tp, LCols, RCols> const& right)
     {
         Matrix<Tp, LRows, RCols> result;
-        // @todo
-        //
-        // for (std::size_t i = 0; i < LRows; ++i)
-        //     for (std::size_t j = 0; j < RCols; ++j)
-        //         result[i][j] = innerProduct(left[i],
-        //             right.getColumn(j), Tp{0});
+        for (std::size_t i = 0; i < LRows; ++i)
+            for (std::size_t j = 0; j < RCols; ++j)
+                result[i][j] = innerProduct(left[i],
+                    right | views::column(j), Tp{0});
         return result;
     }
 
@@ -136,7 +134,7 @@ namespace mpgl {
         }
     }
 
-template <Arithmetic Tp, std::size_t Rows,
+    template <Arithmetic Tp, std::size_t Rows,
         SizedRange<Tp, Rows> Permutations,
         SizedRange<Tp, Rows> Results>
         requires (Rows > 1)
@@ -166,13 +164,12 @@ template <Arithmetic Tp, std::size_t Rows,
         invert(Matrix<Tp, Rows, Rows> const& matrix) noexcept
     {
         Matrix<Up, Rows, Rows> luMatrix = matrix;
-        // @todo
-        // if (auto permutations = lupDecomposition(luMatrix)) {
-        //     auto inverseMatrix = identityMatrix<Up, Rows>();
-        //     for (auto& column : inverseMatrix.columnsRange())
-        //         column = lupSolve(luMatrix, *permutations, column);
-        //     return { inverseMatrix };
-        // }
+        if (auto permutations = lupDecomposition(luMatrix)) {
+            auto inverseMatrix = identityMatrix<Up, Rows>();
+            for (auto column : inverseMatrix | views::columns)
+                column = lupSolve(luMatrix, *permutations, column);
+            return { inverseMatrix };
+        }
         return {};
     }
 

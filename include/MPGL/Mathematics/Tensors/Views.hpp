@@ -213,7 +213,8 @@ namespace mpgl {
             rend(void) const noexcept
                 { return reverse_iterator{ begin() - 1 }; }
 
-        [[nodiscard]] constexpr auto size(void) const noexcept
+        [[nodiscard]] static constexpr auto size(
+            void) const noexcept
                 { return matrix.size(); }
     private:
         MatrixTp                            matrix;
@@ -273,7 +274,8 @@ namespace mpgl {
         [[nodiscard]] constexpr iterator end(void) const noexcept
             { return iterator{this, matrix.height()}; }
 
-        [[nodiscard]] constexpr auto size(void) const noexcept
+        [[nodiscard]] static constexpr std::size_t size(
+            void) const noexcept
                 { return matrix.height(); }
     private:
         Tp                                  matrix;
