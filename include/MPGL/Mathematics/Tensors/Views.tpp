@@ -329,4 +329,35 @@ namespace mpgl {
         return *this;
     }
 
+    template <MatrixType Tp>
+    constexpr ColumnRangeView<Tp>::iterator::iterator(
+        ColumnRangeView* ownerPtr,
+        std::size_t columnID = 0) noexcept
+            : ownerPtr{ownerPtr}, columnID{columnID} {}
+
+    template <MatrixType Tp>
+    constexpr ColumnRangeView<Tp>::iterator&
+        ColumnRangeView<Tp>::iterator::operator++(void) noexcept
+    {
+        ++columnID;
+        return *this;
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] constexpr ColumnRangeView<Tp>::iterator
+        ColumnRangeView<Tp>::iterator::operator++(int) noexcept
+    {
+        auto temp = *this;
+        ++columnID;
+        return temp;
+    }
+
+    template <MatrixType Tp>
+    [[nodiscard]] constexpr ColumnRangeView<Tp>::iterator::value_type
+        ColumnRangeView<Tp>::iterator::operator*(
+            void) const noexcept
+    {
+        return value_type{ownerPtr->matrix, columnID};
+    }
+
 }

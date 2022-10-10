@@ -242,8 +242,7 @@ namespace mpgl {
 
             constexpr explicit iterator(
                 ColumnRangeView* ownerPtr,
-                std::size_t columnID = 0) noexcept
-                    : ownerPtr{ownerPtr}, columnID{columnID} {}
+                std::size_t columnID = 0) noexcept;
 
             constexpr iterator& operator++(void) noexcept;
 
