@@ -68,7 +68,8 @@ namespace mpgl {
         /**
          * Constructs a new vector object
          */
-        constexpr Vector(void) noexcept = default;
+        constexpr Vector(void) noexcept
+            : data{} {}
 
         /**
          * Returns the size of the vector [the number of its
@@ -476,8 +477,9 @@ namespace mpgl {
          */
         template<std::size_t N>
             requires (N < Size)
-        std::tuple_element_t<N, Vector>& get(void) & noexcept
-            { return data[N]; }
+        [[nodiscard]] constexpr std::tuple_element_t<N, Vector>&
+            get(void) & noexcept
+                { return data[N]; }
 
         /**
          * Returns a constant reference to the vector's element
@@ -489,9 +491,10 @@ namespace mpgl {
          */
         template<std::size_t N>
             requires (N < Size)
-        std::tuple_element_t<N, Vector> const& get(
-            void) const& noexcept
-                { return data[N]; }
+        [[nodiscard]] constexpr
+            std::tuple_element_t<N, Vector> const& get(
+                void) const& noexcept
+                    { return data[N]; }
 
         /**
          * Returns a rvalue reference to the vector's element
@@ -503,8 +506,8 @@ namespace mpgl {
          */
         template<std::size_t N>
             requires (N < Size)
-        std::tuple_element_t<N, Vector>&& get(
-            void) && noexcept
+        [[nodiscard]] constexpr std::tuple_element_t<N, Vector>&&
+            get(void) && noexcept
                 { return std::move(data[N]); }
     private:
         std::array<Tp, Size>                    data;
