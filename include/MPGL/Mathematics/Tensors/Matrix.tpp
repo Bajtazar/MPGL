@@ -59,6 +59,30 @@ namespace mpgl {
         return vector;
     }
 
+    template <
+        Arithmetic Tp,
+        std::size_t Rows>
+    static auto castVectorToTuple(Vector<Tp, Rows> const& vector) {
+        using Base = TensorTuple<Tp, Rows>;
+        return reinterpret_cast<Base const&>(vector);
+    }
+
+    template <
+        Arithmetic Tp,
+        std::size_t Rows>
+    static auto castVectorToTuple(Vector<Tp, Rows>& vector) {
+        using Base = TensorTuple<Tp, Rows>;
+        return reinterpret_cast<Base&>(vector);
+    }
+
+    template <
+        Arithmetic Tp,
+        std::size_t Rows>
+    static auto castVectorToTuple(Vector<Tp, Rows>&& vector) {
+        using Base = TensorTuple<Tp, Rows>;
+        return reinterpret_cast<Base&&>(vector);
+    }
+
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
     template <typename... Args>
@@ -66,9 +90,11 @@ namespace mpgl {
         Matrix<Tp, Rows, Cols>::tupleBuilder(Args&&... args) const noexcept
     {
         if (std::is_constant_evaluated())
-            return tupleReverser(std::forward<Args>(args)...);
+            return tupleReverser(castVectorToTuple(
+                std::forward<Args>(args))...);
         else
-            return {std::forward<Args>(args)...};
+            return {castVectorToTuple(
+                std::forward<Args>(args))...};
     }
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
@@ -76,7 +102,7 @@ namespace mpgl {
     constexpr Matrix<Tp, Rows, Cols>::value_type&
         Matrix<Tp, Rows, Cols>::first(void)  noexcept
     {
-        return static_cast<value_type&>(
+        return reinterpret_cast<value_type&>(
             std::get<Rows - 1>(
                 static_cast<NormalBase&>
                 (this->normalBase)));
@@ -87,7 +113,7 @@ namespace mpgl {
     constexpr Matrix<Tp, Rows, Cols>::value_type const&
         Matrix<Tp, Rows, Cols>::first(void) const noexcept
     {
-        return static_cast<value_type const&>(
+        return reinterpret_cast<value_type const&>(
             std::get<Rows - 1>(
                 static_cast<NormalBase const&>
                 (this->normalBase)));
