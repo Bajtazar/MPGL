@@ -60,7 +60,10 @@ namespace mpgl {
     [[nodiscard]] constexpr Vector<Tp, Size>
         Vector<Tp, Size>::operator- (void) const noexcept
     {
-        return {}; // @todo
+        Vector temp = *this;
+        for (Tp& element : temp)
+            element = -element;
+        return temp;
     }
 
     template <Arithmetic Tp, std::size_t Size>
