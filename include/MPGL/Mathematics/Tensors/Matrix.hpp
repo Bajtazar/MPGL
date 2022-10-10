@@ -77,8 +77,19 @@ namespace mpgl {
          *
          * @return the size of the matrix
          */
-        [[nodiscard]] static constexpr std::size_t size(void) noexcept
-            { return Rows; }
+        [[nodiscard]] static constexpr std::size_t
+            size(void) noexcept
+                { return Rows; }
+
+        /**
+         * Returns the height of the matrix
+         * [the number of its columns]
+         *
+         * @return the height of the matrix
+         */
+        [[nodiscard]] static constexpr std::size_t
+            height(void) noexcept
+                { return Cols; }
 
         using iterator = typename container::iterator;
         using const_iterator = typename container::const_iterator;
@@ -440,6 +451,9 @@ namespace mpgl {
         ColumnView<Tp, Rows, Cols>>
     {
     public:
+        using value_type = std::remove_cvref_t<decltype(
+            std::declval<MatrixTp>()[std::declval<Vector2i>()])>;
+
         constexpr explicit ColumnView(
             MatrixTp&& matrix,
             std::size_t columnID) noexcept;
@@ -516,6 +530,60 @@ namespace mpgl {
             owner                           ownerPtr = nullptr;
         };
 
+        constexpr ColumnView& operator+=(ColumnView const& right);
+
+        constexpr ColumnView& operator-=(ColumnView const& right);
+
+        constexpr ColumnView& operator*=(ColumnView const& right);
+
+        constexpr ColumnView& operator/=(ColumnView const& right);
+
+        constexpr ColumnView& operator%=(
+            ColumnView const& right) requires mpgl_Operable(Tp, %);
+
+        constexpr ColumnView& operator^=(
+            ColumnView const& right) requires mpgl_Operable(Tp, ^);
+
+        constexpr ColumnView& operator&=(
+            ColumnView const& right) requires mpgl_Operable(Tp, &);
+
+        constexpr ColumnView& operator|=(
+            ColumnView const& right) requires mpgl_Operable(Tp, |);
+
+        constexpr ColumnView& operator+=(value_type const& right);
+
+        constexpr ColumnView& operator-=(value_type const& right);
+
+        constexpr ColumnView& operator*=(value_type const& right);
+
+        constexpr ColumnView& operator/=(value_type const& right);
+
+        constexpr ColumnView& operator%=(value_type const& right
+            ) requires mpgl_Operable(value_type, %);
+
+        constexpr ColumnView& operator^=(value_type const& right
+            ) requires mpgl_Operable(value_type, ^);
+
+        constexpr ColumnView& operator&=(value_type const& right
+            ) requires mpgl_Operable(value_type, &);
+
+        constexpr ColumnView& operator|=(value_type const& right
+            ) requires mpgl_Operable(value_type, |);
+
+        [[nodiscard]] constexpr MatrixTp const& base(void) const &
+            { return matrix; }
+
+        [[nodiscard]] constexpr MatrixTp&& base(void) &&
+            { return std::move(matrix); }
+
+        [[nodiscard]] constexpr iterator begin(void) const
+            { return iterator{ *this }; }
+
+        [[nodiscard]] constexpr iterator end(void) const
+            { return iterator{ *this, matrix.height() }; }
+
+        [[nodiscard]] constexpr auto size(void) const noexcept
+            { return matrix.height(); }
     private:
         MatrixTp                            matrix;
         std::size_t                         columnID;
