@@ -127,7 +127,7 @@ namespace mpgl {
             owner                           ownerPtr = nullptr;
         };
 
-        using reverse_itertor = std::reverse_iterator<iterator>;
+        using reverse_iterator = std::reverse_iterator<iterator>;
 
         [[nodiscard]] constexpr value_type& operator[] (
             std::size_t index) noexcept;
@@ -163,25 +163,33 @@ namespace mpgl {
             ColumnView const& right
             ) noexcept requires mpgl_Operable(value_type, |);
 
-        constexpr ColumnView& operator+=(value_type const& right);
+        constexpr ColumnView& operator+=(
+            value_type const& right) noexcept;
 
-        constexpr ColumnView& operator-=(value_type const& right);
+        constexpr ColumnView& operator-=(
+            value_type const& right) noexcept;
 
-        constexpr ColumnView& operator*=(value_type const& right);
+        constexpr ColumnView& operator*=(
+            value_type const& right) noexcept;
 
-        constexpr ColumnView& operator/=(value_type const& right);
+        constexpr ColumnView& operator/=(
+            value_type const& right) noexcept;
 
-        constexpr ColumnView& operator%=(value_type const& right
-            ) requires mpgl_Operable(value_type, %);
+        constexpr ColumnView& operator%=(
+            value_type const& right
+            ) noexcept requires mpgl_Operable(value_type, %);
 
-        constexpr ColumnView& operator^=(value_type const& right
-            ) requires mpgl_Operable(value_type, ^);
+        constexpr ColumnView& operator^=(
+            value_type const& right
+            ) noexcept requires mpgl_Operable(value_type, ^);
 
-        constexpr ColumnView& operator&=(value_type const& right
-            ) requires mpgl_Operable(value_type, &);
+        constexpr ColumnView& operator&=(
+            value_type const& right
+            ) noexcept requires mpgl_Operable(value_type, &);
 
-        constexpr ColumnView& operator|=(value_type const& right
-            ) requires mpgl_Operable(value_type, |);
+        constexpr ColumnView& operator|=(
+            value_type const& right
+            ) noexcept requires mpgl_Operable(value_type, |);
 
         [[nodiscard]] constexpr MatrixTp const& base(void) const &
             { return matrix; }
