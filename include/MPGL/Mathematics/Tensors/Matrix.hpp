@@ -448,15 +448,21 @@ namespace mpgl {
 
     template <typename MatrixTp>
     class ColumnView : public std::ranges::view_interface<
-        ColumnView<Tp, Rows, Cols>>
+        ColumnView<MatrixTp>>
     {
     public:
         using value_type = std::remove_cvref_t<decltype(
             std::declval<MatrixTp>()[std::declval<Vector2i>()])>;
+        using vector_form = Vector<value_type,
+            std::remove_cvref_t<MatrixTp>::height()>;
 
         constexpr explicit ColumnView(
             MatrixTp&& matrix,
             std::size_t columnID) noexcept;
+
+        ColumnView& operator=(vector_form const& vector) noexcept;
+
+        [[nodiscard]] operator vector_form() const noexcept;
 
         class iterator {
         public:
@@ -530,6 +536,8 @@ namespace mpgl {
             owner                           ownerPtr = nullptr;
         };
 
+        using reverse_itertor = std::reverse_iterator<iterator>;
+
         constexpr ColumnView& operator+=(ColumnView const& right);
 
         constexpr ColumnView& operator-=(ColumnView const& right);
@@ -576,18 +584,144 @@ namespace mpgl {
         [[nodiscard]] constexpr MatrixTp&& base(void) &&
             { return std::move(matrix); }
 
-        [[nodiscard]] constexpr iterator begin(void) const
-            { return iterator{ *this }; }
+        [[nodiscard]] constexpr iterator begin(
+            void) const noexcept
+                { return iterator{ *this }; }
 
-        [[nodiscard]] constexpr iterator end(void) const
-            { return iterator{ *this, matrix.height() }; }
+        [[nodiscard]] constexpr iterator end(
+            void) const noexcept
+                { return iterator{ *this, matrix.height() }; }
+
+        [[nodiscard]] constexpr reverse_iterator
+            rbegin(void) const noexcept
+                { return reverse_iterator{ end() - 1 }; }
+
+        [[nodiscard]] constexpr reverse_iterator
+            rend(void) const noexcept
+                { return reverse_iterator{ begin() - 1 }; }
 
         [[nodiscard]] constexpr auto size(void) const noexcept
-            { return matrix.height(); }
+                { return matrix.height(); }
     private:
         MatrixTp                            matrix;
         std::size_t                         columnID;
     };
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator+(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator-(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator*(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator/(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator%(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, %);
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator^(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, ^);
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator&(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, &);
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator|(
+            typename ColumnView<MatrixTp>::vector_form const& left,
+            ColumnView<MatrixTp> const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, |);
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator+(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator-(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator*(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator/(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept;
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator%(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, %);
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator^(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, ^);
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator&(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, &);
+
+    template <typename MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
+        operator|(
+            ColumnView<MatrixTp> const& left,
+            typename ColumnView<MatrixTp>::vector_form const& right
+            ) noexcept requires mpgl_Operable(
+                typename ColumnView<MatrixTp>::value_type, |);
 
     /**
      * Returns the identity matrix of the given size
