@@ -79,8 +79,7 @@ namespace mpgl {
         Vector<Tp, Size> const& vector) const noexcept
     {
         [&]<std::size_t... Index>(std::index_sequence<Index...>) {
-            (*this)(std::get<Size - Index - 1>(
-                static_cast<UniformTuple<Tp, Size> const&>(vector))...);
+            (*this)(vector[Index]...);
         }(std::make_index_sequence<Size>{});
     }
 
