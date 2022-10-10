@@ -122,7 +122,7 @@ namespace mpgl {
 
     template <MatrixType MatrixTp>
     constexpr ColumnView<MatrixTp>::iterator&
-        ColumnView<MatrixTp>::iterator::operator+=(
+        ColumnView<MatrixTp>::iterator::operator-=(
             difference_type offset) noexcept
     {
         rowID -= offset;
@@ -195,54 +195,6 @@ namespace mpgl {
 
     template <MatrixType MatrixTp>
     constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator%=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, %)
-    {
-        for (size_t i = 0; i < size(); ++i)
-            (*this)[i] %= right[i];
-        return *this;
-    }
-
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator^=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, ^)
-    {
-        for (size_t i = 0; i < size(); ++i)
-            (*this)[i] ^= right[i];
-        return *this;
-    }
-
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator&=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, &)
-    {
-        for (size_t i = 0; i < size(); ++i)
-            (*this)[i] &= right[i];
-        return *this;
-    }
-
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator|=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, |)
-    {
-        for (size_t i = 0; i < size(); ++i)
-            (*this)[i] |= right[i];
-        return *this;
-    }
-
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
         ColumnView<MatrixTp>::operator+=(
             value_type const& right) noexcept
     {
@@ -281,58 +233,10 @@ namespace mpgl {
         return *this;
     }
 
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator%=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, %)
-    {
-        for (auto& element : *this)
-            element %= right;
-        return *this;
-    }
-
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator^=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, ^)
-    {
-        for (auto& element : *this)
-            element ^= right;
-        return *this;
-    }
-
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator&=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, &)
-    {
-        for (auto& element : *this)
-            element &= right;
-        return *this;
-    }
-
-    template <MatrixType MatrixTp>
-    constexpr ColumnView<MatrixTp>&
-        ColumnView<MatrixTp>::operator|=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(
-                typename ColumnView<MatrixTp>::value_type, |)
-    {
-        for (auto& element : *this)
-            element |= right;
-        return *this;
-    }
-
     template <MatrixType Tp>
     constexpr ColumnRangeView<Tp>::iterator::iterator(
         ColumnRangeView* ownerPtr,
-        std::size_t columnID = 0) noexcept
+        std::size_t columnID) noexcept
             : ownerPtr{ownerPtr}, columnID{columnID} {}
 
     template <MatrixType Tp>

@@ -147,22 +147,6 @@ namespace mpgl {
         constexpr ColumnView& operator/=(
             ColumnView const& right) noexcept;
 
-        constexpr ColumnView& operator%=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(value_type, %);
-
-        constexpr ColumnView& operator^=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(value_type, ^);
-
-        constexpr ColumnView& operator&=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(value_type, &);
-
-        constexpr ColumnView& operator|=(
-            ColumnView const& right
-            ) noexcept requires mpgl_Operable(value_type, |);
-
         constexpr ColumnView& operator+=(
             value_type const& right) noexcept;
 
@@ -174,22 +158,6 @@ namespace mpgl {
 
         constexpr ColumnView& operator/=(
             value_type const& right) noexcept;
-
-        constexpr ColumnView& operator%=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(value_type, %);
-
-        constexpr ColumnView& operator^=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(value_type, ^);
-
-        constexpr ColumnView& operator&=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(value_type, &);
-
-        constexpr ColumnView& operator|=(
-            value_type const& right
-            ) noexcept requires mpgl_Operable(value_type, |);
 
         [[nodiscard]] constexpr MatrixTp const& base(void) const &
             { return matrix; }
@@ -214,8 +182,8 @@ namespace mpgl {
                 { return reverse_iterator{ begin() - 1 }; }
 
         [[nodiscard]] static constexpr auto size(
-            void) const noexcept
-                { return matrix.size(); }
+            void) noexcept
+                { return std::remove_cvref_t<MatrixTp>::size(); }
     private:
         MatrixTp                            matrix;
         std::size_t                         columnID;
@@ -275,8 +243,8 @@ namespace mpgl {
             { return iterator{this, matrix.height()}; }
 
         [[nodiscard]] static constexpr std::size_t size(
-            void) const noexcept
-                { return matrix.height(); }
+            void) noexcept
+                { return std::remove_cvref_t<Tp>::height(); }
     private:
         Tp                                  matrix;
     };
