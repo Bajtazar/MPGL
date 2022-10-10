@@ -25,9 +25,34 @@
  */
 #pragma once
 
+#include <algorithm>
+
 namespace mpgl {
 
+    template <MatrixType MatrixTp>
+    constexpr ColumnView<MatrixTp>::ColumnView(
+        MatrixTp&& matrix,
+        std::size_t columnID) noexcept
+            : matrix{std::forward<MatrixTp>(matrix)},
+            columnID{columnID} {}
 
+    template <MatrixType MatrixTp>
+    constexpr ColumnView<MatrixTp>&
+        ColumnView<MatrixTp>::operator=(
+            vector_form const& vector) noexcept
+    {
+        std::ranges::copy(vector, begin());
+        return *this;
+    }
+
+    template <MatrixType MatrixTp>
+    [[nodiscard]] ColumnView<MatrixTp>::operator
+        vector_form() const noexcept
+    {
+        vector_form vector;
+        std::ranges::copy(*this, vector.begin());
+        return vector;
+    }
 
 }
 

@@ -43,7 +43,8 @@ namespace mpgl {
             MatrixTp&& matrix,
             std::size_t columnID) noexcept;
 
-        ColumnView& operator=(vector_form const& vector) noexcept;
+        constexpr ColumnView& operator=(
+            vector_form const& vector) noexcept;
 
         [[nodiscard]] operator vector_form() const noexcept;
 
@@ -249,6 +250,10 @@ namespace mpgl {
     private:
         Tp                                  matrix;
     };
+
+    template <MatrixType Tp>
+    ColumnRangeView(Tp&& baseD) ->
+        ColumnRangeView<std::views::all_t<Tp>>;
 
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
