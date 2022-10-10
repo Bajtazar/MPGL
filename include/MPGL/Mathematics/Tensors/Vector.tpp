@@ -29,9 +29,9 @@ namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
-        std::span<Tp, Size>() const noexcept
+        std::span<Tp const, Size>() const noexcept
     {
-        return std::span<Tp, Size>{data};
+        return std::span<Tp const, Size>(data);
     }
 
     template <Arithmetic Tp, std::size_t Size>

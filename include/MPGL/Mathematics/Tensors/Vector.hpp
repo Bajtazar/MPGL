@@ -253,7 +253,7 @@ namespace mpgl {
          *
          * @return the std::span that holds view to this vector
          */
-        [[nodiscard]] constexpr operator std::span<Tp, Size>(
+        [[nodiscard]] constexpr operator std::span<Tp const, Size>(
             ) const noexcept;
 
         /**
