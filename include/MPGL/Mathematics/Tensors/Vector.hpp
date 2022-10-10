@@ -249,6 +249,14 @@ namespace mpgl {
             requires mpgl_Operable(Tp, |);
 
         /**
+         * Returns a std::span that holds view to this vector
+         *
+         * @return the std::span that holds view to this vector
+         */
+        [[nodiscard]] constexpr operator std::span<Tp, Size>(
+            ) const noexcept;
+
+        /**
          * Casts the vector to the given type
          *
          * @tparam Up the new vector's element type

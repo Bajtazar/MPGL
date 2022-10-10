@@ -28,6 +28,13 @@
 namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
+    [[nodiscard]] constexpr Vector<Tp, Size>::operator
+        std::span<Tp, Size>() const noexcept
+    {
+        return std::span<Tp, Size>{data};
+    }
+
+    template <Arithmetic Tp, std::size_t Size>
     template <Arithmetic Up>
         requires std::convertible_to<Tp, Up>
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
