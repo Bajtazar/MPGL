@@ -30,11 +30,11 @@
 #include <numeric>
 #include <complex>
 #include <math.h>
+#include <array>
+#include <span>
 
-#include <MPGL/Traits/TupleTraits.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 #include <MPGL/Utility/Ranges.hpp>
-#include <MPGL/Traits/Types.hpp>
 
 namespace mpgl {
 
@@ -45,12 +45,12 @@ namespace mpgl {
      * @tparam Size the number of vector's elements
      */
     template <Arithmetic Tp, std::size_t Size>
-    class Vector : public UniformTuple<Tp, Size> {
+    class Vector {
+        using carrier = std::array<Tp, Size>;
     public:
-        typedef Tp                      value_type;
-        typedef Tp&                     reference;
-        typedef Tp const&               const_reference;
-        typedef UniformTuple<Tp, Size>  Base;
+        using value_type = Tp;
+        using reference = Tp&;
+        using const_reference = Tp const&;
 
         /**
          * Constructs a new vector object from the given
@@ -63,28 +63,7 @@ namespace mpgl {
                 && AllConvertible<value_type,
                     std::remove_cvref_t<Args>...>)
         constexpr Vector(Args&&... args) noexcept
-            : Base{ tupleBuilder(std::forward<Args>(args)...) }
-                { if (!std::is_constant_evaluated()) reverse(*this); }
-
-        /**
-         * Constructs a new vector object from the given
-         * base tuple
-         *
-         * @param base the constant reference to the base
-         * object
-         */
-        constexpr Vector(Base const& base) noexcept
-            : Base{base} {}
-
-        /**
-         * Constructs a new vector object from the given
-         * base tuple
-         *
-         * @param base the rvalue reference to the base
-         * object
-         */
-        constexpr Vector(Base&& base) noexcept
-            : Base{std::move(base)} {}
+            : data{{ static_cast<Tp>(std::forward<Args>(args))... }} {}
 
         /**
          * Constructs a new vector object
@@ -97,8 +76,9 @@ namespace mpgl {
          *
          * @return the size of the vector
          */
-        [[nodiscard]] static constexpr std::size_t size(void) noexcept
-            { return Size; }
+        [[nodiscard]] static constexpr std::size_t size(
+            void) noexcept
+                { return Size; }
 
         /**
          * Returns the length of the vector [equivalent
@@ -297,203 +277,12 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr Vector operator-(void) const noexcept;
 
-        /**
-         * Iterares over the elements of the vector
-         *
-         * @tparam BaseTp the iterator's value type
-         */
-        template <Arithmetic BaseTp>
-        class Iterator {
-        public:
-            using iterator_category =       std::contiguous_iterator_tag;
-            using value_type =              BaseTp;
-            using reference =               BaseTp&;
-            using pointer =                 BaseTp*;
-            using difference_type =         decltype(
-                std::declval<pointer>() - std::declval<pointer>());
-            using iter =                    Iterator;
-            using iter_ref =                Iterator&;
-            using iter_cref =               Iterator const&;
-            using compare =
-                std::compare_three_way_result_t<pointer, pointer>;
-
-            /**
-             * Constructs a new iterator object from the
-             * given pointer
-             *
-             * @param ptr the pointer to the data
-             */
-            constexpr explicit Iterator(pointer ptr) noexcept
-                : ptr{ptr} {}
-
-            /**
-             * Constructs a new iterator object
-             */
-            constexpr explicit Iterator(void) noexcept = default;
-
-            /**
-             * Increments iterator by one
-             *
-             * @return reference to this object
-             */
-            constexpr iter_ref operator++(void) noexcept
-                { ++ptr; return *this; }
-
-            /**
-             * Post-increments iterator by one and returns copy
-             * of the object
-             *
-             * @return the copied object
-             */
-            [[nodiscard]] constexpr iter operator++(int) noexcept
-                { auto temp = *this; ++ptr; return temp; }
-
-            /**
-             * Decrements iterator by one
-             *
-             * @return reference to this object
-             */
-            constexpr iter_ref operator--(void) noexcept
-                { --ptr; return *this; }
-
-            /**
-             * Post-decrements iterator by one and returns copy
-             * of the object
-             *
-             * @return the copied object
-             */
-            [[nodiscard]] constexpr iter operator--(int) noexcept
-                { auto temp = *this; --ptr; return temp; }
-
-            /**
-             * Returns the reference to the vector's element
-             *
-             * @return the reference to the vector's element
-             */
-            [[nodiscard]] constexpr reference operator*(
-                void) const noexcept
-                    { return *ptr; }
-
-            /**
-             * Returns the pointer to the vector's element
-             *
-             * @return the pointer to the vector's element
-             */
-            [[nodiscard]] constexpr pointer operator->(
-                void) const noexcept
-                    { return ptr; }
-
-            /**
-             * Increments iterator by the given distance
-             *
-             * @param offset the incremented distance
-             * @return reference to this object
-             */
-            constexpr iter_ref operator+=(
-                difference_type offset) noexcept
-                    { ptr += offset; return *this; }
-
-            /**
-             * Decrements iterator by the given distance
-             *
-             * @param offset the decremented distance
-             * @return reference to this object
-             */
-            constexpr iter_ref operator-=(
-                difference_type offset) noexcept
-                    { ptr -= offset; return *this; }
-
-            /**
-             * Returns a view shifted by the given offset
-             *
-             * @param offset the incremented distance
-             * @return the view shifted by the given offse
-             */
-            [[nodiscard]] constexpr reference operator[](
-                difference_type offset) const noexcept
-                    { return *(ptr + offset); }
-
-            /**
-             * Adds given distance to an iterator
-             *
-             * @param left the iterator
-             * @param right the distance
-             * @return the shifted iterator
-             */
-            [[nodiscard]] friend constexpr iter operator+(
-                iter_cref left,
-                difference_type right) noexcept
-            { auto temp = left; temp.ptr += right; return temp; }
-
-            /**
-             * Adds given distance to an iterator
-             *
-             * @param left the distance
-             * @param right the iterator
-             * @return the shifted iterator
-             */
-            [[nodiscard]] friend constexpr iter operator+(
-                difference_type left,
-                iter_cref right) noexcept
-            { auto temp = right; temp.ptr += left; return temp; }
-
-            /**
-             * Subtracts given distance from iterator
-             *
-             * @param left the iterator
-             * @param right the distance
-             * @return the shifted operator
-             */
-            [[nodiscard]] friend constexpr iter operator-(
-                iter_cref left,
-                difference_type right) noexcept
-            { auto temp = left; temp.ptr -= right; return temp; }
-
-            /**
-             * Returns distance between iterators
-             *
-             * @param left the left iterator
-             * @param right the right iterator
-             * @return difference_type
-             */
-            [[nodiscard]] friend constexpr difference_type operator-(
-                iter_cref left,
-                iter_cref right) noexcept
-                    { return left.ptr - right.ptr; }
-
-            /**
-             * Checks whether two iterators are equal
-             *
-             * @param left the left iterator
-             * @param right the right iterator
-             * @return whether two iterators are equal
-             */
-            [[nodiscard]] friend constexpr bool operator==(
-                iter_cref left,
-                iter_cref right) noexcept
-                    { return left.ptr == right.ptr; }
-
-            /**
-             * Compares two iterators to each other
-             *
-             * @param left the left iterator
-             * @param right the right iterator
-             * @return the result of compare
-             */
-            [[nodiscard]] friend constexpr compare operator<=> (
-                iter_cref left,
-                iter_cref right) noexcept
-                    { return left.ptr <=> right.ptr; }
-        private:
-            pointer                         ptr;
-        };
-
-        typedef Iterator<Tp>                iterator;
-        typedef Iterator<Tp const>          const_iterator;
-        typedef std::reverse_iterator<
-            iterator>                       reverse_iterator;
-        typedef std::reverse_iterator<
-            const_iterator>                 const_reverse_iterator;
+        using iterator = typename carrier::iterator;
+        using const_iterator = typename carrier::const_iterator;
+        using reverse_iterator
+            = typename carrier::reverse_iterator;
+        using const_reverse_iterator
+            = typename carrier::const_reverse_iterator;
 
         /**
          * Returns the iterator to the begining of the vector
@@ -501,7 +290,7 @@ namespace mpgl {
          * @return the iterator to the begining of the vector
          */
         [[nodiscard]] constexpr iterator begin(void) noexcept
-            { return iterator{ &first() }; }
+            { return data.begin(); }
 
         /**
          * Returns the iterator to the end of the vector
@@ -509,7 +298,7 @@ namespace mpgl {
          * @return the iterator to the end of the vector
          */
         [[nodiscard]] constexpr iterator end(void) noexcept
-            { return iterator{ &first() + Size }; }
+            { return data.end(); }
 
         /**
          * Returns the constant iterator to the begining
@@ -520,7 +309,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_iterator begin(
             void) const noexcept
-                { return const_iterator{ &first() }; }
+                { return data.begin(); }
 
         /**
          * Returns the constant iterator to the end
@@ -531,7 +320,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_iterator end(
             void) const noexcept
-                { return const_iterator{ &first() + Size }; }
+                { return data.end(); }
 
         /**
          * Returns the constant iterator to the begining
@@ -542,7 +331,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_iterator cbegin(
             void) const noexcept
-                { return const_iterator{ &first() }; }
+                { return data.cbegin(); }
 
         /**
          * Returns the constant iterator to the end
@@ -553,7 +342,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_iterator cend(
             void) const noexcept
-                { return const_iterator{ &first() + Size}; }
+                { return data.cend(); }
 
         /**
          * Returns the reverse iterator to the end of
@@ -564,7 +353,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr reverse_iterator rbegin(
             void) noexcept
-                { return reverse_iterator{ end() - 1 }; }
+                { return data.rbegin(); }
 
         /**
          * Returns the reverse iterator to the begining of
@@ -575,7 +364,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr reverse_iterator rend(
             void) noexcept
-                { return reverse_iterator{ begin() - 1}; }
+                { return data.rend(); }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -586,7 +375,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_reverse_iterator rbegin(
             void) const noexcept
-                { return const_reverse_iterator{ end() - 1 }; }
+                { return data.rbegin(); }
 
         /**
          * Returns the constant reverse iterator to the
@@ -597,7 +386,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_reverse_iterator rend(
             void) const noexcept
-                { return const_reverse_iterator{ begin() - 1}; }
+                { return data.rend(); }
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -608,7 +397,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_reverse_iterator crbegin(
             void) const noexcept
-                { return const_reverse_iterator{ cend() - 1 }; }
+                { return data.crbegin(); }
 
         /**
          * Returns the constant reverse iterator to the
@@ -619,7 +408,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_reverse_iterator crend(
             void) const noexcept
-                { return const_reverse_iterator{ cbegin() - 1}; }
+                { return data.crend(); }
 
         /**
          * Returns the reference to element with the given index
@@ -629,7 +418,7 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr reference operator[] (
             std::size_t index) noexcept
-                { return *(&first() + index); }
+                { return data[index]; }
 
         /**
          * Returns the constant reference to element with
@@ -641,33 +430,35 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr const_reference operator[] (
             std::size_t index) const noexcept
-                { return *(&first() + index); }
+                { return data[index]; }
+
+        /**
+         * Returns the reference to element with the given index
+         * @throws std::out_of_range when the index is out of the
+         * vector's scope
+         *
+         * @param index the element's index
+         * @return the reference to element with the given index
+         */
+        [[nodiscard]] constexpr reference at(
+            std::size_t index)
+                { return data.at(index); }
+
+        /**
+         * Returns the constant reference to element with
+         * the given index
+         * @throws std::out_of_range when the index is out of the
+         * vector's scope
+         *
+         * @param index the element's index
+         * @return the constant reference to element with
+         * the given index
+         */
+        [[nodiscard]] constexpr const_reference at(
+            std::size_t index) const
+                { return data.at(index); }
     private:
-        /**
-         * Builds the tuple used by the vector
-         *
-         * @tparam Args the arguments types
-         * @param args the arguments
-         * @return the base tuple
-         */
-        template <typename... Args>
-        constexpr Base tupleBuilder(Args&&... args) const noexcept;
-
-        /**
-         * Returns the reference to the first element
-         *
-         * @return the reference to the first element
-         */
-        constexpr reference first(void) noexcept
-            { return std::get<Size - 1>(static_cast<Base&>(*this)); }
-
-        /**
-         * Returns the constant reference to the first element
-         *
-         * @return the constant reference to the first element
-         */
-        constexpr const_reference first(void) const noexcept
-            { return std::get<Size - 1>(static_cast<Base const&>(*this)); }
+        std::array<Tp, Size>                    data;
     };
 
     /**

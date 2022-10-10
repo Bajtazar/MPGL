@@ -28,26 +28,14 @@
 namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
-    template <typename... Args>
-    constexpr UniformTuple<Tp, Size>
-        Vector<Tp, Size>::tupleBuilder(Args&&... args) const noexcept
-    {
-        if (std::is_constant_evaluated())
-            return tupleReverser(std::forward<Args>(args)...);
-        else
-            return {std::forward<Args>(args)...};
-    }
-
-    template <Arithmetic Tp, std::size_t Size>
     template <Arithmetic Up>
         requires std::convertible_to<Tp, Up>
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
         Vector<Up, Size>() const noexcept
     {
-        return std::apply([](auto&&... args) -> Vector<Up, Size> {
-            return Vector<Up, Size>{ std::move(std::tuple{
-                static_cast<Up>(args)... }) };
-        }, static_cast<Base const&>(*this));
+        Vector<Up, Size> base;
+        std::ranges::copy(begin(), end(), base.begin());
+        return base;
     }
 
     template <Arithmetic Tp, std::size_t Size>
@@ -57,8 +45,7 @@ namespace mpgl {
         Vector<Tp, USize>() const noexcept
     {
         Vector<Tp, USize> base;
-        for (std::size_t i = 0 ;i < Size; ++i)
-            base[i] = (*this)[i];
+        std::ranges::copy(begin(), end(), base.begin());
         return base;
     }
 
@@ -66,11 +53,7 @@ namespace mpgl {
     [[nodiscard]] constexpr Vector<Tp, Size>
         Vector<Tp, Size>::operator- (void) const noexcept
     {
-        return std::apply([]<typename... Args>(Args&&... args) {
-                return Vector{std::forward<Args>(-args)...};
-            }, std::apply([]<typename... Args>(Args&&... args) {
-                return tupleReverser(std::forward<Args>(args)...);
-            }, static_cast<Base const&>(*this)));
+        return {}; // @todo
     }
 
     template <Arithmetic Tp, std::size_t Size>

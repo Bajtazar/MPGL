@@ -26,6 +26,7 @@
 #pragma once
 
 #include <MPGL/Mathematics/Tensors/Vector.hpp>
+#include <MPGL/Traits/TupleTraits.hpp>
 #include <MPGL/Mathematics/Ranges.hpp>
 
 #include <optional>
