@@ -187,7 +187,7 @@ namespace mpgl {
             Vector2f const& center = {},
             Vector2f const& semiAxis = {},
             InnerEllipse const& innerEllipse = {},
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
@@ -206,7 +206,7 @@ namespace mpgl {
             Vector2f const& center,
             Vector2f const& outerSemiAxis,
             Vector2f const& innerSemiAxis,
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             float32 angle = 0.f) requires TwoDimensional<Dim>;
 
         /**
@@ -222,7 +222,7 @@ namespace mpgl {
             Vector2f const& center,
             float32 radius,
             InnerEllipse const& innerEllipse = {},
-            Color const& color = Color::White
+            Color const& color = colors::white
             ) requires TwoDimensional<Dim>;
 
         /**
@@ -238,7 +238,7 @@ namespace mpgl {
             Vector2f const& center,
             float32 outerRadius,
             float32 innerRadius,
-            Color const& color = Color::White
+            Color const& color = colors::white
             ) requires TwoDimensional<Dim>;
 
         /**
@@ -260,7 +260,7 @@ namespace mpgl {
             Vector3f const& minorAxis,
             Vector3f const& majorAxis,
             InnerEllipse const& innerEllipse,
-            Color const& color = Color::White
+            Color const& color = colors::white
             ) requires ThreeDimensional<Dim>;
 
         Ring(Ring const& ring) = default;

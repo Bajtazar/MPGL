@@ -28,6 +28,7 @@
 #include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Events/Registers/UniversalRegister.hpp>
 #include <MPGL/Events/Registers/RegistersHolder.hpp>
+#include <MPGL/Events/Types/WindowMotionEvent.hpp>
 #include <MPGL/Events/Types/MouseReleaseEvent.hpp>
 #include <MPGL/Events/Types/WindowCloseEvent.hpp>
 #include <MPGL/Events/Types/MouseMotionEvent.hpp>
@@ -43,6 +44,10 @@ namespace mpgl {
     /// The screen transformation event register
     typedef UniversalRegister<ScreenTransformationEvent, void(ScreenTransformationEvent::*)(Vector2u const&),
         &ScreenTransformationEvent::onScreenTransformation> ScreenTransformationRegister;
+
+    /// The window motion event register
+    typedef UniversalRegister<WindowMotionEvent, void(WindowMotionEvent::*)(Vector2u const&),
+        &WindowMotionEvent::onWindowMotion>                 WindowMotionRegister;
 
     /// The mouse release event register
     typedef UniversalRegister<MouseReleaseEvent, void(MouseReleaseEvent::*)(MouseButton const&),
@@ -78,8 +83,9 @@ namespace mpgl {
 
     /// The MPGL events registers holder
     typedef RegistersHolder<TickRegister, ScreenTransformationRegister,
-        MouseReleaseRegister, MouseMotionRegister, MousePressRegister,
-        WindowCloseRegister, KeyReleaseRegister, TextWriteRegister,
-        KeyPressRegister, ScrollRegister>                   EventBus;
+        WindowMotionRegister, MouseReleaseRegister, MouseMotionRegister,
+        MousePressRegister, WindowCloseRegister, KeyReleaseRegister,
+        TextWriteRegister, KeyPressRegister,
+        ScrollRegister>                                     EventBus;
 
 }

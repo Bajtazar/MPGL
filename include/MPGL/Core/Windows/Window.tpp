@@ -43,14 +43,14 @@ namespace mpgl {
     {
         context.projection = projection;
         addCameraEventIfDerived(cameraPtr);
-        openWindow();
-        while (!shouldWindowClose()) {
-            clear(background);
+        windowImpl->openWindow();
+        while (!windowImpl->shouldWindowClose()) {
+            windowImpl->clear(background);
             eventManager->onTick();
             setVPMatrix(cameraPtr);
             draw3DDrawables();
             draw2DDrawables();
-            draw();
+            windowImpl->draw();
         }
     }
 

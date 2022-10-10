@@ -37,7 +37,7 @@ namespace mpgl {
         ColorTp&& color,
         Vectors&&... vertices)
             : ResizableAngular<Dim, Spec>{
-                std::forward<Color>(color),
+                std::forward<ColorTp>(color),
                 std::forward<Vectors>(vertices)...} {}
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>

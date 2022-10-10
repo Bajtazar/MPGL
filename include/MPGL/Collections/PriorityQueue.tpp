@@ -25,47 +25,51 @@
  */
 #pragma once
 
+#include <algorithm>
+
 namespace mpgl {
 
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
+    template <typename Tp,
+        std::predicate<Tp, Tp> Comparator,
         std::ranges::forward_range Sequence>
-    template <std::enable_if_t<std::copyable<Tp>, int32>>
-    void MinHeap<Tp, Compare, Sequence>::push(
-        const_reference element)
+    void PriorityQueue<Tp, Comparator, Sequence>::push(
+        const_reference element) requires std::copyable<Tp>
     {
         sequence.push_back(element);
-        std::ranges::push_heap(sequence, compare);
+        std::ranges::push_heap(sequence, comparator);
     }
 
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
+    template <typename Tp,
+        std::predicate<Tp, Tp> Comparator,
         std::ranges::forward_range Sequence>
-    template <std::enable_if_t<std::movable<Tp>, int32>>
-    void MinHeap<Tp, Compare, Sequence>::push(
-        value_type&& element)
+    void PriorityQueue<Tp, Comparator, Sequence>::push(
+        value_type&& element) requires std::movable<Tp>
     {
         sequence.push_back(std::move(element));
-        std::ranges::push_heap(sequence, compare);
+        std::ranges::push_heap(sequence, comparator);
     }
 
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
+    template <typename Tp,
+        std::predicate<Tp, Tp> Comparator,
         std::ranges::forward_range Sequence>
     template <typename... Args>
-    void MinHeap<Tp, Compare, Sequence>::emplace(
-        Args&&... args) requires (
-            std::constructible_from<value_type, Args...>)
+    void PriorityQueue<Tp, Comparator, Sequence>::emplace(
+        Args&&... args) requires
+            std::constructible_from<value_type, Args...>
     {
         sequence.emplace_back(std::forward<Args>(args)...);
-        std::ranges::push_heap(sequence, compare);
+        std::ranges::push_heap(sequence, comparator);
     }
 
-    template <typename Tp, std::predicate<Tp, Tp> Compare,
+    template <typename Tp,
+        std::predicate<Tp, Tp> Comparator,
         std::ranges::forward_range Sequence>
-    [[nodiscard]] MinHeap<Tp, Compare, Sequence>::value_type
-        MinHeap<Tp, Compare, Sequence>::popBack(
+    [[nodiscard]] PriorityQueue<Tp, Comparator, Sequence>::value_type
+        PriorityQueue<Tp, Comparator, Sequence>::pop(
             void) requires std::movable<value_type>
     {
-        std::ranges::pop_heap(sequence, compare);
-        auto result = std::move(sequence.back());
+        std::ranges::pop_heap(sequence, comparator);
+        auto&& result = std::move(sequence.back());
         sequence.pop_back();
         return result;
     }

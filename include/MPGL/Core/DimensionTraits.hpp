@@ -25,41 +25,49 @@
  */
 #pragma once
 
-#include <MPGL/Core/Drawable.hpp>
+#include <MPGL/Traits/Concepts.hpp>
 
 namespace mpgl {
 
     /**
      * Helper metastruct. Provides information about the
-     * dimension of the drawable
+     * dimension of the type
      *
-     * @tparam Tp the type of the drawable instance
+     * @tparam Tp the checked type
+     * @tparam Up the instance of the Tp template
      */
-    template <InstanceOf<Drawable> Tp>
-    class DrawableDimension {
+    template <template <class> class Tp, InstanceOf<Tp> Up>
+    class DimensionOf {
         /**
-         * Gets the dimension tag from the drawable instance
+         * Gets the dimension tag from the Tp instance
          *
          * @tparam Dim the instance's dimension
          * @return the dimension tag
          */
         template <Dimension Dim>
-        static auto helper(Drawable<Dim> const&) noexcept
-            -> Dim;
+        static auto helper(Tp<Dim> const&) noexcept -> Dim;
+
+        /**
+         * Returns a null dimension in case when the dimension
+         * cannot be checked
+         *
+         * @return the null dimension
+         */
+        static dim::NullDim helper(...) noexcept;
     public:
         /**
-         * The drawable instance's dimension tag
+         * The Tp instance's dimension tag
          */
-        using dimension = decltype(helper(std::declval<Tp>()));
+        using dimension = decltype(helper(std::declval<Up>()));
     };
 
     /**
-     * The convinient shortcut for the DrawableDimension dimension
+     * The convinient shortcut for the DimensionOf dimension
      *
-     * @tparam Tp the instance of the drawable template
+     * @tparam Tp the checked type
+     * @tparam Up the instance of the Tp template
      */
-    template <InstanceOf<Drawable> Tp>
-    using DrawableDimensionT
-        = typename DrawableDimension<Tp>::dimension;
+    template <template <class> class Tp, InstanceOf<Tp> Up>
+    using DimensionOfT = typename DimensionOf<Tp, Up>::dimension;
 
 }

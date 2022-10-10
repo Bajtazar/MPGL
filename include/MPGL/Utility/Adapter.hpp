@@ -224,6 +224,15 @@ namespace mpgl {
         constexpr ~Adapter(void) noexcept = default;
     private:
         value_type                          value;
+
+        /**
+         * Casts the position vector from the pixel space into
+         * the OpenGL's normalized space
+         *
+         * @param value a constant reference to the pixel space vector
+         * @return the OpenGL's normalized space vector
+         */
+        static value_type cast(const_reference value) noexcept;
     };
 
     typedef Adapter<2>                      Adapter2D;

@@ -79,7 +79,7 @@ namespace mpgl {
          */
         LineStrip(
             std::size_t vertices = 0,
-            Color const& color = Color::White);
+            Color const& color = colors::white);
 
         LineStrip(LineStrip const& lineStrip) = default;
         LineStrip(LineStrip&& lineStrip) noexcept = default;

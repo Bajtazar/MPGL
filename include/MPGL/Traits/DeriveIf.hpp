@@ -63,6 +63,14 @@ namespace mpgl {
                 DeriveIfBase&&) noexcept = default;
         };
 
+        /**
+         * Special filler class
+         *
+         * @tparam N the number
+         */
+        template <size_t N>
+        class DeriveIfHandler {};
+
     }
 
     /**
@@ -75,5 +83,16 @@ namespace mpgl {
     template <bool Value, class Tp>
     using DeriveIfT = std::conditional_t<
         Value, Tp, details::DeriveIfBase<Tp>>;
+
+    /**
+     * Derives from the given type if the value is true. Otherwise
+     * derives from the derive if base with the size_t number
+     *
+     * @tparam Value the value flag
+     * @tparam Tp the positive derive if result type
+     */
+    template <bool Value, class Tp, size_t N>
+    using DeriveIfTN = std::conditional_t<
+        Value, Tp, details::DeriveIfBase<details::DeriveIfHandler<N>>>;
 
 }

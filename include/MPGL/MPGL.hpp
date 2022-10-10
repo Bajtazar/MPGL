@@ -74,6 +74,7 @@
 #include <MPGL/Core/Text/FontRasterizer.hpp>
 #include <MPGL/Utility/StringAlgorithm.hpp>
 #include <MPGL/Compression/ZlibDecoder.hpp>
+#include <MPGL/Utility/Polymorpher.hpp>
 #include <MPGL/Core/Windows/Window.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 #include <MPGL/Core/Text/Text.hpp>

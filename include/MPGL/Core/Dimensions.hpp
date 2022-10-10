@@ -45,6 +45,9 @@ namespace mpgl {
 
         };
 
+        /// The Null tag
+        typedef Dimension<0>                            NullDim;
+
         /// The 2D tag
         typedef Dimension<2>                            Dim2;
 
@@ -62,7 +65,7 @@ namespace mpgl {
     concept Dimension = requires {
         Tp::orthogonal_space_degree;
     } && std::same_as<decltype(Tp::orthogonal_space_degree),
-            std::size_t const> && Tp::orthogonal_space_degree > 1u;
+            std::size_t const>;
 
     /**
      * Checks wheter the given type is a two dimensional space's tag

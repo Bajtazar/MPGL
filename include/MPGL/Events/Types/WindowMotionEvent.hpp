@@ -25,26 +25,38 @@
  */
 #pragma once
 
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
+#include <MPGL/Events/Event.hpp>
+
 namespace mpgl {
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    template <
-        class ColorTp,
-        AllConvertible<
-        typename LineLoop<Dim, Spec>::Vector>... Vectors>
-            requires std::constructible_from<Color, ColorTp>
-    LineLoop<Dim, Spec>::LineLoop(
-        ColorTp&& color,
-        Vectors&&... vertices)
-            : ResizableAngular<Dim, Spec>{
-                std::forward<ColorTp>(color),
-                std::forward<Vectors>(vertices)...} {}
+    /**
+     * Base class for classes that are notified when window is
+     * being closed
+     */
+    class WindowMotionEvent : public virtual EventBase {
+    public:
+        explicit WindowMotionEvent(void) noexcept = default;
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    template <AllConvertible<
-        typename LineLoop<Dim, Spec>::Vector>... Vectors>
-    LineLoop<Dim, Spec>::LineLoop(Vectors&&... vertices)
-        : ResizableAngular<Dim, Spec>{
-            std::forward<Vectors>(vertices)...} {}
+        WindowMotionEvent& operator=(WindowMotionEvent const&) = delete;
+        WindowMotionEvent& operator=(WindowMotionEvent&&) = delete;
+
+        /**
+         * Pure virtual method. Has to be overloaded.
+         * Notifies when window changes its position
+         *
+         * @param oldPosition the old window position
+         */
+        virtual void onWindowMotion(
+            Vector2u const& oldPosition) noexcept = 0;
+
+        /**
+         * Virtual destructor. Destroys the Window Close Event object
+         */
+        virtual ~WindowMotionEvent(void) noexcept = default;
+    protected:
+        WindowMotionEvent(WindowMotionEvent const&) noexcept = default;
+        WindowMotionEvent(WindowMotionEvent&&) noexcept = default;
+    };
 
 }

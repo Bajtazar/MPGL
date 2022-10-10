@@ -23,28 +23,22 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#pragma once
+#include <MPGL/Platform/Features/Windows/WindowPlatform.hpp>
 
-namespace mpgl {
+namespace mpgl::platform {
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    template <
-        class ColorTp,
-        AllConvertible<
-        typename LineLoop<Dim, Spec>::Vector>... Vectors>
-            requires std::constructible_from<Color, ColorTp>
-    LineLoop<Dim, Spec>::LineLoop(
-        ColorTp&& color,
-        Vectors&&... vertices)
-            : ResizableAngular<Dim, Spec>{
-                std::forward<ColorTp>(color),
-                std::forward<Vectors>(vertices)...} {}
+    WindowPlatform::WindowPlatform(
+        Vector2u dimensions,
+        std::string title,
+        Options const& options)
+            : dimensions{std::move(dimensions)},
+            options{options}, title{std::move(title)} {}
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    template <AllConvertible<
-        typename LineLoop<Dim, Spec>::Vector>... Vectors>
-    LineLoop<Dim, Spec>::LineLoop(Vectors&&... vertices)
-        : ResizableAngular<Dim, Spec>{
-            std::forward<Vectors>(vertices)...} {}
+    void WindowPlatform::setDimensions(
+        Vector2u const& dimensions) noexcept
+    {
+        const_cast<Vector2u&>(context.windowDimensions)
+            = this->dimensions = dimensions;
+    }
 
 }

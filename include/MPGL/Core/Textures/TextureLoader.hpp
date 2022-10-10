@@ -58,8 +58,7 @@ namespace mpgl {
          *
          * @return float64 the percentage of loaded textures
          */
-        [[nodiscard]] float64 loadingStatus(void) const
-            { return counter / allTextures; }
+        [[nodiscard]] float64 loadingStatus(void) const;
 
         /**
          * Pure virtual load function. It has to be implemented

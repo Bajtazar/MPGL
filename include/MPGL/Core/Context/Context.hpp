@@ -56,13 +56,17 @@ namespace mpgl {
         /// Current context window shaders
         ShadersContext                          shaders;
         /// Current context window dimensions
-        Vector2u                                windowDimensions;
+        Vector2u const                          windowDimensions;
         /// Current context window options
-        Options                                 windowOptions;
+        Options const                           windowOptions;
         /// Current context projection matrix
         Matrix4f                                projection;
-        /// Current mouse position
-        Vector2u const                          mousePosition;
+        /// Current mouse position relative to the window
+        Vector2u const                          relativeMousePosition;
+        /// Current window's position on the screen
+        Vector2u const                          windowPosition;
+        /// Current mouse position absolute to the window
+        Vector2u const                          absoluteMousePosition;
 
         /**
          * Ckecks whether the view-projection matrix has changed

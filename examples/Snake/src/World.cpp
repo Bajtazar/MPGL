@@ -62,10 +62,10 @@ void World::generateTable(void) {
     table.reserve(40);
     for (uint16_t i = 0;i < 15;i++)
         table.emplace_back(Vector2f{108, 36*(i+3)},
-            Vector2f{972, 36*(i+3)}, Color::White);
+            Vector2f{972, 36*(i+3)}, colors::white);
     for (uint16_t i = 0;i < 25;i++)
         table.emplace_back(Vector2f{108 + 36*i, 108},
-            Vector2f{108 + 36*i, 612}, Color::White);
+            Vector2f{108 + 36*i, 612}, colors::white);
 }
 
 void World::transform(

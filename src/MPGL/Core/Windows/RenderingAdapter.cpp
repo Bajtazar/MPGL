@@ -33,6 +33,12 @@ namespace mpgl {
         reference.get().onScreenTransformation(oldDimensions);
     }
 
+    void RenderingAdapter::onWindowMotion(
+        Vector2u const& oldPosition) noexcept
+    {
+        reference.get().onWindowMotion(oldPosition);
+    }
+
     void RenderingAdapter::onMouseRelease(
         MouseButton const& button) noexcept
     {
