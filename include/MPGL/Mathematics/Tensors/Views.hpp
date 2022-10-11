@@ -397,8 +397,7 @@ namespace mpgl {
          * @return the iterator to the begining of the column
          */
         [[nodiscard]] constexpr iterator begin(
-            void) const noexcept
-                { return iterator{ matrix.base(), columnID }; }
+            void) const noexcept;
 
         /**
          * Returns an iterator to the end of the column
@@ -406,8 +405,7 @@ namespace mpgl {
          * @return the iterator to the end of the column
          */
         [[nodiscard]] constexpr iterator end(
-            void) const noexcept
-                { return iterator{ matrix.base(), columnID, matrix.base().size() }; }
+            void) const noexcept;
 
         /**
          * Returns a reverse iterator to the end of the column
@@ -446,6 +444,12 @@ namespace mpgl {
     ColumnView(MatrixTp&& base, size_t rowID) ->
         ColumnView<std::views::all_t<MatrixTp>>;
 
+    /**
+     * Views the range of matrix's columns
+     *
+     * @tparam MatrixTp the matrix specialization type or its
+     * view type
+     */
     template <details::MatrixView Tp>
     class ColumnRangeView : public std::ranges::view_interface<
         ColumnRangeView<Tp>>
@@ -454,29 +458,71 @@ namespace mpgl {
         using matrix_type = std::remove_cvref_t<decltype(
             std::declval<Tp>().base())>;
 
+        /**
+         * Constructs a new column range view object
+         *
+         * @param matrix an universal reference to the view
+         * of the matrix specialization
+         */
         constexpr ColumnRangeView(Tp&& matrix) noexcept
             : matrix{matrix} {}
 
+        /**
+         * Iterates over the matrix's columns
+         */
         class iterator {
         public:
             using value_type = ColumnView<Tp>;
             using difference_type = std::ptrdiff_t;
             using iterator_category = std::output_iterator_tag;
 
+            /**
+             * Constructs a new iterator object
+             */
             constexpr explicit iterator(void) noexcept = default;
 
+            /**
+             * Constructs a new iterator object
+             *
+             * @param matrix an universal reference to the view
+             * of the matrix specialization
+             * @param columnID an index of the viewed column
+             */
             constexpr explicit iterator(
                 Tp&& matrix,
                 std::size_t columnID = 0) noexcept;
 
+            /**
+             * Increments iterator by one
+             *
+             * @return reference to this object
+             */
             constexpr iterator& operator++(void) noexcept;
 
+            /**
+             * Post-increments iterator by one and returns copy
+             * of the object
+             *
+             * @return the copied object
+             */
             [[nodiscard]] constexpr iterator operator++(
                 int) noexcept;
 
+            /**
+             * Returns a view to the matrix's column
+             *
+             * @return view to the matrix's column
+             */
             [[nodiscard]] constexpr value_type operator*(
                 void) const noexcept;
 
+            /**
+             * Checks whether two iterators are equal
+             *
+             * @param left the left iterator
+             * @param right the right iterator
+             * @return whether two iterators are equal
+             */
             [[nodiscard]] friend bool operator== (
                 iterator const& left,
                 iterator const& right) noexcept
@@ -486,18 +532,48 @@ namespace mpgl {
             std::size_t                     columnID = 0;
         };
 
-        [[nodiscard]] constexpr Tp const& base(void) const & noexcept
-            { return matrix; }
+        /**
+         * Returns a constant reference to the underlying
+         * matrix specialization's view
+         *
+         * @return the constant reference to the underlying
+         * matrix specialization's view
+         */
+        [[nodiscard]] constexpr Tp const& base(
+            void) const & noexcept
+                { return matrix; }
 
+        /**
+         * Returns a rvalue reference to the underlying
+         * matrix specialization's view
+         *
+         * @return the rvalue reference to the underlying
+         * matrix specialization's view
+         */
         [[nodiscard]] constexpr Tp&& base(void) && noexcept
             { return std::move(matrix); }
 
-        [[nodiscard]] constexpr iterator begin(void) const noexcept
-            { return iterator{matrix.base()}; }
+        /**
+         * Returns an iterator to the begining of the column
+         * range
+         *
+         * @return the iterator to the begining of the
+         * column range
+         */
+        [[nodiscard]] constexpr iterator begin(void) const noexcept;
 
-        [[nodiscard]] constexpr iterator end(void) const noexcept
-            { return iterator{matrix.base(), matrix.base().width()}; }
+        /**
+         * Returns an iterator to the end of the column range
+         *
+         * @return the iterator to the end of the column range
+         */
+        [[nodiscard]] constexpr iterator end(void) const noexcept;
 
+        /**
+         * Returns the size of the column range view
+         *
+         * @return the size of the column range
+         */
         [[nodiscard]] static constexpr std::size_t size(
             void) noexcept
                 { return matrix_type::width(); }

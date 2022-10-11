@@ -226,6 +226,22 @@ namespace mpgl {
         return *this;
     }
 
+    template <details::MatrixView MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::iterator
+        ColumnView<MatrixTp>::begin(void) const noexcept
+            { return iterator{ matrix.base(), columnID }; }
+
+    template <details::MatrixView MatrixTp>
+    [[nodiscard]] constexpr ColumnView<MatrixTp>::iterator
+        ColumnView<MatrixTp>::end(void) const noexcept
+    {
+        return iterator{
+            matrix.base(),
+            columnID,
+            matrix.base().size()
+        };
+    }
+
     template <details::MatrixView Tp>
     constexpr ColumnRangeView<Tp>::iterator::iterator(
         Tp&& matrix,
@@ -255,6 +271,20 @@ namespace mpgl {
             void) const noexcept
     {
         return value_type{matrix.base(), columnID};
+    }
+
+    template <details::MatrixView Tp>
+    [[nodiscard]] constexpr ColumnRangeView<Tp>::iterator
+        ColumnRangeView<Tp>::begin(void) const noexcept
+    {
+        return iterator{matrix.base()};
+    }
+
+    template <details::MatrixView Tp>
+    [[nodiscard]] constexpr ColumnRangeView<Tp>::iterator
+        ColumnRangeView<Tp>::end(void) const noexcept
+    {
+        return iterator{matrix.base(), matrix.base().width()};
     }
 
     template <details::MatrixView MatrixTp>
