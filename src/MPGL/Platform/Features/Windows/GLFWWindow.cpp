@@ -24,6 +24,7 @@
  *  distribution
  */
 #include <MPGL/Exceptions/Window/WindowInvalidArgsException.hpp>
+#include <MPGL/Platform/Features/Devices/GLFWKeyboard.hpp>
 #include <MPGL/Exceptions/Window/WindowGladException.hpp>
 #include <MPGL/Platform/Features/Windows/GLFWWindow.hpp>
 #include <MPGL/Platform/Features/Devices/GLFWMouse.hpp>
@@ -178,7 +179,7 @@ namespace mpgl::platform {
     {
         GLFWWindow* render = static_cast<GLFWWindow*>(
             glfwGetWindowUserPointer(window));
-        auto keyCode = static_cast<Key>(static_cast<int16>(key));
+        auto keyCode = decodeGLFWKeyboardKey(key);
         if (action == GLFW_PRESS)
             render->eventManager->onKeyPress(keyCode);
         else if (action == GLFW_RELEASE)

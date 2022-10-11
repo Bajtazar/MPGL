@@ -25,20 +25,20 @@
  */
 #pragma once
 
-#include <MPGL/IO/Devices/Mouse.hpp>
+#include <MPGL/IO/Devices/Keyboard.hpp>
 
 namespace mpgl::platform {
 
     /**
-     * Decodes the GLFW's mouse button. Returns
-     * mpgl::MouseButton::Unknown when the given
+     * Decodes the GLFW's keyboard key. Returns
+     * mpgl::Key::Unknown when the given
      * mouse button value is not known
      *
-     * @param glfwMouseButton the mouse button
-     * encoded by the GLFW 3.3 library
-     * @return the mouse button used by the MPGL
+     * @param glfwKey the keyboard key encoded by
+     * the GLFW 3.3 library
+     * @return the keyboard key used by the MPGL
      */
-    [[nodiscard]] MouseButton decodeGLFWMouseButton(
-        int32 glfwMouseButton) noexcept;
+    [[nodiscard]] Key decodeGLFWKeyboardKey(
+        int32 glfwKey) noexcept;
 
 }
