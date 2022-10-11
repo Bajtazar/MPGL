@@ -31,6 +31,14 @@ namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
+    [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>::operator
+        std::span<value_type const, Rows>() const noexcept
+    {
+        return std::span<value_type const, Rows>(base);
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>
         Matrix<Tp, Rows, Cols>::operator-(void) const noexcept
     {

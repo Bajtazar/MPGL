@@ -276,6 +276,14 @@ namespace mpgl {
                 { return base[index[0]][index[1]]; }
 
         /**
+         * Returns a std::span that holds view to this matrix
+         *
+         * @return the std::span that holds view to this matrix
+         */
+        [[nodiscard]] constexpr operator std::span<
+            value_type const, Rows>() const noexcept;
+
+        /**
          * Casts the matrix to the given type
          *
          * @tparam Up the new matrix's element type
