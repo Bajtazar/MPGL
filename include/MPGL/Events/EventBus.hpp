@@ -66,7 +66,7 @@ namespace mpgl {
         &MousePressEvent::onMousePress>                     MousePressRegister;
 
     /// The key release event register
-    typedef UniversalRegister<KeyReleaseEvent, void(KeyReleaseEvent::*)(Key const&),
+    typedef UniversalRegister<KeyReleaseEvent, void(KeyReleaseEvent::*)(KeyboardKey const&),
         &KeyReleaseEvent::onKeyRelease>                     KeyReleaseRegister;
 
     /// The text write event register
@@ -74,7 +74,7 @@ namespace mpgl {
         &TextWriteEvent::onTextWrite>                       TextWriteRegister;
 
     /// The key press event register
-    typedef UniversalRegister<KeyPressEvent, void(KeyPressEvent::*)(Key const&),
+    typedef UniversalRegister<KeyPressEvent, void(KeyPressEvent::*)(KeyboardKey const&),
         &KeyPressEvent::onKeyPress>                         KeyPressRegister;
 
     /// The scroll event register

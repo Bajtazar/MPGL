@@ -104,7 +104,7 @@ namespace mpgl {
          *
          * @param key the released keyboard key
          */
-        void onKeyRelease(Key const& key) noexcept final;
+        void onKeyRelease(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs text write event observers that the text has been
@@ -121,7 +121,7 @@ namespace mpgl {
          *
          * @param key the pressed keyboard key
          */
-        void onKeyPress(Key const& key) noexcept final;
+        void onKeyPress(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs scroll event observers that the mouse scroll has

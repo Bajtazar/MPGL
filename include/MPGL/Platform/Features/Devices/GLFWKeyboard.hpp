@@ -31,14 +31,14 @@ namespace mpgl::platform {
 
     /**
      * Decodes the GLFW's keyboard key. Returns
-     * mpgl::Key::Unknown when the given
+     * mpgl::KeyboardKey::Unknown when the given
      * mouse button value is not known
      *
      * @param glfwKey the keyboard key encoded by
      * the GLFW 3.3 library
      * @return the keyboard key used by the MPGL
      */
-    [[nodiscard]] Key decodeGLFWKeyboardKey(
+    [[nodiscard]] KeyboardKey decodeGLFWKeyboardKey(
         int32 glfwKey) noexcept;
 
 }

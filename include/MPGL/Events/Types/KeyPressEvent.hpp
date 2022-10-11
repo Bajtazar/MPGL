@@ -47,7 +47,7 @@ namespace mpgl {
          * @param key the pressed key
          */
         virtual void onKeyPress(
-            Key const& key) noexcept = 0;
+            KeyboardKey const& key) noexcept = 0;
 
         /**
          * Virtual destructor. Destroys the Key Press Event object

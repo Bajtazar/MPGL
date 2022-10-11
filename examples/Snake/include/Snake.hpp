@@ -41,7 +41,7 @@ class Snake :
 public:
     explicit Snake(World& world);
 
-    virtual void onKeyPress(mpgl::Key const& key) noexcept;
+    virtual void onKeyPress(mpgl::KeyboardKey const& key) noexcept;
 
     virtual void transform(
         Transformation2D const& transformator) noexcept;

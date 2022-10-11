@@ -63,7 +63,7 @@ namespace mpgl {
     }
 
     void BasicWindowEventManager::onKeyRelease(
-        Key const& key) noexcept
+        KeyboardKey const& key) noexcept
     {
         get<KeyReleaseRegister>(registers).onEvent(key);
     }
@@ -74,7 +74,9 @@ namespace mpgl {
         get<TextWriteRegister>(registers).onEvent(unicodeString);
     }
 
-    void BasicWindowEventManager::onKeyPress(Key const& key) noexcept {
+    void BasicWindowEventManager::onKeyPress(
+        KeyboardKey const& key) noexcept
+    {
         get<KeyPressRegister>(registers).onEvent(key);
     }
 

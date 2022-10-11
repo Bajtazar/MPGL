@@ -32,7 +32,7 @@ namespace mpgl {
     /**
      * Describes the keyboard keys
      */
-    enum class Key : int16 {
+    enum class KeyboardKey : uint16 {
         Space           = 0x00,
         Apostrophe      = 0x01,
         Comma           = 0x02,

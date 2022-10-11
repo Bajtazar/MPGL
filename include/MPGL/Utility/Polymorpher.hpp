@@ -205,7 +205,7 @@ namespace mpgl {
              *
              * @param key the pressed key
              */
-            void onKeyPress(Key const& key) noexcept
+            void onKeyPress(KeyboardKey const& key) noexcept
                 { this->get()->onKeyPress(key); }
 
             /**
@@ -238,7 +238,7 @@ namespace mpgl {
              *
              * @param key the released key
              */
-            void onKeyRelease(Key const& key) noexcept
+            void onKeyRelease(KeyboardKey const& key) noexcept
                 { this->get()->onKeyRelease(key); }
 
             /**

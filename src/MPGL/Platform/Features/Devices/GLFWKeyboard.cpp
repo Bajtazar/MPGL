@@ -30,252 +30,252 @@
 
 namespace mpgl::platform {
 
-    [[nodiscard]] Key decodeGLFWKeyboardKey(
+    [[nodiscard]] KeyboardKey decodeGLFWKeyboardKey(
         int32 glfwKey) noexcept
     {
         switch (glfwKey) {
             case GLFW_KEY_SPACE:
-                return Key::Space;
+                return KeyboardKey::Space;
             case GLFW_KEY_APOSTROPHE:
-                return Key::Apostrophe;
+                return KeyboardKey::Apostrophe;
             case GLFW_KEY_COMMA:
-                return Key::Comma;
+                return KeyboardKey::Comma;
             case GLFW_KEY_MINUS:
-                return Key::Minus;
+                return KeyboardKey::Minus;
             case GLFW_KEY_PERIOD:
-                return Key::Period;
+                return KeyboardKey::Period;
             case GLFW_KEY_SLASH:
-                return Key::Slash;
+                return KeyboardKey::Slash;
             case GLFW_KEY_0:
-                return Key::Number0;
+                return KeyboardKey::Number0;
             case GLFW_KEY_1:
-                return Key::Number1;
+                return KeyboardKey::Number1;
             case GLFW_KEY_2:
-                return Key::Number2;
+                return KeyboardKey::Number2;
             case GLFW_KEY_3:
-                return Key::Number3;
+                return KeyboardKey::Number3;
             case GLFW_KEY_4:
-                return Key::Number4;
+                return KeyboardKey::Number4;
             case GLFW_KEY_5:
-                return Key::Number5;
+                return KeyboardKey::Number5;
             case GLFW_KEY_6:
-                return Key::Number6;
+                return KeyboardKey::Number6;
             case GLFW_KEY_7:
-                return Key::Number7;
+                return KeyboardKey::Number7;
             case GLFW_KEY_8:
-                return Key::Number8;
+                return KeyboardKey::Number8;
             case GLFW_KEY_9:
-                return Key::Number9;
+                return KeyboardKey::Number9;
             case GLFW_KEY_SEMICOLON:
-                return Key::Semicolon;
+                return KeyboardKey::Semicolon;
             case GLFW_KEY_EQUAL:
-                return Key::Equal;
+                return KeyboardKey::Equal;
             case GLFW_KEY_A:
-                return Key::A;
+                return KeyboardKey::A;
             case GLFW_KEY_B:
-                return Key::B;
+                return KeyboardKey::B;
             case GLFW_KEY_C:
-                return Key::C;
+                return KeyboardKey::C;
             case GLFW_KEY_D:
-                return Key::D;
+                return KeyboardKey::D;
             case GLFW_KEY_E:
-                return Key::E;
+                return KeyboardKey::E;
             case GLFW_KEY_F:
-                return Key::F;
+                return KeyboardKey::F;
             case GLFW_KEY_G:
-                return Key::G;
+                return KeyboardKey::G;
             case GLFW_KEY_H:
-                return Key::H;
+                return KeyboardKey::H;
             case GLFW_KEY_I:
-                return Key::I;
+                return KeyboardKey::I;
             case GLFW_KEY_J:
-                return Key::J;
+                return KeyboardKey::J;
             case GLFW_KEY_K:
-                return Key::K;
+                return KeyboardKey::K;
             case GLFW_KEY_L:
-                return Key::L;
+                return KeyboardKey::L;
             case GLFW_KEY_M:
-                return Key::M;
+                return KeyboardKey::M;
             case GLFW_KEY_N:
-                return Key::N;
+                return KeyboardKey::N;
             case GLFW_KEY_O:
-                return Key::O;
+                return KeyboardKey::O;
             case GLFW_KEY_P:
-                return Key::P;
+                return KeyboardKey::P;
             case GLFW_KEY_Q:
-                return Key::Q;
+                return KeyboardKey::Q;
             case GLFW_KEY_R:
-                return Key::R;
+                return KeyboardKey::R;
             case GLFW_KEY_S:
-                return Key::S;
+                return KeyboardKey::S;
             case GLFW_KEY_T:
-                return Key::T;
+                return KeyboardKey::T;
             case GLFW_KEY_U:
-                return Key::U;
+                return KeyboardKey::U;
             case GLFW_KEY_W:
-                return Key::W;
+                return KeyboardKey::W;
             case GLFW_KEY_V:
-                return Key::V;
+                return KeyboardKey::V;
             case GLFW_KEY_X:
-                return Key::X;
+                return KeyboardKey::X;
             case GLFW_KEY_Y:
-                return Key::Y;
+                return KeyboardKey::Y;
             case GLFW_KEY_Z:
-                return Key::Z;
+                return KeyboardKey::Z;
             case GLFW_KEY_LEFT_BRACKET:
-                return Key::LeftBracket;
+                return KeyboardKey::LeftBracket;
             case GLFW_KEY_BACKSLASH:
-                return Key::BackSlash;
+                return KeyboardKey::BackSlash;
             case GLFW_KEY_RIGHT_BRACKET:
-                return Key::RightBracket;
+                return KeyboardKey::RightBracket;
             case GLFW_KEY_GRAVE_ACCENT:
-                return Key::GraveAccent;
+                return KeyboardKey::GraveAccent;
             case GLFW_KEY_WORLD_1:
-                return Key::World1;
+                return KeyboardKey::World1;
             case GLFW_KEY_WORLD_2:
-                return Key::World2;
+                return KeyboardKey::World2;
             case GLFW_KEY_ESCAPE:
-                return Key::Escape;
+                return KeyboardKey::Escape;
             case GLFW_KEY_ENTER:
-                return Key::Enter;
+                return KeyboardKey::Enter;
             case GLFW_KEY_TAB:
-                return Key::Tab;
+                return KeyboardKey::Tab;
             case GLFW_KEY_BACKSPACE:
-                return Key::BackSpace;
+                return KeyboardKey::BackSpace;
             case GLFW_KEY_INSERT:
-                return Key::Insert;
+                return KeyboardKey::Insert;
             case GLFW_KEY_DELETE:
-                return Key::Delete;
+                return KeyboardKey::Delete;
             case GLFW_KEY_RIGHT:
-                return Key::Right;
+                return KeyboardKey::Right;
             case GLFW_KEY_LEFT:
-                return Key::Left;
+                return KeyboardKey::Left;
             case GLFW_KEY_DOWN:
-                return Key::Down;
+                return KeyboardKey::Down;
             case GLFW_KEY_UP:
-                return Key::Up;
+                return KeyboardKey::Up;
             case GLFW_KEY_PAGE_UP:
-                return Key::PageUp;
+                return KeyboardKey::PageUp;
             case GLFW_KEY_PAGE_DOWN:
-                return Key::PageDown;
+                return KeyboardKey::PageDown;
             case GLFW_KEY_HOME:
-                return Key::Home;
+                return KeyboardKey::Home;
             case GLFW_KEY_END:
-                return Key::End;
+                return KeyboardKey::End;
             case GLFW_KEY_CAPS_LOCK:
-                return Key::CapsLock;
+                return KeyboardKey::CapsLock;
             case GLFW_KEY_SCROLL_LOCK:
-                return Key::ScrollLock;
+                return KeyboardKey::ScrollLock;
             case GLFW_KEY_NUM_LOCK:
-                return Key::NumLock;
+                return KeyboardKey::NumLock;
             case GLFW_KEY_PRINT_SCREEN:
-                return Key::PrintScreen;
+                return KeyboardKey::PrintScreen;
             case GLFW_KEY_PAUSE:
-                return Key::Pause;
+                return KeyboardKey::Pause;
             case GLFW_KEY_F1:
-                return Key::F1;
+                return KeyboardKey::F1;
             case GLFW_KEY_F2:
-                return Key::F2;
+                return KeyboardKey::F2;
             case GLFW_KEY_F3:
-                return Key::F3;
+                return KeyboardKey::F3;
             case GLFW_KEY_F4:
-                return Key::F4;
+                return KeyboardKey::F4;
             case GLFW_KEY_F5:
-                return Key::F5;
+                return KeyboardKey::F5;
             case GLFW_KEY_F6:
-                return Key::F6;
+                return KeyboardKey::F6;
             case GLFW_KEY_F7:
-                return Key::F7;
+                return KeyboardKey::F7;
             case GLFW_KEY_F8:
-                return Key::F8;
+                return KeyboardKey::F8;
             case GLFW_KEY_F9:
-                return Key::F9;
+                return KeyboardKey::F9;
             case GLFW_KEY_F10:
-                return Key::F10;
+                return KeyboardKey::F10;
             case GLFW_KEY_F11:
-                return Key::F11;
+                return KeyboardKey::F11;
             case GLFW_KEY_F12:
-                return Key::F12;
+                return KeyboardKey::F12;
             case GLFW_KEY_F13:
-                return Key::F13;
+                return KeyboardKey::F13;
             case GLFW_KEY_F14:
-                return Key::F14;
+                return KeyboardKey::F14;
             case GLFW_KEY_F15:
-                return Key::F15;
+                return KeyboardKey::F15;
             case GLFW_KEY_F16:
-                return Key::F16;
+                return KeyboardKey::F16;
             case GLFW_KEY_F17:
-                return Key::F17;
+                return KeyboardKey::F17;
             case GLFW_KEY_F18:
-                return Key::F18;
+                return KeyboardKey::F18;
             case GLFW_KEY_F19:
-                return Key::F19;
+                return KeyboardKey::F19;
             case GLFW_KEY_F20:
-                return Key::F20;
+                return KeyboardKey::F20;
             case GLFW_KEY_F21:
-                return Key::F21;
+                return KeyboardKey::F21;
             case GLFW_KEY_F22:
-                return Key::F22;
+                return KeyboardKey::F22;
             case GLFW_KEY_F23:
-                return Key::F23;
+                return KeyboardKey::F23;
             case GLFW_KEY_F24:
-                return Key::F24;
+                return KeyboardKey::F24;
             case GLFW_KEY_F25:
-                return Key::F25;
+                return KeyboardKey::F25;
             case GLFW_KEY_KP_0:
-                return Key::Numpad0;
+                return KeyboardKey::Numpad0;
             case GLFW_KEY_KP_1:
-                return Key::Numpad1;
+                return KeyboardKey::Numpad1;
             case GLFW_KEY_KP_2:
-                return Key::Numpad2;
+                return KeyboardKey::Numpad2;
             case GLFW_KEY_KP_3:
-                return Key::Numpad3;
+                return KeyboardKey::Numpad3;
             case GLFW_KEY_KP_4:
-                return Key::Numpad4;
+                return KeyboardKey::Numpad4;
             case GLFW_KEY_KP_5:
-                return Key::Numpad5;
+                return KeyboardKey::Numpad5;
             case GLFW_KEY_KP_6:
-                return Key::Numpad6;
+                return KeyboardKey::Numpad6;
             case GLFW_KEY_KP_7:
-                return Key::Numpad7;
+                return KeyboardKey::Numpad7;
             case GLFW_KEY_KP_8:
-                return Key::Numpad8;
+                return KeyboardKey::Numpad8;
             case GLFW_KEY_KP_9:
-                return Key::Numpad9;
+                return KeyboardKey::Numpad9;
             case GLFW_KEY_KP_DECIMAL:
-                return Key::NumpadDecimal;
+                return KeyboardKey::NumpadDecimal;
             case GLFW_KEY_KP_DIVIDE:
-                return Key::NumpadDivide;
+                return KeyboardKey::NumpadDivide;
             case GLFW_KEY_KP_MULTIPLY:
-                return Key::NumpadMultiply;
+                return KeyboardKey::NumpadMultiply;
             case GLFW_KEY_KP_SUBTRACT:
-                return Key::NumpadSubtract;
+                return KeyboardKey::NumpadSubtract;
             case GLFW_KEY_KP_ADD:
-                return Key::NumpadAdd;
+                return KeyboardKey::NumpadAdd;
             case GLFW_KEY_KP_ENTER:
-                return Key::Enter;
+                return KeyboardKey::Enter;
             case GLFW_KEY_KP_EQUAL:
-                return Key::Equal;
+                return KeyboardKey::Equal;
             case GLFW_KEY_LEFT_SHIFT:
-                return Key::LeftShift;
+                return KeyboardKey::LeftShift;
             case GLFW_KEY_LEFT_CONTROL:
-                return Key::LeftControl;
+                return KeyboardKey::LeftControl;
             case GLFW_KEY_LEFT_ALT:
-                return Key::LeftAlt;
+                return KeyboardKey::LeftAlt;
             case GLFW_KEY_LEFT_SUPER:
-                return Key::LeftSuper;
+                return KeyboardKey::LeftSuper;
             case GLFW_KEY_RIGHT_SHIFT:
-                return Key::RightShift;
+                return KeyboardKey::RightShift;
             case GLFW_KEY_RIGHT_CONTROL:
-                return Key::RightControl;
+                return KeyboardKey::RightControl;
             case GLFW_KEY_RIGHT_ALT:
-                return Key::RightAlt;
+                return KeyboardKey::RightAlt;
             case GLFW_KEY_RIGHT_SUPER:
-                return Key::RightSuper;
+                return KeyboardKey::RightSuper;
             case GLFW_KEY_MENU:
-                return Key::Menu;
+                return KeyboardKey::Menu;
         }
-        return Key::Unknown;
+        return KeyboardKey::Unknown;
     }
 
 }

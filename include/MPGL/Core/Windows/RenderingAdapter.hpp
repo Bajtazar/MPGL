@@ -127,7 +127,7 @@ namespace mpgl {
          *
          * @param key the released key
          */
-        void onKeyRelease(Key const& key) noexcept final;
+        void onKeyRelease(KeyboardKey const& key) noexcept final;
 
         /**
          * Calls the onTextWrite method on the Render Window
@@ -145,7 +145,7 @@ namespace mpgl {
          *
          * @param key the pressed key
          */
-        void onKeyPress(Key const& key) noexcept final;
+        void onKeyPress(KeyboardKey const& key) noexcept final;
 
         /**
          * Calls the onScroll method on the Render Window

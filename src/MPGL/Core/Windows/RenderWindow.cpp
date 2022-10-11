@@ -165,7 +165,7 @@ namespace mpgl {
         eventManager->onMousePress(button);
     }
 
-    void RenderWindow::onKeyRelease(Key const& key) noexcept {
+    void RenderWindow::onKeyRelease(KeyboardKey const& key) noexcept {
         eventManager->onKeyRelease(key);
     }
 
@@ -175,7 +175,7 @@ namespace mpgl {
         eventManager->onTextWrite(unicodeString);
     }
 
-    void RenderWindow::onKeyPress(Key const& key) noexcept {
+    void RenderWindow::onKeyPress(KeyboardKey const& key) noexcept {
         eventManager->onKeyPress(key);
     }
 

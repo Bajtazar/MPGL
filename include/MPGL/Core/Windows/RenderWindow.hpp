@@ -153,7 +153,7 @@ namespace mpgl {
          *
          * @param key the released key
          */
-        void onKeyRelease(Key const& key) noexcept final;
+        void onKeyRelease(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs contained objects that unicode character
@@ -171,7 +171,7 @@ namespace mpgl {
          *
          * @param key the pressed key
          */
-        void onKeyPress(Key const& key) noexcept final;
+        void onKeyPress(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs contained objects that scroll has been moved
