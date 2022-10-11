@@ -114,7 +114,7 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     void PNGLoader<Policy>::interlance(FileIter& iter) {
-        for (auto const& [inY, inX, startY, startX] : InterlanceCoeff) {
+        for (auto const& [startX, startY, inX, inY] : InterlanceCoeff) {
             Image image{subimageDimensions(startX, startY, inX, inY)};
             Filters{image, *this}(iter);
             for (size_type y = startY, i = 0; y < pixels.getHeight();

@@ -311,7 +311,7 @@ namespace mpgl {
                 j < jBase + 8 && j < pixels.getWidth(); ++j)
             {
                 drawBlockOnImage(redMatrix, greenMatrix, blueMatrix,
-                    {i, j}, {iBase, jBase});
+                    {j, i}, {jBase, iBase});
             }
         }
     }
