@@ -839,67 +839,176 @@ namespace mpgl {
 
     namespace details {
 
+        /**
+         * The adaptor closure for the column view
+         */
         class ColumnViewAdaptorClosure {
         public:
-            constexpr ColumnViewAdaptorClosure(
-                std::size_t rowID) noexcept : rowID{rowID} {}
 
+            /**
+             * Constructs a new column view adaptor closure
+             * object
+             *
+             * @param columnID an index of the viewed column
+             */
+            constexpr ColumnViewAdaptorClosure(
+                std::size_t columnID) noexcept
+                    : columnID{columnID} {}
+
+            /**
+             * Returns a view to the given matrix
+             *
+             * @tparam Tp the matrix's type
+             * @param range an universal reference to the matrix
+             * @return the column view to the range
+             */
             template <MatrixType Tp>
             [[nodiscard]] constexpr auto operator() (
                 Tp&& matrix) const noexcept;
         private:
-            std::size_t                     rowID;
+            std::size_t                     columnID;
         };
 
+
+        /**
+         * The adaptor for the column view
+         */
         struct ColumnViewAdaptor {
 
+            /**
+             * Returns a view to the given matrix
+             *
+             * @tparam Tp the matrix's type
+             * @param range an universal reference to the matrix
+             * @param columnID an index of the viewed column
+             * @return the column view to the range
+             */
             template <MatrixType Tp>
             [[nodiscard]] constexpr auto operator() (
                 Tp&& matrix,
-                std::size_t rowID) const noexcept;
+                std::size_t columnID) const noexcept;
 
+           /**
+             * Returns a closure to the given view
+             *
+             * @param columnID an index of the viewed column
+             * @return the view closure
+             */
             [[nodiscard]] constexpr ColumnViewAdaptorClosure
                 operator() (std::size_t rowID) const noexcept;
 
         };
 
+        /**
+         * The adaptor closure for the column range view
+         */
         struct ColumnRangeViewAdaptorClosure {
 
+            /**
+             * Constructs a new column range view adaptor
+             * closure object
+             */
             constexpr ColumnRangeViewAdaptorClosure(
                 void) noexcept = default;
 
+            /**
+             * Returns a view to the given matrix
+             *
+             * @tparam Tp the matrix's type
+             * @param range an universal reference to the matrix
+             * @return the column view to the range
+             */
             template <MatrixType Tp>
             [[nodiscard]] constexpr auto operator() (
                 Tp&& matrix) const noexcept;
 
         };
 
+        /**
+         * The adaptor for the column range view
+         */
         struct ColumnRangeViewAdaptor {
 
+            /**
+             * Returns a view to the given matrix
+             *
+             * @tparam Tp the matrix's type
+             * @param range an universal reference to the matrix
+             * @return the column view to the range
+             */
             template <MatrixType Tp>
             [[nodiscard]] constexpr auto operator() (
                 Tp&& matrix) const noexcept;
 
+           /**
+             * Returns a closure to the given view
+             *
+             * @return the view closure
+             */
             [[nodiscard]] constexpr ColumnRangeViewAdaptorClosure
                 operator() (void) const noexcept;
 
         };
 
+        /**
+         * Connects the closure with the matrix
+         *
+         * @tparam Tp the matrix type
+         * @tparam Field the field name
+         * @param range an universal reference to the
+         * matrix object
+         * @param closure a constant reference to the
+         * closure object
+         * @return the view of the matrix
+         */
         template <MatrixType Tp>
         [[nodiscard]] constexpr auto operator | (
             Tp&& matrix,
             ColumnViewAdaptorClosure const& closure) noexcept;
 
+        /**
+         * Connects the adaptor with the matrix
+         *
+         * @tparam Tp the matrix type
+         * @tparam Field the field name
+         * @param range an universal reference to the
+         * matrix object
+         * @param closure a constant reference to the
+         * closure object
+         * @return the view of the matrix
+         */
         template <MatrixType Tp>
         [[nodiscard]] constexpr auto operator | (
             Tp&& matrix,
             ColumnViewAdaptor const& adaptor) noexcept;
 
+        /**
+         * Connects the closure with the matrix
+         *
+         * @tparam Tp the matrix type
+         * @tparam Field the field name
+         * @param range an universal reference to the
+         * matrix object
+         * @param closure a constant reference to the
+         * closure object
+         * @return the view of the matrix
+         */
         template <MatrixType Tp>
         [[nodiscard]] constexpr auto operator | (
             Tp&& matrix,
             ColumnRangeViewAdaptorClosure const& closure) noexcept;
 
+        /**
+         * Connects the adaptor with the matrix
+         *
+         * @tparam Tp the matrix type
+         * @tparam Field the field name
+         * @param range an universal reference to the
+         * matrix object
+         * @param closure a constant reference to the
+         * closure object
+         * @return the view of the matrix
+         */
         template <MatrixType Tp>
         [[nodiscard]] constexpr auto operator | (
             Tp&& matrix,

@@ -552,22 +552,22 @@ namespace mpgl::details {
         ColumnViewAdaptorClosure::operator() (
             Tp&& matrix) const noexcept
     {
-        return ColumnView{std::forward<Tp>(matrix), rowID};
+        return ColumnView{std::forward<Tp>(matrix), columnID};
     }
 
     template <MatrixType Tp>
     [[nodiscard]] constexpr auto ColumnViewAdaptor::operator() (
         Tp&& matrix,
-        std::size_t rowID) const noexcept
+        std::size_t columnID) const noexcept
     {
-        return ColumnView{std::forward<Tp>(matrix), rowID};
+        return ColumnView{std::forward<Tp>(matrix), columnID};
     }
 
     [[nodiscard]] constexpr ColumnViewAdaptorClosure
         ColumnViewAdaptor::operator() (
-            std::size_t rowID) const noexcept
+            std::size_t columnID) const noexcept
     {
-        return ColumnViewAdaptorClosure{rowID};
+        return ColumnViewAdaptorClosure{columnID};
     }
 
     template <MatrixType Tp>
