@@ -56,9 +56,11 @@ namespace mpgl {
 
     template <typename MatrixTp>
     constexpr ColumnView<MatrixTp>::iterator::iterator(
-        owner ownerPtr,
+        MatrixTp&& matrix,
+        std::size_t columnID,
         std::size_t rowID) noexcept
-            : rowID{rowID}, ownerPtr{ownerPtr} {}
+            : matrix{std::forward<MatrixTp>(matrix)},
+            columnID{columnID}, rowID{rowID} {}
 
     template <typename MatrixTp>
     constexpr ColumnView<MatrixTp>::iterator&
@@ -99,7 +101,7 @@ namespace mpgl {
         ColumnView<MatrixTp>::iterator::operator*(
             void) const noexcept
     {
-        return ownerPtr->matrix.base()[rowID][ownerPtr->columnID];
+        return matrix.base()[rowID][columnID];
     }
 
     template <typename MatrixTp>
@@ -107,8 +109,7 @@ namespace mpgl {
         ColumnView<MatrixTp>::iterator::operator->(
             void) const noexcept
     {
-        return std::addressof(
-            ownerPtr->matrix.base()[rowID][ownerPtr->columnID]);
+        return std::addressof(matrix.base()[rowID][columnID]);
     }
 
     template <typename MatrixTp>
@@ -134,7 +135,7 @@ namespace mpgl {
         ColumnView<MatrixTp>::iterator::operator[](
             difference_type offset) const noexcept
     {
-        return ownerPtr->matrix.base()[rowID + offset][ownerPtr->columnID];
+        return matrix.base()[rowID + offset][columnID];
     }
 
     template <typename MatrixTp>
@@ -227,9 +228,9 @@ namespace mpgl {
 
     template <typename Tp>
     constexpr ColumnRangeView<Tp>::iterator::iterator(
-        ColumnRangeView const* ownerPtr,
+        Tp&& matrix,
         std::size_t columnID) noexcept
-            : ownerPtr{ownerPtr}, columnID{columnID} {}
+            : matrix{std::forward<Tp>(matrix)}, columnID{columnID} {}
 
     template <typename Tp>
     constexpr ColumnRangeView<Tp>::iterator&
@@ -253,7 +254,7 @@ namespace mpgl {
         ColumnRangeView<Tp>::iterator::operator*(
             void) const noexcept
     {
-        return value_type{ownerPtr->matrix.base(), columnID};
+        return value_type{matrix.base(), columnID};
     }
 
     template <typename MatrixTp>
@@ -563,7 +564,7 @@ namespace mpgl::details {
     }
 
     template <typename Tp>
-    [[nodiscard]] auto operator | (
+    [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnViewAdaptorClosure const& closure) noexcept
     {
@@ -571,7 +572,7 @@ namespace mpgl::details {
     }
 
     template <typename Tp>
-    [[nodiscard]] auto operator | (
+    [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnViewAdaptor const& adaptor) noexcept
     {
@@ -579,7 +580,7 @@ namespace mpgl::details {
     }
 
     template <typename Tp>
-    [[nodiscard]] auto operator | (
+    [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnRangeViewAdaptorClosure const& closure) noexcept
     {
@@ -587,7 +588,7 @@ namespace mpgl::details {
     }
 
     template <typename Tp>
-    [[nodiscard]] auto operator | (
+    [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnRangeViewAdaptor const& adaptor) noexcept
     {

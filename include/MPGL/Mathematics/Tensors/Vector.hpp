@@ -68,8 +68,7 @@ namespace mpgl {
         /**
          * Constructs a new vector object
          */
-        constexpr Vector(void) noexcept
-            : data{} {}
+        constexpr Vector(void) noexcept = default;
 
         /**
          * Returns the size of the vector [the number of its
@@ -510,7 +509,7 @@ namespace mpgl {
             get(void) && noexcept
                 { return std::move(data[N]); }
     private:
-        std::array<Tp, Size>                    data;
+        std::array<Tp, Size>                    data = {};
     };
 
     /**

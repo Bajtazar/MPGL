@@ -24,6 +24,7 @@
  *  distribution
  */
 #include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
+#include <MPGL/Mathematics/Tensors/MatrixFunctions.hpp>
 #include <MPGL/Core/Model.hpp>
 
 namespace mpgl {

@@ -60,8 +60,7 @@ namespace mpgl {
         /**
          * Constructs a new matrix object
          */
-        constexpr Matrix(void) noexcept
-            : base{} {}
+        constexpr Matrix(void) noexcept = default;
 
         /**
          * Inverses the sign of the matrix's elements
@@ -81,12 +80,22 @@ namespace mpgl {
 
         /**
          * Returns the height of the matrix
-         * [the number of its columns]
+         * [the number of its rows]
          *
          * @return the height of the matrix
          */
         [[nodiscard]] static constexpr std::size_t
             height(void) noexcept
+                { return Rows; }
+
+        /**
+         * Returns the width of the matrix
+         * [the number of its columns]
+         *
+         * @return the width of the matrix
+         */
+        [[nodiscard]] static constexpr std::size_t
+            width(void) noexcept
                 { return Cols; }
 
         using iterator = typename container::iterator;
@@ -441,7 +450,7 @@ namespace mpgl {
         constexpr Matrix& operator|=(Tp const& right
             ) requires mpgl_Operable(Tp, |);
     private:
-        container                           base;
+        container                           base = {};
     };
 
     /**
