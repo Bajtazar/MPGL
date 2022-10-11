@@ -104,6 +104,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Events/Management/BasicWindowEventManager.cpp
     ${MPGL_SOURCES}/Platform/Features/Windows/WindowPlatform.cpp
     ${MPGL_SOURCES}/Platform/Features/Windows/GLFWWindow.cpp
+    ${MPGL_SOURCES}/Platform/Features/Devices/GLFWMouse.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)

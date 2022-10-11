@@ -25,23 +25,20 @@
  */
 #pragma once
 
-#include <MPGL/Traits/Types.hpp>
+#include <MPGL/IO/Devices/Mouse.hpp>
 
-namespace mpgl {
+namespace mpgl::platform {
 
     /**
-     * Describes the mouse buttons
+     * Decodes the GLFW's mouse button. Returns
+     * mpgl::MouseButton::Unknown when the given
+     * mouse button value is not known
+     *
+     * @param glfwKey the mouse button encoded by
+     * the GLFW 3.3 library
+     * @return the mouse button used by the MPGL
      */
-    enum class MouseButton : uint8 {
-        Left            = 0x00,
-        Right           = 0x01,
-        Middle          = 0x02,
-        Button4         = 0x03,
-        Button5         = 0x04,
-        Button6         = 0x05,
-        Button7         = 0x06,
-        Button8         = 0x07,
-        Unknown         = 0x08
-    };
+    [[nodiscard]] MouseButton decodeGLFWMouseButton(
+        int32 glfwMouseButton) noexcept;
 
 }

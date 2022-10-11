@@ -23,25 +23,35 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#pragma once
+#include <MPGL/Platform/Features/Devices/GLFWMouse.hpp>
 
-#include <MPGL/Traits/Types.hpp>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
-namespace mpgl {
+namespace mpgl::platform {
 
-    /**
-     * Describes the mouse buttons
-     */
-    enum class MouseButton : uint8 {
-        Left            = 0x00,
-        Right           = 0x01,
-        Middle          = 0x02,
-        Button4         = 0x03,
-        Button5         = 0x04,
-        Button6         = 0x05,
-        Button7         = 0x06,
-        Button8         = 0x07,
-        Unknown         = 0x08
-    };
+    [[nodiscard]] MouseButton decodeGLFWMouseButton(
+        int32 glfwMouseButton) noexcept
+    {
+        switch (glfwMouseButton) {
+            case GLFW_MOUSE_BUTTON_LEFT:
+                return MouseButton::Left;
+            case GLFW_MOUSE_BUTTON_RIGHT:
+                return MouseButton::Right;
+            case GLFW_MOUSE_BUTTON_MIDDLE:
+                return MouseButton::Middle;
+            case GLFW_MOUSE_BUTTON_4:
+                return MouseButton::Button4;
+            case GLFW_MOUSE_BUTTON_5:
+                return MouseButton::Button5;
+            case GLFW_MOUSE_BUTTON_6:
+                return MouseButton::Button6;
+            case GLFW_MOUSE_BUTTON_7:
+                return MouseButton::Button7;
+            case GLFW_MOUSE_BUTTON_8:
+                return MouseButton::Button8;
+        }
+        return MouseButton::Unknown;
+    }
 
 }

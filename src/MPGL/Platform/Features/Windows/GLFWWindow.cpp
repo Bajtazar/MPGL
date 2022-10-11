@@ -26,6 +26,7 @@
 #include <MPGL/Exceptions/Window/WindowInvalidArgsException.hpp>
 #include <MPGL/Exceptions/Window/WindowGladException.hpp>
 #include <MPGL/Platform/Features/Windows/GLFWWindow.hpp>
+#include <MPGL/Platform/Features/Devices/GLFWMouse.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
 
 #include <glad/glad.h>
@@ -215,8 +216,7 @@ namespace mpgl::platform {
     {
         GLFWWindow* render = static_cast<GLFWWindow*>(
             glfwGetWindowUserPointer(window));
-        auto buttonCode = static_cast<MouseButton>(
-            static_cast<uint8>(button));
+        auto buttonCode = decodeGLFWMouseButton(button);
         if (action == GLFW_PRESS)
             render->eventManager->onMousePress(buttonCode);
         else if (action == GLFW_RELEASE)
