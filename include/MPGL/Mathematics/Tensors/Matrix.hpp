@@ -249,7 +249,7 @@ namespace mpgl {
          * @return the reference to element with the given index
          */
         template <std::integral Ip>
-        [[nodiscard]] constexpr value_type& operator[] (
+        [[nodiscard]] constexpr element_type& operator[] (
             Vector2<Ip> const& index) noexcept
                 { return base[index[0]][index[1]]; }
 
@@ -262,7 +262,7 @@ namespace mpgl {
          * the given index
          */
         template <std::integral Ip>
-        [[nodiscard]] constexpr value_type const& operator[] (
+        [[nodiscard]] constexpr element_type const& operator[] (
             Vector2<Ip> const& index) const noexcept
                 { return base[index[0]][index[1]]; }
 

@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <MPGL/Mathematics/Ranges.hpp>
+
 namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
