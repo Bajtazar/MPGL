@@ -585,30 +585,71 @@ namespace mpgl {
     ColumnRangeView(Tp&& base) ->
         ColumnRangeView<std::views::all_t<Tp>>;
 
+    /**
+     * Adds vector and column together
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator+(
             typename ColumnView<MatrixTp>::vector_form const& left,
             ColumnView<MatrixTp> const& right) noexcept;
 
+    /**
+     * Subtracts vector from the column
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator-(
             typename ColumnView<MatrixTp>::vector_form const& left,
             ColumnView<MatrixTp> const& right) noexcept;
 
+    /**
+     * Multiplies vector and column together
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator*(
             typename ColumnView<MatrixTp>::vector_form const& left,
             ColumnView<MatrixTp> const& right) noexcept;
 
+    /**
+     * Divides the elements of vector by the elements of the
+     * column
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator/(
             typename ColumnView<MatrixTp>::vector_form const& left,
             ColumnView<MatrixTp> const& right) noexcept;
 
+    /**
+     * Calculates the modulo of the vector and column elements
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator%(
@@ -617,6 +658,15 @@ namespace mpgl {
             ) noexcept requires mpgl_Operable(
                 typename ColumnView<MatrixTp>::value_type, %);
 
+    /**
+     * Calculates the bitwise-xor of the vector and column
+     * elements
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator^(
@@ -625,6 +675,15 @@ namespace mpgl {
             ) noexcept requires mpgl_Operable(
                 typename ColumnView<MatrixTp>::value_type, ^);
 
+    /**
+     * Calculates the bitwise-and of the vector and the other vector
+     *
+     * @tparam Tp the vector's value type
+     * @tparam Rows the vector's rows
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator&(
@@ -633,6 +692,15 @@ namespace mpgl {
             ) noexcept requires mpgl_Operable(
                 typename ColumnView<MatrixTp>::value_type, &);
 
+    /**
+     * Calculates the bitwise-or of the vector and the other vector
+     *
+     * @tparam Tp the vector's value type
+     * @tparam Rows the vector's rows
+     * @param left the constant reference to the left vector
+     * @param right the constant reference to the right column
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator|(
@@ -641,6 +709,14 @@ namespace mpgl {
             ) noexcept requires mpgl_Operable(
                 typename ColumnView<MatrixTp>::value_type, |);
 
+    /**
+     * Adds vector and column together
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator+(
@@ -648,6 +724,14 @@ namespace mpgl {
             typename ColumnView<MatrixTp>::vector_form const& right
             ) noexcept;
 
+    /**
+     * Subtracts vector from the column
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator-(
@@ -655,6 +739,14 @@ namespace mpgl {
             typename ColumnView<MatrixTp>::vector_form const& right
             ) noexcept;
 
+    /**
+     * Multiplies vector and column together
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator*(
@@ -662,6 +754,15 @@ namespace mpgl {
             typename ColumnView<MatrixTp>::vector_form const& right
             ) noexcept;
 
+    /**
+     * Divides the elements of vector by the elements of the
+     * column
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator/(
@@ -669,6 +770,14 @@ namespace mpgl {
             typename ColumnView<MatrixTp>::vector_form const& right
             ) noexcept;
 
+    /**
+     * Calculates the modulo of the vector and column elements
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator%(
@@ -677,6 +786,15 @@ namespace mpgl {
             ) noexcept requires mpgl_Operable(
                 typename ColumnView<MatrixTp>::value_type, %);
 
+    /**
+     * Calculates the bitwise-xor of the vector and column
+     * elements
+     *
+     * @tparam MatrixTp the matrix's view type
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator^(
@@ -685,6 +803,15 @@ namespace mpgl {
             ) noexcept requires mpgl_Operable(
                 typename ColumnView<MatrixTp>::value_type, ^);
 
+    /**
+     * Calculates the bitwise-and of the vector and the other vector
+     *
+     * @tparam Tp the vector's value type
+     * @tparam Rows the vector's rows
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator&(
@@ -693,6 +820,15 @@ namespace mpgl {
             ) noexcept requires mpgl_Operable(
                 typename ColumnView<MatrixTp>::value_type, &);
 
+    /**
+     * Calculates the bitwise-or of the vector and the other vector
+     *
+     * @tparam Tp the vector's value type
+     * @tparam Rows the vector's rows
+     * @param left the constant reference to the left column
+     * @param right the constant reference to the right vector
+     * @return the result vector
+     */
     template <MatrixType MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator|(
