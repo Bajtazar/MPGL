@@ -27,7 +27,7 @@
 
 #include <MPGL/Exceptions/HuffmanTree/HuffmanTreeEmptyMapException.hpp>
 #include <MPGL/Exceptions/HuffmanTree/HuffmanTreeUnknownToken.hpp>
-#include <MPGL/Collections/MinHeap.hpp>
+#include <MPGL/Collections/PriorityQueue.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 #include <MPGL/IO/Readers.hpp>
@@ -291,30 +291,49 @@ namespace mpgl {
                 notLeaf{false} {}
 
             /**
-             * Returns whether one node has higher frequency
-             * than another
+             * Returns the result of the starship operator on the
+             * nodes frequencies
              *
              * @param left the constant reference to the left node
              * @param right the constant reference to the right node
-             * @return if left node has higher frequency
+             * @return the result of the starship operator on the
+             * nodes frequencies
              */
-            friend bool operator> (
+            friend auto operator<=> (
                 Node const& left,
                 Node const& right) noexcept
-                    { return left.frequency > right.frequency; }
+                    { return left.frequency <=> right.frequency; }
 
             /**
-             * Returns whether one node has lower frequency
-             * than another
+             * Returns whether nodes has the same frequency
              *
              * @param left the constant reference to the left node
              * @param right the constant reference to the right node
-             * @return if left node has lower frequency
+             * @return if nodes has the same frequency
              */
-            friend bool operator< (
+            friend bool operator== (
                 Node const& left,
                 Node const& right) noexcept
-                    { return left.frequency < right.frequency; }
+                    { return left.frequency == right.frequency; }
+        };
+
+        /**
+         * Compares the playloads of the node pointers
+         */
+        struct NodePtrComparator {
+
+            /**
+             * Compares two node pointers payload with each other
+             *
+             * @param left the constant reference to the left pointer
+             * @param right the constant reference to the right pointer
+             * @return if the left payload is bigger than the right one
+             */
+            [[nodiscard]] bool operator() (
+                NodePtr const& left,
+                NodePtr const& right) const noexcept
+                    { return (*left) > (*right); }
+
         };
 
         /**
@@ -331,6 +350,8 @@ namespace mpgl {
             bitsOf<CharType>()>                     CountedArray;
         typedef std::vector<
             std::pair<uint8, uint8>>                CharacterLengthArray;
+        typedef PriorityQueue<NodePtr,
+            NodePtrComparator>                      MinQueue;
 
         /**
          * Walks through the tree and saves the tokens codes
@@ -374,7 +395,7 @@ namespace mpgl {
          * @param heap the reference to the minimum headp
          * with the nodes
          */
-        void emplaceNodes(MinHeap<NodePtr>& heap);
+        void emplaceNodes(MinQueue& heap);
 
         /**
          * Generates count array for the given lengths range

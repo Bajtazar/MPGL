@@ -27,14 +27,14 @@
 
 namespace mpgl {
 
-    template <InstanceOf<Drawable> Base,
+    template <SpecializationOf<Drawable> Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::draw(void) const noexcept {
         std::ranges::for_each(*this,
             [](auto const& drawable){ drawable.draw(); });
     }
 
-    template <InstanceOf<Drawable> Base,
+    template <SpecializationOf<Drawable> Base,
         std::ranges::input_range Range>
     void DrawableCollection<Base, Range>::draw(
         std::size_t begin,

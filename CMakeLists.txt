@@ -59,7 +59,6 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Figures/Primitives/Helpers/LineLoopHelpers.cpp
     ${MPGL_SOURCES}/Core/Figures/Meshes/StaticMesh.cpp
     ${MPGL_SOURCES}/Core/Figures/Meshes/DynamicMesh.cpp
-    ${MPGL_SOURCES}/Core/Windows/WindowPlatform.cpp
     ${MPGL_SOURCES}/Core/Windows/Window.cpp
     ${MPGL_SOURCES}/Core/Windows/RenderWindow.cpp
     ${MPGL_SOURCES}/Core/Windows/RenderingAdapter.cpp
@@ -103,12 +102,19 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Iterators/SafeIterator.cpp
     ${MPGL_SOURCES}/Events/Registers/TickRegister.cpp
     ${MPGL_SOURCES}/Events/Management/BasicWindowEventManager.cpp
+    ${MPGL_SOURCES}/Platform/Features/Windows/WindowPlatform.cpp
+    ${MPGL_SOURCES}/Platform/Features/Windows/GLFWWindow.cpp
+    ${MPGL_SOURCES}/Platform/Features/Devices/GLFWKeyboard.cpp
+    ${MPGL_SOURCES}/Platform/Features/Devices/GLFWMouse.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "MPGL_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"")
+
+set(MPGL_RELEASE_FLAGS "-Wall -Wextra -Werror -pedantic -O3")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${MPGL_RELEASE_FLAGS}")
 
 # configure_file(mpgl.pc.in mpgl.pc @ONLY)
 

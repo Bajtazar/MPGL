@@ -36,7 +36,7 @@ namespace mpgl {
     {
         get<"texCoords">(triangle[0]) = Vector2f{0, 0};
         get<"texCoords">(triangle[1]) = Vector2f{1, 0};
-        get<"texCoords">(triangle[2]) = Vector2f{0.5, 1.};
+        get<"texCoords">(triangle[2]) = Vector2f{0.5, 1};
     }
 
     template <

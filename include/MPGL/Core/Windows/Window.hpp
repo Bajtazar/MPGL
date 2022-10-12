@@ -25,8 +25,9 @@
  */
 #pragma once
 
-#include <MPGL/Core/Windows/WindowPlatform.hpp>
+#include <MPGL/Platform/Features/Windows/PlatformHandler.hpp>
 #include <MPGL/Core/Camera/StaticCamera.hpp>
+#include <MPGL/Core/Windows/WindowBase.hpp>
 
 namespace mpgl {
 
@@ -35,7 +36,9 @@ namespace mpgl {
      * Calls the specific event manager method when the designated
      * event occurs
      */
-    class Window : public WindowPlatform {
+    class Window :
+        private platform::PlatformHandler,
+        public WindowBase {
     public:
         using String = std::string;
         using Paths = std::vector<String>;
@@ -59,11 +62,11 @@ namespace mpgl {
             EventManagerPtr eventManager = defaultManager(),
             Paths const& shaderDirectories = defaultShaderDirs());
 
-        Window(Window const& window) noexcept = delete;
-        Window(Window&& window) noexcept = delete;
+        Window(Window const& window) = delete;
+        Window(Window&& window) noexcept = default;
 
-        Window& operator= (Window const& window) noexcept = delete;
-        Window& operator= (Window&& window) noexcept = delete;
+        Window& operator= (Window const& window) = delete;
+        Window& operator= (Window&& window) noexcept = default;
 
         /**
          * Sets this window as a context one
@@ -86,6 +89,52 @@ namespace mpgl {
          */
         void setTickrate(std::size_t ticks) noexcept;
 
+       /**
+         * Returns the window dimensions vector
+         *
+         * @return the constaint reference to the window dimensions
+         * vector
+         */
+        [[nodiscard]] Vector2u const&
+            getWindowDimensions(void) const noexcept;
+
+        /**
+         * Returns the window title
+         *
+         * @return the constant reference to the window title
+         * string
+         */
+        [[nodiscard]] std::string const&
+            getWindowTitle(void) const noexcept;
+
+        /**
+         * Closes the window
+         */
+        void closeWindow(void) noexcept;
+
+        /**
+         * Opens the window
+         */
+        void openWindow(void) noexcept;
+
+        /**
+         * Sets the position of the window on the screen
+         *
+         * @param position a constant reference to the
+         * new position vector
+         */
+        void setPosition(Vector2u const& position) noexcept;
+
+        /**
+         * Minimizes the window
+         */
+        void minimize(void) noexcept;
+
+        /**
+         * Maximizes the window
+         */
+        void maximize(void) noexcept;
+
         /**
          * Draws frames until the window has to be closed. Draws
          * only 2D drawables
@@ -93,7 +142,7 @@ namespace mpgl {
          * @param background a background color
          */
         void windowLoop(
-            Color const& background = Color::Black) noexcept;
+            Color const& background = colors::black) noexcept;
 
         /**
          * Draws frames until the window has to be closed. Draws
@@ -110,7 +159,7 @@ namespace mpgl {
         template <std::derived_from<Camera> CameraTp = StaticCamera>
         void windowLoop(
             Matrix4f const& projection,
-            Color const& background = Color::Black,
+            Color const& background = colors::black,
             std::shared_ptr<CameraTp> cameraPtr = defaultCamera()
             ) noexcept;
 
@@ -127,7 +176,7 @@ namespace mpgl {
          *
          * @return the window screen shot
          */
-        [[nodiscard]] Image saveWindowScreen(void) const final;
+        [[nodiscard]] Image saveWindowScreen(void) const;
 
         /**
          * Destroy the Window object
@@ -139,6 +188,8 @@ namespace mpgl {
         typedef ThreadClock::time_point             TimePoint;
         typedef std::shared_ptr<StaticCamera>       StaticCameraPtr;
         typedef std::shared_ptr<Camera>             CameraPtr;
+        typedef typename platform::PlatformHandler
+            ::WindowPtr                             WindowPtr;
 
         /**
          * Draws 2D drawables on the screen
@@ -185,6 +236,23 @@ namespace mpgl {
         TimePoint                                   lastTime;
 
         /**
+         * Returns the default platform-dependent implementation
+         * of the window (GLFWWindow)
+         *
+         * @param dimensions a constant reference to the window's
+         * dimensions
+         * @param title a constant reference to the window's
+         * dimensions
+         * @param options a constant reference to the window's
+         * options
+         * @return the default window implementation
+         */
+        static WindowPtr defaultWindowPlatfrom(
+            Vector2u const& dimensions,
+            String const& title,
+            Options const& options);
+
+        /**
          * Returns the default event manager for the window
          * (BasicWindowEventManager)
          *
@@ -205,6 +273,9 @@ namespace mpgl {
          * @return the default camera
          */
         static StaticCameraPtr defaultCamera(void) noexcept;
+
+        static auto constexpr                       Drawer =
+            [](auto const& drawable){ drawable->draw(); };
     };
 
 }

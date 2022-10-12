@@ -38,7 +38,7 @@ namespace mpgl {
      *
      * @tparam Handles the shared pointer resources types
      */
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     class DeferredExecutionWrapper {
     public:
         /**

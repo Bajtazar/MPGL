@@ -93,7 +93,7 @@ namespace mpgl {
         auto decoded = ZlibDecoder{std::move(rawFileData), policy}();
         auto iter = makeIterator<Policy>(decoded.cbegin(), decoded.cend());
         if (headerData.interlance)
-            return interlance(policy, iter);
+            return interlance(iter);
         Filters{pixels, *this}(iter);
     }
 
@@ -113,11 +113,8 @@ namespace mpgl {
     }
 
     template <security::SecurityPolicy Policy>
-    void PNGLoader<Policy>::interlance(
-        Policy policy,
-        FileIter& iter)
-    {
-        for (auto const& [inY, inX, startY, startX] : InterlanceCoeff) {
+    void PNGLoader<Policy>::interlance(FileIter& iter) {
+        for (auto const& [startX, startY, inX, inY] : InterlanceCoeff) {
             Image image{subimageDimensions(startX, startY, inX, inY)};
             Filters{image, *this}(iter);
             for (size_type y = startY, i = 0; y < pixels.getHeight();

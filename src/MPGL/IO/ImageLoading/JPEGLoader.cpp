@@ -68,10 +68,7 @@ namespace mpgl {
         : JPEGLoader{Policy{}, filePath} {}
 
     template <security::SecurityPolicy Policy>
-    void JPEGLoader<Policy>::parseNextChunk(
-        FileIter& file,
-        uint16 signature)
-    {
+    void JPEGLoader<Policy>::parseNextChunk(uint16 signature) {
         if (signature == 0xFFD9) {
             endOfImage = true;
             return;
@@ -86,7 +83,7 @@ namespace mpgl {
         if (readType<uint16, true>(file) != 0xFFD8)
             throw ImageLoadingInvalidTypeException{filePath};
         while (!endOfImage) {
-            parseNextChunk(file, readType<uint16, true>(file));
+            parseNextChunk(readType<uint16, true>(file));
             while (!parsingQueue.empty()) {
                 auto chunk = std::move(parsingQueue.front());
                 parsingQueue.pop();
@@ -101,13 +98,13 @@ namespace mpgl {
         uint8 id,
         int16& coeff)
     {
-        uint8 code = huffmanTables.at(false).at(id)->decoder(iter);
+        uint8 code = huffmanTables.at(DC_CODE).at(id)->decoder(iter);
         uint16 bits = readRNBits<uint16>(code, iter);
         coeff += decodeNumber(code, bits);
         std::array<int16, 64> data{};
         data.front() = coeff
             * quantizationTables.at(id)->information.at(0);
-        decodeMatrix(data, huffmanTables.at(true).at(id),
+        decodeMatrix(data, huffmanTables.at(AC_CODE).at(id),
             quantizationTables.at(id), iter);
         auto zigzaged = ZigZacRange<8>::fromZigZac(data);
         ifct(zigzaged);
@@ -216,11 +213,17 @@ namespace mpgl {
         if (0xE0 & header)
             throw ImageLoadingFileCorruptionException{
                 this->loader.filePath};
-        this->loader.huffmanTables[static_cast<bool>(
-            (0x10 & header) >> 4)].emplace(
+        this->loader.huffmanTables[coding(header)].emplace(
                 static_cast<uint8>(0xF & header),
                 std::make_unique<HuffmanTable>(HuffmanTree<uint16>{
                     symbolsLengths, characters}));
+    }
+
+    template <security::SecurityPolicy Policy>
+    bool JPEGLoader<Policy>::DHTChunk::coding(
+        uint8 header) const noexcept
+    {
+        return ((0x10 & header) >> 4) == 0x01;
     }
 
     template <security::SecurityPolicy Policy>
@@ -276,8 +279,7 @@ namespace mpgl {
             auto byte = readType<uint8>(data);
             if (byte == 0xFF)
                 if (uint8 header = readType<uint8>(data))
-                    return this->loader.parseNextChunk(data,
-                        0xFF00 | header);
+                    return this->loader.parseNextChunk(0xFF00 | header);
             this->loader.imageData.push_back(byte);
         }
     }
@@ -315,7 +317,7 @@ namespace mpgl {
                 j < jBase + 8 && j < pixels.getWidth(); ++j)
             {
                 drawBlockOnImage(redMatrix, greenMatrix, blueMatrix,
-                    {i, j}, {iBase, jBase});
+                    {j, i}, {jBase, iBase});
             }
         }
     }

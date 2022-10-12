@@ -317,7 +317,7 @@ namespace mpgl {
     {
         switch (index) {
             case Newline:
-                return loadNewline(subfont, level, scale);
+                return loadNewline();
             case Tabulator:
                 return loadTab(subfont, level, scale);
             default:
@@ -338,11 +338,7 @@ namespace mpgl {
     }
 
     template <Dimension Dim>
-    void Text<Dim>::loadNewline(
-        Subfont& subfont,
-        uint8 level,
-        float32 scale)
-    {
+    void Text<Dim>::loadNewline(void){
         positionSpace.move(getPosition());
         positionSpace.advance({0.f, -1.1f * textSize});
         emplaceModifiers();

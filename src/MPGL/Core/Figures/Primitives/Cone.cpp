@@ -87,7 +87,7 @@ namespace mpgl {
         Indices& indices,
         size_t segments)
     {
-        for (auto i = 1; i < segments; ++i)
+        for (size_t i = 1; i < segments; ++i)
             addTriangle(indices, 0, i, i + 1);
         addTriangle(indices, 0, 1, segments);
     }

@@ -79,7 +79,7 @@ namespace mpgl {
          */
         Polygon(
             std::size_t vertices = 0,
-            Color const& color = Color::White);
+            Color const& color = colors::white);
 
         /**
          * Constructs a new circle-like Polygon object with
@@ -95,7 +95,7 @@ namespace mpgl {
             Vector2f const& center,
             float32 radius = 0.f,
             std::size_t segments = 0,
-            Color const& color = Color::White
+            Color const& color = colors::white
             ) requires TwoDimensional<Dim>;
 
         Polygon(Polygon const& polygon) = default;

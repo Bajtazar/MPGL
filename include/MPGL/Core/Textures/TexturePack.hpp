@@ -41,9 +41,9 @@ namespace mpgl {
      */
     class TexturePack {
     public:
-        typedef std::string                         Key;
+        typedef std::string                         KeyboardKey;
         typedef Texture                             Value;
-        typedef std::map<Key, Value>                TextureMap;
+        typedef std::map<KeyboardKey, Value>        TextureMap;
         typedef typename TextureMap::value_type     value_type;
         typedef typename TextureMap::size_type      size_type;
 
@@ -239,7 +239,7 @@ namespace mpgl {
          * reference to default texture
          */
         [[nodiscard]] Value const&
-            operator[] (Key const& key) const noexcept;
+            operator[] (KeyboardKey const& key) const noexcept;
 
         /**
          * Returns the number of stored textures without the

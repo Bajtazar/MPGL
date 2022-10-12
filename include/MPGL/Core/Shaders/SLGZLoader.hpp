@@ -49,7 +49,8 @@ namespace mpgl {
          *
          * @param token the security policy token
          */
-        explicit SLGZLoader(Policy token = {}) noexcept {}
+        explicit SLGZLoader([[maybe_unused]]
+            Policy token = {}) noexcept {}
 
         /**
          * Parses the SLGZ file format and returns a map containing

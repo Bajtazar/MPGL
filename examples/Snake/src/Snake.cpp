@@ -86,22 +86,22 @@ void Snake::onTick(
     }
 }
 
-void Snake::onKeyPress(Key const& key) noexcept {
+void Snake::onKeyPress(KeyboardKey const& key) noexcept {
     switch (key) {
-        case Key::Right:
-        case Key::D:
+        case KeyboardKey::Right:
+        case KeyboardKey::D:
             momentum = Vector2si{1, 0};
             break;
-        case Key::Left:
-        case Key::A:
+        case KeyboardKey::Left:
+        case KeyboardKey::A:
             momentum = Vector2si{-1, 0};
             break;
-        case Key::Down:
-        case Key::S:
+        case KeyboardKey::Down:
+        case KeyboardKey::S:
             momentum = Vector2si{0, -1};
             break;
-        case Key::Up:
-        case Key::W:
+        case KeyboardKey::Up:
+        case KeyboardKey::W:
             momentum = Vector2si{0, 1};
             break;
         default:

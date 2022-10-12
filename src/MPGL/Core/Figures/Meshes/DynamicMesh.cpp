@@ -85,10 +85,9 @@ namespace mpgl {
 
     template <MeshTraitSpecifier Spec>
     void DynamicMesh<Spec>::buildVertexViews(void) {
-        uint32 id = 0;
-        for (Vertex const& vertex : vertices)
+        for (uint32 id = 0; id < vertices.size(); ++id)
             verticesView.push_back(VertexView{*this, id++});
-        id = 0;
+        uint32 id = 0;
         for (IndicesTriangle const& triangle : indices) {
             verticesView[triangle.firstVertex].emplaceTriangle(id);
             verticesView[triangle.secondVertex].emplaceTriangle(id);

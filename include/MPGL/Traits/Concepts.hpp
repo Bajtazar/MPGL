@@ -279,14 +279,14 @@ namespace mpgl {
         IsConstevalType<Tp, Args...>::value;
 
     /**
-     * Checks whether the given type is an instance of the given
-     * template
+     * Checks whether the given type is a specialization of the given
+     * template class
      *
      * @param Tp the checked type
      * @param Template the template type
      */
     template <typename Tp, template <typename...> class Template>
-    concept InstanceOf = IsInstanceV<Template, Tp>;
+    concept SpecializationOf = IsInstanceV<Template, Tp>;
 
     /**
      * Checks whether the given range is a random acces range
@@ -542,7 +542,7 @@ namespace mpgl {
      * @tparam Args the checked types
      */
     template <template <typename...> class Template, class... Args>
-    concept AllInstancesOf = (InstanceOf<Args, Template> && ...);
+    concept AllInstancesOf = (SpecializationOf<Args, Template> && ...);
 
     /**
      * Checks whether the range is random acces range and if

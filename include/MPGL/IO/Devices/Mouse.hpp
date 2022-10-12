@@ -25,9 +25,6 @@
  */
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <MPGL/Traits/Types.hpp>
 
 namespace mpgl {
@@ -36,14 +33,15 @@ namespace mpgl {
      * Describes the mouse buttons
      */
     enum class MouseButton : uint8 {
-        Left            = GLFW_MOUSE_BUTTON_LEFT,
-        Right           = GLFW_MOUSE_BUTTON_RIGHT,
-        Middle          = GLFW_MOUSE_BUTTON_MIDDLE,
-        Button4         = GLFW_MOUSE_BUTTON_4,
-        Button5         = GLFW_MOUSE_BUTTON_5,
-        Button6         = GLFW_MOUSE_BUTTON_6,
-        Button7         = GLFW_MOUSE_BUTTON_7,
-        Button8         = GLFW_MOUSE_BUTTON_8
+        Left            = 0x00,
+        Right           = 0x01,
+        Middle          = 0x02,
+        Button4         = 0x03,
+        Button5         = 0x04,
+        Button6         = 0x05,
+        Button7         = 0x06,
+        Button8         = 0x07,
+        Unknown         = 0x08
     };
 
 }

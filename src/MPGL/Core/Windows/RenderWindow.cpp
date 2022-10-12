@@ -125,11 +125,9 @@ namespace mpgl {
     {
         bind(cleaning, color);
         glEnable(GL_DEPTH_TEST);
-        std::ranges::for_each(drawables3D,
-            [](auto const& drawable){ drawable->draw(); });
+        std::ranges::for_each(drawables3D, Drawer);
         glDisable(GL_DEPTH_TEST);
-        std::ranges::for_each(drawables2D,
-            [](auto const& drawable){ drawable->draw(); });
+        std::ranges::for_each(drawables2D, Drawer);
         unbind();
     }
 
@@ -137,6 +135,12 @@ namespace mpgl {
         Vector2u const& oldDimensions) noexcept
     {
         eventManager->onScreenTransformation(oldDimensions);
+    }
+
+    void RenderWindow::onWindowMotion(
+        Vector2u const& oldPosition) noexcept
+    {
+        eventManager->onWindowMotion(oldPosition);
     }
 
     void RenderWindow::onMouseRelease(
@@ -161,7 +165,7 @@ namespace mpgl {
         eventManager->onMousePress(button);
     }
 
-    void RenderWindow::onKeyRelease(Key const& key) noexcept {
+    void RenderWindow::onKeyRelease(KeyboardKey const& key) noexcept {
         eventManager->onKeyRelease(key);
     }
 
@@ -171,7 +175,7 @@ namespace mpgl {
         eventManager->onTextWrite(unicodeString);
     }
 
-    void RenderWindow::onKeyPress(Key const& key) noexcept {
+    void RenderWindow::onKeyPress(KeyboardKey const& key) noexcept {
         eventManager->onKeyPress(key);
     }
 

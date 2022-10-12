@@ -60,6 +60,14 @@ namespace mpgl {
             Vector2u const& oldDimensions) noexcept final;
 
         /**
+         * Informs mouse release event observers that the window
+         * has been moved
+         *
+         * @param oldPosition the old window position
+         */
+        void onWindowMotion(Vector2u const& oldPosition) noexcept final;
+
+        /**
          * Informs mouse release event observers that the mouse button
          * has been released
          *
@@ -96,7 +104,7 @@ namespace mpgl {
          *
          * @param key the released keyboard key
          */
-        void onKeyRelease(Key const& key) noexcept final;
+        void onKeyRelease(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs text write event observers that the text has been
@@ -113,7 +121,7 @@ namespace mpgl {
          *
          * @param key the pressed keyboard key
          */
-        void onKeyPress(Key const& key) noexcept final;
+        void onKeyPress(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs scroll event observers that the mouse scroll has
@@ -152,6 +160,7 @@ namespace mpgl {
         ~BasicWindowEventManager(void) noexcept = default;
     private:
         typedef std::shared_ptr<ScreenTransformationEvent>  STEPtr;
+        typedef std::shared_ptr<WindowMotionEvent>          WMEPtr;
         typedef std::shared_ptr<MouseReleaseEvent>          MREPtr;
         typedef std::shared_ptr<MouseMotionEvent>           MMEPtr;
         typedef std::shared_ptr<WindowCloseEvent>           WCEPtr;
@@ -177,6 +186,22 @@ namespace mpgl {
          * transformation event shared pointer
          */
         void push(STEPtr&& event) final;
+
+        /**
+         * Registers window motion event pointer in the manager
+         *
+         * @param event the constant reference to the window motion
+         * event shared pointer
+         */
+        void push(WMEPtr const& event) final;
+
+        /**
+         * Registers window motion event pointer in the manager
+         *
+         * @param event the rvalue reference to the window motion
+         * event shared pointer
+         */
+        void push(WMEPtr&& event) final;
 
         /**
          * Registers mouse release event pointer in the manager

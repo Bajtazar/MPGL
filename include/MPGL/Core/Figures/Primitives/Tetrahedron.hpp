@@ -46,7 +46,7 @@ namespace mpgl {
          *
          * @param color the color of the tetrahedron (optional)
          */
-        Tetrahedron(Color const& color = Color::White);
+        Tetrahedron(Color const& color = colors::white);
 
         /**
          * Constructs a new tetrahedron from a four
@@ -63,7 +63,7 @@ namespace mpgl {
             Vector3f const& secondVertex,
             Vector3f const& thirdVertex,
             Vector3f const& fourthVertex,
-            Color const& color = Color::White);
+            Color const& color = colors::white);
 
         /**
          * Constructs a new tetrahedron object from the given

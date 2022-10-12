@@ -47,7 +47,7 @@ namespace mpgl {
          * @param key the released key
          */
         virtual void onKeyRelease(
-            Key const& key) noexcept = 0;
+            KeyboardKey const& key) noexcept = 0;
 
         /**
          * Virual destructor. Destroys the Key Release Event object

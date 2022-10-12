@@ -29,7 +29,7 @@
 #include <MPGL/Core/Figures/Elliptic.hpp>
 #include <MPGL/Core/Textures/Sprite.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
-#include <MPGL/Core/DrawableTraits.hpp>
+#include <MPGL/Core/DimensionTraits.hpp>
 
 namespace mpgl {
 
@@ -53,13 +53,13 @@ namespace mpgl {
      *
      * @tparam Base a figure type
      */
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     class TexturedFigure :
-        public Sprite<DrawableDimensionT<Base>>,
+        public Sprite<DimensionOfT<Drawable, Base>>,
         public Base
     {
     public:
-        using Dim = DrawableDimensionT<Base>;
+        using Dim = DimensionOfT<Drawable, Base>;
 
         /**
          * Constructs a new textured figure object. Initializes

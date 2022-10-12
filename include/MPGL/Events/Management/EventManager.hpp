@@ -229,6 +229,7 @@ namespace mpgl {
 
     typedef EventManager<
         ScreenTransformationEvent,
+        WindowMotionEvent,
         MouseReleaseEvent,
         MouseMotionEvent,
         WindowCloseEvent,

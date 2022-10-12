@@ -464,11 +464,10 @@ namespace mpgl {
         /**
          * Performs Adam7 interlance on the decompressed data
          *
-         * @param policy the security policy tag
          * @param iter the reference to the decompressed data
          * iterator
          */
-        void interlance(Policy policy, FileIter& iter);
+        void interlance(FileIter& iter);
 
         /**
          * Returns the dimensions of the interlanced subimage

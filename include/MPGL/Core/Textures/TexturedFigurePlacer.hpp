@@ -43,7 +43,7 @@ namespace mpgl {
      *
      * @tparam Tp the figure type
      */
-    template <InstanceOf<Figure> Tp>
+    template <SpecializationOf<Figure> Tp>
     class TexturedFigurePlacer;
 
     /**

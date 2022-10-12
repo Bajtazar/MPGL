@@ -111,7 +111,7 @@ namespace mpgl {
          *
          * @tparam Tp the vertex type
          */
-        template <InstanceOf<Vertex> Tp>
+        template <SpecializationOf<Vertex> Tp>
         struct VertexTag {};
 
         /**
@@ -120,7 +120,7 @@ namespace mpgl {
          *
          * @tparam Tp the vertex type
          */
-        template <InstanceOf<Vertex> Tp>
+        template <SpecializationOf<Vertex> Tp>
         void setArrayData(
             [[maybe_unused]] VertexTag<Tp>) const noexcept;
 

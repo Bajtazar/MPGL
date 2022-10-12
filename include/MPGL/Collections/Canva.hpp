@@ -130,7 +130,6 @@ namespace mpgl {
             using reference =                       value_type&;
             using pointer =                         value_type*;
             using const_reference =                 value_type const&;
-            using const_pointer =                   value_type* const;
 
             /**
              * Constructs a new row object from the given constant
@@ -534,7 +533,7 @@ namespace mpgl {
              * @return the constant pointer to the begining of the
              * row's memory
              */
-            [[nodiscard]] constexpr const_pointer memory(
+            [[nodiscard]] constexpr pointer memory(
                 void) const noexcept
                     { return this->first; }
         };

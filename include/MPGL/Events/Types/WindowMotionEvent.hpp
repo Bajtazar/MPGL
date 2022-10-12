@@ -25,41 +25,38 @@
  */
 #pragma once
 
-#include <MPGL/Core/Drawable.hpp>
+#include <MPGL/Mathematics/Tensors/Vector.hpp>
+#include <MPGL/Events/Event.hpp>
 
 namespace mpgl {
 
     /**
-     * Helper metastruct. Provides information about the
-     * dimension of the drawable
-     *
-     * @tparam Tp the type of the drawable instance
+     * Base class for classes that are notified when window is
+     * being closed
      */
-    template <InstanceOf<Drawable> Tp>
-    class DrawableDimension {
-        /**
-         * Gets the dimension tag from the drawable instance
-         *
-         * @tparam Dim the instance's dimension
-         * @return the dimension tag
-         */
-        template <Dimension Dim>
-        static auto helper(Drawable<Dim> const&) noexcept
-            -> Dim;
+    class WindowMotionEvent : public virtual EventBase {
     public:
-        /**
-         * The drawable instance's dimension tag
-         */
-        using dimension = decltype(helper(std::declval<Tp>()));
-    };
+        explicit WindowMotionEvent(void) noexcept = default;
 
-    /**
-     * The convinient shortcut for the DrawableDimension dimension
-     *
-     * @tparam Tp the instance of the drawable template
-     */
-    template <InstanceOf<Drawable> Tp>
-    using DrawableDimensionT
-        = typename DrawableDimension<Tp>::dimension;
+        WindowMotionEvent& operator=(WindowMotionEvent const&) = delete;
+        WindowMotionEvent& operator=(WindowMotionEvent&&) = delete;
+
+        /**
+         * Pure virtual method. Has to be overloaded.
+         * Notifies when window changes its position
+         *
+         * @param oldPosition the old window position
+         */
+        virtual void onWindowMotion(
+            Vector2u const& oldPosition) noexcept = 0;
+
+        /**
+         * Virtual destructor. Destroys the Window Close Event object
+         */
+        virtual ~WindowMotionEvent(void) noexcept = default;
+    protected:
+        WindowMotionEvent(WindowMotionEvent const&) noexcept = default;
+        WindowMotionEvent(WindowMotionEvent&&) noexcept = default;
+    };
 
 }

@@ -132,7 +132,7 @@ namespace mpgl {
             findFusionIndicesHelper(
                 std::index_sequence<Indices...> indices)
     {
-        if constexpr (!InstanceOf<CurrentTp, Fusable>) {
+        if constexpr (!SpecializationOf<CurrentTp, Fusable>) {
             return findFusionIndices<Index + 1>(
                 pushBack<Index>(indices));
         } else if constexpr (!IsFusable<LastTp,

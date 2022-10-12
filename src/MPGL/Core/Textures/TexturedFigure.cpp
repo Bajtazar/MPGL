@@ -29,17 +29,17 @@
 
 namespace mpgl {
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     TexturedFigure<Base>::Executable const
         TexturedFigure<Base>::executable =
     [](ShaderProgram const& program) {
         ShaderLocation{program, "tex"}(0);
     };
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     TexturedFigure<Base>::Placer const TexturedFigure<Base>::placer{};
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     void TexturedFigure<Base>::draw(void) const noexcept {
         auto const& textureBuffer = this->texture.getTextureBuffer();
         textureBuffer.activate();
@@ -47,11 +47,11 @@ namespace mpgl {
         Base::draw();
     }
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     void TexturedFigure<Base>::setConvolution(
         Matrix3f const& convolution)
     {
-        if constexpr (InstanceOf<Base, Elliptic>) {
+        if constexpr (SpecializationOf<Base, Elliptic>) {
             this->setShader(Base::ShaderManager::convolutionShader);
         } else {
             this->setShader(VertexTraits::convolutionShader());
@@ -65,16 +65,16 @@ namespace mpgl {
         ));
     }
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     void TexturedFigure<Base>::resetConvolution(void) {
-        if constexpr (InstanceOf<Base, Elliptic>) {
+        if constexpr (SpecializationOf<Base, Elliptic>) {
             this->setShader(Base::ShaderManager::shader);
         } else {
             this->setShader(VertexTraits::convolutionShader());
         }
     }
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     void TexturedFigure<Base>::setShader(
         ShaderProgram const& program) noexcept
     {
@@ -82,7 +82,7 @@ namespace mpgl {
         executable(*this->shaderProgram);
     }
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     void TexturedFigure<Base>::setShader(
         ShaderProgram&& program) noexcept
     {
@@ -90,7 +90,7 @@ namespace mpgl {
         executable(*this->shaderProgram);
     }
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     void TexturedFigure<Base>::setShader(
         std::string const& name) noexcept
     {

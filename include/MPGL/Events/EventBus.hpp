@@ -28,6 +28,7 @@
 #include <MPGL/Events/Types/ScreenTransformationEvent.hpp>
 #include <MPGL/Events/Registers/UniversalRegister.hpp>
 #include <MPGL/Events/Registers/RegistersHolder.hpp>
+#include <MPGL/Events/Types/WindowMotionEvent.hpp>
 #include <MPGL/Events/Types/MouseReleaseEvent.hpp>
 #include <MPGL/Events/Types/WindowCloseEvent.hpp>
 #include <MPGL/Events/Types/MouseMotionEvent.hpp>
@@ -43,6 +44,10 @@ namespace mpgl {
     /// The screen transformation event register
     typedef UniversalRegister<ScreenTransformationEvent, void(ScreenTransformationEvent::*)(Vector2u const&),
         &ScreenTransformationEvent::onScreenTransformation> ScreenTransformationRegister;
+
+    /// The window motion event register
+    typedef UniversalRegister<WindowMotionEvent, void(WindowMotionEvent::*)(Vector2u const&),
+        &WindowMotionEvent::onWindowMotion>                 WindowMotionRegister;
 
     /// The mouse release event register
     typedef UniversalRegister<MouseReleaseEvent, void(MouseReleaseEvent::*)(MouseButton const&),
@@ -61,7 +66,7 @@ namespace mpgl {
         &MousePressEvent::onMousePress>                     MousePressRegister;
 
     /// The key release event register
-    typedef UniversalRegister<KeyReleaseEvent, void(KeyReleaseEvent::*)(Key const&),
+    typedef UniversalRegister<KeyReleaseEvent, void(KeyReleaseEvent::*)(KeyboardKey const&),
         &KeyReleaseEvent::onKeyRelease>                     KeyReleaseRegister;
 
     /// The text write event register
@@ -69,7 +74,7 @@ namespace mpgl {
         &TextWriteEvent::onTextWrite>                       TextWriteRegister;
 
     /// The key press event register
-    typedef UniversalRegister<KeyPressEvent, void(KeyPressEvent::*)(Key const&),
+    typedef UniversalRegister<KeyPressEvent, void(KeyPressEvent::*)(KeyboardKey const&),
         &KeyPressEvent::onKeyPress>                         KeyPressRegister;
 
     /// The scroll event register
@@ -78,8 +83,9 @@ namespace mpgl {
 
     /// The MPGL events registers holder
     typedef RegistersHolder<TickRegister, ScreenTransformationRegister,
-        MouseReleaseRegister, MouseMotionRegister, MousePressRegister,
-        WindowCloseRegister, KeyReleaseRegister, TextWriteRegister,
-        KeyPressRegister, ScrollRegister>                   EventBus;
+        WindowMotionRegister, MouseReleaseRegister, MouseMotionRegister,
+        MousePressRegister, WindowCloseRegister, KeyReleaseRegister,
+        TextWriteRegister, KeyPressRegister,
+        ScrollRegister>                                     EventBus;
 
 }

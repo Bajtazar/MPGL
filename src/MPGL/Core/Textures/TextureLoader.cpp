@@ -37,6 +37,13 @@ namespace mpgl {
         return TexturePack{textures};
     }
 
+    [[nodiscard]] float64
+        TextureLoaderBase::loadingStatus(void) const
+    {
+        return allTextures ? float64(counter) / float64(allTextures)
+            : 1.;
+    }
+
     void TextureLoaderBase::tryLoad(void) {
         if (loadingStatus() != 1.)
             load();

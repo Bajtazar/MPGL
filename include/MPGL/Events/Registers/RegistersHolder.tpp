@@ -39,7 +39,7 @@ namespace mpgl {
 
     template <class... Registers>
         requires AllInstancesOf<RegisterInterface, Registers...>
-    template <class Tp, InstanceOf<RegisterInterface> Register>
+    template <class Tp, SpecializationOf<RegisterInterface> Register>
     void RegistersHolder<Registers...>::pushIfDerived(
         Register& reg,
         std::shared_ptr<Tp> const& pointer)

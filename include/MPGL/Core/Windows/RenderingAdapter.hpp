@@ -38,6 +38,7 @@ namespace mpgl {
      */
     class RenderingAdapter :
         public ScreenTransformationEvent,
+        public WindowMotionEvent,
         public MouseReleaseEvent,
         public WindowCloseEvent,
         public MouseMotionEvent,
@@ -93,6 +94,12 @@ namespace mpgl {
         void onMouseRelease(MouseButton const& button) noexcept final;
 
         /**
+         * Informs contained objects that window has been moved
+         */
+        void onWindowMotion(
+            Vector2u const& oldPosition) noexcept final;
+
+        /**
          * Calls the onWindowClose method on the Render Window
          * reference
          */
@@ -120,7 +127,7 @@ namespace mpgl {
          *
          * @param key the released key
          */
-        void onKeyRelease(Key const& key) noexcept final;
+        void onKeyRelease(KeyboardKey const& key) noexcept final;
 
         /**
          * Calls the onTextWrite method on the Render Window
@@ -138,7 +145,7 @@ namespace mpgl {
          *
          * @param key the pressed key
          */
-        void onKeyPress(Key const& key) noexcept final;
+        void onKeyPress(KeyboardKey const& key) noexcept final;
 
         /**
          * Calls the onScroll method on the Render Window

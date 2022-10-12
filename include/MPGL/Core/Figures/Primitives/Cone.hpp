@@ -49,7 +49,7 @@ namespace mpgl {
          * one base circle (optional)
          */
         Cone(
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             size_t baseSegments = 20);
 
         /**
@@ -70,7 +70,7 @@ namespace mpgl {
             Vector3f const& position,
             Vector3f const& radiusVector,
             Vector3f const& heightVector,
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             size_t baseSegments = 20);
 
         /**
@@ -90,7 +90,7 @@ namespace mpgl {
             Vector3f const& position,
             float32 radius,
             float32 height,
-            Color const& color = Color::White,
+            Color const& color = colors::white,
             size_t baseSegments = 20);
 
         /**

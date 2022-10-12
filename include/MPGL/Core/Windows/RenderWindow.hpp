@@ -37,6 +37,7 @@ namespace mpgl {
      */
     class RenderWindow : public WindowBase,
         public ScreenTransformationEvent,
+        public WindowMotionEvent,
         public MouseReleaseEvent,
         public WindowCloseEvent,
         public MouseMotionEvent,
@@ -121,6 +122,12 @@ namespace mpgl {
         void onMouseRelease(MouseButton const& button) noexcept final;
 
         /**
+         * Informs contained objects that window has been moved
+         */
+        void onWindowMotion(
+            Vector2u const& oldPosition) noexcept final;
+
+        /**
          * Informs contained objects that window has been closed
          */
         void onWindowClose(void) noexcept final;
@@ -146,7 +153,7 @@ namespace mpgl {
          *
          * @param key the released key
          */
-        void onKeyRelease(Key const& key) noexcept final;
+        void onKeyRelease(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs contained objects that unicode character
@@ -164,7 +171,7 @@ namespace mpgl {
          *
          * @param key the pressed key
          */
-        void onKeyPress(Key const& key) noexcept final;
+        void onKeyPress(KeyboardKey const& key) noexcept final;
 
         /**
          * Informs contained objects that scroll has been moved
@@ -235,6 +242,9 @@ namespace mpgl {
          * Unbinds the current framebuffer
          */
         void unbind(void) noexcept;
+
+        static auto constexpr                       Drawer =
+            [](auto const& drawable){ drawable->draw(); };
     };
 
 }

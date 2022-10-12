@@ -176,7 +176,7 @@ namespace mpgl {
 
     template <std::ranges::random_access_range Range>
         requires (std::ranges::sized_range<Range>
-            && InstanceOf<std::ranges::range_value_t<Range>,
+            && SpecializationOf<std::ranges::range_value_t<Range>,
                 std::complex>)
     void FFT::operator() (Range&& range) const noexcept {
         if constexpr (FixedSizeRange<Range>) {

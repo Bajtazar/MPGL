@@ -154,6 +154,16 @@ namespace mpgl {
              */
             uint8 readChunk(FileIter& data);
 
+            /**
+             * Returns whether the huffman codes are encoded
+             * using the DC or AC coding
+             *
+             * @param header the chunk header's value
+             * @return true if AC coding is being used
+             * @return false if DC coding is being used
+             */
+            bool coding(uint8 header) const noexcept;
+
             std::array<uint8, 17>                   symbolsLengths{};
             DataBuffer                              characters{};
         };
@@ -405,10 +415,9 @@ namespace mpgl {
         /**
          * Parses the next chunk header
          *
-         * @param file the iterator to the file's data
          * @param signature the chunk's signature
          */
-        void parseNextChunk(FileIter& file, uint16 signature);
+        void parseNextChunk(uint16 signature);
 
         /**
          * Reads the 8x8 matrix from the iterator
@@ -495,6 +504,9 @@ namespace mpgl {
 
         static ChunkParser const                    emptyChunk;
         static ParserMap const                      chunkParser;
+
+        static constexpr bool DC_CODE = false;
+        static constexpr bool AC_CODE = true;
     };
 
     template class JPEGLoader<Secured>;

@@ -116,7 +116,8 @@ namespace mpgl {
             { stopSource.request_stop(); }
     private:
         template <std::invocable Func>
-        using Package = std::packaged_task<std::invoke_result_t<Func>>;
+        using Package = std::packaged_task<
+            std::invoke_result_t<Func>()>;
 
         template <std::ranges::input_range Range>
         using FutureOfRange = FutureOf<

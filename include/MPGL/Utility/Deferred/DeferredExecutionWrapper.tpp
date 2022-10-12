@@ -29,7 +29,7 @@
 
 namespace mpgl {
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <typename... Args>
     constexpr auto
         DeferredExecutionWrapper<Handles...>::WeakPointers::weaken(
@@ -38,7 +38,7 @@ namespace mpgl {
         return std::tuple{std::weak_ptr{handles}...};
     }
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
     DeferredExecutionWrapper<Handles...>::InvocableArgumentsWrapper<
@@ -50,7 +50,7 @@ namespace mpgl {
                 arguments{std::move(arguments)},
                 invocable{std::move(invocable)} {}
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
     void DeferredExecutionWrapper<Handles...
@@ -67,7 +67,7 @@ namespace mpgl {
         );
     }
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
     bool DeferredExecutionWrapper<Handles...
@@ -79,7 +79,7 @@ namespace mpgl {
         }, handles.handles);
     }
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
     auto DeferredExecutionWrapper<Handles...
@@ -91,7 +91,7 @@ namespace mpgl {
         }, handles.handles);
     }
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     DeferredExecutionWrapper<Handles...>::InvocableArgumentsWrapper<
         Args...>::InvocableArgumentsWrapper(
@@ -99,7 +99,7 @@ namespace mpgl {
             Args... args)
             : wrapper{std::move(wrapper)}, args{args...} {}
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <PureType... Args>
     template <std::invocable<Handles..., Args...> Function>
     [[nodiscard]] DeferredExecutionWrapper<Handles...>::
@@ -111,13 +111,13 @@ namespace mpgl {
             std::move(*this), std::move(func)};
     }
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     DeferredExecutionWrapper<Handles...>::DeferredExecutionWrapper(
         Handles&&... handles)
             : handles{std::weak_ptr{std::forward<Handles>(handles)}...}
                 {}
 
-    template <InstanceOf<std::shared_ptr>... Handles>
+    template <SpecializationOf<std::shared_ptr>... Handles>
     template <PureType... Args,
         std::invocable<Handles..., Args...> Func>
     [[nodiscard]] auto DeferredExecutionWrapper<Handles...>::operator()(

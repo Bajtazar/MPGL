@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <MPGL/Mathematics/Tensors/Views.hpp>
+
 namespace mpgl {
 
     template <IFCT::size_type Size>
@@ -87,7 +89,7 @@ namespace mpgl {
     void IFCT::operator() (
         Matrix<Tp, Rows, Rows>& matrix) const
     {
-        for (auto& column : matrix.columnsRange())
+        for (auto column : matrix | views::columns)
             (*this)(column);
         for (auto& row : matrix)
             (*this)(row);

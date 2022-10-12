@@ -34,6 +34,12 @@ namespace mpgl {
             oldDimensions);
     }
 
+    void BasicWindowEventManager::onWindowMotion(
+        Vector2u const& oldPosition) noexcept
+    {
+        get<WindowMotionRegister>(registers).onEvent(oldPosition);
+    }
+
     void BasicWindowEventManager::onMouseRelease(
         MouseButton const& button) noexcept
     {
@@ -57,7 +63,7 @@ namespace mpgl {
     }
 
     void BasicWindowEventManager::onKeyRelease(
-        Key const& key) noexcept
+        KeyboardKey const& key) noexcept
     {
         get<KeyReleaseRegister>(registers).onEvent(key);
     }
@@ -68,7 +74,9 @@ namespace mpgl {
         get<TextWriteRegister>(registers).onEvent(unicodeString);
     }
 
-    void BasicWindowEventManager::onKeyPress(Key const& key) noexcept {
+    void BasicWindowEventManager::onKeyPress(
+        KeyboardKey const& key) noexcept
+    {
         get<KeyPressRegister>(registers).onEvent(key);
     }
 
@@ -102,6 +110,15 @@ namespace mpgl {
 
     void BasicWindowEventManager::push(STEPtr&& event) {
         get<ScreenTransformationRegister>(registers).pushBack(
+            std::move(event));
+    }
+
+    void BasicWindowEventManager::push(WMEPtr const& event) {
+        get<WindowMotionRegister>(registers).pushBack(event);
+    }
+
+    void BasicWindowEventManager::push(WMEPtr&& event) {
+        get<WindowMotionRegister>(registers).pushBack(
             std::move(event));
     }
 

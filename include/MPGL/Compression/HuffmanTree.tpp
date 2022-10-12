@@ -29,18 +29,18 @@ namespace mpgl {
 
     template <typename CharType, SizeType FrequencyType>
     void HuffmanTree<CharType, FrequencyType>::emplaceNodes(
-        MinHeap<NodePtr>& heap)
+        MinQueue& heap)
     {
         while (heap.size() != 1) {
-            auto left = heap.popBack();
-            auto right = heap.popBack();
+            auto left = heap.pop();
+            auto right = heap.pop();
             auto node = std::make_unique<Node>(0,
                 left->frequency + right->frequency, true);
             node->leftNode = std::move(left);
             node->rightNode = std::move(right);
             heap.push(std::move(node));
         }
-        root = std::move(heap.popBack());
+        root = heap.pop();
     }
 
     template <typename CharType, SizeType FrequencyType>
@@ -50,7 +50,7 @@ namespace mpgl {
     {
         if (!data.size())
             throw HuffmanTreeEmptyMapException{};
-        MinHeap<NodePtr> heap;
+        MinQueue heap;
         for (const auto& frequencyPair : data)
             heap.push(std::make_unique<Node>(frequencyPair));
         emplaceNodes(heap);

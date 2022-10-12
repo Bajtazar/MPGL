@@ -38,7 +38,7 @@ namespace mpgl {
 
     template <security::SecurityPolicy Policy>
     TTFLoader<Policy>::TTFLoader(
-        Policy policy,
+        [[maybe_unused]] Policy policy,
         FileName const& fileName)
             : fileName{fileName}
     {
@@ -123,7 +123,8 @@ namespace mpgl {
             readType<uint16, true>(iter));
         std::advance(iter, 6);
         auto range = tablesRange | std::views::transform(
-            [&iter](auto const& i){ return readNChars(4, iter); });
+            [&iter]([[maybe_unused]] auto const& _){
+                return readNChars(4, iter); });
         std::ranges::for_each(range, [this, &iter](auto const& tag)
             { tables[tag] = TableDirectory{iter}; });
     }
@@ -210,8 +211,6 @@ namespace mpgl {
     {
         bool windowsPlatform = (record.platformID == 3) &&
             (record.encodingID < 2 || record.encodingID == 10);
-        // bool unicodePlatform = !record.platformID &&
-        //    record.encodingID < 5;
         if (windowsPlatform)
             return {record.subtableOffset};
         return {};
@@ -232,7 +231,7 @@ namespace mpgl {
         std::advance(iter, 4);
         auto limit = reserve(readType<uint16, true>(iter) >> 1);
         std::advance(iter, 6);
-        auto reader = [&iter](uint16 const& _)
+        auto reader = [&iter]([[maybe_unused]] uint16 const& _)
             { return readType<uint16, true>(iter); };
         std::ranges::transform(limit, std::back_inserter(endCode), reader);
         std::advance(iter, 2);

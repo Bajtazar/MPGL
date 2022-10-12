@@ -25,133 +25,113 @@
  */
 #pragma once
 
-#include <MPGL/Core/Windows/WindowBase.hpp>
+#include <MPGL/Platform/Features/Windows/WindowPlatform.hpp>
 
-namespace mpgl {
+#include <GLFW/glfw3.h>
+
+namespace mpgl::platform {
 
     /**
-     * Implements platform specific operations on window
+     * Implements the window using the GLFW3 library
      */
-    class WindowPlatform : public WindowBase {
+    class GLFWWindow : public WindowPlatform {
     public:
-        WindowPlatform(void) = delete;
-
-        WindowPlatform(WindowPlatform const&) = delete;
-        WindowPlatform(WindowPlatform&&) = delete;
-
-        WindowPlatform& operator=(WindowPlatform const&) = delete;
-        WindowPlatform& operator=(WindowPlatform&&) = delete;
-
         /**
-         * Returns the window dimensions vector
-         *
-         * @return the constaint reference to the window dimensions
-         * vector
-         */
-        [[nodiscard]] Vector2u const&
-            getWindowDimensions(void) const noexcept
-                { return dimensions; }
-
-        /**
-         * Returns the window title
-         *
-         * @return the constant reference to the window title
-         * string
-         */
-        [[nodiscard]] std::string const&
-            getWindowTitle(void) const noexcept
-                { return title; }
-
-        /**
-         * Returns a mouse position in the window
-         *
-         * @return the mouse position in the window
-         */
-        [[nodiscard]] Vector2f getMousePosition(void) const noexcept;
-
-        /**
-         * Closes the window
-         */
-        void closeWindow(void) noexcept;
-
-        /**
-         * Opens the window
-         */
-        void openWindow(void) noexcept;
-
-        /**
-         * Virtual destructor. Destroy the Window Platform object
-         */
-        virtual ~WindowPlatform(void) noexcept;
-    protected:
-        /**
-         * Construct a new Window Platform object
+         * Constructs a new GLFW window object
          *
          * @param dimensions the window's dimensions
          * @param title the window's title
          * @param options the window's options
-         * @param eventManager the window's event manager
          */
-        explicit WindowPlatform(
+        explicit GLFWWindow(
             Vector2u dimensions,
             std::string title,
-            Options const& options,
-            EventManagerPtr&& eventManager);
+            Options const& options);
+
+        GLFWWindow(GLFWWindow const&) = delete;
+        GLFWWindow(GLFWWindow&&) = delete;
+
+        GLFWWindow& operator=(GLFWWindow const&) = delete;
+        GLFWWindow& operator=(GLFWWindow&&) = delete;
+
+        /**
+         * Closes the window
+         */
+        void closeWindow(void) noexcept final;
+
+        /**
+         * Opens the window
+         */
+        void openWindow(void) noexcept final;
+
+        /**
+         * Sets the position of the window on the screen
+         *
+         * @param position a constant reference to the
+         * new position vector
+         */
+        void setPosition(Vector2u const& position) noexcept final;
+
+        /**
+         * Minimizes the window
+         */
+        void minimize(void) noexcept final;
+
+        /**
+         * Maximizes the window
+         */
+        void maximize(void) noexcept final;
 
         /**
          * Returns whether the window should be closed
          *
          * @return if the window should be closed
          */
-        [[nodiscard]] bool shouldWindowClose(void) const noexcept
-            { return glfwWindowShouldClose(window); }
+        [[nodiscard]] bool shouldWindowClose(
+            void) const noexcept final;
 
         /**
          * Clears the framebuffer
          *
          * @param color the background color
          */
-        void clear(Color const& color) const noexcept;
+        void clear(Color const& color) const noexcept final;
 
         /**
          * Draws the framebuffer in the window
          */
-        void draw(void) const noexcept;
+        void draw(void) const noexcept final;
 
         /**
-         * Pure virtual method. Has to be overloaded. Saves the
-         * current window screen to the image
+         * Saves the current window screen to the image
          *
          * @return the window screen shot
          */
-        [[nodiscard]] virtual Image saveWindowScreen(void) const = 0;
+        [[nodiscard]] Image saveWindowScreen(void) const final;
 
         /**
          * Sets the window as the current one
          */
-        void setContextWindow(void) noexcept;
+        void setContextWindow(void) noexcept final;
+
+        ~GLFWWindow(void) noexcept override;
     private:
-        Vector2u                                dimensions;
-        Options                                 options;
-        std::string                             title;
         GLFWwindow*                             window;
 
         /**
-         * Sets the Window options
+         * Sets the window options
          */
-        void setWindowOptions(void) const noexcept;
+        void setWindowOptions(void) const noexcept final;
+
+        /**
+         * Sets the window invariant attribibutes
+         */
+        void setWindowAttributes(void) const noexcept;
 
         /**
          * Sets the window callbacks
          */
         void setCallbacks(void) noexcept;
-
-        /**
-         * Sets the window dimensions
-         *
-         * @param dim the window dimensions
-         */
-        void setDimensions(Vector2u const& dim) noexcept;
 
         /**
          * The framebuffer callback
@@ -164,6 +144,18 @@ namespace mpgl {
             GLFWwindow *window,
             int32 width,
             int32 height) noexcept;
+
+        /**
+         * The window position callback
+         *
+         * @param window the GLFW window pointer
+         * @param xPos the window's new positon's x-axis coordinate
+         * @param yPos the window's new positon's y-axis coordinate
+         */
+        static void windowPositionCallback(
+            GLFWwindow *window,
+            int32 xPos,
+            int32 yPos) noexcept;
 
         /**
          * The keyboard callback
@@ -224,6 +216,11 @@ namespace mpgl {
          */
         static void windowCloseCallback(
             GLFWwindow *window) noexcept;
+
+        /**
+         * Actualizes absolut mouse position
+         */
+        static void actualizeAbsolutePosition(void) noexcept;
     };
 
 }
