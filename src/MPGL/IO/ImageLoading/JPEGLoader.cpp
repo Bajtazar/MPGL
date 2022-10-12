@@ -98,13 +98,13 @@ namespace mpgl {
         uint8 id,
         int16& coeff)
     {
-        uint8 code = huffmanTables.at(false).at(id)->decoder(iter);
+        uint8 code = huffmanTables.at(DC_CODE).at(id)->decoder(iter);
         uint16 bits = readRNBits<uint16>(code, iter);
         coeff += decodeNumber(code, bits);
         std::array<int16, 64> data{};
         data.front() = coeff
             * quantizationTables.at(id)->information.at(0);
-        decodeMatrix(data, huffmanTables.at(true).at(id),
+        decodeMatrix(data, huffmanTables.at(AC_CODE).at(id),
             quantizationTables.at(id), iter);
         auto zigzaged = ZigZacRange<8>::fromZigZac(data);
         ifct(zigzaged);
@@ -213,11 +213,17 @@ namespace mpgl {
         if (0xE0 & header)
             throw ImageLoadingFileCorruptionException{
                 this->loader.filePath};
-        this->loader.huffmanTables[static_cast<bool>(
-            (0x10 & header) >> 4)].emplace(
+        this->loader.huffmanTables[coding(header)].emplace(
                 static_cast<uint8>(0xF & header),
                 std::make_unique<HuffmanTable>(HuffmanTree<uint16>{
                     symbolsLengths, characters}));
+    }
+
+    template <security::SecurityPolicy Policy>
+    bool JPEGLoader<Policy>::DHTChunk::coding(
+        uint8 header) const noexcept
+    {
+        return ((0x10 & header) >> 4) == 0x01;
     }
 
     template <security::SecurityPolicy Policy>
