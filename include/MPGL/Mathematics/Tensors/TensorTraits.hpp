@@ -36,7 +36,7 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <class Tp>
-    class MatrixTypeFn {
+    class MatrixSpecFn {
         /**
          * Method choosen by the compiler when the given type
          * is a specialization of the matrix template class
@@ -70,7 +70,7 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <class Tp>
-    concept MatrixType = MatrixTypeFn<Tp>::value;
+    concept MatrixSpec = MatrixSpecFn<Tp>::value;
 
     /**
      * Helper metastruct. Helps to determine whether the given
@@ -79,7 +79,7 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <class Tp>
-    class VectorTypeFn {
+    class VectorSpecFn {
         /**
          * Method choosen by the compiler when the given type
          * is a specialization of the vector template class
@@ -112,6 +112,6 @@ namespace mpgl {
      * @tparam Tp the checked type
      */
     template <class Tp>
-    concept VectorType = VectorTypeFn<Tp>::value;
+    concept VectorSpec = VectorSpecFn<Tp>::value;
 
 }

@@ -302,7 +302,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator-(
             typename ColumnView<MatrixTp>::vector_form const& left,
@@ -317,7 +317,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator*(
             typename ColumnView<MatrixTp>::vector_form const& left,
@@ -332,7 +332,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator/(
             typename ColumnView<MatrixTp>::vector_form const& left,
@@ -347,7 +347,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator%(
             typename ColumnView<MatrixTp>::vector_form const& left,
@@ -364,7 +364,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator^(
             typename ColumnView<MatrixTp>::vector_form const& left,
@@ -381,7 +381,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator&(
             typename ColumnView<MatrixTp>::vector_form const& left,
@@ -398,7 +398,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator|(
             typename ColumnView<MatrixTp>::vector_form const& left,
@@ -415,7 +415,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator+(
             ColumnView<MatrixTp> const& left,
@@ -430,7 +430,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator-(
             ColumnView<MatrixTp> const& left,
@@ -445,7 +445,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator*(
             ColumnView<MatrixTp> const& left,
@@ -460,7 +460,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator/(
             ColumnView<MatrixTp> const& left,
@@ -475,7 +475,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator%(
             ColumnView<MatrixTp> const& left,
@@ -492,7 +492,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator^(
             ColumnView<MatrixTp> const& left,
@@ -509,7 +509,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator&(
             ColumnView<MatrixTp> const& left,
@@ -526,7 +526,7 @@ namespace mpgl {
         return vector;
     }
 
-    template <MatrixType MatrixTp>
+    template <MatrixSpec MatrixTp>
     [[nodiscard]] constexpr ColumnView<MatrixTp>::vector_form
         operator|(
             ColumnView<MatrixTp> const& left,
@@ -547,7 +547,7 @@ namespace mpgl {
 
 namespace mpgl::details {
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto
         ColumnViewAdaptorClosure::operator() (
             Tp&& matrix) const noexcept
@@ -555,7 +555,7 @@ namespace mpgl::details {
         return ColumnView{std::forward<Tp>(matrix), columnID};
     }
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto ColumnViewAdaptor::operator() (
         Tp&& matrix,
         std::size_t columnID) const noexcept
@@ -570,7 +570,7 @@ namespace mpgl::details {
         return ColumnViewAdaptorClosure{columnID};
     }
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto
         ColumnRangeViewAdaptorClosure::operator() (
             Tp&& matrix) const noexcept
@@ -578,7 +578,7 @@ namespace mpgl::details {
         return ColumnRangeView{std::forward<Tp>(matrix)};
     }
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto
         ColumnRangeViewAdaptor::operator() (
             Tp&& matrix) const noexcept
@@ -593,7 +593,7 @@ namespace mpgl::details {
         return ColumnRangeViewAdaptorClosure{};
     }
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnViewAdaptorClosure const& closure) noexcept
@@ -601,7 +601,7 @@ namespace mpgl::details {
         return closure(std::forward<Tp>(matrix));
     }
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnViewAdaptor const& adaptor) noexcept
@@ -609,7 +609,7 @@ namespace mpgl::details {
         return adaptor(std::forward<Tp>(matrix));
     }
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnRangeViewAdaptorClosure const& closure) noexcept
@@ -617,7 +617,7 @@ namespace mpgl::details {
         return closure(std::forward<Tp>(matrix));
     }
 
-    template <MatrixType Tp>
+    template <MatrixSpec Tp>
     [[nodiscard]] constexpr auto operator | (
         Tp&& matrix,
         ColumnRangeViewAdaptor const& adaptor) noexcept
