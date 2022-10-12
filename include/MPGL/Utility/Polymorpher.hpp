@@ -562,8 +562,8 @@ namespace mpgl {
     template <class Tp>
     struct Polymorpher :
         private virtual details::PolymorpherBase<Tp>,
-        public DeriveIfTN<InstanceOf<Tp, Drawable>, details::DrawablePolymorpher<Tp>, 0>,
-        public DeriveIfTN<InstanceOf<Tp, Transformable>, details::TransformablePolymorpher<Tp>, 1>,
+        public DeriveIfTN<SpecializationOf<Tp, Drawable>, details::DrawablePolymorpher<Tp>, 0>,
+        public DeriveIfTN<SpecializationOf<Tp, Transformable>, details::TransformablePolymorpher<Tp>, 1>,
         public DeriveIfTN<std::derived_from<Tp, KeyPressEvent>, details::KeyPressEventPolymorpher<Tp>, 2>,
         public DeriveIfTN<std::derived_from<Tp, KeyReleaseEvent>, details::KeyReleaseEventPolymorpher<Tp>, 3>,
         public DeriveIfTN<std::derived_from<Tp, MouseMotionEvent>, details::MouseMotionEventPolymorpher<Tp>, 4>,

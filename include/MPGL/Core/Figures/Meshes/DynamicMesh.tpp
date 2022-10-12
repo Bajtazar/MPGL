@@ -88,7 +88,7 @@ namespace mpgl {
     template <std::random_access_iterator Iter>
     void DynamicMesh<Spec>::eraseViewIndices(Iter const& position) {
         uint32 id = 0;
-        if constexpr (InstanceOf<Iter, AccessRegisteringIterator>) {
+        if constexpr (SpecializationOf<Iter, AccessRegisteringIterator>) {
             id = *position.get().iter;
         } else {
             id = *position.iter;

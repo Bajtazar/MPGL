@@ -166,7 +166,7 @@ namespace mpgl {
          * @param pointer the constant reference to the pointer
          * object
          */
-        template <class Tp, InstanceOf<RegisterInterface> Register>
+        template <class Tp, SpecializationOf<RegisterInterface> Register>
         static void pushIfDerived(
             Register& reg,
             std::shared_ptr<Tp> const& pointer);

@@ -36,7 +36,7 @@ namespace mpgl {
      * @tparam Tp the checked type
      * @tparam Up the instance of the Tp template
      */
-    template <template <class> class Tp, InstanceOf<Tp> Up>
+    template <template <class> class Tp, SpecializationOf<Tp> Up>
     class DimensionOf {
         /**
          * Gets the dimension tag from the Tp instance
@@ -67,7 +67,7 @@ namespace mpgl {
      * @tparam Tp the checked type
      * @tparam Up the instance of the Tp template
      */
-    template <template <class> class Tp, InstanceOf<Tp> Up>
+    template <template <class> class Tp, SpecializationOf<Tp> Up>
     using DimensionOfT = typename DimensionOf<Tp, Up>::dimension;
 
 }

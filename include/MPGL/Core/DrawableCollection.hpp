@@ -43,8 +43,8 @@ namespace mpgl {
          * @tparam Base the checked type
          */
         template <typename Base>
-        concept TransDrawable = InstanceOf<Base, Drawable> &&
-            InstanceOf<Base, Transformable>;
+        concept TransDrawable = SpecializationOf<Base, Drawable> &&
+            SpecializationOf<Base, Transformable>;
 
     }
 
@@ -56,7 +56,7 @@ namespace mpgl {
      * @tparam Base the drawable type
      * @tparam Range the collection type
      */
-    template <InstanceOf<Drawable> Base,
+    template <SpecializationOf<Drawable> Base,
         std::ranges::input_range Range = std::vector<Base>>
     struct DrawableCollection :
         public Drawable<DimensionOfT<Drawable, Base>>,

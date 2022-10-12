@@ -27,7 +27,7 @@
 
 namespace mpgl {
 
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     template <typename... Args>
         requires std::constructible_from<Base, Args...>
     TexturedFigure<Base>::TexturedFigure(
@@ -36,7 +36,7 @@ namespace mpgl {
             Sprite<Dim>{texture},
             Base{std::forward<Args>(args)...}
     {
-        if constexpr (InstanceOf<Base, Elliptic>) {
+        if constexpr (SpecializationOf<Base, Elliptic>) {
             this->context.shaders.setOrQueue(this->shaderProgram,
                 Base::ShaderManager::shader, executable);
         } else {

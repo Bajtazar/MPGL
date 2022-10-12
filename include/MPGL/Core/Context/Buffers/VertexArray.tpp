@@ -27,7 +27,7 @@
 
 namespace mpgl {
 
-    template <InstanceOf<Vertex> Tp>
+    template <SpecializationOf<Vertex> Tp>
     void VertexArray::setArrayData(
         [[maybe_unused]] VertexTag<Tp>) const noexcept
     {

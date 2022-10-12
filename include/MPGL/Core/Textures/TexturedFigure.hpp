@@ -53,7 +53,7 @@ namespace mpgl {
      *
      * @tparam Base a figure type
      */
-    template <InstanceOf<Figure> Base>
+    template <SpecializationOf<Figure> Base>
     class TexturedFigure :
         public Sprite<DimensionOfT<Drawable, Base>>,
         public Base
