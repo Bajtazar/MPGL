@@ -37,17 +37,13 @@ namespace mpgl {
         : bufferID{buffer} {}
 
     VertexBuffer::VertexBuffer(VertexBuffer&& buffer) noexcept
-        : bufferID{buffer.bufferID}
-    {
-        buffer.bufferID = 0;
-    }
+        : bufferID{std::exchange(buffer.bufferID, 0)} {}
 
     VertexBuffer&
         VertexBuffer::operator=(VertexBuffer&& buffer) noexcept
     {
         this->~VertexBuffer();
-        bufferID = buffer.bufferID;
-        buffer.bufferID = 0;
+        bufferID = std::exchange(buffer.bufferID, 0);
         return *this;
     }
 

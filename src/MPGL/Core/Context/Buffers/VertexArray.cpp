@@ -35,15 +35,11 @@ namespace mpgl {
         : arrayID{arrayID} {}
 
     VertexArray::VertexArray(VertexArray&& array) noexcept
-        : arrayID{array.arrayID}
-    {
-        array.arrayID = 0;
-    }
+        : arrayID{std::exchange(array.arrayID, 0)} {}
 
     VertexArray& VertexArray::operator=(VertexArray&& array) noexcept {
         this->~VertexArray();
-        arrayID = array.arrayID;
-        array.arrayID = 0;
+        arrayID = std::exchange(array.arrayID, 0);
         return *this;
     }
 

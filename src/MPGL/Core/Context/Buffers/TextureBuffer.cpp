@@ -34,17 +34,13 @@ namespace mpgl {
     }
 
     TextureBuffer::TextureBuffer(TextureBuffer&& buffer) noexcept
-        : textureID{buffer.textureID}
-    {
-        buffer.textureID = 0;
-    }
+        : textureID{std::exchange(buffer.textureID, 0)} {}
 
     TextureBuffer& TextureBuffer::operator=(
         TextureBuffer&& buffer) noexcept
     {
         this->~TextureBuffer();
-        textureID = buffer.textureID;
-        buffer.textureID = 0;
+        textureID = std::exchange(buffer.textureID, 0);
         return *this;
     }
 

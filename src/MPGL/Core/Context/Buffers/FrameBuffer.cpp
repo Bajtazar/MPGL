@@ -38,18 +38,15 @@ namespace mpgl {
         : frameID{frameID}, renderID{renderID} {}
 
     FrameBuffer::FrameBuffer(FrameBuffer&& buffer) noexcept
-        : frameID{buffer.frameID}, renderID{buffer.renderID}
-    {
-        buffer.frameID = buffer.renderID = 0;
-    }
+        : frameID{std::exchange(buffer.frameID, 0)},
+        renderID{std::exchange(buffer.renderID, 0)} {}
 
     FrameBuffer& FrameBuffer::operator=(
         FrameBuffer&& buffer) noexcept
     {
         this->~FrameBuffer();
-        frameID = buffer.frameID;
-        renderID = buffer.renderID;
-        buffer.frameID = buffer.renderID = 0;
+        frameID = std::exchange(buffer.frameID, 0);
+        renderID = std::exchange(buffer.renderID, 0);
         return *this;
     }
 

@@ -38,17 +38,13 @@ namespace mpgl {
 
     ElementArrayBuffer::ElementArrayBuffer(
         ElementArrayBuffer&& buffer) noexcept
-            : elementID{buffer.elementID}
-    {
-        buffer.elementID = 0;
-    }
+            : elementID{std::exchange(buffer.elementID, 0)} {}
 
     ElementArrayBuffer& ElementArrayBuffer::operator=(
         ElementArrayBuffer&& buffer) noexcept
     {
         this->~ElementArrayBuffer();
-        elementID = buffer.elementID;
-        buffer.elementID = 0;
+        elementID = std::exchange(buffer.elementID, 0);
         return *this;
     }
 

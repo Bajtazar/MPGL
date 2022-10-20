@@ -63,9 +63,7 @@ namespace mpgl {
         Elliptic const& shape)
     {
         Figure<Dim>::operator=(shape);
-        vertices.clear();
-        vertices.reserve(shape.vertices.size());
-        std::ranges::copy(shape.vertices, std::back_inserter(vertices));
+        vertices = shape.vertices;
         return *this;
     }
 
