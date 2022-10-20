@@ -23,7 +23,6 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Textures/TexturedFigure.hpp>
 

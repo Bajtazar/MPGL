@@ -40,7 +40,6 @@
 #include <MPGL/Exceptions/TTFLoaderFileCorruptionException.hpp>
 #include <MPGL/Exceptions/ExecusionUnknownPolicyException.hpp>
 #include <MPGL/Mathematics/Transforms/ConvolutionKernels.hpp>
-#include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Figures/Primitives/ConvexHexahedron.hpp>
 #include <MPGL/Core/Transformations/ChainTransformation.hpp>
 #include <MPGL/Platform/Features/Devices/GLFWKeyboard.hpp>

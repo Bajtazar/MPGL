@@ -26,7 +26,6 @@
 #pragma once
 
 #include <MPGL/Core/Figures/Primitives/Helpers/RingHelpers.hpp>
-#include <MPGL/Utility/Deferred/DelegatePointer.hpp>
 
 namespace mpgl {
 

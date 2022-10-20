@@ -23,7 +23,6 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Utility/Deferred/DeferredExecutionWrapper.hpp>
 #include <MPGL/Core/Transformations/Rotation.hpp>
 #include <MPGL/Core/Figures/Views.hpp>
 #include <MPGL/Core/Text/UTF-8.hpp>
