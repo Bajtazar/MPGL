@@ -25,7 +25,6 @@
  */
 #pragma once
 
-#include <MPGL/Utility/Deferred/DelegatePointer.hpp>
 #include <MPGL/Core/Shaders/ShaderLocation.hpp>
 #include <MPGL/Mathematics/Tensors/Matrix.hpp>
 #include <MPGL/Core/Shaders/Shadeable.hpp>
@@ -65,7 +64,7 @@ namespace mpgl {
         /**
          * Constructs a new model object
          */
-        explicit Model(void);
+        explicit Model(void) noexcept = default;
 
         /**
          * Construct a new model object from the given
@@ -99,17 +98,15 @@ namespace mpgl {
             ShaderLocation                      viewProjection;
         };
 
-        using LocationPtr = DelegatePointer<Locations>;
         using Matrix4fCRef = std::reference_wrapper<Matrix4f const>;
-        using LocationSetter = std::function<void(void)>;
         using LocationSetterBuilder = std::function<
-            LocationSetter(ProgramPtr const&, LocationPtr const&)>;
+            void(ProgramPtr const&, Locations&)>;
 
         static Matrix4f const                   defaultModel;
         static LocationSetterBuilder const      locationSetterBuilder;
 
         Matrix4fCRef                            model = defaultModel;
-        DelegatePointer<Locations>              locations;
+        Locations                               locations = {};
     };
 
 }

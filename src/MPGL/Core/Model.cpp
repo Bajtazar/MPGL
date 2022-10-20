@@ -32,21 +32,13 @@ namespace mpgl {
     Matrix4f const Model::defaultModel = identityMatrix<float32, 4>();
 
     Model::LocationSetterBuilder const Model::locationSetterBuilder =
-        [](ProgramPtr const& program, LocationPtr const& locations)
-            -> Model::LocationSetter
+        [](ProgramPtr const& program, Locations& locations)
+            -> void
     {
-        return DeferredExecutionWrapper{
-            program, locations}(
-                [](auto program, auto locations)
-        {
-            locations->model = ShaderLocation{*program, "model"};
-            locations->viewProjection = ShaderLocation{
-                *program, "viewProjection"};
-        });
+        locations.model = ShaderLocation{*program, "model"};
+        locations.viewProjection = ShaderLocation{
+            *program, "viewProjection"};
     };
-
-    Model::Model(void)
-        : locations{new Locations} {}
 
     Model::Model(Model const& model)
         : locations{model.locations} {}
@@ -62,9 +54,9 @@ namespace mpgl {
     }
 
     void Model::actualizeLocations(void) const noexcept {
-        locations->model(model.get());
+        locations.model(model.get());
         if (context.hasVPChanges())
-            locations->viewProjection(context.getViewProjection());
+            locations.viewProjection(context.getViewProjection());
     }
 
 }

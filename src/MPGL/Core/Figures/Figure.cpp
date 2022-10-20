@@ -35,15 +35,6 @@ namespace mpgl {
         setLocations();
     }
 
-    template <Dimension Dim>
-    Figure<Dim>::Figure(
-        std::string const& programName,
-        Executable exec)
-            : Shadeable{programName, exec}
-    {
-        setLocations();
-    }
-
     template <>
     Figure<dim::Dim2>::Figure(Figure const& shape)
         : Shadeable{shape.shaderProgram}
@@ -79,10 +70,9 @@ namespace mpgl {
     template <Dimension Dim>
     void Figure<Dim>::setLocations(void) {
         if constexpr (ThreeDimensional<Dim>) {
-            Shadeable::setLocations(
-                this->locationSetterBuilder(
-                    this->shaderProgram,
-                    this->locations));
+            this->locationSetterBuilder(
+                this->shaderProgram,
+                this->locations);
         }
     }
 

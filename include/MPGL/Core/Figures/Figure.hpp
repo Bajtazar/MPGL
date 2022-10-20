@@ -68,8 +68,6 @@ namespace mpgl {
          */
         virtual ~Figure(void) noexcept = default;
     protected:
-        using Executable = typename Shadeable::Executable;
-
         /**
          * Construct a new Figure object. Loads the given
          * shaders
@@ -77,17 +75,6 @@ namespace mpgl {
          * @param programName the given shader name
          */
         explicit Figure(std::string const& programName);
-
-        /**
-         * Constructs a new Figure object. Loads the given
-         * shaders
-         *
-         * @param programName the given shader name
-         * @param exec the shader's executable
-         */
-        explicit Figure(
-            std::string const& programName,
-            Executable exec);
 
         /**
          * Construct a new Figure object from the given
