@@ -145,12 +145,15 @@ namespace mpgl {
          */
         virtual ~TexturedFigure(void) noexcept = default;
     private:
-        using Executable = typename Shadeable::Executable;
         using VertexTraits = typename Base::VertexTraits;
         using Placer = TexturedFigurePlacer<Base>;
 
-        static Executable const                     executable;
         static Placer const                         placer;
+
+        /**
+         * Sets textured figure locations
+         */
+        void setLocations(void);
     };
 
     template class TexturedFigure<Triangle<dim::Dim2, uint8>>;

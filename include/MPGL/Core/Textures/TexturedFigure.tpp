@@ -37,11 +37,9 @@ namespace mpgl {
             Base{std::forward<Args>(args)...}
     {
         if constexpr (SpecializationOf<Base, Elliptic>) {
-            this->context.shaders.setOrQueue(this->shaderProgram,
-                Base::ShaderManager::shader, executable);
+            setShader(Base::ShaderManager::shader);
         } else {
-            this->context.shaders.setOrQueue(this->shaderProgram,
-                VertexTraits::shader(), executable);
+            setShader(VertexTraits::shader());
         }
         placer(*this);
     }

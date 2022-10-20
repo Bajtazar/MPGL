@@ -30,11 +30,9 @@
 namespace mpgl {
 
     template <SpecializationOf<Figure> Base>
-    TexturedFigure<Base>::Executable const
-        TexturedFigure<Base>::executable =
-    [](ShaderProgram const& program) {
-        ShaderLocation{program, "tex"}(0);
-    };
+    void TexturedFigure<Base>::setLocations(void) {
+        ShaderLocation{*this->shaderProgram, "tex"}(0);
+    }
 
     template <SpecializationOf<Figure> Base>
     TexturedFigure<Base>::Placer const TexturedFigure<Base>::placer{};
@@ -56,13 +54,9 @@ namespace mpgl {
         } else {
             this->setShader(VertexTraits::convolutionShader());
         }
-        Shadeable::setLocations(DeferredExecutionWrapper{
-            this->shaderProgram}(
-            [](auto program, auto convolution, auto dimensions) {
-                ShaderLocation{*program, "convolution"}(convolution);
-                ShaderLocation{*program, "screen"}(dimensions);
-            }, convolution, this->texture.getTextureDimensions()
-        ));
+        ShaderLocation{*this->shaderProgram, "convolution"}(convolution);
+        ShaderLocation{*this->shaderProgram, "screen"}(
+            this->texture.getTextureDimensions());
     }
 
     template <SpecializationOf<Figure> Base>
@@ -79,7 +73,7 @@ namespace mpgl {
         ShaderProgram const& program) noexcept
     {
         Base::setShader(program);
-        executable(*this->shaderProgram);
+        setLocations();
     }
 
     template <SpecializationOf<Figure> Base>
@@ -87,7 +81,7 @@ namespace mpgl {
         ShaderProgram&& program) noexcept
     {
         Base::setShader(std::move(program));
-        executable(*this->shaderProgram);
+        setLocations();
     }
 
     template <SpecializationOf<Figure> Base>
@@ -95,11 +89,7 @@ namespace mpgl {
         std::string const& name) noexcept
     {
         Base::setShader(name);
-        Shadeable::setLocations(DeferredExecutionWrapper{
-            this->shaderProgram}([](auto program)
-        {
-            executable(*program);
-        }));
+        setLocations();
     }
 
 }
