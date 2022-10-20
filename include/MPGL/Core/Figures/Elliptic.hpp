@@ -280,8 +280,6 @@ namespace mpgl {
          */
         virtual ~Elliptic(void) noexcept = default;
     protected:
-        using Executable = typename Shadeable::Executable;
-
         /**
          * Constructs a new Elliptic object with given
          * vector of vertices, color, program name and
@@ -289,12 +287,10 @@ namespace mpgl {
          *
          * @param vertices the vector of vertices
          * @param programName the shader program name
-         * @param exec the shader's executible
          */
         explicit Elliptic(
             Vertices vertices,
-            std::string const& programName,
-            Executable exec);
+            std::string const& programName);
 
         /**
          * Constructs a new Elliptic object from the given

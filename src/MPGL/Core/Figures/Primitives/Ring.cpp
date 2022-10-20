@@ -151,19 +151,15 @@ namespace mpgl {
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ring<Dim, Spec>::setLocations(void) {
-        Shadeable::setLocations(DeferredExecutionWrapper{
-            this->shaderProgram, locations}(
-                [](auto program, auto locations)
-        {
-            locations->outerShift
-                = ShaderLocation{*program, "outerShift"};
-            locations->innerShift
-                = ShaderLocation{*program, "innerShift"};
-            locations->outerTransform
-                = ShaderLocation{*program, "outerTransform"};
-            locations->innerTransform
-                = ShaderLocation{*program, "innerTransform"};
-        }));
+        auto& program = *this->shaderProgram;
+        locations.outerShift
+            = ShaderLocation{program, "outerShift"};
+        locations.innerShift
+            = ShaderLocation{program, "innerShift"};
+        locations.outerTransform
+            = ShaderLocation{program, "outerTransform"};
+        locations.innerTransform
+            = ShaderLocation{program, "innerTransform"};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -175,9 +171,10 @@ namespace mpgl {
         float32 angle) requires TwoDimensional<Dim>
             : Elliptic<Dim, Spec>{Elliptic<Dim, Spec>::ellipseVertices(
                 center, semiAxis, angle, color),
-                shaderManager.shader, shaderManager},
-            locations{new Locations}, innerEllipse{innerEllipse}
+                shaderManager.shader},
+                innerEllipse{innerEllipse}
     {
+        shaderManager(*this->shaderProgram);
         actualizeMatrices();
         setLocations();
     }
@@ -190,9 +187,10 @@ namespace mpgl {
         Color const& color) requires TwoDimensional<Dim>
             : Elliptic<Dim, Spec>{Elliptic<Dim, Spec>::circleVertices(
                 center, radius, color),
-                shaderManager.shader, shaderManager},
-            locations{new Locations}, innerEllipse{innerEllipse}
+                shaderManager.shader},
+            innerEllipse{innerEllipse}
     {
+        shaderManager(*this->shaderProgram);
         actualizeMatrices();
         setLocations();
     }
@@ -209,11 +207,11 @@ namespace mpgl {
                 VertexTraits::buildVertex(center - majorAxis + minorAxis, color),
                 VertexTraits::buildVertex(center + majorAxis + minorAxis, color),
                 VertexTraits::buildVertex(center + majorAxis - minorAxis, color)
-            }, shaderManager.shader, shaderManager},
-            locations{new Locations}, innerEllipse{innerEllipse}
+            }, shaderManager.shader}, innerEllipse{innerEllipse}
     {
         if (dot(minorAxis, majorAxis))
             throw NotPerpendicularException{minorAxis, majorAxis};
+        shaderManager(*this->shaderProgram);
         checkInnerAndOuterPlanes();
         actualizeMatrices();
         setLocations();
@@ -295,12 +293,12 @@ namespace mpgl {
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ring<Dim, Spec>::actualizeLocations(void) const noexcept {
         Elliptic<Dim, Spec>::actualizeLocations();
-        locations->outerShift(
+        locations.outerShift(
             Vector{get<"position">(this->vertices.front())});
-        locations->innerShift(
+        locations.innerShift(
             Vector{innerEllipse.vertices.front()});
-        locations->outerTransform(outline);
-        locations->innerTransform(innerEllipse.outline);
+        locations.outerTransform(outline);
+        locations.innerTransform(innerEllipse.outline);
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -332,7 +330,8 @@ namespace mpgl {
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ring<Dim, Spec>::setShader(std::string const& name) {
-        Elliptic<Dim, Spec>::setShader(name, shaderManager);
+        Elliptic<Dim, Spec>::setShader(name);
+        shaderManager(*this->shaderProgram);
         setLocations();
     }
 

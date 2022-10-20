@@ -381,7 +381,7 @@ namespace mpgl {
             ShaderLocation                              innerTransform;
         };
 
-        DelegatePointer<Locations>                      locations;
+        Locations                                       locations;
         InnerEllipse                                    innerEllipse;
         MatrixT                                         outline;
 

@@ -32,9 +32,8 @@ namespace mpgl {
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     Elliptic<Dim, Spec>::Elliptic(
         Vertices vertices,
-        std::string const& programName,
-        Executable exec)
-            : Figure<Dim>{programName, std::move(exec)},
+        std::string const& programName)
+            : Figure<Dim>{programName},
             vertices{std::move(vertices)}
     {
         initializeBuffers();
