@@ -183,7 +183,7 @@ namespace mpgl {
             ShaderLocation                              transform;
         };
 
-        DelegatePointer<Locations>                      locations;
+        Locations                                       locations;
         MatrixT                                         outlineTransform;
 
         static OutlineCalculator const                  outlineCalc;

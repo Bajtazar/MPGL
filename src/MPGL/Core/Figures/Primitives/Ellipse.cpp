@@ -46,14 +46,10 @@ namespace mpgl {
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ellipse<Dim, Spec>::setLocations(void) {
-        Shadeable::setLocations(DeferredExecutionWrapper{
-            this->shaderProgram, locations}(
-                [](auto program, auto locations)
-        {
-            locations->shift = ShaderLocation{*program, "shift"};
-            locations->transform
-                = ShaderLocation{*program, "transform"};
-        }));
+        auto& program = *this->shaderProgram;
+        locations.shift = ShaderLocation{program, "shift"};
+        locations.transform
+            = ShaderLocation{program, "transform"};
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -65,9 +61,9 @@ namespace mpgl {
             : Elliptic<Dim, Spec>{
                 Elliptic<Dim, Spec>::ellipseVertices(
                     center, semiAxis, angle, color),
-                shaderManager.shader, shaderManager},
-            locations{new Locations}
+                shaderManager.shader}
     {
+        shaderManager(*this->shaderProgram);
         actualizeMatrices();
         setLocations();
     }
@@ -80,9 +76,9 @@ namespace mpgl {
             : Elliptic<Dim, Spec>{
                 Elliptic<Dim, Spec>::circleVertices(
                     center, radius, color),
-                shaderManager.shader, shaderManager},
-            locations{new Locations}
+                shaderManager.shader}
     {
+        shaderManager(*this->shaderProgram);
         actualizeMatrices();
         setLocations();
     }
@@ -98,11 +94,11 @@ namespace mpgl {
                 VertexTraits::buildVertex(center - majorAxis + minorAxis, color),
                 VertexTraits::buildVertex(center + majorAxis + minorAxis, color),
                 VertexTraits::buildVertex(center + majorAxis - minorAxis, color)
-            }, shaderManager.shader, shaderManager},
-            locations{new Locations}
+            }, shaderManager.shader}
     {
         if (dot(minorAxis, majorAxis))
             throw NotPerpendicularException{minorAxis, majorAxis};
+        shaderManager(*this->shaderProgram);
         actualizeMatrices();
         setLocations();
     }
@@ -147,9 +143,9 @@ namespace mpgl {
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ellipse<Dim, Spec>::actualizeLocations(void) const noexcept {
         Elliptic<Dim, Spec>::actualizeLocations();
-        locations->shift(Vector{get<"position">(
+        locations.shift(Vector{get<"position">(
             this->vertices.front())});
-        locations->transform(outlineTransform);
+        locations.transform(outlineTransform);
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -182,7 +178,8 @@ namespace mpgl {
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ellipse<Dim, Spec>::setShader(std::string const& name) {
-        Elliptic<Dim, Spec>::setShader(name, shaderManager);
+        Elliptic<Dim, Spec>::setShader(name);
+        shaderManager(*this->shaderProgram);
         setLocations();
     }
 
