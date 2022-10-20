@@ -991,7 +991,6 @@ namespace mpgl {
             Vector2f>                               GlyphDimensions;
         typedef std::pair<Vector2f, std::size_t>    GlyphPosPair;
         typedef typename ShadersContext::ProgramPtr ProgramPtr;
-        typedef typename ShadersContext::Executable Executable;
 
         static constexpr SizeT                      ShiftBase
             = Subfont::shiftBase;
@@ -1145,9 +1144,7 @@ namespace mpgl {
         Style                                       style;
         Modifiers                                   mods;
 
-        static const Executable                     shaderExec;
-
-/**
+        /**
          * Loads the glyphs into the memory
          *
          * @param array the array with glyphs ids

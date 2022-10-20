@@ -162,12 +162,6 @@ namespace mpgl {
     }
 
     template <Dimension Dim>
-    Text<Dim>::Executable const Text<Dim>::shaderExec =
-        [](ShaderProgram const& program) -> void {
-            ShaderLocation{program, "tex"}(0);
-        };
-
-    template <Dimension Dim>
     Tetragon<Dim> Text<Dim>::generateUnderline(
         PositionHolder const& positionSpace,
         float32 textSize,
@@ -196,11 +190,11 @@ namespace mpgl {
 
     template <Dimension Dim>
     void Text<Dim>::setLocations(void) {
+        ShaderLocation{*shaderProgram, "tex"}(0);
         if constexpr (ThreeDimensional<Dim>) {
-            Shadeable::setLocations(
-                this->locationSetterBuilder(
-                    this->shaderProgram,
-                    this->locations));
+            this->locationSetterBuilder(
+                shaderProgram,
+                this->locations);
         }
     }
 
@@ -209,8 +203,8 @@ namespace mpgl {
         Font const& font,
         Vector const& position,
         String const& text,
-        TextOptions const& options) : Shadeable{shaderType(),
-            shaderExec}, positionSpace{position}, text{text},
+        TextOptions const& options) : Shadeable{shaderType()},
+            positionSpace{position}, text{text},
             font{font}, underlines{
                 generateUnderline(positionSpace, options.size,
                 options.color)},
@@ -389,20 +383,18 @@ namespace mpgl {
     template <Dimension Dim>
     void Text<Dim>::setShader(ShaderProgram const& program) noexcept {
         Shadeable::setShader(program);
-        shaderExec(*shaderProgram);
         setLocations();
     }
 
     template <Dimension Dim>
     void Text<Dim>::setShader(ShaderProgram&& program) noexcept {
         Shadeable::setShader(std::move(program));
-        shaderExec(*shaderProgram);
         setLocations();
     }
 
     template <Dimension Dim>
     void Text<Dim>::setShader(String const& name) {
-        Shadeable::setShader(name, shaderExec);
+        Shadeable::setShader(name);
         setLocations();
     }
 
