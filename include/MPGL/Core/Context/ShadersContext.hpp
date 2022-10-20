@@ -77,47 +77,6 @@ namespace mpgl {
         [[nodiscard]] Library getLibrary(void) const noexcept;
 
         /**
-         * Sets the shader program with the given name in the
-         * pointer is available. Otherwise sets the shader
-         * to the queue and waits until the library is available
-         *
-         * @param pointer the reference to the shader program
-         * shadred pointer
-         * @param name the constant reference to the shader program
-         * name
-         */
-        void setOrQueue(
-            ProgramPtr& pointer,
-            std::string const& name);
-
-        /**
-         * Sets the shader program with the given name in the
-         * pointer is available and executes associated
-         * executable. Otherwise sets the shader and executable
-         * to the queue and waits until the library is available
-         *
-         * @param pointer the reference to the shader program
-         * shadred pointer
-         * @param name the constant reference to the shader program
-         * name
-         * @param exec the executable called after shader program
-         * shared pointer initialization
-         */
-        void setOrQueue(
-            ProgramPtr& pointer,
-            std::string const& name,
-            Executable exec);
-
-        /**
-         * Executes the given invocable if the library is available.
-         * Otherwise adds the executable to the queue and waits until
-         * the library is available
-         *
-         * @param exec the independent executable
-         */
-        void executeOrQueue(IndependentExecutable exec);
-
-        /**
          * Returns whether the shader library is defined
          *
          * @return if the shader library is defined
@@ -125,52 +84,10 @@ namespace mpgl {
         [[nodiscard]] bool isHolding(void) const noexcept
             { return std::holds_alternative<ShaderLibrary>(shaders); }
     private:
-        typedef std::weak_ptr<ShaderProgram>    WeakProgram;
-        typedef std::tuple<WeakProgram,
-            std::string, Executable>            ShaderTuple;
-        typedef std::pair<WeakProgram,
-            std::string>                        ShaderPair;
-        typedef std::queue<ShaderTuple>         TupleQueue;
-        typedef std::queue<ShaderPair>          PairQueue;
-        typedef std::queue<
-            IndependentExecutable>              Executables;
         typedef std::variant<std::monostate,
             ShaderLibrary>                      Shaders;
 
-        TupleQueue                              tupleQueue;
-        PairQueue                               pairQueue;
-        Executables                             executables;
         Shaders                                 shaders;
-
-        /**
-         * Initializes the shaders from the shader program pair queue
-         *
-         * @param exception the reference to the exception object
-         * @param library the constant reference to the shader
-         * library object
-         */
-        void setShaderFromPairQueue(
-            std::exception_ptr& exception,
-            ShaderLibrary const& library) noexcept;
-
-        /**
-         * Initializes the shaders from the shader program tuple queue
-         *
-         * @param exception the reference to the exception object
-         * @param library the constant reference to the shader
-         * library object
-         */
-        void setShaderFromTupleQueue(
-            std::exception_ptr& exception,
-            ShaderLibrary const& library) noexcept;
-
-        /**
-         * Executes the executables
-         *
-         * @param exception the reference to the exception object
-         */
-        void runExecutable(
-            std::exception_ptr& exception) noexcept;
     };
 
 }

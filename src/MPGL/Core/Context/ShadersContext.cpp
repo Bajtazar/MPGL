@@ -29,55 +29,6 @@ namespace mpgl {
 
     void ShadersContext::setLibrary(ShaderLibrary const& library) {
         shaders = library;
-        std::exception_ptr exception;
-        while (!tupleQueue.empty())
-            setShaderFromTupleQueue(exception, library);
-        while (!pairQueue.empty())
-            setShaderFromPairQueue(exception, library);
-        while (!executables.empty())
-            runExecutable(exception);
-        if (exception)
-            std::rethrow_exception(exception);
-    }
-
-    void ShadersContext::setShaderFromPairQueue(
-        std::exception_ptr& exception,
-        ShaderLibrary const& library) noexcept
-    {
-        try {
-            auto&& [shader, name] = std::move(pairQueue.front());
-            pairQueue.pop();
-            if (auto program = shader.lock())
-                *program = library[name];
-        } catch (...) {
-            exception = std::current_exception();
-        }
-    }
-
-    void ShadersContext::setShaderFromTupleQueue(
-        std::exception_ptr& exception,
-        ShaderLibrary const& library) noexcept
-    {
-        try {
-            auto&& [shader, name, exec] = std::move(tupleQueue.front());
-            tupleQueue.pop();
-            if (auto program = shader.lock())
-                exec(*program = library[name]);
-        } catch (...) {
-            exception = std::current_exception();
-        }
-    }
-
-    void ShadersContext::runExecutable(
-        std::exception_ptr& exception) noexcept
-    {
-        try {
-            auto&& exec = std::move(executables.front());
-            executables.pop();
-            exec();
-        } catch (...) {
-            exception = std::current_exception();
-        }
     }
 
     [[nodiscard]] ShadersContext::Library ShadersContext::getLibrary(
@@ -86,34 +37,6 @@ namespace mpgl {
         if (isHolding())
             return {std::get<ShaderLibrary>(shaders)};
         return std::nullopt;
-    }
-
-    void ShadersContext::setOrQueue(
-        ProgramPtr& pointer,
-        std::string const& name)
-    {
-        if (isHolding())
-            *pointer = std::get<ShaderLibrary>(shaders)[name];
-        else
-            pairQueue.emplace(pointer, name);
-    }
-
-    void ShadersContext::setOrQueue(
-        ProgramPtr& pointer,
-        std::string const& name,
-        Executable exec)
-    {
-        if (isHolding())
-            exec(*pointer = std::get<ShaderLibrary>(shaders)[name]);
-        else
-            tupleQueue.emplace(pointer, name, std::move(exec));
-    }
-
-    void ShadersContext::executeOrQueue(IndependentExecutable exec) {
-        if (isHolding())
-            exec();
-        else
-            executables.emplace(std::move(exec));
     }
 
 }

@@ -25,6 +25,8 @@
  */
 #include <MPGL/Core/Context/Context.hpp>
 
+#include <GLFW/glfw3.h>
+
 #include <stdlib.h>
 #include <iostream>
 #include <ranges>

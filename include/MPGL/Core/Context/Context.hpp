@@ -30,7 +30,6 @@
 #include <MPGL/Core/Context/Options.hpp>
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include <thread>
 #include <atomic>
