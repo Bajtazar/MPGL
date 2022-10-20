@@ -59,10 +59,11 @@ namespace mpgl {
         /**
          * Sets the given shader program
          *
+         * @throws ShaderLibraryNotLoadedException if shader library
+         * is not loaded yet
          * @param name the name of the shader program
          */
-        virtual void setShader(std::string const& name)
-            { context.shaders.setOrQueue(shaderProgram, name); }
+        virtual void setShader(std::string const& name);
 
         /**
          * Returns the constant reference to the shader program
@@ -80,10 +81,6 @@ namespace mpgl {
          */
         virtual ~Shadeable(void) noexcept = default;
     protected:
-        typedef typename ShadersContext::Executable Executable;
-        typedef typename
-            ShadersContext::IndependentExecutable   IndependentExecutable;
-
         /**
          * Constructs a new Shadeable object from the given
          * constant reference to the shader program pointer
@@ -109,21 +106,11 @@ namespace mpgl {
          * constant reference to the string with the shader
          * program name
          *
+         * @throws ShaderLibraryNotLoadedException if shader library
+         * is not loaded yet
          * @param programName the shader program name
          */
         explicit Shadeable(std::string const& programName);
-
-        /**
-         * Constructs a new Shadeable object from the given
-         * constant reference to the string with the shader
-         * program name and an executable
-         *
-         * @param programName the shader program name
-         * @param exec the shader program's executable
-         */
-        explicit Shadeable(
-            std::string const& programName,
-            Executable exec);
 
         /**
          * Constructs a new Shadeable object
@@ -167,23 +154,6 @@ namespace mpgl {
          * @return the reference to this object
          */
         Shadeable& operator=(Shadeable&& shadeable) noexcept;
-
-        /**
-         * Sets the new shader program
-         *
-         * @param program the shader program's name
-         * @param exec the shader program's executable
-         */
-        void setShader(
-            std::string const& program,
-            Executable exec);
-
-        /**
-         * Sets the shader locations executable
-         *
-         * @param exec the independent executable with locations
-         */
-        void setLocations(IndependentExecutable exec);
 
         ProgramPtr                                  shaderProgram;
     };

@@ -23,6 +23,7 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
+#include <MPGL/Exceptions/Shader/ShaderLibraryNotLoadedException.hpp>
 #include <MPGL/Core/Shaders/Shadeable.hpp>
 
 namespace mpgl {
@@ -42,24 +43,11 @@ namespace mpgl {
         setShader(name);
     }
 
-    void Shadeable::setShader(std::string const& name,
-        Executable exec)
-    {
-        context.shaders.setOrQueue(shaderProgram, name,
-            std::move(exec));
-    }
-
-    void Shadeable::setLocations(IndependentExecutable exec) {
-        context.shaders.executeOrQueue(std::move(exec));
-    }
-
-    Shadeable::Shadeable(
-        std::string const& name,
-        ShadersContext::Executable exec)
-            : Shadeable{}
-    {
-        context.shaders.setOrQueue(shaderProgram,
-            name, std::move(exec));
+    void Shadeable::setShader(std::string const& name) {
+        if (auto library = context.shaders.getLibrary())
+            *shaderProgram = (*library)[name];
+        else
+            throw ShaderLibraryNotLoadedException{name};
     }
 
     Shadeable::Shadeable(Shadeable const& shadeable)
