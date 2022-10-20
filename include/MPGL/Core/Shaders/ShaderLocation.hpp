@@ -40,7 +40,7 @@ namespace mpgl {
         /**
          * Constructs a new Shader Location object
          */
-        explicit ShaderLocation(void) noexcept;
+        ShaderLocation(void) noexcept;
 
         /**
          * Construct a new Shader Location object

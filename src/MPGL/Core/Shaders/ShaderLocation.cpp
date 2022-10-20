@@ -29,13 +29,15 @@
 
 namespace mpgl {
 
+    static constexpr mpgl::uint32 UninitializedLocation = 0xFFFFFFFF;
+
     ShaderLocation::ShaderLocation(void) noexcept
-        : location{0xFFFFFFFF} {}
+        : location{UninitializedLocation} {}
 
     ShaderLocation::ShaderLocation(
         ShaderProgram const& program,
         std::string const& uniform)
-            : location{0xFFFFFFFF}
+            : location{UninitializedLocation}
     {
         setLocation(program, uniform);
     }
@@ -49,7 +51,7 @@ namespace mpgl {
         program.use();
         location = glGetUniformLocation(*program.shaderProgramID,
             uniform.c_str());
-        if (location == 0xFFFFFFFF)
+        if (location == UninitializedLocation)
             throw ShaderLocationUniformException{uniform};
     }
 
