@@ -41,7 +41,7 @@ namespace mpgl {
         std::span<Tp const, Size> const& span) noexcept
             : Vector{tags::uninitializedMemoryTag}
     {
-        std::ranges::copy(span.begin(), span.end(), begin());
+        std::ranges::copy(span, begin());
     }
 
     template <Arithmetic Tp, std::size_t Size>

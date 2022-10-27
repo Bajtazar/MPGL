@@ -42,6 +42,7 @@ namespace mpgl {
     class Matrix {
     public:
         using value_type = Vector<Tp, Cols>;
+        using transposed_value_type = Vector<Tp, Rows>;
         using element_type = Tp;
         using container = std::array<value_type, Rows>;
 
@@ -61,6 +62,15 @@ namespace mpgl {
          * Constructs a new matrix object
          */
         constexpr Matrix(void) noexcept = default;
+
+        /**
+         * Constructs a new matrix object. Copies the span
+         * elements into this matrix object
+         *
+         * @param span a constant reference to the span object
+         */
+        explicit constexpr Matrix(
+            std::span<value_type const, Rows> const& span) noexcept;
 
         /**
          * Inverses the sign of the matrix's elements
