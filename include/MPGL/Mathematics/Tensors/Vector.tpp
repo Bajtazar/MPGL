@@ -28,6 +28,15 @@
 namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
+    constexpr Vector<Tp, Size>::Vector(void) noexcept
+        : data{} {}
+
+    template <Arithmetic Tp, std::size_t Size>
+    constexpr Vector<Tp, Size>::Vector(
+        [[maybe_unused]] UninitializedMemoryTag const& tag
+        ) noexcept {}
+
+    template <Arithmetic Tp, std::size_t Size>
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
         std::span<Tp const, Size>() const noexcept
     {
@@ -40,7 +49,7 @@ namespace mpgl {
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
         Vector<Up, Size>() const noexcept
     {
-        Vector<Up, Size> base;
+        Vector<Up, Size> base{tags::uninitializedMemoryTag};
         std::ranges::copy(begin(), end(), base.begin());
         return base;
     }
@@ -51,8 +60,13 @@ namespace mpgl {
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
         Vector<Tp, USize>() const noexcept
     {
-        Vector<Tp, USize> base;
-        std::ranges::copy(begin(), end(), base.begin());
+        Vector<Tp, USize> base{tags::uninitializedMemoryTag};
+        // allows compiler to detect that all uninitialized
+        // fields are overwritten
+        for (std::size_t i = 0;i < Size; ++i)
+            base[i] = (*this)[i];
+        for (std::size_t i = Size; i < USize; ++i)
+            base[i] = Tp{};
         return base;
     }
 
