@@ -37,6 +37,14 @@ namespace mpgl {
         ) noexcept {}
 
     template <Arithmetic Tp, std::size_t Size>
+    constexpr Vector<Tp, Size>::Vector(
+        std::span<Tp const, Size> const& span) noexcept
+            : Vector{tags::uninitializedMemoryTag}
+    {
+        std::ranges::copy(span.begin(), span.end(), begin());
+    }
+
+    template <Arithmetic Tp, std::size_t Size>
     [[nodiscard]] constexpr Vector<Tp, Size>::operator
         std::span<Tp const, Size>() const noexcept
     {
@@ -319,7 +327,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left + right; });
@@ -331,7 +339,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left - right; });
@@ -343,7 +351,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left * right; });
@@ -355,7 +363,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left / right; });
@@ -367,7 +375,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, %)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left % right; });
@@ -379,7 +387,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, ^)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left ^ right; });
@@ -391,7 +399,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, &)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left & right; });
@@ -403,7 +411,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, |)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, right, result.begin(),
             [](Tp const& left, Tp const& right)-> Tp {
                 return left | right; });
@@ -415,7 +423,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left + right; });
@@ -427,7 +435,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left - right; });
@@ -439,7 +447,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left * right; });
@@ -451,7 +459,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left / right; });
@@ -463,7 +471,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right) requires mpgl_Operable(Tp, %)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left % right; });
@@ -475,7 +483,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right) requires mpgl_Operable(Tp, ^)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left ^ right; });
@@ -487,7 +495,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right) requires mpgl_Operable(Tp, &)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left & right; });
@@ -499,7 +507,7 @@ namespace mpgl {
         Vector<Tp, Size> const& left,
         Tp const& right) requires mpgl_Operable(Tp, |)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(left, result.begin(),
             [&right](Tp const& left) -> Tp {
                 return left | right; });
@@ -511,7 +519,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left + right; });
@@ -523,7 +531,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left - right; });
@@ -535,7 +543,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left * right; });
@@ -547,7 +555,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left / right; });
@@ -559,7 +567,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, ^)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left % right; });
@@ -571,7 +579,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, ^)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left ^ right; });
@@ -583,7 +591,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, &)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left & right; });
@@ -595,7 +603,7 @@ namespace mpgl {
         Tp const& left,
         Vector<Tp, Size> const& right) requires mpgl_Operable(Tp, |)
     {
-        Vector<Tp, Size> result;
+        Vector<Tp, Size> result{tags::uninitializedMemoryTag};
         std::ranges::transform(right, result.begin(),
             [&left](Tp const& right) -> Tp {
                 return left | right; });

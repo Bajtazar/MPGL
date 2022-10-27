@@ -82,6 +82,15 @@ namespace mpgl {
             ) noexcept;
 
         /**
+         * Constructs a new vector object. Copies the span
+         * elements into this vector object
+         *
+         * @param span a constant reference to the span object
+         */
+        explicit constexpr Vector(
+            std::span<Tp const, Size> const& span) noexcept;
+
+        /**
          * Returns the size of the vector [the number of its
          * elements]
          *
