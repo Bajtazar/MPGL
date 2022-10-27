@@ -42,25 +42,49 @@ namespace mpgl {
     class Matrix {
     public:
         using value_type = Vector<Tp, Cols>;
+        using transposed_value_type = Vector<Tp, Rows>;
         using element_type = Tp;
         using container = std::array<value_type, Rows>;
 
         /**
          * Constructs a new matrix object from the given
-         * vectors
+         * row vectors
          *
          * @tparam Rws the types of vectors
          * @param rows the universal references to vectors
          */
         template <AllAbsolutelySame<value_type>... Rws>
             requires (sizeof...(Rws) == Rows)
-        constexpr Matrix(Rws&&... rows) noexcept
-            : base{ static_cast<value_type>(std::forward<Rws>(rows))... } {}
+        constexpr Matrix(Rws&&... rows) noexcept;
+
+        /**
+         * Constructs a new matrix object from the given
+         * column vectors
+         *
+         * @tparam Cls the types of vectors
+         * @param tag the tag that indicates that vectors are
+         * being used as a columns
+         * @param columns the universal references to vectors
+         */
+        template <AllAbsolutelySame<transposed_value_type>... Cls>
+            requires (sizeof...(Cls) == Cols)
+        constexpr Matrix(
+            [[maybe_unused]] TransposedTag tag,
+            Cls&&... columns) noexcept;
 
         /**
          * Constructs a new matrix object
          */
         constexpr Matrix(void) noexcept = default;
+
+        /**
+         * Constructs a new matrix object. Copies the span
+         * elements into this matrix object
+         *
+         * @param span a constant reference to the span object
+         */
+        explicit constexpr Matrix(
+            std::span<value_type const, Rows> const& span) noexcept;
 
         /**
          * Inverses the sign of the matrix's elements

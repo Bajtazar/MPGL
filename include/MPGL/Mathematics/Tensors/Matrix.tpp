@@ -31,6 +31,43 @@ namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
         requires (Rows > 1 && Cols > 1)
+    template <AllAbsolutelySame<typename Matrix<Tp, Rows, Cols>::
+        value_type>... Rws>
+            requires (sizeof...(Rws) == Rows)
+    constexpr Matrix<Tp, Rows, Cols>::Matrix(
+        Rws&&... rows) noexcept
+            : base{ static_cast<value_type>(
+                std::forward<Rws>(rows))... }
+    {}
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    template <AllAbsolutelySame<typename Matrix<Tp, Rows, Cols>::
+        transposed_value_type>... Cls>
+            requires (sizeof...(Cls) == Cols)
+    constexpr Matrix<Tp, Rows, Cols>::Matrix(
+        [[maybe_unused]] TransposedTag tag,
+        Cls&&... columns) noexcept
+    {
+        auto placer = [this](auto&& column, std::size_t const columnId) {
+            std::size_t rowId = 0;
+            for (auto&& element : column)
+                base[rowId++][columnId] = element;
+        };
+        std::size_t columnId = 0;
+        (placer(std::forward<Cls>(columns), columnId++), ...);
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
+    constexpr Matrix<Tp, Rows, Cols>::Matrix(
+        std::span<value_type const, Rows> const& span) noexcept
+    {
+        std::ranges::copy(span, begin());
+    }
+
+    template <Arithmetic Tp, std::size_t Rows, std::size_t Cols>
+        requires (Rows > 1 && Cols > 1)
     [[nodiscard]] constexpr Matrix<Tp, Rows, Cols>::operator
         std::span<value_type const, Rows>() const noexcept
     {

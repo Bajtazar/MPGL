@@ -33,6 +33,7 @@
 #include <array>
 #include <span>
 
+#include <MPGL/Mathematics/Tensors/TensorTags.hpp>
 #include <MPGL/Traits/Concepts.hpp>
 #include <MPGL/Utility/Ranges.hpp>
 
@@ -62,13 +63,31 @@ namespace mpgl {
             requires (sizeof...(Args) == Size
                 && AllConvertible<value_type,
                     std::remove_cvref_t<Args>...>)
-        constexpr Vector(Args&&... args) noexcept
-            : data{{ static_cast<Tp>(std::forward<Args>(args))... }} {}
+        constexpr Vector(Args&&... args) noexcept;
 
         /**
-         * Constructs a new vector object
+         * Constructs a new vector object.
+         * Implicitly initializes vector's memory
          */
-        constexpr Vector(void) noexcept = default;
+        constexpr Vector(void) noexcept;
+
+        /**
+         * Constructs a new vector object.
+         * Explicitly informs that memory
+         * inside a vector should not be initialized
+         */
+        explicit constexpr Vector(
+            [[maybe_unused]] UninitializedMemoryTag const& tag
+            ) noexcept;
+
+        /**
+         * Constructs a new vector object. Copies the span
+         * elements into this vector object
+         *
+         * @param span a constant reference to the span object
+         */
+        explicit constexpr Vector(
+            std::span<Tp const, Size> const& span) noexcept;
 
         /**
          * Returns the size of the vector [the number of its
@@ -509,7 +528,7 @@ namespace mpgl {
             get(void) && noexcept
                 { return std::move(data[N]); }
     private:
-        std::array<Tp, Size>                    data = {};
+        std::array<Tp, Size>                    data;
     };
 
     /**

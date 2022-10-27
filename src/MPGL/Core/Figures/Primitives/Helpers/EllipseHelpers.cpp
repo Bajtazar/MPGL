@@ -63,11 +63,11 @@ namespace mpgl {
         EllipseOutlineCalculator<dim::Dim2, Spec>::operator() (
             Ellipse<dim::Dim2, Spec> const& ellipse) const noexcept
     {
-        return invert(transpose(
-            Matrix2f{Vector2f{get<"position">(ellipse.vertices[1])}
+        return invert(Matrix2f{tags::transposedTag,
+            Vector2f{get<"position">(ellipse.vertices[1])}
                 - Vector2f{get<"position">(ellipse.vertices[0])},
             Vector2f{get<"position">(ellipse.vertices[3])}
-                - Vector2f{get<"position">(ellipse.vertices[0])}}));
+                - Vector2f{get<"position">(ellipse.vertices[0])}});
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
