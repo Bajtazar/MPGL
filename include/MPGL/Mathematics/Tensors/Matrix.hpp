@@ -48,15 +48,29 @@ namespace mpgl {
 
         /**
          * Constructs a new matrix object from the given
-         * vectors
+         * row vectors
          *
          * @tparam Rws the types of vectors
          * @param rows the universal references to vectors
          */
         template <AllAbsolutelySame<value_type>... Rws>
             requires (sizeof...(Rws) == Rows)
-        constexpr Matrix(Rws&&... rows) noexcept
-            : base{ static_cast<value_type>(std::forward<Rws>(rows))... } {}
+        constexpr Matrix(Rws&&... rows) noexcept;
+
+        /**
+         * Constructs a new matrix object from the given
+         * column vectors
+         *
+         * @tparam Cls the types of vectors
+         * @param tag the tag that indicates that vectors are
+         * being used as a columns
+         * @param columns the universal references to vectors
+         */
+        template <AllAbsolutelySame<transposed_value_type>... Cls>
+            requires (sizeof...(Cls) == Cols)
+        constexpr Matrix(
+            [[maybe_unused]] TransposedTag tag,
+            Cls&&... columns) noexcept;
 
         /**
          * Constructs a new matrix object
