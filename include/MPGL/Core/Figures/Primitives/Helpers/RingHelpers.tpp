@@ -41,7 +41,8 @@ namespace mpgl {
         auto const v0 = Vector2f{*iter++};
         auto const v1 = Vector2f{*iter++};
         auto const v3 = Vector2f{*++iter};
-        return invert(transpose(Matrix2f{v1 - v0, v3 - v0}));
+        return invert(Matrix2f{tags::transposedTag,
+            v1 - v0, v3 - v0});
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>

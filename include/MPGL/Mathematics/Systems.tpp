@@ -68,8 +68,8 @@ namespace mpgl {
             Vector2<Tp> const& secondPoint,
             Vector2<Tp> const& secondVersor) const noexcept
     {
-        if (auto matrix = invert(transpose(Matrix2f{firstVersor,
-            -secondVersor})))
+        if (auto matrix = invert(Matrix2f{tags::transposedTag,
+            firstVersor, -secondVersor}))
         {
             Vector2<Tp> pos = *matrix * (secondPoint - firstPoint);
             return firstPoint + firstVersor * pos[0];
