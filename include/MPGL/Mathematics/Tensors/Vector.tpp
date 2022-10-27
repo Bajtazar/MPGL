@@ -28,6 +28,15 @@
 namespace mpgl {
 
     template <Arithmetic Tp, std::size_t Size>
+    template <AbsolutelyArithmetic... Args>
+        requires (sizeof...(Args) == Size
+            && AllConvertible<typename Vector<Tp, Size>::value_type,
+                std::remove_cvref_t<Args>...>)
+    constexpr Vector<Tp, Size>::Vector(Args&&... args) noexcept
+        : data{{ static_cast<Tp>(std::forward<Args>(args))... }}
+    {}
+
+    template <Arithmetic Tp, std::size_t Size>
     constexpr Vector<Tp, Size>::Vector(void) noexcept
         : data{} {}
 

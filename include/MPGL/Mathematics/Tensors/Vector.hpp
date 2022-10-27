@@ -63,8 +63,7 @@ namespace mpgl {
             requires (sizeof...(Args) == Size
                 && AllConvertible<value_type,
                     std::remove_cvref_t<Args>...>)
-        constexpr Vector(Args&&... args) noexcept
-            : data{{ static_cast<Tp>(std::forward<Args>(args))... }} {}
+        constexpr Vector(Args&&... args) noexcept;
 
         /**
          * Constructs a new vector object.
