@@ -77,4 +77,21 @@ namespace mpgl::async {
         return counter->load() == 0;
     }
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] void*
+        Task<ReturnTp, Alloc>::promise_type::operator new(
+            std::size_t size)
+    {
+        return std::allocator_traits<Alloc>::allocate(
+            allocator, size);
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    void Task<ReturnTp, Alloc>::promise_type::operator delete(
+        void* ptr, std::size_t size)
+    {
+        std::allocator_traits<Alloc>::deallocate(
+            allocator, ptr, size);
+    }
+
 }
