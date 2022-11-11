@@ -80,6 +80,14 @@ namespace mpgl::async {
     }
 
     /**
+     * Tag used in co_await expression to preempt coroutine
+     * and wait for all child coroutines to execute
+     */
+    struct synchronize_t{};
+
+    inline constexpr synchronize_t      synchronize;
+
+    /**
      * Asynchronic task wrapper used to put coroutine inside a
      * threadpool. Allows to implement very versatile asynchronious
      * code using modified co_yield calls. Using co_yield expression
@@ -241,6 +249,69 @@ namespace mpgl::async {
         explicit promise_type(void) noexcept;
 
         /**
+         * Awaiter that manages a co_yield expression call
+         *
+         * @tparam Up the type holded by other task's future
+         */
+        template <PureType Up>
+        struct YieldAwaiter {
+            /**
+             * Informs that awaiter is not ready
+             *
+             * @return false
+             */
+            [[nodiscard]] bool await_ready(void) const noexcept;
+
+            /**
+             * Informs that awaiter should not interrupt
+             * coroutine execution
+             *
+             * @return false
+             */
+            [[nodiscard]] bool await_suspend(
+                [[maybe_unused]] std::coroutine_handle<>);
+
+            /**
+             * Returns a future to the registered coroutine
+             *
+             * @return the future to the registered coroutine
+             */
+            [[nodiscard]] std::future<Up> await_resume(
+                void) noexcept;
+
+            std::future<Up> future;
+        };
+
+        /**
+         * Awaiter that manages a co_await expression call
+         */
+        struct SynchronizeAwaiter {
+            /**
+             * Checks whether there are any children coroutines
+             * that are still running. If so return false and
+             * the suspension proces is continued. If not it
+             * permanenly abandons preempting proces
+             *
+             * @return if there are not any children coroutines
+             */
+            [[nodiscard]] bool await_ready(void) const noexcept
+                { return counter->load() == 0; }
+
+            /**
+             * Preempts coroutine
+             */
+            void await_suspend(
+                 [[maybe_unused]] std::coroutine_handle<>) {}
+
+            /**
+             * Resumes coroutine
+             */
+            void await_resume(void) const noexcept {}
+
+            std::atomic<size_t>*    counter;
+        };
+
+        /**
          * Allocates a coroutine using a static stateless allocator
          * object
          *
@@ -286,6 +357,28 @@ namespace mpgl::async {
                 { return {}; }
 
         /**
+         * Adds an other task to the threadpool and returns
+         * an awaiter that manages the co_yield call
+         *
+         * @tparam Up the type holded by other task's future
+         * @param other a rvalue reference to the other type
+         * @return an yield awaiter
+         */
+        template <PureType Up>
+        [[nodiscard]] YieldAwaiter<Up> yield_value(
+            Task<Up>&& other);
+
+        /**
+         * Preemts this coroutine and returns an awaiter
+         * that manages the co_await call
+         *
+         * @param synchronizeTag a synchronizer tag
+         * @return a synchronize awaiter
+         */
+        [[nodiscard]] SynchronizeAwaiter await_transform(
+            [[maybe_unused]] synchronize_t synchronizeTag) noexcept;
+
+        /**
          * Saves a value returned by a coroutine
          *
          * @tparam Vp a type of retured value
@@ -299,6 +392,13 @@ namespace mpgl::async {
          * its back to std::future given by it]
          */
         void unhandled_exception(void) noexcept;
+
+        /**
+         * Returns a future of the current coroutine
+         *
+         * @return the future of the current coroutine
+         */
+        [[nodiscard]] std::future<Tp> getFuture(void);
 
         friend class Task;
     private:
