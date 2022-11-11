@@ -25,8 +25,11 @@
  */
 #pragma once
 
+#include <MPGL/Traits/Concepts.hpp>
+
 #include <functional>
 #include <algorithm>
+#include <coroutine>
 #include <memory>
 #include <future>
 #include <vector>
@@ -75,5 +78,94 @@ namespace mpgl::async {
         };
 
     }
+
+    /**
+     * Asynchronic task wrapper used to put coroutine inside a
+     * threadpool. Allows to implement very versatile asynchronious
+     * code using modified co_yield calls. Using co_yield expression
+     * on the other mpgl::async::task coroutine wont suspend the
+     * execution of the current coroutine and adds it to the
+     * threadpool currently used by the parent coroutine. That
+     * allows to schedudle multiple coroutines before preemting
+     * current coroutine. Moreover, co_yield expression returns
+     * std::future objects, that can be used to acquire result
+     * of the children coroutines excecution. To maximize performance
+     * potential the co_await mpgl::async::synchronize call can be
+     * used to wait for the children coroutines to end. Using
+     * this construction guarantee that all std::futures comming
+     * from previous co_yield expressions will be ready. This call
+     * is also faster that manually synchronizing std::futures
+     * because its asleeps and preemts current coroutine and
+     * wait for execution of the latest children to be awaken
+     *
+     * @tparam ReturnTp a type returned by the coroutine
+     * @tparam Alloc a type of the stateless allocator that allocs
+     * the coroutine on the heap
+     *
+     * @warning the allocator type must be stateless, otherwise
+     * using task will result in undefined behaviour
+     * @warning the coroutine returning non-void type must return
+     * before the end of the coroutine, otherwise falling through
+     * coroutine will result in undefined behaviour
+     * @warning yielding children coroutines and not synchronizing
+     * them before the coroutine returns may result in undefined
+     * behaviour if children coroutines finishes after the parent.
+     * (Manual synchronization using for example futures returned
+     * by co_yield rather than calling co_await mpgl::async::synchronize
+     * is OK if all children coroutines has ended its job before
+     * the end of the parent)
+     *
+     * @note example valid usage of task
+     * @code{.cpp}
+     *  template <
+     *      std::random_access_iterator Iter,
+     *      std::sentinel_for<Iter> Sent>
+     *  mpgl::async::task<void> merge_sort(
+     *      Iter iter,
+     *      Sent const& sent)
+     *  {
+     *      if (std::next(iter) == sent)
+     *          co_return;
+     *
+     *      auto const middle = iter + std::distance(iter, sent) / 2;
+     *      co_yield merge_sort(iter, middle);
+     *      co_yield merge_sort(middle);
+     *      co_await mpgl::async::synchronize;
+     *
+     *      std::vector<std::iter_value_t<Iter>> buffer(std::distance(iter, sent));
+     *      std::merge(iter, middle, middle, sent, buffer.begin());
+     *      std::ranges::copy(buffer, iter);
+     *      // fallthrough is OK because its returning void
+     *  }
+     * @endcode
+     */
+    template <
+        PureType ReturnTp,
+        Allocator<std::byte> Alloc = std::allocator<std::byte>>
+    class Task {
+    public:
+        class promise_type;
+
+        using return_type = ReturnType;
+        using allocator_type = Alloc;
+        using future_type = std::future<return_type>;
+
+        [[nodiscard]] operator bool() const;
+
+        void operator() (void) const;
+
+        [[nodiscard]] isValid(void) const noexcept;
+
+        [[nodiscard]] future_type getFuture(void);
+    private:
+        using handle_t = std::coroutine_handle<promise_type>;
+
+        explicit Task(handle_t handle) noexcept
+            : handle{handle} {}
+
+        handle_t                        handle;
+
+        static Alloc                    allocator;
+    };
 
 }
