@@ -35,7 +35,7 @@
 #include <vector>
 #include <thread>
 
-namespace mpgl {
+namespace mpgl::async {
 
     /**
      * Manages a threadpool. Automaticly distributes tasks between

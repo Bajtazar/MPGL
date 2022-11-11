@@ -25,7 +25,7 @@
  */
 #pragma once
 
-namespace mpgl {
+namespace mpgl::async {
 
     template <std::invocable Func>
     [[nodiscard]] Threadpool::FutureOf<Func>
