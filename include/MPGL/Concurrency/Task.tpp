@@ -134,4 +134,13 @@ namespace mpgl::async {
         promise.set_value(std::forward<Vp>(value));
     }
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    void  Task<ReturnTp, Alloc>::promise_type::unhandled_exception(
+        void) noexcept
+    {
+        finish();
+        asleep = false;
+        promise.set_exception(std::current_exception());
+    }
+
 }
