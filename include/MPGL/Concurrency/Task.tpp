@@ -124,4 +124,14 @@ namespace mpgl::async {
         return { &this->childrenCounter };
     }
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    template <std::convertible_to<ReturnTp> Vp>
+    void Task<ReturnTp, Alloc>::promise_type::return_value(
+        Vp&& value)
+    {
+        finish();
+        asleep = false;
+        promise.set_value(std::forward<Vp>(value));
+    }
+
 }
