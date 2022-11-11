@@ -236,6 +236,11 @@ namespace mpgl::async {
     {
     public:
         /**
+         * Constructs a new promise type object
+         */
+        explicit promise_type(void) noexcept;
+
+        /**
          * Allocates a coroutine using a static stateless allocator
          * object
          *
@@ -299,6 +304,38 @@ namespace mpgl::async {
     private:
         std::promise<ReturnTp>          promise;
         bool mutable                    asleep = false;
+
+        /**
+         * Coroutine handler that does not create a future
+         * type to the current coroutine. It is being used
+         * only to wrap the awakened coroutines
+         *
+         */
+        class AwakenedCoroutine {
+        public:
+            /**
+             * Constructs a new awakened coroutine object
+             *
+             * @param handle a handle to the coroutine
+             */
+            explicit AwakenedCoroutine(handle_t handle) noexcept
+                : handle{handle} {}
+
+            /**
+             * Invokes a coroutine
+             */
+            void operator() (void) const;
+
+            /**
+             * Placeholder used only to trigger valid concept
+             *
+             * @param pool a pointer to the threadpool
+             */
+            void setThreadpool(
+                [[maybe_unused]] Threadpool* pool) const noexcept;
+        private:
+            handle_t                    handle;
+        };
     };
 
 }

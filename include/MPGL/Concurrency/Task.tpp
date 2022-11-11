@@ -30,4 +30,18 @@ namespace mpgl::async {
     template <PureType ReturnTp, Allocator<std::byte> Alloc>
     Alloc Task<ReturnTp, Alloc>::allocator = {};
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    Task<ReturnTp, Alloc>::promise_type::promise_type(
+        void) noexcept : details::PromiseTypeInterface{
+
+    .awake=[](details::PromiseTypeInterface const& ref) {
+        promise_type const& self = static_cast<promise_type const&>(ref);
+        if (self.asleep)
+            self.pool->appendTask(
+                AwakenedCoroutine{handle_t::from_promise(self)});
+        self.asleep = false;
+    }
+
+    } {}
+
 }
