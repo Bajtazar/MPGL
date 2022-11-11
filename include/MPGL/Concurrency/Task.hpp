@@ -92,18 +92,19 @@ namespace mpgl::async {
      * of the children coroutines excecution. To maximize performance
      * potential the co_await mpgl::async::synchronize call can be
      * used to wait for the children coroutines to end. Using
-     * this construction guarantee that all std::futures comming
+     * this construction guarantee that all of the std::futures comming
      * from previous co_yield expressions will be ready. This call
      * is also faster that manually synchronizing std::futures
-     * because its asleeps and preemts current coroutine and
-     * wait for execution of the latest children to be awaken
+     * because it asleeps and preemts current coroutine and
+     * wait for execution of the latest children to be awaken.
+     * Coroutine is being destroyed only after complete execution
      *
      * @tparam ReturnTp a type returned by the coroutine
      * @tparam Alloc a type of the stateless allocator that allocs
      * the coroutine on the heap
      *
      * @warning the allocator type must be stateless, otherwise
-     * using task will result in undefined behaviour
+     * using task class will result in undefined behaviour
      * @warning the coroutine returning non-void type must return
      * before the end of the coroutine, otherwise falling through
      * coroutine will result in undefined behaviour
@@ -114,6 +115,9 @@ namespace mpgl::async {
      * by co_yield rather than calling co_await mpgl::async::synchronize
      * is OK if all children coroutines has ended its job before
      * the end of the parent)
+     * @warning abandoning coroutine in the middle of its execution
+     * requires explicit destruction. Coroutine is destroyed automatically
+     * only after full execution
      *
      * @note example valid usage of task
      * @code{.cpp}
@@ -144,27 +148,66 @@ namespace mpgl::async {
         Allocator<std::byte> Alloc = std::allocator<std::byte>>
     class Task {
     public:
+        /// Task's promise type
         class promise_type;
 
         using return_type = ReturnType;
         using allocator_type = Alloc;
         using future_type = std::future<return_type>;
 
+        /**
+         * Constructs a new empty task object. It should
+         * be used only as a placeholder
+         */
+        explicit Task(void) noexcept = default;
+
+        /**
+         * Returns whether a coroutine has ended its job
+         *
+         * @return if a coroutine has ended its job
+         */
         [[nodiscard]] operator bool() const;
 
+        /**
+         * Invokes a coroutine
+         */
         void operator() (void) const;
 
+        /**
+         * Checks whether a task object holds a real coroutine
+         * or placeholder used by default constructor
+         *
+         * @return if a task holds a real coroutine
+         */
         [[nodiscard]] isValid(void) const noexcept;
 
+        /**
+         * Returns a future returned by the handled coroutine
+         *
+         * @return the coroutine's future object
+         */
         [[nodiscard]] future_type getFuture(void);
+
+        /**
+         * Manually destroys coroutine if it has not set future
+         * yet
+         */
+        void terminate(void) const;
     private:
         using handle_t = std::coroutine_handle<promise_type>;
 
+        /**
+         * Construct a new task object from a coroutine
+         * handle
+         *
+         * @param handle a coroutine handle object
+         */
         explicit Task(handle_t handle) noexcept
             : handle{handle} {}
 
-        handle_t                        handle;
+        handle_t                        handle = nullptr;
 
+        /// Thats why allocator has to be stateless
         static Alloc                    allocator;
     };
 
