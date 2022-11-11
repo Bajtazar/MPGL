@@ -433,7 +433,7 @@ namespace mpgl::async {
              * @param pool a pointer to the threadpool
              */
             void setThreadpool(
-                [[maybe_unused]] Threadpool* pool) const noexcept;
+                [[maybe_unused]] Threadpool* pool) const noexcept {}
         private:
             handle_t                    handle;
         };

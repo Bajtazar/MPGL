@@ -147,7 +147,14 @@ namespace mpgl::async {
     [[nodiscard]] std::future<ReturnTp>
         Task<ReturnTp, Alloc>::promise_type::getFuture(void)
     {
-        return return promise.get_future();
+        return promise.get_future();
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    void Task<ReturnTp, Alloc>::promise_type::AwakenedCoroutine
+        ::operator() (void) const
+    {
+        handle();
     }
 
 }
