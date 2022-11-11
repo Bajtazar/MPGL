@@ -65,10 +65,49 @@ namespace mpgl::async::details {
      * @tparam Task a task type
      */
     template <class Task>
-    concept CoroutineWorker = IndependentTask<Task> &&
+    concept CoroutineWorker = CoroutineTask<Task> &&
         requires (Task& task)
     {
         { task.getFuture() } -> SpecializationOf<std::future>;
+    };
+
+    /**
+     * Helper struct that allows to determine the result
+     * of computing given task inside threadpool. The type
+     * is a std::future object parametrized with the result
+     * of invoking given task
+     *
+     * @tparam Task a task type
+     */
+    template <std::invocable Task>
+    struct FutureOfHelper {
+        using Type = std::future<std::invoke_result_t<Task>>;
+    };
+
+    /**
+     * Specialization for the coroutine tasks. This tasks does not
+     * return any informations about their future thus the type
+     * is simply void
+     *
+     * @tparam Task a task type
+     */
+    template <std::invocable Task>
+        requires CoroutineTask<Task>
+    struct FutureOfHelper<Task> {
+        using Type = void;
+    };
+
+    /**
+     * Specialization for the coroutine workers. This task does
+     * return their future and so it is the type defined by this
+     * class
+     *
+     * @tparam Task a task type
+     */
+    template <std::invocable Task>
+        requires CoroutineWorker<Task>
+    struct FutureOfHelper<Task> {
+        using Type = decltype(std::declval<Task>().getFuture());
     };
 
 }
@@ -81,8 +120,8 @@ namespace mpgl::async {
      */
     class Threadpool {
     public:
-        template <std::invocable Func>
-        using FutureOf = std::future<std::invoke_result_t<Func>>;
+        template <std::invocable Task>
+        using FutureOf = typename details::FutureOfHelper<Task>::Type;
 
         template <std::ranges::input_range Range>
         using ResultOfRange = std::invoke_result_t<
