@@ -115,4 +115,13 @@ namespace mpgl::async {
         return { this->pool->appendTask(std::move(other)) };
     }
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] Task<ReturnTp, Alloc>::promise_type::SynchronizeAwaiter
+        Task<ReturnTp, Alloc>::promise_type::await_transform(
+            [[maybe_unused]] synchronize_t) noexcept
+    {
+        asleep = true;
+        return { &this->childrenCounter };
+    }
+
 }
