@@ -32,8 +32,24 @@ namespace mpgl::async {
         Threadpool::appendTask(Func&& task)
     {
         Package<Func> package{std::move(task)};
-        FutureOf<Func> future = package.get_future();
+        auto future = package.get_future();
         link.emplaceTask(std::move(package));
+        return future;
+    }
+
+    template <details::CoroutineTask Task>
+    void Threadpool::appendTask(Task&& task) {
+        task.setThreadpool(this);
+        link.emplaceTask(std::move(task));
+    }
+
+    template <details::CoroutineWorker Task>
+    [[nodiscard]] Threadpool::FutureOf<Task>
+        Threadpool::appendTask(Task&& task)
+    {
+        task.setThreadpool(task);
+        auto future = task.getFuture();
+        link.emplaceTask(std::move(task));
         return future;
     }
 

@@ -148,7 +148,7 @@ namespace mpgl::async {
 
         /**
          * Appends task to the queue. Tries to distribute tasks
-         * equally. Returns future of the given invocable
+         * equally. Returns the future of the given invocable
          *
          * @tparam Func the type of the task
          * @param task the invocable to be executed
@@ -157,6 +157,28 @@ namespace mpgl::async {
         template <std::invocable Func>
         [[nodiscard]] FutureOf<Func>
             appendTask(Func&& task);
+
+        /**
+         * Appends coroutine task to the queue. Tries to
+         * distribute tasks equally
+         *
+         * @tparam Task a coroutine task's type
+         * @param task the coroutine task object
+         */
+        template <details::CoroutineTask Task>
+        void appendTask(Task&& task);
+
+        /**
+         * Appends coroutine worker to the queue. Tries to
+         * distribute tasks equally. Returns the future of
+         * the given worker
+         *
+         * @tparam Task a coroutine task's type
+         * @param task the coroutine task object
+         */
+        template <details::CoroutineWorker Task>
+        [[nodiscard]] FutureOf<Task>
+            appendTask(Task&& task);
 
         /**
          * Executes given tasks in the threadpool and waits unitl
