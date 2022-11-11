@@ -157,4 +157,45 @@ namespace mpgl::async {
         handle();
     }
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] Task<ReturnTp, Alloc>::operator bool() const {
+        return !handle.done();
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    void Task<ReturnTp, Alloc>::operator() (void) const {
+        handle();
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] bool Task<ReturnTp, Alloc>::isValid(
+        void) const noexcept
+    {
+        return handle != nullptr;
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] Task<ReturnTp, Alloc>::future_type
+        Task<ReturnTp, Alloc>::getFuture(void)
+    {
+        return handle.promise().getFuture();
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    bool Task<ReturnTp, Alloc>::terminate(void) {
+        if (handle) {
+            handle.destroy();
+            handle = nullptr;
+            return true;
+        }
+        return false;
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    void Task<ReturnTp, Alloc>::setThreadpool(
+        Threadpool* pool) noexcept
+    {
+        handle.promise().pool = pool;
+    }
+
 }

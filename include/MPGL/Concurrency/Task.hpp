@@ -199,8 +199,10 @@ namespace mpgl::async {
         /**
          * Manually destroys coroutine if it has not set future
          * yet
+         *
+         * @return if coroutine was destroyed successfully
          */
-        void terminate(void) const;
+        bool terminate(void);
 
         friend class Threadpool;
     private:
