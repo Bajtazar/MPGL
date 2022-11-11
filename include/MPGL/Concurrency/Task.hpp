@@ -151,7 +151,7 @@ namespace mpgl::async {
         /// Task's promise type
         class promise_type;
 
-        using return_type = ReturnType;
+        using return_type = ReturnTp;
         using allocator_type = Alloc;
         using future_type = std::future<return_type>;
 
@@ -179,7 +179,7 @@ namespace mpgl::async {
          *
          * @return if a task holds a real coroutine
          */
-        [[nodiscard]] isValid(void) const noexcept;
+        [[nodiscard]] bool isValid(void) const noexcept;
 
         /**
          * Returns a future returned by the handled coroutine
@@ -193,6 +193,8 @@ namespace mpgl::async {
          * yet
          */
         void terminate(void) const;
+
+        friend class Threadpool;
     private:
         using handle_t = std::coroutine_handle<promise_type>;
 
@@ -205,10 +207,98 @@ namespace mpgl::async {
         explicit Task(handle_t handle) noexcept
             : handle{handle} {}
 
+        /**
+         * Sets a pointer to the threadpool currenly used by
+         * a coroutine
+         *
+         * @param pool a pointer to the threadpool
+         */
+        void setThreadpool(Threadpool* pool) noexcept;
+
         handle_t                        handle = nullptr;
 
         /// Thats why allocator has to be stateless
         static Alloc                    allocator;
+    };
+
+    /**
+     * Promise type of a coroutine handled by mpgl::task
+     *
+     * @tparam ReturnTp a type returned by the coroutine
+     * @tparam Alloc a type of the stateless allocator that allocs
+     * the coroutine on the heap
+     */
+    template <
+        PureType ReturnTp,
+        Allocator<std::byte> Alloc>
+    class Task<ReturnTp, Alloc>::promise_type
+        : private details::PromiseTypeInterface
+    {
+    public:
+        /**
+         * Allocates a coroutine using a static stateless allocator
+         * object
+         *
+         * @param size a size of an allocated memory
+         * @return a pointer to the allocated memory
+         */
+        [[nodiscard]] static void* operator new(std::size_t size);
+
+        /**
+         * Deallocates a coroutine with a static stateless allocator
+         * object
+         *
+         * @param ptr a pointer to the allocated memory
+         * @param size a size of an allocated memory
+         */
+        static void operator delete(void* ptr, std::size_t size);
+
+        /**
+         * Creates a task object from this object
+         *
+         * @return a task object
+         */
+        [[nodiscard]] Task get_return_object(void) noexcept;
+
+        /**
+         * Always suspends a coroutine after initialization
+         *
+         * @return std::suspend_always
+         */
+        [[nodiscard]] std::suspend_always initial_suspend(
+            void) const noexcept
+                { return {}; }
+
+        /**
+         * Never suspends coroutine after its end and so
+         * coroutine is always implicitly destroyed after
+         * full execution
+         *
+         * @return std::suspend_always
+         */
+        [[nodiscard]] std::suspend_never final_suspend(
+            void) const noexcept
+                { return {}; }
+
+        /**
+         * Saves a value returned by a coroutine
+         *
+         * @tparam Vp a type of retured value
+         * @param value a returned value object
+         */
+        template <std::convertible_to<ReturnTp> Vp>
+        void return_value(Vp&& value);
+
+        /**
+         * Handles exception thrown by a coroutine [propagates
+         * its back to std::future given by it]
+         */
+        void unhandled_exception(void) noexcept;
+
+        friend class Task;
+    private:
+        std::promise<ReturnTp>          promise;
+        bool mutable                    asleep = false;
     };
 
 }
