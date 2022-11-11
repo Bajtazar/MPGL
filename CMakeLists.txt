@@ -98,6 +98,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Layouts/DefaultLayout.cpp
     ${MPGL_SOURCES}/Core/Layouts/AnchoredLayout.cpp
     ${MPGL_SOURCES}/Concurrency/Threadpool.cpp
+    ${MPGL_SOURCES}/Concurrency/Task.cpp
     ${MPGL_SOURCES}/Compression/Checksums/CRC32.cpp
     ${MPGL_SOURCES}/Iterators/SafeIterator.cpp
     ${MPGL_SOURCES}/Events/Registers/TickRegister.cpp

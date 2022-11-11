@@ -27,19 +27,7 @@
 
 #include <MPGL/Collections/CircularList.hpp>
 #include <MPGL/Concurrency/QueueMonitor.hpp>
-
-#include <functional>
-#include <algorithm>
-#include <memory>
-#include <future>
-#include <vector>
-#include <thread>
-
-namespace mpgl::async {
-
-    class Threadpool;
-
-}
+#include <MPGL/Concurrency/Task.hpp>
 
 namespace mpgl::async::details {
 
