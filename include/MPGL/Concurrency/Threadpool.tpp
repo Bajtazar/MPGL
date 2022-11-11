@@ -47,7 +47,7 @@ namespace mpgl::async {
     [[nodiscard]] Threadpool::FutureOf<Task>
         Threadpool::appendTask(Task&& task)
     {
-        task.setThreadpool(task);
+        task.setThreadpool(this);
         auto future = task.getFuture();
         link.emplaceTask(std::move(task));
         return future;

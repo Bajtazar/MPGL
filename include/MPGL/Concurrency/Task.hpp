@@ -59,7 +59,7 @@ namespace mpgl::async {
              * function pointer calls from 2 to 1 without
              * memory size overhead]. Awakes this coroutine
              */
-            typedef void(*Awaker)(PromiseTypeInterface const&);
+            typedef void(*Awaker)(PromiseTypeInterface&);
 
             /**
              * Signalizes that a coroutine has ended its work.
@@ -70,6 +70,15 @@ namespace mpgl::async {
              * nothing
              */
             void finish(void);
+
+            /**
+             * Constructs a new promise type interface object
+             *
+             * @param awake a pointer to function that awakes
+             * this coroutine
+             */
+            explicit PromiseTypeInterface(Awaker&& awake) noexcept
+                : awake{std::move(awake)} {}
 
             std::atomic<size_t>         childrenCounter = {};
             Threadpool*                 threadpool = nullptr;
@@ -197,14 +206,20 @@ namespace mpgl::async {
         [[nodiscard]] future_type getFuture(void);
 
         /**
+         * Sets a pointer to the threadpool currenly used by
+         * a coroutine
+         *
+         * @param pool a pointer to the threadpool
+         */
+        void setThreadpool(Threadpool* pool) noexcept;
+
+        /**
          * Manually destroys coroutine if it has not set future
          * yet
          *
          * @return if coroutine was destroyed successfully
          */
         bool terminate(void);
-
-        friend class Threadpool;
     private:
         using handle_t = std::coroutine_handle<promise_type>;
 
@@ -216,14 +231,6 @@ namespace mpgl::async {
          */
         explicit Task(handle_t handle) noexcept
             : handle{handle} {}
-
-        /**
-         * Sets a pointer to the threadpool currenly used by
-         * a coroutine
-         *
-         * @param pool a pointer to the threadpool
-         */
-        void setThreadpool(Threadpool* pool) noexcept;
 
         handle_t                        handle = nullptr;
 

@@ -43,7 +43,8 @@ namespace mpgl::async::details {
         requires (Task& task, Threadpool* pool)
     {
         task.setThreadpool(pool);
-    };
+    } && std::invocable<Task> &&
+        std::same_as<std::invoke_result_t<Task>, void>;
 
     /**
      * Checks whether the given task is a coroutine that

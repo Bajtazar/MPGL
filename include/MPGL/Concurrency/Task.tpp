@@ -34,10 +34,10 @@ namespace mpgl::async {
     Task<ReturnTp, Alloc>::promise_type::promise_type(
         void) noexcept : details::PromiseTypeInterface{
 
-    .awake=[](details::PromiseTypeInterface const& ref) {
-        promise_type const& self = static_cast<promise_type const&>(ref);
+    [](details::PromiseTypeInterface& reference) -> void {
+        promise_type& self = static_cast<promise_type&>(reference);
         if (self.asleep)
-            self.pool->appendTask(
+            self.threadpool->appendTask(
                 AwakenedCoroutine{handle_t::from_promise(self)});
         self.asleep = false;
     }
@@ -91,7 +91,7 @@ namespace mpgl::async {
         void* ptr, std::size_t size)
     {
         std::allocator_traits<Alloc>::deallocate(
-            allocator, ptr, size);
+            allocator, static_cast<std::byte*>(ptr), size);
     }
 
     template <PureType ReturnTp, Allocator<std::byte> Alloc>
@@ -110,9 +110,9 @@ namespace mpgl::async {
     {
         auto& otherPromise = other.handle.promise();
         otherPromise.parent = this;
-        otherPromise.pool = this->pool;
+        otherPromise.threadpool = this->threadpool;
         ++this->childrenCounter;
-        return { this->pool->appendTask(std::move(other)) };
+        return { this->threadpool->appendTask(std::move(other)) };
     }
 
     template <PureType ReturnTp, Allocator<std::byte> Alloc>
@@ -195,7 +195,7 @@ namespace mpgl::async {
     void Task<ReturnTp, Alloc>::setThreadpool(
         Threadpool* pool) noexcept
     {
-        handle.promise().pool = pool;
+        handle.promise().threadpool = pool;
     }
 
 }
