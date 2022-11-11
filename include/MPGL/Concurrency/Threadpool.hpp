@@ -210,7 +210,7 @@ namespace mpgl {
                  * Class the operator() on the wrapped object
                  */
                 void operator() (void) noexcept
-                { function(); }
+                    { function(); }
 
                 /**
                  * Destroy the Task Worker object
@@ -254,11 +254,11 @@ namespace mpgl {
             /**
              * Emplace task into one of the working queues
              *
-             * @tparam Func the invocable type
-             * @param package the packaged invocable
+             * @tparam Task a task type
+             * @param task the task object
              */
-            template <std::invocable Func>
-            void emplaceTask(Package<Func>&& package);
+            template <class Task>
+            void emplaceTask(Task&& task);
         private:
             typedef std::mutex                      Mutex;
             typedef std::lock_guard<Mutex>          Guard;
@@ -273,7 +273,8 @@ namespace mpgl {
          * @param stopToken the stop token
          * @param queueLink link to the workers task queue
          */
-        void worker(StopToken stopToken,
+        void worker(
+            StopToken stopToken,
             Attachment queueLink) noexcept;
 
         /**
