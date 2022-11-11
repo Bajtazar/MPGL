@@ -94,4 +94,25 @@ namespace mpgl::async {
             allocator, ptr, size);
     }
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] Task<ReturnTp, Alloc>
+        Task<ReturnTp, Alloc>::promise_type::get_return_object(
+            void) noexcept
+    {
+        return Task{ handle_t::from_promise(*this) };
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    template <PureType Up>
+    [[nodiscard]] Task<ReturnTp, Alloc>::promise_type::YieldAwaiter<Up>
+        Task<ReturnTp, Alloc>::promise_type::yield_value(
+            Task<Up>&& other)
+    {
+        auto& otherPromise = other.handle.promise();
+        otherPromise.parent = this;
+        otherPromise.pool = this->pool;
+        ++this->childrenCounter;
+        return { this->pool->appendTask(std::move(other)) };
+    }
+
 }
