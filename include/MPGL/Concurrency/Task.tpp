@@ -135,12 +135,19 @@ namespace mpgl::async {
     }
 
     template <PureType ReturnTp, Allocator<std::byte> Alloc>
-    void  Task<ReturnTp, Alloc>::promise_type::unhandled_exception(
+    void Task<ReturnTp, Alloc>::promise_type::unhandled_exception(
         void) noexcept
     {
         finish();
         asleep = false;
         promise.set_exception(std::current_exception());
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] std::future<ReturnTp>
+        Task<ReturnTp, Alloc>::promise_type::getFuture(void)
+    {
+        return return promise.get_future();
     }
 
 }
