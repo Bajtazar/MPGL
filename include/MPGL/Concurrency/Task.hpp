@@ -269,7 +269,8 @@ namespace mpgl::async {
              * @return false
              */
             [[nodiscard]] bool await_suspend(
-                [[maybe_unused]] std::coroutine_handle<>);
+                [[maybe_unused]] std::coroutine_handle<>
+                ) const noexcept;
 
             /**
              * Returns a future to the registered coroutine
@@ -294,14 +295,14 @@ namespace mpgl::async {
              *
              * @return if there are not any children coroutines
              */
-            [[nodiscard]] bool await_ready(void) const noexcept
-                { return counter->load() == 0; }
+            [[nodiscard]] bool await_ready(void) const noexcept;
 
             /**
              * Preempts coroutine
              */
             void await_suspend(
-                 [[maybe_unused]] std::coroutine_handle<>) {}
+                 [[maybe_unused]] std::coroutine_handle<>
+                 ) const noexcept{}
 
             /**
              * Resumes coroutine
@@ -398,7 +399,7 @@ namespace mpgl::async {
          *
          * @return the future of the current coroutine
          */
-        [[nodiscard]] std::future<Tp> getFuture(void);
+        [[nodiscard]] std::future<ReturnTp> getFuture(void);
 
         friend class Task;
     private:

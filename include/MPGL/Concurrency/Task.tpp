@@ -44,4 +44,37 @@ namespace mpgl::async {
 
     } {}
 
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    template <PureType Up>
+    [[nodiscard]] bool Task<ReturnTp, Alloc>::promise_type::
+        YieldAwaiter<Up>::await_ready(void) const noexcept
+    {
+        return false;
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    template <PureType Up>
+    [[nodiscard]] bool Task<ReturnTp, Alloc>::promise_type::
+        YieldAwaiter<Up>::await_suspend(
+            [[maybe_unused]] std::coroutine_handle<>
+            ) const noexcept
+    {
+        return false;
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    template <PureType Up>
+    [[nodiscard]] std::future<Up> Task<ReturnTp, Alloc>::
+        promise_type::YieldAwaiter<Up>::await_resume(void) noexcept
+    {
+        return std::move(future);
+    }
+
+    template <PureType ReturnTp, Allocator<std::byte> Alloc>
+    [[nodiscard]] bool Task<ReturnTp, Alloc>::promise_type::
+        SynchronizeAwaiter::await_ready(void) const noexcept
+    {
+        return counter->load() == 0;
+    }
+
 }
