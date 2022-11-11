@@ -84,6 +84,71 @@ namespace mpgl::async {
             Threadpool*                 threadpool = nullptr;
             PromiseTypeInterface*       parent = nullptr;
             Awaker                      awake;
+            bool mutable                asleep = false;
+        };
+
+        /**
+         * Templated successor of the promise type interface.
+         * Describes handling of excepition risen in coroutine
+         *
+         * @tparam ReturnTp a type returned by the coroutine
+         */
+        template <PureType ReturnTp>
+        class PromiseTypeTemplatedInterface :
+            protected PromiseTypeInterface
+        {
+        public:
+            /**
+             * Handles exception thrown by a coroutine [propagates
+             * its back to std::future given by it]
+             */
+            void unhandled_exception(void) noexcept;
+        protected:
+            using PromiseTypeInterface::PromiseTypeInterface;
+
+            std::promise<ReturnTp>      promise;
+        };
+
+        /**
+         * Direct base class of the promise type. Implements
+         * return_value method if a return type is not a void.
+         * Otherwise void specialization of this class is derived
+         * which specifies return_void method
+         *
+         * @tparam ReturnTp a type returned by the coroutine
+         */
+        template <PureType ReturnTp>
+        struct PromiseTypeBase
+            : protected PromiseTypeTemplatedInterface<ReturnTp>
+        {
+            using PromiseTypeTemplatedInterface<ReturnTp>::PromiseTypeTemplatedInterface;
+            using PromiseTypeTemplatedInterface<ReturnTp>::unhandled_exception;
+
+            /**
+             * Sets a value returned by a coroutine in a promise
+             *
+             * @tparam Vp a type of retured value
+             * @param value a returned value object
+             */
+            template <std::convertible_to<ReturnTp> Vp>
+            void return_value(Vp&& value);
+        };
+
+        /**
+         * Void specialization of the promise type base. Specifies
+         * the return void method
+         */
+        template <>
+        struct PromiseTypeBase<void>
+            : protected PromiseTypeTemplatedInterface<void>
+        {
+            using PromiseTypeTemplatedInterface<void>::PromiseTypeTemplatedInterface;
+            using PromiseTypeTemplatedInterface<void>::unhandled_exception;
+
+            /**
+             * Sets a void promise
+             */
+            void return_void(void);
         };
 
     }
@@ -156,7 +221,7 @@ namespace mpgl::async {
      *      std::vector<std::iter_value_t<Iter>> buffer(std::distance(iter, sent));
      *      std::merge(iter, middle, middle, sent, buffer.begin());
      *      std::ranges::copy(buffer, iter);
-     *      // fallthrough is OK because its returning void
+     *      // fallthrough is OK because it's returning void
      *  }
      * @endcode
      */
@@ -249,7 +314,7 @@ namespace mpgl::async {
         PureType ReturnTp,
         Allocator<std::byte> Alloc>
     class Task<ReturnTp, Alloc>::promise_type
-        : private details::PromiseTypeInterface
+        : public details::PromiseTypeBase<ReturnTp>
     {
     public:
         /**
@@ -387,21 +452,6 @@ namespace mpgl::async {
          */
         [[nodiscard]] SynchronizeAwaiter await_transform(
             [[maybe_unused]] synchronize_t synchronizeTag) noexcept;
-
-        /**
-         * Saves a value returned by a coroutine
-         *
-         * @tparam Vp a type of retured value
-         * @param value a returned value object
-         */
-        template <std::convertible_to<ReturnTp> Vp>
-        void return_value(Vp&& value);
-
-        /**
-         * Handles exception thrown by a coroutine [propagates
-         * its back to std::future given by it]
-         */
-        void unhandled_exception(void) noexcept;
 
         /**
          * Returns a future of the current coroutine

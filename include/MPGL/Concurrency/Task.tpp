@@ -25,6 +25,25 @@
  */
 #pragma once
 
+namespace mpgl::async::details {
+
+    template <PureType ReturnTp>
+    void PromiseTypeTemplatedInterface<ReturnTp>::
+        unhandled_exception(void) noexcept
+    {
+        finish();
+        promise.set_exception(std::current_exception());
+    }
+
+    template <PureType ReturnTp>
+    template <std::convertible_to<ReturnTp> Vp>
+    void PromiseTypeBase<ReturnTp>::return_value(Vp&& value) {
+        this->finish();
+        this->promise.set_value(std::forward<Vp>(value));
+    }
+
+}
+
 namespace mpgl::async {
 
     template <PureType ReturnTp, Allocator<std::byte> Alloc>
@@ -32,7 +51,7 @@ namespace mpgl::async {
 
     template <PureType ReturnTp, Allocator<std::byte> Alloc>
     Task<ReturnTp, Alloc>::promise_type::promise_type(
-        void) noexcept : details::PromiseTypeInterface{
+        void) noexcept : details::PromiseTypeBase<ReturnTp>{
 
     [](details::PromiseTypeInterface& reference) -> void {
         promise_type& self = static_cast<promise_type&>(reference);
@@ -125,29 +144,10 @@ namespace mpgl::async {
     }
 
     template <PureType ReturnTp, Allocator<std::byte> Alloc>
-    template <std::convertible_to<ReturnTp> Vp>
-    void Task<ReturnTp, Alloc>::promise_type::return_value(
-        Vp&& value)
-    {
-        finish();
-        asleep = false;
-        promise.set_value(std::forward<Vp>(value));
-    }
-
-    template <PureType ReturnTp, Allocator<std::byte> Alloc>
-    void Task<ReturnTp, Alloc>::promise_type::unhandled_exception(
-        void) noexcept
-    {
-        finish();
-        asleep = false;
-        promise.set_exception(std::current_exception());
-    }
-
-    template <PureType ReturnTp, Allocator<std::byte> Alloc>
     [[nodiscard]] std::future<ReturnTp>
         Task<ReturnTp, Alloc>::promise_type::getFuture(void)
     {
-        return promise.get_future();
+        return this->promise.get_future();
     }
 
     template <PureType ReturnTp, Allocator<std::byte> Alloc>

@@ -35,4 +35,9 @@ namespace mpgl::async::details {
         parent->awake(*parent);
     }
 
+    void PromiseTypeBase<void>::return_void(void) {
+        this->finish();
+        this->promise.set_value();
+    }
+
 }
