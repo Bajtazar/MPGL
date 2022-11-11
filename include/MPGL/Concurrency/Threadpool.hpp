@@ -37,6 +37,44 @@
 
 namespace mpgl::async {
 
+    class Threadpool;
+
+}
+
+namespace mpgl::async::details {
+
+    /**
+     * Checks whether the given task is a coroutine that
+     * registers threadpool and does not provie any way
+     * to get its future
+     *
+     * @tparam Task a task type
+     */
+    template <class Task>
+    concept CoroutineTask =
+        requires (Task& task, Threadpool* pool)
+    {
+        task.setThreadpool(pool);
+    };
+
+    /**
+     * Checks whether the given task is a coroutine that
+     * registers threadpool and provies its future thus allowing
+     * to check if its execution has been completed
+     *
+     * @tparam Task a task type
+     */
+    template <class Task>
+    concept CoroutineWorker = IndependentTask<Task> &&
+        requires (Task& task)
+    {
+        { task.getFuture() } -> SpecializationOf<std::future>;
+    };
+
+}
+
+namespace mpgl::async {
+
     /**
      * Manages a threadpool. Automaticly distributes tasks between
      * working threads and allows to get task future
