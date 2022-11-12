@@ -29,12 +29,21 @@
 
 #include <functional>
 #include <algorithm>
-#include <coroutine>
 #include <memory>
 #include <future>
 #include <vector>
 #include <thread>
 #include <atomic>
+
+#ifdef __cpp_impl_coroutine
+#include <coroutine>
+#endif
+
+#ifdef __cpp_lib_coroutine
+
+#ifndef mpgl_async_task
+#define mpgl_async_task
+#endif
 
 namespace mpgl::async {
 
@@ -499,3 +508,5 @@ namespace mpgl::async {
     };
 
 }
+
+#endif

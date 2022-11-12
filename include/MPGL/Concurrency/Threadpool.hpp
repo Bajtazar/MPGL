@@ -394,4 +394,7 @@ namespace mpgl::async {
 }
 
 #include <MPGL/Concurrency/Threadpool.tpp>
+
+#ifdef mpgl_async_task
 #include <MPGL/Concurrency/Task.tpp>
+#endif

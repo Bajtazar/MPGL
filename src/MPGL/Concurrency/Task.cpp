@@ -25,6 +25,8 @@
  */
 #include <MPGL/Concurrency/Task.hpp>
 
+#ifdef mpgl_async_task
+
 namespace mpgl::async::details {
 
     void PromiseTypeInterface::finish(void) {
@@ -41,3 +43,5 @@ namespace mpgl::async::details {
     }
 
 }
+
+#endif
