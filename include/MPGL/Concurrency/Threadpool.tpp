@@ -25,24 +25,38 @@
  */
 #pragma once
 
-namespace mpgl {
+namespace mpgl::async {
 
     template <std::invocable Func>
     [[nodiscard]] Threadpool::FutureOf<Func>
         Threadpool::appendTask(Func&& task)
     {
         Package<Func> package{std::move(task)};
-        FutureOf<Func> future = package.get_future();
-        link.emplaceTask<Func>(std::move(package));
+        auto future = package.get_future();
+        link.emplaceTask(std::move(package));
         return future;
     }
 
-    template <std::invocable Func>
-    void Threadpool::QueueLink::emplaceTask(
-        Package<Func>&& package)
+    template <details::CoroutineTask Task>
+    void Threadpool::appendTask(Task&& task) {
+        task.setThreadpool(this);
+        link.emplaceTask(std::move(task));
+    }
+
+    template <details::CoroutineWorker Task>
+    [[nodiscard]] Threadpool::FutureOf<Task>
+        Threadpool::appendTask(Task&& task)
     {
+        task.setThreadpool(this);
+        auto future = task.getFuture();
+        link.emplaceTask(std::move(task));
+        return future;
+    }
+
+    template <class Task>
+    void Threadpool::QueueLink::emplaceTask(Task&& task) {
         Guard guard{mutex};
-        link->emplace(std::move(package));
+        link->emplace(std::move(task));
         ++link;
     }
 

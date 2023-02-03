@@ -30,7 +30,7 @@ namespace mpgl {
     template <security::SecurityPolicy SP>
     TextureLoaderParallel<SP>::TextureLoaderParallel(
         std::string const& directory,
-        Threadpool& threadpool)
+        async::Threadpool& threadpool)
             : TextureLoaderBase{directory.size() + 1},
                 threadpool{threadpool}
     {
@@ -125,7 +125,7 @@ namespace mpgl {
     TextureLoader<SP, EP, Independent>::TextureLoader(
         std::string const& directory,
         [[maybe_unused]] SP securityToken,
-        Threadpool& threadpool
+        async::Threadpool& threadpool
         ) requires (!Independent)
             : LoaderBase{directory, threadpool} {}
 

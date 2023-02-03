@@ -98,6 +98,7 @@ add_library(${PROJECT_NAME} STATIC
     ${MPGL_SOURCES}/Core/Layouts/DefaultLayout.cpp
     ${MPGL_SOURCES}/Core/Layouts/AnchoredLayout.cpp
     ${MPGL_SOURCES}/Concurrency/Threadpool.cpp
+    ${MPGL_SOURCES}/Concurrency/Task.cpp
     ${MPGL_SOURCES}/Compression/Checksums/CRC32.cpp
     ${MPGL_SOURCES}/Iterators/SafeIterator.cpp
     ${MPGL_SOURCES}/Events/Registers/TickRegister.cpp
@@ -113,7 +114,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "MPGL_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"")
 
-set(MPGL_RELEASE_FLAGS "-Wall -Wextra -Werror -pedantic -O3")
+set(MPGL_RELEASE_FLAGS "-Wall -Wextra -Werror -pedantic -O3 -fcoroutines")
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${MPGL_RELEASE_FLAGS}")
 
 # configure_file(mpgl.pc.in mpgl.pc @ONLY)
