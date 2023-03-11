@@ -113,7 +113,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "MPGL_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"")
 
-set(MPGL_RELEASE_FLAGS "-Wall -Wextra -Werror -pedantic -O3")
+set(MPGL_RELEASE_FLAGS "-Wall -Wextra -Werror -pedantic -fPIE -O2")
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${MPGL_RELEASE_FLAGS}")
 
 # configure_file(mpgl.pc.in mpgl.pc @ONLY)
@@ -123,7 +123,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
 
-SET(GLAD_API "gl=4.6" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest")
+set(GLAD_API "gl=4.6" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest")
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/external/glfw/include)

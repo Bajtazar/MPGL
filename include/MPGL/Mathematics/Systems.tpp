@@ -150,11 +150,11 @@ namespace mpgl {
         Vector3<Tp> const& secondVersor) const noexcept
     {
         if (auto matrix = getMatrix(firstVersor, secondVersor, 0, 1))
-            return {SystemTuple{*matrix, 0, 1, 2}};
+            return SystemTuple<Tp>{*matrix, 0, 1, 2};
         if (auto matrix = getMatrix(firstVersor, secondVersor, 0, 2))
-            return {SystemTuple{*matrix, 0, 2, 1}};
+            return SystemTuple<Tp>{*matrix, 0, 2, 1};
         if (auto matrix = getMatrix(firstVersor, secondVersor, 1, 2))
-            return {SystemTuple{*matrix, 1, 2, 0}};
+            return SystemTuple<Tp>{*matrix, 1, 2, 0};
         return std::nullopt;
     }
 
@@ -208,7 +208,7 @@ namespace mpgl {
     {
         Vector3<Tp> normal = planeNormalVector(firstPoint,
             secondPoint, thirdPoint);
-        Vector4<Tp> result{normal};
+        Vector4<Tp> result = normal;
         result[3] = -dot(normal, firstPoint);
         return result;
     }

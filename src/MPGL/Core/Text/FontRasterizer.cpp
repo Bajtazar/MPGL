@@ -243,7 +243,6 @@ namespace mpgl {
         BitmapRow& row,
         size_type index) const noexcept
     {
-        Vector2<uint16> brokenPixel;
         for (auto const& contour : contours) {
             if (std::round(contour.front().position[1]) == index) {
                 uint16 brokenPixel = std::round(
@@ -257,8 +256,7 @@ namespace mpgl {
     FontRasterizer::CanvaRow FontRasterizer::rasterizeLine(
         BitmapRow& row) const noexcept
     {
-        PixelRow pixelRow;
-        pixelRow.resize(row.size(), 0);
+        PixelRow pixelRow(row.size(), 0);
         bool flag = false;
         for (size_type i = 0; i != row.size(); ++i) {
             if (row[i] == Flag) {

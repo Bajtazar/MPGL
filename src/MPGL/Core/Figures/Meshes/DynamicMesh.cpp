@@ -537,7 +537,7 @@ namespace mpgl {
 
     template <MeshTraitSpecifier Spec>
     void DynamicMesh<Spec>::eraseIndex(
-        VertexView::iterator const& position)
+        typename VertexView::iterator const& position)
     {
         eraseViewIndices(position);
         isIndiciesChanged = true;
@@ -545,7 +545,7 @@ namespace mpgl {
 
     template <MeshTraitSpecifier Spec>
     void DynamicMesh<Spec>::eraseIndex(
-        VertexView::const_iterator const& position)
+        typename VertexView::const_iterator const& position)
     {
         eraseViewIndices(position);
         isIndiciesChanged = true;
@@ -553,8 +553,8 @@ namespace mpgl {
 
     template <MeshTraitSpecifier Spec>
     void DynamicMesh<Spec>::eraseIndex(
-        VertexView::iterator first,
-        VertexView::iterator const& last)
+        typename VertexView::iterator first,
+        typename VertexView::iterator const& last)
     {
         for (; first != last; ++first)
             eraseViewIndices(first);
@@ -563,8 +563,8 @@ namespace mpgl {
 
     template <MeshTraitSpecifier Spec>
     void DynamicMesh<Spec>::eraseIndex(
-        VertexView::const_iterator first,
-        VertexView::const_iterator const& last)
+        typename VertexView::const_iterator first,
+        typename VertexView::const_iterator const& last)
     {
         for (; first != last; ++first)
             eraseViewIndices(first);

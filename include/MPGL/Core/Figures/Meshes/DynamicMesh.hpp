@@ -903,7 +903,7 @@ namespace mpgl {
          * @param position a constant reference to the iterator
          * containing erased triangle's position
          */
-        void eraseIndex(VertexView::iterator const& position);
+        void eraseIndex(typename VertexView::iterator const& position);
 
         /**
          * Erases indices triangle lying under the given constant
@@ -912,7 +912,7 @@ namespace mpgl {
          * @param position a constant reference to the constant
          * iterator containing erased triangle's position
          */
-        void eraseIndex(VertexView::const_iterator const& position);
+        void eraseIndex(typename VertexView::const_iterator const& position);
 
         /**
          * Erases indices triangles lying within the range specified
@@ -924,8 +924,8 @@ namespace mpgl {
          * last triangle of the erased range
          */
         void eraseIndex(
-            VertexView::iterator first,
-            VertexView::iterator const& last);
+            typename VertexView::iterator first,
+            typename VertexView::iterator const& last);
 
         /**
          * Erases indices triangles lying within the range specified
@@ -937,8 +937,8 @@ namespace mpgl {
          * to the last triangle of the erased range
          */
         void eraseIndex(
-            VertexView::const_iterator first,
-            VertexView::const_iterator const& last);
+            typename VertexView::const_iterator first,
+            typename VertexView::const_iterator const& last);
 
         /**
          * Destroys the dynamic mesh object

@@ -41,7 +41,7 @@ namespace mpgl {
     }};
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    float64 const Sphere<Spec>::ATan = std::atan(0.5);
+    float32 const Sphere<Spec>::ATan = std::atan(0.5f);
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
     void Sphere<Spec>::generateIcosahedronFaces(
@@ -53,13 +53,13 @@ namespace mpgl {
         for (uint8 i = 0; i < 5; ++i)
             vertices.push_back(VertexTraits::buildVertex(
                 position + sphericalToCartesian(Vector3f{radius, ATan,
-                std::numbers::pi * (72. * i + 36.) / 180.}),
+                static_cast<float32>(std::numbers::pi * (72. * i + 36.) / 180.)}),
             color));
         for (uint8 i = 0; i < 5; ++i)
             vertices.push_back(VertexTraits::buildVertex(
                 position + Vector3f{1, 1, -1} *
                     sphericalToCartesian(Vector3f{radius, ATan,
-                        std::numbers::pi * (72. * i) / 180.}),
+                        static_cast<float32>(std::numbers::pi * (72. * i) / 180.)}),
             color));
     }
 
@@ -108,8 +108,8 @@ namespace mpgl {
         auto predicate = [&position, &radius, &color](
             Vertex const& left, Vertex const& right)
         {
-            auto inner = Vector3f{left | cast::position}
-                + Vector3f{right | cast::position} - 2.f * position;
+            auto inner = static_cast<Vector3f>(left | cast::position)
+                + static_cast<Vector3f>(right | cast::position) - 2.f * position;
             inner *= radius / inner.length();
             return VertexTraits::buildVertex(inner + position, color);
         };

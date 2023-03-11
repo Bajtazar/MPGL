@@ -235,7 +235,7 @@ namespace mpgl {
             auto const middleAvg = averageOfEdges(edges);
             auto const facesAvg = averageOfFaces(edges);
             Vector const& current = (facesAvg + 2.f * middleAvg +
-                Vector{vertices[vertex] | cast::position}) / 4.f;
+                static_cast<Vector>(vertices[vertex] | cast::position)) / 4.f;
             uint32 id = this->vertices.size();
             this->vertices.push_back(std::invoke(builder, current));
             addTetragonVertices(id, edges);
@@ -321,10 +321,10 @@ namespace mpgl {
     CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
         ::averageOfEdges(Edges const& edges)
     {
-        Vector avg;
+        Vector avg{};
         float32 counter = 0.f;
         for (uint32 index : edges | std::views::transform(&Edge::vertex)) {
-            avg += Vector{vertices[index] | cast::position};
+            avg += static_cast<Vector>(vertices[index] | cast::position);
             ++counter;
         }
         return avg / counter;
@@ -343,15 +343,15 @@ namespace mpgl {
     CatmullClarkTessellator::Algorithm<VRange, IRange, Predicate>
         ::averageOfFaces(Edges const& edges)
     {
-        Vector avg;
+        Vector avg{};
         float32 counter = 0.f;
         for (Edge const* edge : edges) {
-            avg += Vector{vertices[edge->firstFaceID]
-                | cast::position};
+            avg += static_cast<Vector>(vertices[edge->firstFaceID]
+                | cast::position);
             ++counter;
             if (edge->secondFaceID != Placeholder) {
-                avg += Vector{vertices[edge->secondFaceID]
-                    | cast::position};
+                avg += static_cast<Vector>(vertices[edge->secondFaceID]
+                    | cast::position);
                 ++counter;
             }
         }
@@ -378,10 +378,10 @@ namespace mpgl {
             uint32 fourthIndex)
     {
         auto const facePos = (
-            Vector{vertices[firstIndex] | cast::position}
-            + Vector{vertices[secondIndex] | cast::position}
-            + Vector{vertices[thirdIndex] | cast::position}
-            + Vector{vertices[fourthIndex] | cast::position}) / 4.f;
+            static_cast<Vector>(vertices[firstIndex] | cast::position)
+            + static_cast<Vector>(vertices[secondIndex] | cast::position)
+            + static_cast<Vector>(vertices[thirdIndex] | cast::position)
+            + static_cast<Vector>(vertices[fourthIndex] | cast::position)) / 4.f;
         return std::invoke(builder, facePos);
     }
 
@@ -405,10 +405,10 @@ namespace mpgl {
             uint32 fourthIndex)
     {
         auto const facePos = (
-            Vector{vertices[firstIndex] | cast::position}
-            + Vector{vertices[secondIndex] | cast::position}
-            + Vector{this->vertices[thirdIndex] | cast::position}
-            + Vector{this->vertices[fourthIndex] | cast::position}) / 4.f;
+            static_cast<Vector>(vertices[firstIndex] | cast::position)
+            + static_cast<Vector>(vertices[secondIndex] | cast::position)
+            + static_cast<Vector>(this->vertices[thirdIndex] | cast::position)
+            + static_cast<Vector>(this->vertices[fourthIndex] | cast::position)) / 4.f;
         return std::invoke(builder, facePos);
     }
 
@@ -430,8 +430,8 @@ namespace mpgl {
             uint32 secondIndex)
     {
         auto const facePos = (
-            Vector{vertices[firstIndex] | cast::position}
-            + Vector{vertices[secondIndex] | cast::position}) / 2.f;
+            static_cast<Vector>(vertices[firstIndex] | cast::position)
+            + static_cast<Vector>(vertices[secondIndex] | cast::position)) / 2.f;
         return std::invoke(builder, facePos);
     }
 

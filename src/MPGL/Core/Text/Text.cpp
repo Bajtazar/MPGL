@@ -35,9 +35,12 @@ namespace mpgl {
         Vector const& position) noexcept
             : vertices{{
                 Adapter{position},
-                Adapter{position + Vector{1._y}},
-                Adapter{position + Vector{1._x + 1._y}}
-            }}, xVersor{1._x}, yVersor{1._y}, position{position} {}
+                Adapter{position + static_cast<Vector>(1._y)},
+                Adapter{position + static_cast<Vector>(1._x + 1._y)}
+            }},
+            xVersor{static_cast<Vector>(1._x)},
+            yVersor{static_cast<Vector>(1._y)},
+            position{position} {}
 
     template <Dimension Dim>
     void Text<Dim>::PositionHolder::transform(
@@ -60,9 +63,9 @@ namespace mpgl {
     void Text<Dim>::PositionHolder::actualize(
         void) noexcept
     {
-        position = Vector{vertices[0]};
-        yVersor = Vector{vertices[1]} - position;
-        xVersor = Vector{vertices[2]} - Vector{vertices[1]};
+        position = static_cast<Vector>(vertices[0]);
+        yVersor = static_cast<Vector>(vertices[1]) - position;
+        xVersor = static_cast<Vector>(vertices[2]) - static_cast<Vector>(vertices[1]);
     }
 
     template <Dimension Dim>
@@ -79,7 +82,7 @@ namespace mpgl {
     {
         Vector const realAdvance = changeSystem(advanceVector);
         for (Adapter& vertex : vertices)
-            vertex = Vector{vertex} + realAdvance;
+            vertex = static_cast<Vector>(vertex) + realAdvance;
         actualize();
         return realAdvance;
     }
@@ -135,7 +138,7 @@ namespace mpgl {
     {
         Vector const shift = point - position;
         for (Adapter& vertex : vertices)
-            vertex = Vector{vertex} + shift;
+            vertex = static_cast<Vector>(vertex) + shift;
         actualize();
     }
 
@@ -242,9 +245,9 @@ namespace mpgl {
         Vector const& advance) noexcept
     {
         underlines.back()[2] | cast::position = advance
-            + Vector{underlines.back()[2] | cast::position};
+            + static_cast<Vector>(underlines.back()[2] | cast::position);
         underlines.back()[3] | cast::position = advance
-            + Vector{underlines.back()[3] | cast::position};
+            + static_cast<Vector>(underlines.back()[3] | cast::position);
     }
 
     template <Dimension Dim>
@@ -252,9 +255,9 @@ namespace mpgl {
         Vector const& advance) noexcept
     {
         strikethroughs.back()[2] | cast::position = advance
-            + Vector{strikethroughs.back()[2] | cast::position};
+            + static_cast<Vector>(strikethroughs.back()[2] | cast::position);
         strikethroughs.back()[3] | cast::position = advance
-            + Vector{strikethroughs.back()[3] | cast::position};
+            + static_cast<Vector>(strikethroughs.back()[3] | cast::position);
     }
 
     template <Dimension Dim>
@@ -431,8 +434,8 @@ namespace mpgl {
         if (!glyphs.size())
             return positionSpace.getPosition();
         auto&& [bearing, id] = findFirstGlyphBearing();
-        return positionSpace.findOrigin({glyphs.front()[id]
-            | cast::position}, bearing);
+        return positionSpace.findOrigin(static_cast<Vector>(
+            glyphs.front()[id] | cast::position), bearing);
     }
 
     template <Dimension Dim>

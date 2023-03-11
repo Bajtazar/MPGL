@@ -162,8 +162,8 @@ namespace mpgl {
         float32 height,
         Color const& color,
         size_t baseSegments) : Angular<dim::Dim3, Spec>{
-            generateVertices(color, position, {1._x * radius},
-            {1._y * height}, baseSegments)},
+            generateVertices(color, position, 1._x * radius,
+            1._y * height, baseSegments)},
                 indices{generateIndices(baseSegments)}
     {
         reloadElementBuffer();

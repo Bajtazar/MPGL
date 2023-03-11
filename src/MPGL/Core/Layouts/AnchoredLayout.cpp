@@ -43,8 +43,8 @@ namespace mpgl {
     void AnchoredLayout::operator() (
         any::InputRange<Adapter2D>& range) const noexcept
     {
-        Vector2f newDim{context.windowDimensions};
-        Vector2f oldDim{dimensions.get()};
+        Vector2f newDim = context.windowDimensions;
+        Vector2f oldDim = dimensions.get();
         auto translation = 2.f * hook * (1.f - oldDim / newDim);
         for (Adapter2D& vertexPosition : range) {
             Vector2f& position = vertexPosition.get();
@@ -56,8 +56,8 @@ namespace mpgl {
     void AnchoredLayout::operator() (
         Adapter2D& coordinate) const noexcept
     {
-        Vector2f newDim{context.windowDimensions};
-        Vector2f oldDim{dimensions.get()};
+        Vector2f newDim = context.windowDimensions;
+        Vector2f oldDim = dimensions.get();
         auto translation = 2.f * hook * (1.f - oldDim / newDim);
         Vector2f& position = coordinate.get();
         position = (position + 1.f) * oldDim / newDim - 1.f

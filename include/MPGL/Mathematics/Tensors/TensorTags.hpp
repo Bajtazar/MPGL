@@ -28,21 +28,12 @@
 namespace mpgl {
 
     /**
-     * Informs explicitly that the memory inside a tensor
-     * should be uninitialized for the performance benefits
-     */
-    struct UninitializedMemoryTag {};
-
-    /**
      * Informs that the given variables should be treated
      * as for the transposed variant of the matrix
      */
     struct TransposedTag {};
 
     namespace tags {
-
-        /// Uninitalized Memory Tag
-        constexpr inline UninitializedMemoryTag     uninitializedMemoryTag;
 
         /// Transposed Tag
         constexpr inline TransposedTag              transposedTag;

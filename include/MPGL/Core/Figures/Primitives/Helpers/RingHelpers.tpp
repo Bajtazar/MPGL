@@ -38,9 +38,9 @@ namespace mpgl {
             Range const& ring) const noexcept
     {
         auto iter = ring.begin();
-        auto const v0 = Vector2f{*iter++};
-        auto const v1 = Vector2f{*iter++};
-        auto const v3 = Vector2f{*++iter};
+        auto const v0 = static_cast<Vector2f>(*iter++);
+        auto const v1 = static_cast<Vector2f>(*iter++);
+        auto const v3 = static_cast<Vector2f>(*++iter);
         return invert(Matrix2f{tags::transposedTag,
             v1 - v0, v3 - v0});
     }
@@ -69,10 +69,10 @@ namespace mpgl {
             Range const& ring) const noexcept
     {
         auto iter = ring.begin();
-        auto const v0 = Vector3f{*iter++};
-        auto const v1 = Vector3f{*iter++};
-        auto const v3 = Vector3f{*++iter};
-        Vector3f const a = v3 - v0, b = v1 - v0;
+        auto const v0 = static_cast<Vector3f>(*iter++);
+        auto const v1 = static_cast<Vector3f>(*iter++);
+        auto const v3 = static_cast<Vector3f>(*++iter);
+        auto const a = v3 - v0, b = v1 - v0;
         return {
             Vector2f{a[0], b[0]},
             Vector2f{a[1], b[1]},
@@ -88,7 +88,7 @@ namespace mpgl {
         Vector2u const& position) const noexcept
     {
         Vector2f local = outline * (vectorCast<float32>(position) -
-            Vector2f{*ring.begin()});
+            static_cast<Vector2f>(*ring.begin()));
         return (local - 0.5f).length() <= 0.5f;
     }
 

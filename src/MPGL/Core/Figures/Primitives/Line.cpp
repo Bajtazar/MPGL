@@ -52,8 +52,8 @@ namespace mpgl {
     [[nodiscard]] Line<Dim, Spec>::Vector
         Line<Dim, Spec>::getLineCenter(void) const noexcept
     {
-        return (Vector{get<"position">(this->vertices[0])}
-            + Vector{get<"position">(this->vertices[1])}) / 2.f;
+        return (static_cast<Vector>(get<"position">(this->vertices[0]))
+            + static_cast<Vector>(get<"position">(this->vertices[1]))) / 2.f;
     }
 
     template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>

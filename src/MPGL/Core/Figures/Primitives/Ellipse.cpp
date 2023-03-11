@@ -112,8 +112,8 @@ namespace mpgl {
     [[nodiscard]] Ellipse<Dim, Spec>::Vector
         Ellipse<Dim, Spec>::getCenter(void) const noexcept
     {
-        return (Vector{get<"position">(this->vertices[3])}
-            + Vector{get<"position">(this->vertices[1])}) / 2.f;
+        return (static_cast<Vector>(get<"position">(this->vertices[3]))
+            + static_cast<Vector>(get<"position">(this->vertices[1]))) / 2.f;
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -121,10 +121,10 @@ namespace mpgl {
         void) const noexcept
     {
         return {
-            (Vector{get<"position">(this->vertices[1])}
-                - Vector{get<"position">(this->vertices[0])}).length(),
-            (Vector{get<"position">(this->vertices[3])}
-                - Vector{get<"position">(this->vertices[0])}).length()
+            (static_cast<Vector>(get<"position">(this->vertices[1]))
+                - static_cast<Vector>(get<"position">(this->vertices[0]))).length(),
+            (static_cast<Vector>(get<"position">(this->vertices[3]))
+                - static_cast<Vector>(get<"position">(this->vertices[0]))).length()
         };
     }
 
@@ -142,8 +142,8 @@ namespace mpgl {
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
     void Ellipse<Dim, Spec>::actualizeLocations(void) const noexcept {
         Elliptic<Dim, Spec>::actualizeLocations();
-        locations.shift(Vector{get<"position">(
-            this->vertices.front())});
+        locations.shift(static_cast<Vector>(get<"position">(
+            this->vertices.front())));
         locations.transform(outlineTransform);
     }
 

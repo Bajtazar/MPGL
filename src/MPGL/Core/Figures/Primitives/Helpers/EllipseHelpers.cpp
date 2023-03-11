@@ -38,7 +38,7 @@ namespace mpgl {
     {
         Vector2f local = ellipse.outlineTransform * (
             vectorCast<float32>(position) -
-            Vector2f{get<"position">(ellipse.vertices.front())});
+            static_cast<Vector2f>(get<"position">(ellipse.vertices.front())));
         return (local - 0.5f).length() <= 0.5f;
     }
 
@@ -64,10 +64,10 @@ namespace mpgl {
             Ellipse<dim::Dim2, Spec> const& ellipse) const noexcept
     {
         return invert(Matrix2f{tags::transposedTag,
-            Vector2f{get<"position">(ellipse.vertices[1])}
-                - Vector2f{get<"position">(ellipse.vertices[0])},
-            Vector2f{get<"position">(ellipse.vertices[3])}
-                - Vector2f{get<"position">(ellipse.vertices[0])}});
+            static_cast<Vector2f>(get<"position">(ellipse.vertices[1]))
+                - static_cast<Vector2f>(get<"position">(ellipse.vertices[0])),
+            static_cast<Vector2f>(get<"position">(ellipse.vertices[3]))
+                - static_cast<Vector2f>(get<"position">(ellipse.vertices[0]))});
     }
 
     template <EllipticTraitSpecifier<dim::Dim3> Spec>
@@ -75,12 +75,12 @@ namespace mpgl {
         EllipseOutlineCalculator<dim::Dim3, Spec>::getVersors(
             Ellipse<dim::Dim3, Spec> const& ellipse) const noexcept
     {
-        Vector3f const a = Vector3f{get<"position">(
-            ellipse.vertices[3])} - Vector3f{get<"position">(
-                ellipse.vertices[0])};
-        Vector3f const b = Vector3f{get<"position">(
-            ellipse.vertices[1])} - Vector3f{get<"position">(
-                ellipse.vertices[0])};
+        Vector3f const a = static_cast<Vector3f>(get<"position">(
+            ellipse.vertices[3])) - static_cast<Vector3f>(get<"position">(
+                ellipse.vertices[0]));
+        Vector3f const b = static_cast<Vector3f>(get<"position">(
+            ellipse.vertices[1])) - static_cast<Vector3f>(get<"position">(
+                ellipse.vertices[0]));
         return {
             Vector2f{a[0], b[0]},
             Vector2f{a[1], b[1]},

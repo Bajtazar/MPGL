@@ -81,9 +81,9 @@ namespace mpgl {
         uint16 x, float32 y) const noexcept
     {
         if constexpr (Axis)
-            return {std::round(y), x};
+            return {static_cast<uint16>(std::round(y)), x};
         else
-            return {x, std::round(y)};
+            return {x, static_cast<uint16>(std::round(y))};
     }
 
     template <std::relation<uint16, uint16> Compare>

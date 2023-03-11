@@ -153,7 +153,7 @@ namespace mpgl {
             Color const& color);
 
         static Indices const                        IcosahedronIndices;
-        static float64 const                        ATan;
+        static float32 const                        ATan;
     };
 
     template class Sphere<void>;

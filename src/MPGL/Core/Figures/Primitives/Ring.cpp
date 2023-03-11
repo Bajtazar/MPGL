@@ -126,7 +126,7 @@ namespace mpgl {
     [[nodiscard]] Ring<Dim, Spec>::Vector
         Ring<Dim, Spec>::InnerEllipse::getCenter(void) const noexcept
     {
-        return (Vector{vertices[3]} + Vector{vertices[1]}) / 2.f;
+        return (static_cast<Vector>(vertices[3]) + static_cast<Vector>(vertices[1])) / 2.f;
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -134,8 +134,8 @@ namespace mpgl {
         Ring<Dim, Spec>::InnerEllipse::getSemiAxis(void) const noexcept
     {
         return {
-            (Vector{vertices[1]} - Vector{vertices[0]}).length(),
-            (Vector{vertices[3]} - Vector{vertices[0]}).length()
+            (static_cast<Vector>(vertices[1]) - static_cast<Vector>(vertices[0])).length(),
+            (static_cast<Vector>(vertices[3]) - static_cast<Vector>(vertices[0])).length()
         };
     }
 
@@ -261,8 +261,8 @@ namespace mpgl {
     [[nodiscard]] Ring<Dim, Spec>::Vector
         Ring<Dim, Spec>::getCenter(void) const noexcept
     {
-        return (Vector{get<"position">(this->vertices[3])}
-            + Vector{get<"position">(this->vertices[1])}) / 2.f;
+        return (static_cast<Vector>(get<"position">(this->vertices[3]))
+            + static_cast<Vector>(get<"position">(this->vertices[1]))) / 2.f;
     }
 
     template <Dimension Dim, EllipticTraitSpecifier<Dim> Spec>
@@ -270,10 +270,10 @@ namespace mpgl {
         void) const noexcept
     {
         return {
-            (Vector{get<"position">(this->vertices[1])}
-                - Vector{get<"position">(this->vertices[0])}).length(),
-            (Vector{get<"position">(this->vertices[3])}
-                - Vector{get<"position">(this->vertices[0])}).length()
+            (static_cast<Vector>(get<"position">(this->vertices[1]))
+                - static_cast<Vector>(get<"position">(this->vertices[0]))).length(),
+            (static_cast<Vector>(get<"position">(this->vertices[3]))
+                - static_cast<Vector>(get<"position">(this->vertices[0]))).length()
         };
     }
 
@@ -293,9 +293,9 @@ namespace mpgl {
     void Ring<Dim, Spec>::actualizeLocations(void) const noexcept {
         Elliptic<Dim, Spec>::actualizeLocations();
         locations.outerShift(
-            Vector{get<"position">(this->vertices.front())});
+            static_cast<Vector>(get<"position">(this->vertices.front())));
         locations.innerShift(
-            Vector{innerEllipse.vertices.front()});
+            static_cast<Vector>(innerEllipse.vertices.front()));
         locations.outerTransform(outline);
         locations.innerTransform(innerEllipse.outline);
     }
