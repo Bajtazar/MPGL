@@ -31,24 +31,39 @@
 #include <iostream>
 #include <ranges>
 
+#ifndef MPGL_CONSTRUCTOR
+#define MPGL_CONSTRUCTOR __attribute__((constructor))
+#endif
+
+#ifndef MPGL_DESTRUCTOR
+#define MPGL_DESTRUCTOR __attribute__((destructor))
+#endif
+
 namespace mpgl {
 
-    void errorCallback(int32 error, char const* message) noexcept {
-        std::cout << "Error: " << error << '\n';
-        std::cout << "Description: " << message << '\n';
+    namespace details {
+
+        static void errorCallback(
+            int32 error,
+            char const* message) noexcept
+        {
+            std::cout << "Error: " << error << '\n';
+            std::cout << "Description: " << message << '\n';
+        }
+
+        MPGL_CONSTRUCTOR void initializeContext(void) {
+            if (!glfwInit())
+                throw std::runtime_error{"MPGL cannot initialize context"};
+            glfwSetErrorCallback(errorCallback);
+        }
+
+        MPGL_DESTRUCTOR void destroyContext(void) {
+            glfwTerminate();
+        }
+
     }
 
     Context GraphicalObject::context{};
-
-    Context::Context(void) noexcept {
-        if (!glfwInit())
-            std::terminate();
-        glfwSetErrorCallback(errorCallback);
-    }
-
-    Context::~Context(void) noexcept {
-        glfwTerminate();
-    }
 
     void Context::setViewProjection(Matrix4f const& matrix) noexcept {
         hasViewChanged = !std::ranges::equal(

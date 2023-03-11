@@ -36,16 +36,13 @@
 
 namespace mpgl {
 
+    struct GraphicalObject;
+
     /**
      * Represents an OpenGL context
      */
     class Context {
     public:
-        /**
-         * Initializes OpenGL context
-         */
-        explicit Context(void) noexcept;
-
         Context(Context const&) = delete;
         Context(Context&&) = delete;
 
@@ -103,11 +100,20 @@ namespace mpgl {
             int32 error,
             char const* message) noexcept;
 
+        friend void initializeContext(void);
+
+        friend struct GraphicalObject;
+
         /**
          * Destroys an OpenGL context
          */
-        ~Context(void) noexcept;
+        ~Context(void) noexcept = default;
     private:
+        /**
+         * Initializes OpenGL context
+         */
+        explicit Context(void) noexcept = default;
+
         Matrix4f                                viewProjection{};
         bool                                    hasViewChanged = true;
     };
@@ -115,9 +121,6 @@ namespace mpgl {
     struct GraphicalObject {
         /// The OpenGL context shared by all graphical objects
         static Context                          context;
-
-        /// Forces context initialization before any other object
-        static_assert(((void)context, true));
     };
 
 }
