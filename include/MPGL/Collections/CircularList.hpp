@@ -447,6 +447,14 @@ namespace mpgl {
          */
         constexpr value_type popRoot(void) noexcept;
 
+        /**
+         * Explicitly destroys inner circular list but does not
+         * provide information to the compiler about end of the
+         * object's lifetime. Object can safely be used after this
+         * operation unlike the normal destructor call
+         */
+        constexpr void destroy(void) noexcept;
+
         [[no_unique_address]] NodeAllocType         alloc;
         NodePtr                                     sentinel;
     };

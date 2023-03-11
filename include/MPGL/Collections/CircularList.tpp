@@ -191,7 +191,7 @@ namespace mpgl {
         CircularList<Tp, Alloc>::operator=(
             CircularList const& list)
     {
-        this->~CircularList();
+        destroy();
         if (sentinel = nullptr; list.empty())
             return *this;
         buildListFromList(list.attachment());
@@ -203,7 +203,7 @@ namespace mpgl {
         CircularList<Tp, Alloc>::operator=(
             CircularList&& list) noexcept
     {
-        this->~CircularList();
+        destroy();
         sentinel = list.sentinel;
         list.sentinel = nullptr;
         return *this;
@@ -213,6 +213,11 @@ namespace mpgl {
     constexpr CircularList<Tp, Alloc>::~CircularList(
         void) noexcept
     {
+        destroy();
+    }
+
+    template <PureType Tp, Allocator<Tp> Alloc>
+    constexpr void CircularList<Tp, Alloc>::destroy(void) noexcept {
         if (!sentinel) return;
         auto iter = iterator{ sentinel->nextNode };
         auto const end = iterator{ sentinel };
