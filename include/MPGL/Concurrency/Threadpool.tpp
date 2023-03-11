@@ -33,13 +33,13 @@ namespace mpgl {
     {
         Package<Func> package{std::move(task)};
         FutureOf<Func> future = package.get_future();
-        link.emplaceTask<Func>(std::move(package));
+        link.emplaceTask(std::move(package));
         return future;
     }
 
-    template <std::invocable Func>
+    template <typename Task>
     void Threadpool::QueueLink::emplaceTask(
-        Package<Func>&& package)
+        Task&& package)
     {
         Guard guard{mutex};
         link->emplace(std::move(package));

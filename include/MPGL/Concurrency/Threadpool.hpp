@@ -210,7 +210,7 @@ namespace mpgl {
                  * Class the operator() on the wrapped object
                  */
                 void operator() (void) noexcept
-                { function(); }
+                    { function(); }
 
                 /**
                  * Destroy the Task Worker object
@@ -257,8 +257,8 @@ namespace mpgl {
              * @tparam Func the invocable type
              * @param package the packaged invocable
              */
-            template <std::invocable Func>
-            void emplaceTask(Package<Func>&& package);
+            template <typename Task>
+            void emplaceTask(Task&& package);
         private:
             typedef std::mutex                      Mutex;
             typedef std::lock_guard<Mutex>          Guard;
