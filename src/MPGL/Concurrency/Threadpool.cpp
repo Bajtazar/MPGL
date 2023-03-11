@@ -25,7 +25,7 @@
  */
 #include <MPGL/Concurrency/Threadpool.hpp>
 
-namespace mpgl {
+namespace mpgl::async {
 
     uint32 Threadpool::threadpoolSize(uint32 size) noexcept {
         return size ? size :

@@ -172,7 +172,7 @@ namespace mpgl {
          */
         explicit TextureLoaderParallel(
             std::string const& directory,
-            Threadpool& threadpool);
+            async::Threadpool& threadpool);
 
         TextureLoaderParallel(TextureLoaderParallel const&) = delete;
         TextureLoaderParallel(TextureLoaderParallel&&) = delete;
@@ -197,7 +197,7 @@ namespace mpgl {
             std::string, ImageFuture>>              ImageQueue;
 
         ImageQueue                                  imageQueue;
-        Threadpool&                                 threadpool;
+        async::Threadpool&                          threadpool;
         [[no_unique_address]] SecurityPolicy        securityToken;
 
         void pushTasks(Paths const& paths);
@@ -213,7 +213,7 @@ namespace mpgl {
      */
     class TextureLoaderThreadpool {
     protected:
-        Threadpool                                  threadpool;
+        async::Threadpool                           threadpool;
     };
 
     /**
@@ -329,7 +329,7 @@ namespace mpgl {
         explicit TextureLoader(
             std::string const& directory,
             SecurityPolicy securityToken,
-            Threadpool& threadpool
+            async::Threadpool& threadpool
             ) requires (!Independent);
 
         TextureLoader(TextureLoader const&) = delete;
@@ -356,7 +356,7 @@ namespace mpgl {
 
     template <security::SecurityPolicy SecurityPolicy>
     TextureLoader(std::string const&,
-        SecurityPolicy, Threadpool&) -> TextureLoader<SecurityPolicy,
+        SecurityPolicy, async::Threadpool&) -> TextureLoader<SecurityPolicy,
             Parallel, false>;
 
 }
