@@ -84,7 +84,7 @@ namespace mpgl {
     RenderWindow&
         RenderWindow::operator=(RenderWindow&& window) noexcept
     {
-        this->~RenderWindow();
+        destroy();
         windowTexture = std::move(window.windowTexture);
         framebuffer = window.framebuffer;
         renderbuffer = window.renderbuffer;
@@ -189,9 +189,13 @@ namespace mpgl {
         eventManager->onTick(delta);
     }
 
-    RenderWindow::~RenderWindow(void) noexcept {
+    void RenderWindow::destroy(void) noexcept {
         glDeleteFramebuffers(1, &framebuffer);
         glDeleteRenderbuffers(1, &renderbuffer);
+    }
+
+    RenderWindow::~RenderWindow(void) noexcept {
+        destroy();
     }
 
 }

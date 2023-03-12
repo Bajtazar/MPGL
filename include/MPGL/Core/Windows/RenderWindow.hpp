@@ -243,6 +243,12 @@ namespace mpgl {
          */
         void unbind(void) noexcept;
 
+        /**
+         * Performs clean-up like a real destructor does
+         * but does not violate the object lifespan
+         */
+        void destroy(void) noexcept;
+
         static auto constexpr                       Drawer =
             [](auto const& drawable){ drawable->draw(); };
     };
