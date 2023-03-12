@@ -115,6 +115,12 @@ namespace mpgl {
          */
         explicit FrameBuffer(uint32 frameID, uint32 renderID) noexcept;
 
+        /**
+         * Destroys the buffers handled by this object. Does not
+         * violate the object lifetime
+         */
+        void destroyBuffers(void) noexcept;
+
         uint32                              frameID;
         uint32                              renderID;
     };

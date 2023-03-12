@@ -44,7 +44,7 @@ namespace mpgl {
     FrameBuffer& FrameBuffer::operator=(
         FrameBuffer&& buffer) noexcept
     {
-        this->~FrameBuffer();
+        destroyBuffers();
         frameID = std::exchange(buffer.frameID, 0);
         renderID = std::exchange(buffer.renderID, 0);
         return *this;
@@ -83,11 +83,15 @@ namespace mpgl {
             != GL_FRAMEBUFFER_COMPLETE;
     }
 
-    FrameBuffer::~FrameBuffer(void) noexcept {
+    void FrameBuffer::destroyBuffers(void) noexcept {
         if (frameID)
             glDeleteFramebuffers(1, &frameID);
         if (renderID)
             glDeleteRenderbuffers(1, &renderID);
+    }
+
+    FrameBuffer::~FrameBuffer(void) noexcept {
+        destroyBuffers();
     }
 
 }
