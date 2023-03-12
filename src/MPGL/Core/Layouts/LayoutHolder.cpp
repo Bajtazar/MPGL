@@ -25,6 +25,8 @@
  */
 #include <MPGL/Core/Layouts/LayoutHolder.hpp>
 
+#include <new>
+
 namespace mpgl {
 
     LayoutHolder::InlineMemory::InlineMemory(
@@ -45,13 +47,15 @@ namespace mpgl {
     LayoutHolder::LayoutInterface*
         LayoutHolder::InlineMemory::get(void) noexcept
     {
-        return reinterpret_cast<LayoutInterface*>(memory.data());
+        return std::launder(reinterpret_cast<LayoutInterface*>(
+            memory.data()));
     }
 
     LayoutHolder::LayoutInterface const*
         LayoutHolder::InlineMemory::get(void) const noexcept
     {
-        return reinterpret_cast<const LayoutInterface*>(memory.data());
+        return std::launder(reinterpret_cast<LayoutInterface const*>(
+            memory.data()));
     }
 
     LayoutHolder::InlineMemory::~InlineMemory(void) noexcept {
