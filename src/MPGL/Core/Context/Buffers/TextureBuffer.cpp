@@ -39,7 +39,7 @@ namespace mpgl {
     TextureBuffer& TextureBuffer::operator=(
         TextureBuffer&& buffer) noexcept
     {
-        this->~TextureBuffer();
+        destroyBuffer();
         textureID = std::exchange(buffer.textureID, 0);
         return *this;
     }
@@ -99,9 +99,13 @@ namespace mpgl {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    TextureBuffer::~TextureBuffer(void) noexcept {
+    void TextureBuffer::destroyBuffer(void) noexcept {
         if (textureID)
             glDeleteTextures(1, &textureID);
+    }
+
+    TextureBuffer::~TextureBuffer(void) noexcept {
+        destroyBuffer();
     }
 
 }
