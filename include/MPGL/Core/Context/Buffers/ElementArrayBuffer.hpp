@@ -124,6 +124,12 @@ namespace mpgl {
         uint32& getBuffer(void) noexcept
             { return elementID; }
 
+        /**
+         * Destroys the buffer handled by this object. Does not
+         * violate the object lifetime
+         */
+        void destroyBuffer(void) noexcept;
+
         uint32                                  elementID;
     };
 

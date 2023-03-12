@@ -43,7 +43,7 @@ namespace mpgl {
     ElementArrayBuffer& ElementArrayBuffer::operator=(
         ElementArrayBuffer&& buffer) noexcept
     {
-        this->~ElementArrayBuffer();
+        destroyBuffer();
         elementID = std::exchange(buffer.elementID, 0);
         return *this;
     }
@@ -56,9 +56,13 @@ namespace mpgl {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    ElementArrayBuffer::~ElementArrayBuffer(void) noexcept {
+    void ElementArrayBuffer::destroyBuffer(void) noexcept {
         if (elementID)
             glDeleteBuffers(1, &elementID);
+    }
+
+    ElementArrayBuffer::~ElementArrayBuffer(void) noexcept {
+        destroyBuffer();
     }
 
 }
