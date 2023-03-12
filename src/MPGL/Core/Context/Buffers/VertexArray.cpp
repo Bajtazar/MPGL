@@ -38,7 +38,7 @@ namespace mpgl {
         : arrayID{std::exchange(array.arrayID, 0)} {}
 
     VertexArray& VertexArray::operator=(VertexArray&& array) noexcept {
-        this->~VertexArray();
+        destroyArray();
         arrayID = std::exchange(array.arrayID, 0);
         return *this;
     }
@@ -89,9 +89,13 @@ namespace mpgl {
             static_cast<uint16>(dataType), 0, instances);
     }
 
-    VertexArray::~VertexArray(void) noexcept {
+    void VertexArray::destroyArray(void) noexcept {
         if (arrayID)
             glDeleteVertexArrays(1, &arrayID);
+    }
+
+    VertexArray::~VertexArray(void) noexcept {
+        destroyArray();
     }
 
 }
