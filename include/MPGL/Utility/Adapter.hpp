@@ -97,17 +97,6 @@ namespace mpgl {
             { return value; }
 
         /**
-         * Casts the wrapped object onto the given type
-         *
-         * @tparam Tp the casted vector's type
-         * @return the casted vector
-         */
-        template <Arithmetic Tp>
-            requires std::convertible_to<float32, Tp>
-        [[nodiscard]] operator Vector2<Tp>() const noexcept
-            { return value_type(*this); }
-
-        /**
          * Returns a reference to the wrapped object
          *
          * @return the reference to the wrapped object
@@ -190,16 +179,6 @@ namespace mpgl {
          * @return the denormalized value
          */
         [[nodiscard]] operator value_type() const noexcept;
-
-        /**
-         * Rescales, converts and returns the denormalized value
-         *
-         * @return the denormalized value
-         */
-        template <Arithmetic Tp>
-            requires std::convertible_to<float32, Tp>
-        [[nodiscard]] operator Vector2<Tp>() const noexcept
-            { return value_type(*this); }
 
         /**
          * Returns a reference to the wrapped object
