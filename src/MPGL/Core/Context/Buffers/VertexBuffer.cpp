@@ -33,6 +33,11 @@ namespace mpgl {
         glGenBuffers(1, &bufferID);
     }
 
+    void VertexBuffer::destroyBuffer(void) noexcept {
+        if (bufferID)
+            glDeleteBuffers(1, &bufferID);
+    }
+
     VertexBuffer::VertexBuffer(uint32 buffer) noexcept
         : bufferID{buffer} {}
 
@@ -42,7 +47,7 @@ namespace mpgl {
     VertexBuffer&
         VertexBuffer::operator=(VertexBuffer&& buffer) noexcept
     {
-        this->~VertexBuffer();
+        destroyBuffer();
         bufferID = std::exchange(buffer.bufferID, 0);
         return *this;
     }
@@ -66,8 +71,7 @@ namespace mpgl {
     }
 
     VertexBuffer::~VertexBuffer(void) noexcept {
-        if (bufferID)
-            glDeleteBuffers(1, &bufferID);
+        destroyBuffer();
     }
 
 }
