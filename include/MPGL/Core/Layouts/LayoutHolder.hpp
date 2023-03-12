@@ -231,14 +231,29 @@ namespace mpgl {
              *
              * @return the pointer to the range interface
              */
-            LayoutInterface* get(void) const noexcept;
+            LayoutInterface* get(void) noexcept;
+
+            /**
+             * Returns a constant pointer to the range interface
+             *
+             * @return the constant pointer to the range interface
+             */
+            LayoutInterface const* get(void) const noexcept;
 
             /**
              * Returns a pointer to the range interface
              *
              * @return the pointer to the range interface
              */
-            LayoutInterface* operator-> (void) const noexcept
+            LayoutInterface* operator-> (void) noexcept
+                { return get(); }
+
+            /**
+             * Returns a constant pointer to the range interface
+             *
+             * @return the constant pointer to the range interface
+             */
+            LayoutInterface const* operator-> (void) const noexcept
                 { return get(); }
 
             /**
@@ -247,6 +262,11 @@ namespace mpgl {
             ~InlineMemory(void) noexcept;
         private:
             std::array<std::byte, InlineSize>           memory;
+
+            /**
+             * Destroys an object handled by the inline memory
+             */
+            void destroyHandledObject(void) noexcept;
         };
 
         using LayoutPtr = std::unique_ptr<LayoutInterface>;
@@ -260,7 +280,14 @@ namespace mpgl {
          *
          * @return the pointer to the layout interface
          */
-        LayoutInterface* pointer(void) const noexcept;
+        LayoutInterface* pointer(void) noexcept;
+
+        /**
+         * Returns a constant pointer to the layout interface
+         *
+         * @return the constant pointer to the layout interface
+         */
+        LayoutInterface const* pointer(void) const noexcept;
 
         /**
          * Chooses the type of storage for the given tag

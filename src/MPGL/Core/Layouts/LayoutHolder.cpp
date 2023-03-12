@@ -37,23 +37,42 @@ namespace mpgl {
         LayoutHolder::InlineMemory::operator=(
             InlineMemory&& inlineMemory) noexcept
     {
-        this->~InlineMemory();
+        destroyHandledObject();
         inlineMemory->move(memory.front());
         return *this;
     }
 
     LayoutHolder::LayoutInterface*
+        LayoutHolder::InlineMemory::get(void) noexcept
+    {
+        return reinterpret_cast<LayoutInterface*>(memory.data());
+    }
+
+    LayoutHolder::LayoutInterface const*
         LayoutHolder::InlineMemory::get(void) const noexcept
     {
-        return const_cast<LayoutInterface*>(
-            reinterpret_cast<const LayoutInterface*>(memory.data()));
+        return reinterpret_cast<const LayoutInterface*>(memory.data());
     }
 
     LayoutHolder::InlineMemory::~InlineMemory(void) noexcept {
+        destroyHandledObject();
+    }
+
+    void LayoutHolder::InlineMemory::destroyHandledObject(
+        void) noexcept
+    {
         (*this)->~LayoutInterface();
     }
 
     LayoutHolder::LayoutInterface*
+        LayoutHolder::pointer(void) noexcept
+    {
+        if (std::holds_alternative<LayoutPtr>(storage))
+            return std::get<LayoutPtr>(storage).get();
+        return std::get<InlineMemory>(storage).get();
+    }
+
+    LayoutHolder::LayoutInterface const*
         LayoutHolder::pointer(void) const noexcept
     {
         if (std::holds_alternative<LayoutPtr>(storage))
