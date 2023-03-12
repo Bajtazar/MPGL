@@ -214,7 +214,7 @@ namespace mpgl::any {
              * begining of the range
              */
             [[nodiscard]] constexpr virtual IterPtr iterator(
-                void) noexcept = 0;
+                void) const noexcept = 0;
 
             /**
              * Pure virtual method. Has to be overloaded. Clones
@@ -596,7 +596,7 @@ namespace mpgl::any {
              * begining of the range
              */
             [[nodiscard]] constexpr IterPtr iterator(
-                void) noexcept final;
+                void) const noexcept final;
 
             /**
              * Destroys the Wrapped Range object
@@ -664,14 +664,29 @@ namespace mpgl::any {
              *
              * @return the pointer to the range interface
              */
-            RangeInterface* get(void) const noexcept;
+            RangeInterface* get(void) noexcept;
+
+            /**
+             * Returns a constant pointer to the range interface
+             *
+             * @return the constant pointer to the range interface
+             */
+            RangeInterface const* get(void) const noexcept;
 
             /**
              * Returns a pointer to the range interface
              *
              * @return the pointer to the range interface
              */
-            RangeInterface* operator-> (void) const noexcept
+            RangeInterface* operator-> (void) noexcept
+                { return get(); }
+
+            /**
+             * Returns a constant pointer to the range interface
+             *
+             * @return the constant pointer to the range interface
+             */
+            RangeInterface const* operator-> (void) const noexcept
                 { return get(); }
 
             /**
@@ -679,6 +694,12 @@ namespace mpgl::any {
              */
             ~InlineMemory(void) noexcept;
         private:
+            /**
+             * Destroys an object handled by the inline memory.
+             * Does not violate the object lifetime
+             */
+            void destroyHandledObject(void) noexcept;
+
             std::array<std::byte, 16ul>     memory;
         };
 
@@ -739,7 +760,14 @@ namespace mpgl::any {
          *
          * @return the pointer to the range interface
          */
-        RangeInterface* rangePointer(void) const noexcept;
+        RangeInterface* rangePointer(void) noexcept;
+
+        /**
+         * Returns a constant pointer to the range interface
+         *
+         * @return the constant pointer to the range interface
+         */
+        RangeInterface const* rangePointer(void) const noexcept;
 
         /**
          * Chooses the type of storage for the given range

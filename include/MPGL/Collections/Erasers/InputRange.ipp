@@ -26,6 +26,7 @@
 #pragma once
 
 #include <utility>
+#include <new>
 
 #include <MPGL/Utility/Ranges.hpp>
 
@@ -42,7 +43,7 @@ namespace mpgl::any {
     template <PureType Tp>
     template <std::ranges::input_range Rg>
     [[nodiscard]] constexpr InputRange<Tp>::RangeInterface::IterPtr
-        InputRange<Tp>::WrappedRange<Rg>::iterator(void) noexcept
+        InputRange<Tp>::WrappedRange<Rg>::iterator(void) const noexcept
     {
         return std::make_unique<Iterator>(
             std::ranges::begin(range),
@@ -79,6 +80,15 @@ namespace mpgl::any {
 
     template <PureType Tp>
     InputRange<Tp>::RangeInterface* InputRange<Tp>::rangePointer(
+        void) noexcept
+    {
+        if (std::holds_alternative<InterfacePtr>(storage))
+            return std::get<InterfacePtr>(storage).get();
+        return std::get<InlineMemory>(storage).get();
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::RangeInterface const* InputRange<Tp>::rangePointer(
         void) const noexcept
     {
         if (std::holds_alternative<InterfacePtr>(storage))
@@ -161,7 +171,7 @@ namespace mpgl::any {
         InputRange<Tp>::InlineMemory::operator=(
             InlineMemory const& inlineMemory) noexcept
     {
-        this->~InlineMemory();
+        destroyHandledObject();
         inlineMemory->clone(memory.front());
         return *this;
     }
@@ -171,22 +181,37 @@ namespace mpgl::any {
         InputRange<Tp>::InlineMemory::operator=(
             InlineMemory&& inlineMemory) noexcept
     {
-        this->~InlineMemory();
+        destroyHandledObject();
         inlineMemory->move(memory.front());
         return *this;
     }
 
     template <PureType Tp>
     InputRange<Tp>::RangeInterface*
+        InputRange<Tp>::InlineMemory::get(void) noexcept
+    {
+        return std::launder(
+            reinterpret_cast<RangeInterface*>(memory.data()));
+    }
+
+    template <PureType Tp>
+    InputRange<Tp>::RangeInterface const*
         InputRange<Tp>::InlineMemory::get(void) const noexcept
     {
-        return const_cast<RangeInterface*>(
-            reinterpret_cast<const RangeInterface*>(memory.data()));
+        return std::launder(
+            reinterpret_cast<RangeInterface const*>(memory.data()));
+    }
+
+    template <PureType Tp>
+    void InputRange<Tp>::InlineMemory::destroyHandledObject(
+        void) noexcept
+    {
+        (*this)->~RangeInterface();
     }
 
     template <PureType Tp>
     InputRange<Tp>::InlineMemory::~InlineMemory(void) noexcept {
-        (*this)->~RangeInterface();
+        destroyHandledObject();
     }
 
 }
