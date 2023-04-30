@@ -165,6 +165,8 @@ namespace mpgl {
         static Indices const                        BaseIndices;
     };
 
-    template class Torus<void>;
+    extern template class Torus<void>;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Torus.tpp>
