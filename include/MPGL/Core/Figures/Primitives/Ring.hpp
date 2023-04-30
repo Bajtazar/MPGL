@@ -414,12 +414,15 @@ namespace mpgl {
         void actualizeLocations(void) const noexcept override final;
     };
 
-    template class Ring<dim::Dim2>;
-    template class Ring<dim::Dim3>;
-    template class Ring<dim::Dim2, uint8>;
-    template class Ring<dim::Dim3, uint8>;
+    extern template class Ring<dim::Dim2>;
+    extern template class Ring<dim::Dim3>;
+    extern template class Ring<dim::Dim2, uint8>;
+    extern template class Ring<dim::Dim3, uint8>;
 
     typedef Ring<dim::Dim2>                         Ring2D;
     typedef Ring<dim::Dim3>                         Ring3D;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Helpers/RingHelpers.tpp>
+#include <MPGL/Core/Figures/Primitives/Ring.tpp>

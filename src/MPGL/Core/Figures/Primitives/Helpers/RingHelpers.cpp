@@ -23,74 +23,9 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Figures/Primitives/Ring.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
-
-    template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] RingOutlineCalculator<dim::Dim3, Spec>::MatrixT
-        RingOutlineCalculator<dim::Dim3, Spec>::getXYMatrix(
-            Vector2f const& xVersor,
-            Vector2f const& yVersor) const noexcept
-    {
-        Matrix2f matrix = *invert(Matrix2f{xVersor, yVersor});
-        return {
-            Vector3f{matrix[0][0], matrix[0][1], 0.f},
-            Vector3f{matrix[1][0], matrix[1][1], 0.f}
-        };
-    }
-
-    template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] RingOutlineCalculator<dim::Dim3, Spec>::MatrixT
-        RingOutlineCalculator<dim::Dim3, Spec>::getXZMatrix(
-            Vector2f const& xVersor,
-            Vector2f const& zVersor) const noexcept
-    {
-        Matrix2f matrix = *invert(Matrix2f{xVersor, zVersor});
-        return {
-            Vector3f{matrix[0][0], 0.f, matrix[0][1]},
-            Vector3f{matrix[1][0], 0.f, matrix[1][1]}
-        };
-    }
-
-    template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] RingOutlineCalculator<dim::Dim3, Spec>::MatrixT
-        RingOutlineCalculator<dim::Dim3, Spec>::getYZMatrix(
-            Vector2f const& yVersor,
-            Vector2f const& zVersor) const noexcept
-    {
-        Matrix2f matrix = *invert(Matrix2f{yVersor, zVersor});
-        return {
-            Vector3f{0.f, matrix[0][0], matrix[0][1]},
-            Vector3f{0.f, matrix[1][0], matrix[1][1]}
-        };
-    }
-
-    template <EllipticTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] bool RingClickChecker<dim::Dim2, Spec>::operator() (
-        Ring<dim::Dim2, Spec> const& ring,
-        Vector2u const& position) const noexcept
-    {
-        bool outring = insideSystem(ring.vertices | views::position,
-            ring.outline, position);
-        bool inring = insideSystem(ring.innerEllipse.vertices,
-            ring.innerEllipse.outline, position);
-        return outring && (!inring);
-    }
-
-    template <EllipticTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] bool RingClickChecker<dim::Dim3, Spec>::operator() (
-        Ring<dim::Dim3, Spec> const& ring,
-        Vector2u const& position) const noexcept
-    {
-        bool outring = insideSystem(ring.vertices | views::position,
-            ring.model, position);
-        bool inring = insideSystem(ring.innerEllipse.vertices,
-            ring.model, position);
-        return outring && (!inring);
-    }
 
     std::string const RingShader<dim::Dim2, void>::shader
         = "MPGL/2D/Ring";
@@ -136,5 +71,15 @@ namespace mpgl {
     {
         RingShader<dim::Dim2, uint8>{}(program);
     }
+
+    template class RingOutlineCalculator<dim::Dim2, void>;
+    template class RingOutlineCalculator<dim::Dim3, void>;
+    template class RingOutlineCalculator<dim::Dim2, uint8>;
+    template class RingOutlineCalculator<dim::Dim3, uint8>;
+
+    template class RingClickChecker<dim::Dim2, void>;
+    template class RingClickChecker<dim::Dim3, void>;
+    template class RingClickChecker<dim::Dim2, uint8>;
+    template class RingClickChecker<dim::Dim3, uint8>;
 
 }
