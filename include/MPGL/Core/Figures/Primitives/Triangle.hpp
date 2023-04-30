@@ -105,12 +105,15 @@ namespace mpgl {
         static Clicker const                        clicker;
     };
 
-    template class Triangle<dim::Dim2>;
-    template class Triangle<dim::Dim3>;
-    template class Triangle<dim::Dim2, uint8>;
-    template class Triangle<dim::Dim3, uint8>;
+    extern template class Triangle<dim::Dim2>;
+    extern template class Triangle<dim::Dim3>;
+    extern template class Triangle<dim::Dim2, uint8>;
+    extern template class Triangle<dim::Dim3, uint8>;
 
     typedef Triangle<dim::Dim2>                     Triangle2D;
     typedef Triangle<dim::Dim3>                     Triangle3D;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Helpers/TriangleHelpers.tpp>
+#include <MPGL/Core/Figures/Primitives/Triangle.tpp>
