@@ -63,7 +63,7 @@ namespace mpgl {
     void Tetrahedron<Spec>::initElementBuffer(void) const noexcept {
         BindGuard<VertexArray> vaoGuard{this->vertexArray};
         elementBuffer.bind();
-        elementBuffer.setBufferData(indices);
+        elementBuffer.setBufferData(Indices);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>

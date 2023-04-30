@@ -30,13 +30,42 @@
 
 namespace mpgl {
 
+    namespace details {
+        /**
+         * Base class for the tetrahedron figure. Holds all type-independent
+         * methods and attributes that are shared between all tetrahedron
+         * specializations
+        */
+        class TetrahedronBase {
+        protected:
+            using IndicesArray = std::array<uint32, 12>;
+
+            static constexpr IndicesArray           Indices{
+                0, 1, 2, 0, 2, 3, 0, 1, 3, 1, 2, 3};
+
+            /**
+             * Constructs a new tetrahedron base object
+            */
+            explicit TetrahedronBase(void) noexcept = default;
+
+            /**
+             * Destroys a tetrahedron base object
+            */
+            ~TetrahedronBase(void) noexcept = default;
+        };
+
+    }
+
     /**
      * Represents a tetrahedron figure
      *
      * @tparam Spec the angular vertices specifier
      */
     template <AngularTraitSpecifier<dim::Dim3> Spec = void>
-    class Tetrahedron : public Angular<dim::Dim3, Spec> {
+    class Tetrahedron :
+        public Angular<dim::Dim3, Spec>,
+        private details::TetrahedronBase
+    {
     public:
         using VertexTraits = Angular<dim::Dim3, Spec>::VertexTraits;
 
@@ -91,10 +120,6 @@ namespace mpgl {
          */
         virtual ~Tetrahedron(void) noexcept = default;
     private:
-        using Indices = std::array<uint32, 12>;
-
-        static constexpr Indices const              indices{
-            0, 1, 2, 0, 2, 3, 0, 1, 3, 1, 2, 3};
 
         /**
          * Initializes the element buffer object
