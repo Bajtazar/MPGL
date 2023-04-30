@@ -87,8 +87,8 @@ namespace mpgl {
         Sprite& operator=(Sprite&& sprite) noexcept = default;
     };
 
-    template class Sprite<dim::Dim2>;
-    template class Sprite<dim::Dim3>;
+    extern template class Sprite<dim::Dim2>;
+    extern template class Sprite<dim::Dim3>;
 
     typedef Sprite<dim::Dim2>                           Sprite2D;
     typedef Sprite<dim::Dim3>                           Sprite3D;
