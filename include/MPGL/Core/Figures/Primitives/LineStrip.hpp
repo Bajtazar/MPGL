@@ -117,10 +117,10 @@ namespace mpgl {
         static Clicker const                        clicker;
     };
 
-    template class LineStrip<dim::Dim2>;
-    template class LineStrip<dim::Dim3>;
-    template class LineStrip<dim::Dim2, uint8>;
-    template class LineStrip<dim::Dim3, uint8>;
+    extern template class LineStrip<dim::Dim2>;
+    extern template class LineStrip<dim::Dim3>;
+    extern template class LineStrip<dim::Dim2, uint8>;
+    extern template class LineStrip<dim::Dim3, uint8>;
 
     typedef LineStrip<dim::Dim2>                    LineStrip2D;
     typedef LineStrip<dim::Dim3>                    LineStrip3D;

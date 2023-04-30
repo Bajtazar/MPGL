@@ -81,10 +81,10 @@ namespace mpgl {
             LineStrip<dim::Dim3, Spec> const& lineStrip) const noexcept;
     };
 
-    template class LineStripDrawer<dim::Dim2, void>;
-    template class LineStripDrawer<dim::Dim3, void>;
-    template class LineStripDrawer<dim::Dim2, uint8>;
-    template class LineStripDrawer<dim::Dim3, uint8>;
+    extern template class LineStripDrawer<dim::Dim2, void>;
+    extern template class LineStripDrawer<dim::Dim3, void>;
+    extern template class LineStripDrawer<dim::Dim2, uint8>;
+    extern template class LineStripDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for normalizing the vertices range
@@ -169,14 +169,14 @@ namespace mpgl {
             ) const noexcept;
     };
 
-    template class LineStripClickCheckerNormalizer<dim::Dim2, void>;
-    template class LineStripClickCheckerNormalizer<dim::Dim3, void>;
-    template class LineStripClickCheckerNormalizer<dim::Dim2, uint8>;
-    template class LineStripClickCheckerNormalizer<dim::Dim3, uint8>;
+    extern template class LineStripClickCheckerNormalizer<dim::Dim2, void>;
+    extern template class LineStripClickCheckerNormalizer<dim::Dim3, void>;
+    extern template class LineStripClickCheckerNormalizer<dim::Dim2, uint8>;
+    extern template class LineStripClickCheckerNormalizer<dim::Dim3, uint8>;
 
-    template class LineStripClickChecker<dim::Dim2, void>;
-    template class LineStripClickChecker<dim::Dim3, void>;
-    template class LineStripClickChecker<dim::Dim2, uint8>;
-    template class LineStripClickChecker<dim::Dim3, uint8>;
+    extern template class LineStripClickChecker<dim::Dim2, void>;
+    extern template class LineStripClickChecker<dim::Dim3, void>;
+    extern template class LineStripClickChecker<dim::Dim2, uint8>;
+    extern template class LineStripClickChecker<dim::Dim3, uint8>;
 
 }
