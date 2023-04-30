@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
+
 namespace mpgl {
 
     template <SpecializationOf<Figure> Base>
@@ -42,6 +44,69 @@ namespace mpgl {
             setShader(VertexTraits::shader());
         }
         placer(*this);
+    }
+
+    template <SpecializationOf<Figure> Base>
+    void TexturedFigure<Base>::setLocations(void) {
+        ShaderLocation{*this->shaderProgram, "tex"}(0);
+    }
+
+    template <SpecializationOf<Figure> Base>
+    TexturedFigure<Base>::Placer const TexturedFigure<Base>::placer{};
+
+    template <SpecializationOf<Figure> Base>
+    void TexturedFigure<Base>::draw(void) const noexcept {
+        auto const& textureBuffer = this->texture.getTextureBuffer();
+        textureBuffer.activate();
+        BindGuard textureGuard{textureBuffer};
+        Base::draw();
+    }
+
+    template <SpecializationOf<Figure> Base>
+    void TexturedFigure<Base>::setConvolution(
+        Matrix3f const& convolution)
+    {
+        if constexpr (SpecializationOf<Base, Elliptic>) {
+            this->setShader(Base::ShaderManager::convolutionShader);
+        } else {
+            this->setShader(VertexTraits::convolutionShader());
+        }
+        ShaderLocation{*this->shaderProgram, "convolution"}(convolution);
+        ShaderLocation{*this->shaderProgram, "screen"}(
+            this->texture.getTextureDimensions());
+    }
+
+    template <SpecializationOf<Figure> Base>
+    void TexturedFigure<Base>::resetConvolution(void) {
+        if constexpr (SpecializationOf<Base, Elliptic>) {
+            this->setShader(Base::ShaderManager::shader);
+        } else {
+            this->setShader(VertexTraits::convolutionShader());
+        }
+    }
+
+    template <SpecializationOf<Figure> Base>
+    void TexturedFigure<Base>::setShader(
+        ShaderProgram const& program) noexcept
+    {
+        Base::setShader(program);
+        setLocations();
+    }
+
+    template <SpecializationOf<Figure> Base>
+    void TexturedFigure<Base>::setShader(
+        ShaderProgram&& program) noexcept
+    {
+        Base::setShader(std::move(program));
+        setLocations();
+    }
+
+    template <SpecializationOf<Figure> Base>
+    void TexturedFigure<Base>::setShader(
+        std::string const& name) noexcept
+    {
+        Base::setShader(name);
+        setLocations();
     }
 
 }

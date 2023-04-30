@@ -23,72 +23,28 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 #include <MPGL/Core/Textures/TexturedFigure.hpp>
 
 namespace mpgl {
 
-    template <SpecializationOf<Figure> Base>
-    void TexturedFigure<Base>::setLocations(void) {
-        ShaderLocation{*this->shaderProgram, "tex"}(0);
-    }
+    template class TexturedFigure<Triangle<dim::Dim2, uint8>>;
+    template class TexturedFigure<Triangle<dim::Dim3, uint8>>;
+    template class TexturedFigure<Tetragon<dim::Dim2, uint8>>;
+    template class TexturedFigure<Tetragon<dim::Dim3, uint8>>;
+    template class TexturedFigure<Line<dim::Dim2, uint8>>;
+    template class TexturedFigure<Line<dim::Dim3, uint8>>;
+    template class TexturedFigure<LineLoop<dim::Dim2, uint8>>;
+    template class TexturedFigure<LineLoop<dim::Dim3, uint8>>;
+    template class TexturedFigure<LineStrip<dim::Dim2, uint8>>;
+    template class TexturedFigure<LineStrip<dim::Dim3, uint8>>;
+    template class TexturedFigure<Points<dim::Dim2, uint8>>;
+    template class TexturedFigure<Points<dim::Dim3, uint8>>;
+    template class TexturedFigure<Polygon<dim::Dim2, uint8>>;
+    template class TexturedFigure<Polygon<dim::Dim3, uint8>>;
 
-    template <SpecializationOf<Figure> Base>
-    TexturedFigure<Base>::Placer const TexturedFigure<Base>::placer{};
-
-    template <SpecializationOf<Figure> Base>
-    void TexturedFigure<Base>::draw(void) const noexcept {
-        auto const& textureBuffer = this->texture.getTextureBuffer();
-        textureBuffer.activate();
-        BindGuard textureGuard{textureBuffer};
-        Base::draw();
-    }
-
-    template <SpecializationOf<Figure> Base>
-    void TexturedFigure<Base>::setConvolution(
-        Matrix3f const& convolution)
-    {
-        if constexpr (SpecializationOf<Base, Elliptic>) {
-            this->setShader(Base::ShaderManager::convolutionShader);
-        } else {
-            this->setShader(VertexTraits::convolutionShader());
-        }
-        ShaderLocation{*this->shaderProgram, "convolution"}(convolution);
-        ShaderLocation{*this->shaderProgram, "screen"}(
-            this->texture.getTextureDimensions());
-    }
-
-    template <SpecializationOf<Figure> Base>
-    void TexturedFigure<Base>::resetConvolution(void) {
-        if constexpr (SpecializationOf<Base, Elliptic>) {
-            this->setShader(Base::ShaderManager::shader);
-        } else {
-            this->setShader(VertexTraits::convolutionShader());
-        }
-    }
-
-    template <SpecializationOf<Figure> Base>
-    void TexturedFigure<Base>::setShader(
-        ShaderProgram const& program) noexcept
-    {
-        Base::setShader(program);
-        setLocations();
-    }
-
-    template <SpecializationOf<Figure> Base>
-    void TexturedFigure<Base>::setShader(
-        ShaderProgram&& program) noexcept
-    {
-        Base::setShader(std::move(program));
-        setLocations();
-    }
-
-    template <SpecializationOf<Figure> Base>
-    void TexturedFigure<Base>::setShader(
-        std::string const& name) noexcept
-    {
-        Base::setShader(name);
-        setLocations();
-    }
+    template class TexturedFigure<Ellipse<dim::Dim2, uint8>>;
+    template class TexturedFigure<Ellipse<dim::Dim3, uint8>>;
+    template class TexturedFigure<Ring<dim::Dim2, uint8>>;
+    template class TexturedFigure<Ring<dim::Dim3, uint8>>;
 
 }

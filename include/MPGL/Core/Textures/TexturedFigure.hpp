@@ -156,25 +156,25 @@ namespace mpgl {
         void setLocations(void);
     };
 
-    template class TexturedFigure<Triangle<dim::Dim2, uint8>>;
-    template class TexturedFigure<Triangle<dim::Dim3, uint8>>;
-    template class TexturedFigure<Tetragon<dim::Dim2, uint8>>;
-    template class TexturedFigure<Tetragon<dim::Dim3, uint8>>;
-    template class TexturedFigure<Line<dim::Dim2, uint8>>;
-    template class TexturedFigure<Line<dim::Dim3, uint8>>;
-    template class TexturedFigure<LineLoop<dim::Dim2, uint8>>;
-    template class TexturedFigure<LineLoop<dim::Dim3, uint8>>;
-    template class TexturedFigure<LineStrip<dim::Dim2, uint8>>;
-    template class TexturedFigure<LineStrip<dim::Dim3, uint8>>;
-    template class TexturedFigure<Points<dim::Dim2, uint8>>;
-    template class TexturedFigure<Points<dim::Dim3, uint8>>;
-    template class TexturedFigure<Polygon<dim::Dim2, uint8>>;
-    template class TexturedFigure<Polygon<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<Triangle<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<Triangle<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<Tetragon<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<Tetragon<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<Line<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<Line<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<LineLoop<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<LineLoop<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<LineStrip<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<LineStrip<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<Points<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<Points<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<Polygon<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<Polygon<dim::Dim3, uint8>>;
 
-    template class TexturedFigure<Ellipse<dim::Dim2, uint8>>;
-    template class TexturedFigure<Ellipse<dim::Dim3, uint8>>;
-    template class TexturedFigure<Ring<dim::Dim2, uint8>>;
-    template class TexturedFigure<Ring<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<Ellipse<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<Ellipse<dim::Dim3, uint8>>;
+    extern template class TexturedFigure<Ring<dim::Dim2, uint8>>;
+    extern template class TexturedFigure<Ring<dim::Dim3, uint8>>;
 
     using TriangleSprite2D = TexturedFigure<Triangle<dim::Dim2, uint8>>;
     using TriangleSprite3D = TexturedFigure<Triangle<dim::Dim3, uint8>>;
