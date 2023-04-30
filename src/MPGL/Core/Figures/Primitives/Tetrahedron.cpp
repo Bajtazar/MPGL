@@ -24,55 +24,9 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Tetrahedron.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 
 namespace mpgl {
 
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    Tetrahedron<Spec>::Tetrahedron(Color const& color)
-        : Angular<dim::Dim3, Spec>{4, color}
-    {
-        initElementBuffer();
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    Tetrahedron<Spec>::Tetrahedron(
-        Vector3f const& firstVertex,
-        Vector3f const& secondVertex,
-        Vector3f const& thirdVertex,
-        Vector3f const& fourthVertex,
-        Color const& color)
-            : Angular<dim::Dim3, Spec>{{
-                VertexTraits::buildVertex(firstVertex, color),
-                VertexTraits::buildVertex(secondVertex, color),
-                VertexTraits::buildVertex(thirdVertex, color),
-                VertexTraits::buildVertex(fourthVertex, color)}}
-    {
-        initElementBuffer();
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    Tetrahedron<Spec>::Tetrahedron(Tetrahedron const& tetrahedron)
-        : Angular<dim::Dim3, Spec>{tetrahedron}
-    {
-        initElementBuffer();
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Tetrahedron<Spec>::initElementBuffer(void) const noexcept {
-        BindGuard<VertexArray> vaoGuard{this->vertexArray};
-        elementBuffer.bind();
-        elementBuffer.setBufferData(indices);
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void Tetrahedron<Spec>::draw(void) const noexcept {
-        this->actualizeBufferBeforeDraw();
-        this->shaderProgram->use();
-        this->actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{this->vertexArray};
-        this->vertexArray.drawElements(
-            VertexArray::DrawMode::Triangles, 12, DataType::UInt32);
-    }
+    template class Tetrahedron<void>;
 
 }

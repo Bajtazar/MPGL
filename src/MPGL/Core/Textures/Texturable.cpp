@@ -27,12 +27,7 @@
 
 namespace mpgl {
 
-    template <Dimension Dim>
-    Texturable<Dim>::Texturable(Texture const& texture)
-        : texture{texture} {}
-
-    template <Dimension Dim>
-    Texturable<Dim>::Texturable(Texturable const& texturable)
-        : texture{texturable.texture} {}
+    template class Texturable<dim::Dim2>;
+    template class Texturable<dim::Dim3>;
 
 }

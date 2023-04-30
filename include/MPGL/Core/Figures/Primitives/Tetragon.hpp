@@ -139,12 +139,15 @@ namespace mpgl {
         static Clicker const                        clicker;
     };
 
-    template class Tetragon<dim::Dim2>;
-    template class Tetragon<dim::Dim3>;
-    template class Tetragon<dim::Dim2, uint8>;
-    template class Tetragon<dim::Dim3, uint8>;
+    extern template class Tetragon<dim::Dim2>;
+    extern template class Tetragon<dim::Dim3>;
+    extern template class Tetragon<dim::Dim2, uint8>;
+    extern template class Tetragon<dim::Dim3, uint8>;
 
     typedef Tetragon<dim::Dim2>                     Tetragon2D;
     typedef Tetragon<dim::Dim3>                     Tetragon3D;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Helpers/TetragonHelpers.tpp>
+#include <MPGL/Core/Figures/Primitives/Tetragon.tpp>

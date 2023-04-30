@@ -45,18 +45,18 @@ namespace mpgl {
          * @param thirdVertex the third vertex's index
          * @param fourthVertex the fourth vertex's index
          */
-        IndicesTetragon(
+        constexpr IndicesTetragon(
             uint32 firstVertex,
             uint32 secondVertex,
             uint32 thirdVertex,
             uint32 fourthVertex) noexcept;
 
-        IndicesTetragon(IndicesTetragon const&) noexcept = default;
-        IndicesTetragon(IndicesTetragon&&) noexcept = default;
+        constexpr IndicesTetragon(IndicesTetragon const&) noexcept = default;
+        constexpr IndicesTetragon(IndicesTetragon&&) noexcept = default;
 
-        IndicesTetragon& operator=(
+        constexpr IndicesTetragon& operator=(
             IndicesTetragon const&) noexcept = default;
-        IndicesTetragon& operator=(
+        constexpr IndicesTetragon& operator=(
             IndicesTetragon&&) noexcept = default;
 
         /**
@@ -64,58 +64,58 @@ namespace mpgl {
          *
          * @return the value of the first tetragon's vertex
          */
-        [[nodiscard]] uint32 getFirstVertex(void) const noexcept;
+        [[nodiscard]] constexpr uint32 getFirstVertex(void) const noexcept;
 
         /**
          * Accesses the value of the second tetragon's vertex
          *
          * @return the value of the second tetragon's vertex
          */
-        [[nodiscard]] uint32 getSecondVertex(void) const noexcept;
+        [[nodiscard]] constexpr uint32 getSecondVertex(void) const noexcept;
 
         /**
          * Accesses the value of the third tetragon's vertex
          *
          * @return the value of the third tetragon's vertex
          */
-        [[nodiscard]] uint32 getThirdVertex(void) const noexcept;
+        [[nodiscard]] constexpr uint32 getThirdVertex(void) const noexcept;
 
         /**
          * Accesses the value of the fourth tetragon's vertex
          *
          * @return the value of the fourth tetragon's vertex
          */
-        [[nodiscard]] uint32 getFourthVertex(void) const noexcept;
+        [[nodiscard]] constexpr uint32 getFourthVertex(void) const noexcept;
 
         /**
          * Sets the value of the first tetragon's vertex
          *
          * @param value the new value of the vertex
          */
-        void setFirstVertex(uint32 value) noexcept;
+        constexpr void setFirstVertex(uint32 value) noexcept;
 
         /**
          * Sets the value of the second tetragon's vertex
          *
          * @param value the new value of the vertex
          */
-        void setSecondVertex(uint32 value) noexcept;
+        constexpr void setSecondVertex(uint32 value) noexcept;
 
         /**
          * Sets the value of the third tetragon's vertex
          *
          * @param value the new value of the vertex
          */
-        void setThirdVertex(uint32 value) noexcept;
+        constexpr void setThirdVertex(uint32 value) noexcept;
 
         /**
          * Sets the value of the fourth tetragon's vertex
          *
          * @param value the new value of the vertex
          */
-        void setFourthVertex(uint32 value) noexcept;
+        constexpr void setFourthVertex(uint32 value) noexcept;
 
-        ~IndicesTetragon(void) noexcept = default;
+        constexpr ~IndicesTetragon(void) noexcept = default;
     private:
         IndicesTriangle                    firstTriangle;
         IndicesTriangle                    secondTriangle;
@@ -124,3 +124,5 @@ namespace mpgl {
     #pragma pack(pop)
 
 }
+
+#include <MPGL/Core/Vertex/Indices/IndicesTetragon.ipp>

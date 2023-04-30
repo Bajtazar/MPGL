@@ -24,129 +24,34 @@
  *  distribution
  */
 #include <MPGL/Core/Textures/TexturedFigurePlacer.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
-    template <
-        Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Triangle<Dim, Spec>>::operator() (
-        Triangle<Dim, Spec>& triangle) const noexcept
-    {
-        get<"texCoords">(triangle[0]) = Vector2f{0, 0};
-        get<"texCoords">(triangle[1]) = Vector2f{1, 0};
-        get<"texCoords">(triangle[2]) = Vector2f{0.5, 1};
-    }
+    template struct TexturedFigurePlacer<Triangle<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Triangle<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Tetragon<Dim, Spec>>::operator() (
-        Tetragon<Dim, Spec>& tetragon) const noexcept
-    {
-        get<"texCoords">(tetragon[0]) = Vector2f{0, 0};
-        get<"texCoords">(tetragon[1]) = Vector2f{0, 1};
-        get<"texCoords">(tetragon[2]) = Vector2f{1, 1};
-        get<"texCoords">(tetragon[3]) = Vector2f{1, 0};
-    }
+    template struct TexturedFigurePlacer<Tetragon<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Tetragon<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Line<Dim, Spec>>::operator() (
-        Line<Dim, Spec>& line) const noexcept
-    {
-        get<"texCoords">(line[0]) = Vector2f{0, 0};
-        get<"texCoords">(line[1]) = Vector2f{1, 0};
-    }
+    template struct TexturedFigurePlacer<Line<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Line<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<LineStrip<Dim, Spec>>::operator() (
-        LineStrip<Dim, Spec>& lineStrip) const noexcept
-    {
-        if (lineStrip.size() <= 1)
-            return;
-        auto const piece = 1.f / (lineStrip.size() - 1);
-        std::remove_const_t<decltype(piece)> iter = 0.;
-        for (auto& vertex : lineStrip | views::texCoords) {
-            vertex = Vector2f{iter, 0};
-            iter += piece;
-        }
-    }
+    template struct TexturedFigurePlacer<LineStrip<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<LineStrip<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<LineLoop<Dim, Spec>>::operator() (
-        LineLoop<Dim, Spec>& lineLoop) const noexcept
-    {
-        if (lineLoop.size() <= 1)
-            return;
-        auto const piece = 1.f / (lineLoop.size() - 1);
-        std::remove_const_t<decltype(piece)> iter = 0.;
-        for (auto& vertex : lineLoop | views::texCoords) {
-            vertex = Vector2f{iter, 0};
-            iter += piece;
-        }
-    }
+    template struct TexturedFigurePlacer<LineLoop<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<LineLoop<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Points<Dim, Spec>>::operator() (
-        Points<Dim, Spec>& points) const noexcept
-    {
-        if (points.size() <= 1)
-            return;
-        auto const piece = 1.f / (points.size() - 1);
-        std::remove_const_t<decltype(piece)> iter = 0.;
-        for (auto& vertex : points | views::texCoords) {
-            vertex = Vector2f{iter, 0};
-            iter += piece;
-        }
-    }
+    template struct TexturedFigurePlacer<Points<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Points<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        TexturableAngularTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Polygon<Dim, Spec>>::operator() (
-        Polygon<Dim, Spec>& polygon) const noexcept
-    {
-        if (polygon.size() <= 1)
-            return;
-        auto const piece = 1.f / (polygon.size() - 1);
-        std::remove_const_t<decltype(piece)> iter = 0.;
-        for (auto& vertex : polygon | views::texCoords) {
-            vertex = Vector2f{iter, 0};
-            iter += piece;
-        }
-    }
+    template struct TexturedFigurePlacer<Polygon<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Polygon<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        EllipticTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Ellipse<Dim, Spec>>::operator() (
-        Ellipse<Dim, Spec>& ellipse) const noexcept
-    {
-        get<"texCoords">(ellipse[0]) = Vector2f{0, 0};
-        get<"texCoords">(ellipse[1]) = Vector2f{0, 1};
-        get<"texCoords">(ellipse[2]) = Vector2f{1, 1};
-        get<"texCoords">(ellipse[3]) = Vector2f{1, 0};
-    }
+    template struct TexturedFigurePlacer<Ellipse<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Ellipse<dim::Dim3, uint8>>;
 
-    template <
-        Dimension Dim,
-        EllipticTraitSpecifier<Dim> Spec>
-    void TexturedFigurePlacer<Ring<Dim, Spec>>::operator() (
-        Ring<Dim, Spec>& ring) const noexcept
-    {
-        get<"texCoords">(ring[0]) = Vector2f{0, 0};
-        get<"texCoords">(ring[1]) = Vector2f{0, 1};
-        get<"texCoords">(ring[2]) = Vector2f{1, 1};
-        get<"texCoords">(ring[3]) = Vector2f{1, 0};
-    }
+    template struct TexturedFigurePlacer<Ring<dim::Dim2, uint8>>;
+    template struct TexturedFigurePlacer<Ring<dim::Dim3, uint8>>;
 
 }

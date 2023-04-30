@@ -24,77 +24,22 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/LineStrip.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] auto
-        LineStripClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
-            LineStrip<dim::Dim2, Spec> const& lineStrip
-                ) const noexcept
-    {
-        auto normalizer = [](Vector2f const& value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return lineStrip.vertices | views::position
-            | std::views::transform(normalizer);
-    }
+    template class LineStripDrawer<dim::Dim2, void>;
+    template class LineStripDrawer<dim::Dim3, void>;
+    template class LineStripDrawer<dim::Dim2, uint8>;
+    template class LineStripDrawer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] auto
-        LineStripClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
-            LineStrip<dim::Dim3, Spec> const& lineStrip
-                ) const noexcept
-    {
-        auto normalizer = [](auto value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return lineStrip.vertices | views::position | views::project(
-            lineStrip.model) | std::views::transform(normalizer);
-    }
+    template class LineStripClickCheckerNormalizer<dim::Dim2, void>;
+    template class LineStripClickCheckerNormalizer<dim::Dim3, void>;
+    template class LineStripClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class LineStripClickCheckerNormalizer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    void LineStripDrawer<dim::Dim2, Spec>::operator() (
-        LineStrip<dim::Dim2, Spec> const& lineStrip) const noexcept
-    {
-        lineStrip.actualizeBufferBeforeDraw();
-        lineStrip.shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{lineStrip.vertexArray};
-        lineStrip.vertexArray.drawArrays(
-            VertexArray::DrawMode::LineStrip,
-            lineStrip.vertices.size());
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void LineStripDrawer<dim::Dim3, Spec>::operator() (
-        LineStrip<dim::Dim3, Spec> const& lineStrip) const noexcept
-    {
-        lineStrip.actualizeBufferBeforeDraw();
-        lineStrip.shaderProgram->use();
-        lineStrip.actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{lineStrip.vertexArray};
-        lineStrip.vertexArray.drawArrays(
-            VertexArray::DrawMode::LineStrip,
-            lineStrip.vertices.size());
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool LineStripClickChecker<Dim, Spec>::operator() (
-        LineStrip<Dim, Spec> const& lineStrip,
-        Vector2u const& position) const noexcept
-    {
-        Vector2f pos = Adapter2D{position}.get();
-        auto range = Normalizer{}(lineStrip);
-        auto first = *range.begin();
-        for (Vector2f last : range | std::views::drop(1)) {
-            if (isOnLine(pos, first, last))
-                return true;
-            first = last;
-        }
-        return false;
-    }
+    template class LineStripClickChecker<dim::Dim2, void>;
+    template class LineStripClickChecker<dim::Dim3, void>;
+    template class LineStripClickChecker<dim::Dim2, uint8>;
+    template class LineStripClickChecker<dim::Dim3, uint8>;
 
 }

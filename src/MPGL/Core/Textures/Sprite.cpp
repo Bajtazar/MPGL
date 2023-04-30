@@ -27,8 +27,7 @@
 
 namespace mpgl {
 
-    template <Dimension Dim>
-    Sprite<Dim>::Sprite(Texture const& texture)
-        : Texturable<Dim>{texture} {}
+    template class Sprite<dim::Dim2>;
+    template class Sprite<dim::Dim3>;
 
 }

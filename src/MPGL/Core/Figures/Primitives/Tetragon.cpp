@@ -24,76 +24,12 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Tetragon.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 
 namespace mpgl {
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Tetragon<Dim, Spec>::Drawer const
-        Tetragon<Dim, Spec>::drawer = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Tetragon<Dim, Spec>::Clicker const
-        Tetragon<Dim, Spec>::clicker = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Tetragon<Dim, Spec>::Tetragon(
-        Vector2f const& firstVertex,
-        Vector2f const& dimensions,
-        Color const& color) requires TwoDimensional<Dim>
-            : Tetragon{
-                firstVertex,
-                firstVertex + 1._y * dimensions[1],
-                firstVertex + dimensions,
-                color} {}
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Tetragon<Dim, Spec>::Tetragon(Color const& color)
-        : Angular<Dim, Spec>{4, color}
-    {
-        initElementBuffer();
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Tetragon<Dim, Spec>::Tetragon(
-        Vector const& firstVertex,
-        Vector const& secondVertex,
-        Vector const& thirdVertex,
-        Color const& color)
-            : Angular<Dim, Spec>{{
-                VertexTraits::buildVertex(firstVertex, color),
-                VertexTraits::buildVertex(secondVertex, color),
-                VertexTraits::buildVertex(thirdVertex, color),
-                VertexTraits::buildVertex(firstVertex - secondVertex
-                    + thirdVertex, color)}}
-    {
-        initElementBuffer();
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Tetragon<Dim, Spec>::Tetragon(Tetragon const& tetragon)
-        : Angular<Dim, Spec>{tetragon}
-    {
-        initElementBuffer();
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    void Tetragon<Dim, Spec>::initElementBuffer(void) const noexcept {
-        BindGuard<VertexArray> vaoGuard{this->vertexArray};
-        elementBuffer.bind();
-        elementBuffer.setBufferData(indices);
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    void Tetragon<Dim, Spec>::draw(void) const noexcept {
-        drawer(*this);
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool Tetragon<Dim, Spec>::contains(
-        Vector2u const& position) const noexcept
-    {
-        return clicker(*this, position);
-    }
+    template class Tetragon<dim::Dim2>;
+    template class Tetragon<dim::Dim3>;
+    template class Tetragon<dim::Dim2, uint8>;
+    template class Tetragon<dim::Dim3, uint8>;
 
 }

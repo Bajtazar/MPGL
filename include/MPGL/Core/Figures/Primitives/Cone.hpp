@@ -220,6 +220,8 @@ namespace mpgl {
             size_t third);
     };
 
-    template class Cone<void>;
+    extern template class Cone<void>;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Cone.tpp>

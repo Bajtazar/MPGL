@@ -30,13 +30,44 @@
 
 namespace mpgl {
 
+    namespace details {
+
+        /**
+         * Base class for the convex hexahedron figure. Holds all
+         * type-independent methods and attributes that are shared between
+         * all convex hexahedron specializations
+        */
+        class ConvexHexahedronBase {
+        protected:
+            /**
+             * Constructs a new convex hexahedron base object
+            */
+            explicit ConvexHexahedronBase(void) noexcept = default;
+
+            /**
+             * Destroys a convex hexahedron base object
+            */
+            virtual ~ConvexHexahedronBase(void) noexcept = default;
+
+            using IndicesArray = std::array<uint32, 36>;
+
+            static constexpr IndicesArray           Indices{
+                0, 1, 3, 1, 2, 3, 1, 2, 4, 2, 4, 7, 0, 1, 5, 1, 5, 4,
+                4, 5, 7, 7, 5, 6, 0, 3, 5, 3, 5, 6, 3, 2, 6, 2, 6, 7};
+        };
+
+    }
+
     /**
      * Represents a convex hexahedron figure
      *
      * @tparam Spec the angular vertices specifier
      */
     template <AngularTraitSpecifier<dim::Dim3> Spec = void>
-    class ConvexHexahedron : public Angular<dim::Dim3, Spec> {
+    class ConvexHexahedron :
+        public Angular<dim::Dim3, Spec>,
+        private details::ConvexHexahedronBase
+    {
     public:
         using VertexTraits = Angular<dim::Dim3, Spec>::VertexTraits;
 
@@ -91,11 +122,6 @@ namespace mpgl {
          */
         virtual ~ConvexHexahedron(void) noexcept = default;
     private:
-        using Indices = std::array<uint32, 36>;
-
-        static constexpr Indices const              indices{
-            0, 1, 3, 1, 2, 3, 1, 2, 4, 2, 4, 7, 0, 1, 5, 1, 5, 4,
-            4, 5, 7, 7, 5, 6, 0, 3, 5, 3, 5, 6, 3, 2, 6, 2, 6, 7};
 
         /**
          * Initializes the element buffer object
@@ -105,6 +131,8 @@ namespace mpgl {
         ElementArrayBuffer                          elementBuffer;
     };
 
-    template class ConvexHexahedron<void>;
+    extern template class ConvexHexahedron<void>;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/ConvexHexahedron.tpp>

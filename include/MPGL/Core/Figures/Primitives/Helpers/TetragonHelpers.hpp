@@ -79,10 +79,10 @@ namespace mpgl {
             Tetragon<dim::Dim3, Spec> const& tetragon) const noexcept;
     };
 
-    template class TetragonDrawer<dim::Dim2, void>;
-    template class TetragonDrawer<dim::Dim3, void>;
-    template class TetragonDrawer<dim::Dim2, uint8>;
-    template class TetragonDrawer<dim::Dim3, uint8>;
+    extern template class TetragonDrawer<dim::Dim2, void>;
+    extern template class TetragonDrawer<dim::Dim3, void>;
+    extern template class TetragonDrawer<dim::Dim2, uint8>;
+    extern template class TetragonDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -136,9 +136,9 @@ namespace mpgl {
             Vector2u const& position) const noexcept;
     };
 
-    template class TetragonClickChecker<dim::Dim2, void>;
-    template class TetragonClickChecker<dim::Dim3, void>;
-    template class TetragonClickChecker<dim::Dim2, uint8>;
-    template class TetragonClickChecker<dim::Dim3, uint8>;
+    extern template class TetragonClickChecker<dim::Dim2, void>;
+    extern template class TetragonClickChecker<dim::Dim3, void>;
+    extern template class TetragonClickChecker<dim::Dim2, uint8>;
+    extern template class TetragonClickChecker<dim::Dim3, uint8>;
 
 }

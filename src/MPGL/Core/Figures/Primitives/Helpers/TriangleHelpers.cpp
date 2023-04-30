@@ -24,56 +24,17 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Triangle.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    void TriangleDrawer<dim::Dim2, Spec>::operator() (
-        Triangle<dim::Dim2, Spec> const& triangle) const noexcept
-    {
-        triangle.actualizeBufferBeforeDraw();
-        triangle.shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{triangle.vertexArray};
-        triangle.vertexArray.drawArrays(
-            VertexArray::DrawMode::Triangles, 3);
-    }
+    template class TriangleDrawer<dim::Dim2, void>;
+    template class TriangleDrawer<dim::Dim3, void>;
+    template class TriangleDrawer<dim::Dim2, uint8>;
+    template class TriangleDrawer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    void TriangleDrawer<dim::Dim3, Spec>::operator() (
-        Triangle<dim::Dim3, Spec> const& triangle) const noexcept
-    {
-        triangle.actualizeBufferBeforeDraw();
-        triangle.shaderProgram->use();
-        triangle.actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{triangle.vertexArray};
-        triangle.vertexArray.drawArrays(
-            VertexArray::DrawMode::Triangles, 3);
-    }
-
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] bool TriangleClickChecker<dim::Dim2, Spec>::operator() (
-        Triangle<dim::Dim2, Spec> const& triangle,
-        Vector2u const& position) const noexcept
-    {
-        return isInsideTriangle(Adapter2D{position}.get(),
-            get<"position">(triangle.vertices[0]).get(),
-            get<"position">(triangle.vertices[1]).get(),
-            get<"position">(triangle.vertices[2]).get());
-    }
-
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] bool TriangleClickChecker<dim::Dim3, Spec>::operator() (
-        Triangle<dim::Dim3, Spec> const& triangle,
-        Vector2u const& position) const noexcept
-    {
-        auto iter = (triangle.vertices | views::position
-            | views::project(triangle.model)).begin();
-        return isInsideTriangle(Adapter2D{position}.get(),
-            Adapter2D{*iter++}.get(), Adapter2D{*iter++}.get(),
-            Adapter2D{*iter++}.get());
-    }
+    template class TriangleClickChecker<dim::Dim2, void>;
+    template class TriangleClickChecker<dim::Dim3, void>;
+    template class TriangleClickChecker<dim::Dim2, uint8>;
+    template class TriangleClickChecker<dim::Dim3, uint8>;
 
 }

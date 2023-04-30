@@ -287,12 +287,14 @@ namespace mpgl {
         Vertices                            vertices;
     };
 
-    template class Angular<dim::Dim2>;
-    template class Angular<dim::Dim3>;
-    template class Angular<dim::Dim2, uint8>;
-    template class Angular<dim::Dim3, uint8>;
+    extern template class Angular<dim::Dim2>;
+    extern template class Angular<dim::Dim3>;
+    extern template class Angular<dim::Dim2, uint8>;
+    extern template class Angular<dim::Dim3, uint8>;
 
     typedef Angular<dim::Dim2>              Angular2D;
     typedef Angular<dim::Dim3>              Angular3D;
 
 }
+
+#include <MPGL/Core/Figures/Angular.tpp>

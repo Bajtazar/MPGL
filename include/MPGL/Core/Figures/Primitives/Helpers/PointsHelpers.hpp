@@ -79,10 +79,10 @@ namespace mpgl {
             Points<dim::Dim3, Spec> const& points) const noexcept;
     };
 
-    template class PointsDrawer<dim::Dim2, void>;
-    template class PointsDrawer<dim::Dim3, void>;
-    template class PointsDrawer<dim::Dim2, uint8>;
-    template class PointsDrawer<dim::Dim3, uint8>;
+    extern template class PointsDrawer<dim::Dim2, void>;
+    extern template class PointsDrawer<dim::Dim3, void>;
+    extern template class PointsDrawer<dim::Dim2, uint8>;
+    extern template class PointsDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for normalizing the vertices range
@@ -162,14 +162,14 @@ namespace mpgl {
             Points<dim::Dim3, Spec> const& points) const noexcept;
     };
 
-    template class PointsClickCheckerNormalizer<dim::Dim2, void>;
-    template class PointsClickCheckerNormalizer<dim::Dim3, void>;
-    template class PointsClickCheckerNormalizer<dim::Dim2, uint8>;
-    template class PointsClickCheckerNormalizer<dim::Dim3, uint8>;
+    extern template class PointsClickCheckerNormalizer<dim::Dim2, void>;
+    extern template class PointsClickCheckerNormalizer<dim::Dim3, void>;
+    extern template class PointsClickCheckerNormalizer<dim::Dim2, uint8>;
+    extern template class PointsClickCheckerNormalizer<dim::Dim3, uint8>;
 
-    template class PointsClickChecker<dim::Dim2, void>;
-    template class PointsClickChecker<dim::Dim3, void>;
-    template class PointsClickChecker<dim::Dim2, uint8>;
-    template class PointsClickChecker<dim::Dim3, uint8>;
+    extern template class PointsClickChecker<dim::Dim2, void>;
+    extern template class PointsClickChecker<dim::Dim3, void>;
+    extern template class PointsClickChecker<dim::Dim2, uint8>;
+    extern template class PointsClickChecker<dim::Dim3, uint8>;
 
 }

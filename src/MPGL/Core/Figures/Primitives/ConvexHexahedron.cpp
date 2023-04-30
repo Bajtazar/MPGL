@@ -24,68 +24,9 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/ConvexHexahedron.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
 
 namespace mpgl {
 
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    ConvexHexahedron<Spec>::ConvexHexahedron(Color const& color)
-        : Angular<dim::Dim3, Spec>{8, color}
-    {
-        initElementBuffer();
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    ConvexHexahedron<Spec>::ConvexHexahedron(
-        Vector3f const& firstVertex,
-        Vector3f const& firstVersor,
-        Vector3f const& secondVersor,
-        Vector3f const& thirdVersor,
-        Color const& color)
-            : Angular<dim::Dim3, Spec>{{
-                VertexTraits::buildVertex(
-                    firstVertex + secondVersor + thirdVersor, color),
-                VertexTraits::buildVertex(
-                    firstVertex + thirdVersor, color),
-                VertexTraits::buildVertex(
-                    firstVertex + firstVersor + thirdVersor, color),
-                VertexTraits::buildVertex(
-                    firstVertex + firstVersor + secondVersor + thirdVersor, color),
-                VertexTraits::buildVertex(
-                    firstVertex, color),
-                VertexTraits::buildVertex(
-                    firstVertex + secondVersor, color),
-                VertexTraits::buildVertex(
-                    firstVertex + firstVersor + secondVersor, color),
-                VertexTraits::buildVertex(
-                    firstVertex + firstVersor, color)}}
-    {
-        initElementBuffer();
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    ConvexHexahedron<Spec>::ConvexHexahedron(
-        ConvexHexahedron const& hexahedron)
-            : Angular<dim::Dim3, Spec>{hexahedron}
-    {
-        initElementBuffer();
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void ConvexHexahedron<Spec>::initElementBuffer(void) const noexcept {
-        BindGuard<VertexArray> vaoGuard{this->vertexArray};
-        elementBuffer.bind();
-        elementBuffer.setBufferData(indices);
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void ConvexHexahedron<Spec>::draw(void) const noexcept {
-        this->actualizeBufferBeforeDraw();
-        this->shaderProgram->use();
-        this->actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{this->vertexArray};
-        this->vertexArray.drawElements(
-            VertexArray::DrawMode::Triangles, 36, DataType::UInt32);
-    }
+    template class ConvexHexahedron<void>;
 
 }

@@ -150,10 +150,10 @@ namespace mpgl {
             Vector2f const& zVersor) const noexcept;
     };
 
-    template class RingOutlineCalculator<dim::Dim2, void>;
-    template class RingOutlineCalculator<dim::Dim3, void>;
-    template class RingOutlineCalculator<dim::Dim2, uint8>;
-    template class RingOutlineCalculator<dim::Dim3, uint8>;
+    extern template class RingOutlineCalculator<dim::Dim2, void>;
+    extern template class RingOutlineCalculator<dim::Dim3, void>;
+    extern template class RingOutlineCalculator<dim::Dim2, uint8>;
+    extern template class RingOutlineCalculator<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -231,10 +231,10 @@ namespace mpgl {
             Vector2u const& position) const noexcept;
     };
 
-    template class RingClickChecker<dim::Dim2, void>;
-    template class RingClickChecker<dim::Dim3, void>;
-    template class RingClickChecker<dim::Dim2, uint8>;
-    template class RingClickChecker<dim::Dim3, uint8>;
+    extern template class RingClickChecker<dim::Dim2, void>;
+    extern template class RingClickChecker<dim::Dim3, void>;
+    extern template class RingClickChecker<dim::Dim2, uint8>;
+    extern template class RingClickChecker<dim::Dim3, uint8>;
 
     /**
      * Structure containing information about shader used by
@@ -317,5 +317,3 @@ namespace mpgl {
     };
 
 }
-
-#include <MPGL/Core/Figures/Primitives/Helpers/RingHelpers.tpp>

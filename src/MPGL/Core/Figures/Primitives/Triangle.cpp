@@ -27,39 +27,9 @@
 
 namespace mpgl {
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Triangle<Dim, Spec>::Drawer const
-        Triangle<Dim, Spec>::drawer = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Triangle<Dim, Spec>::Clicker const
-        Triangle<Dim, Spec>::clicker = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Triangle<Dim, Spec>::Triangle(
-        Vector const& firstVertex,
-        Vector const& secondVertex,
-        Vector const& thirdVertex,
-        Color const& color)
-            : Angular<Dim, Spec>{{
-                VertexTraits::buildVertex(firstVertex, color),
-                VertexTraits::buildVertex(secondVertex, color),
-                VertexTraits::buildVertex(thirdVertex, color)}} {}
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Triangle<Dim, Spec>::Triangle(Color const& color)
-        : Angular<Dim, Spec>{3, color} {}
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    void Triangle<Dim, Spec>::draw(void) const noexcept {
-        drawer(*this);
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool Triangle<Dim, Spec>::contains(
-        Vector2u const& position) const noexcept
-    {
-        return clicker(*this, position);
-    }
+    template class Triangle<dim::Dim2>;
+    template class Triangle<dim::Dim3>;
+    template class Triangle<dim::Dim2, uint8>;
+    template class Triangle<dim::Dim3, uint8>;
 
 }

@@ -24,70 +24,22 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Points.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] auto
-        PointsClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
-            Points<dim::Dim2, Spec> const& points) const noexcept
-    {
-        auto normalizer = [](Vector2f const& value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return points.vertices | views::position
-            | std::views::transform(normalizer);
-    }
+    template class PointsDrawer<dim::Dim2, void>;
+    template class PointsDrawer<dim::Dim3, void>;
+    template class PointsDrawer<dim::Dim2, uint8>;
+    template class PointsDrawer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] auto
-        PointsClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
-            Points<dim::Dim3, Spec> const& points) const noexcept
-    {
-        auto normalizer = [](auto value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return points.vertices | views::position | views::project(
-            points.model) | std::views::transform(normalizer);
-    }
+    template class PointsClickCheckerNormalizer<dim::Dim2, void>;
+    template class PointsClickCheckerNormalizer<dim::Dim3, void>;
+    template class PointsClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class PointsClickCheckerNormalizer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    void PointsDrawer<dim::Dim2, Spec>::operator() (
-        Points<dim::Dim2, Spec> const& points) const noexcept
-    {
-        points.actualizeBufferBeforeDraw();
-        points.shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{points.vertexArray};
-        points.vertexArray.drawArrays(VertexArray::DrawMode::Points,
-            points.vertices.size());
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void PointsDrawer<dim::Dim3, Spec>::operator() (
-        Points<dim::Dim3, Spec> const& points) const noexcept
-    {
-        points.actualizeBufferBeforeDraw();
-        points.shaderProgram->use();
-        points.actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{points.vertexArray};
-        points.vertexArray.drawArrays(VertexArray::DrawMode::Points,
-            points.vertices.size());
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool
-        PointsClickChecker<Dim, Spec>::operator() (
-            Points<Dim, Spec> const& points,
-            Vector2u const& position) const noexcept
-    {
-        Vector2f normalized = Adapter2D{position}.get();
-        for (auto pos : Normalizer{}(points))
-            if (pos == normalized)
-                return true;
-        return false;
-    }
+    template class PointsClickChecker<dim::Dim2, void>;
+    template class PointsClickChecker<dim::Dim3, void>;
+    template class PointsClickChecker<dim::Dim2, uint8>;
+    template class PointsClickChecker<dim::Dim3, uint8>;
 
 }

@@ -79,10 +79,10 @@ namespace mpgl {
             Triangle<dim::Dim3, Spec> const& triangle) const noexcept;
     };
 
-    template class TriangleDrawer<dim::Dim2, void>;
-    template class TriangleDrawer<dim::Dim3, void>;
-    template class TriangleDrawer<dim::Dim2, uint8>;
-    template class TriangleDrawer<dim::Dim3, uint8>;
+    extern template class TriangleDrawer<dim::Dim2, void>;
+    extern template class TriangleDrawer<dim::Dim3, void>;
+    extern template class TriangleDrawer<dim::Dim2, uint8>;
+    extern template class TriangleDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -136,9 +136,9 @@ namespace mpgl {
             Vector2u const& position) const noexcept;
     };
 
-    template class TriangleClickChecker<dim::Dim2, void>;
-    template class TriangleClickChecker<dim::Dim3, void>;
-    template class TriangleClickChecker<dim::Dim2, uint8>;
-    template class TriangleClickChecker<dim::Dim3, uint8>;
+    extern template class TriangleClickChecker<dim::Dim2, void>;
+    extern template class TriangleClickChecker<dim::Dim3, void>;
+    extern template class TriangleClickChecker<dim::Dim2, uint8>;
+    extern template class TriangleClickChecker<dim::Dim3, uint8>;
 
 }

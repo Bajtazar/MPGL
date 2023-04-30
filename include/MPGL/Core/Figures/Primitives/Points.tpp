@@ -47,4 +47,28 @@ namespace mpgl {
         : ResizableAngular<Dim, Spec>{
             std::forward<Vectors>(vertices)...} {}
 
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Drawer const
+        Points<Dim, Spec>::drawer = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Clicker const
+        Points<Dim, Spec>::clicker = {};
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    Points<Dim, Spec>::Points(std::size_t vertices, Color const& color)
+        : ResizableAngular<Dim, Spec>{vertices, color} {}
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    void Points<Dim, Spec>::draw(void) const noexcept {
+        drawer(*this);
+    }
+
+    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
+    [[nodiscard]] bool Points<Dim, Spec>::contains(
+        Vector2u const& position) const noexcept
+    {
+        return clicker(*this, position);
+    }
+
 }

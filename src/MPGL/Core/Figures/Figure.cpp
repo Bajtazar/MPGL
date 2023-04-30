@@ -27,13 +27,6 @@
 
 namespace mpgl {
 
-    template <Dimension Dim>
-    Figure<Dim>::Figure(std::string const& programName)
-        : Shadeable{programName}
-    {
-        setLocations();
-    }
-
     template <>
     Figure<dim::Dim2>::Figure(Figure const& shape)
         : Shadeable{shape.shaderProgram}
@@ -48,31 +41,7 @@ namespace mpgl {
         setLocations();
     }
 
-    template <Dimension Dim>
-    Figure<Dim>& Figure<Dim>::operator=(Figure const& shape) {
-        if constexpr (ThreeDimensional<Dim>)
-            Model::operator=(shape);
-        this->shaderProgram = shape.shaderProgram;
-        this->isModified = true;
-        return *this;
-    }
-
-    template <Dimension Dim>
-    Figure<Dim>& Figure<Dim>::operator=(Figure&& shape) noexcept {
-        if constexpr (ThreeDimensional<Dim>)
-            Model::operator=(std::move(shape));
-        this->shaderProgram = std::move(shape.shaderProgram);
-        this->isModified = shape.isModified;
-        return *this;
-    }
-
-    template <Dimension Dim>
-    void Figure<Dim>::setLocations(void) {
-        if constexpr (ThreeDimensional<Dim>) {
-            this->locationSetterBuilder(
-                this->shaderProgram,
-                this->locations);
-        }
-    }
+    template class Figure<dim::Dim2>;
+    template class Figure<dim::Dim3>;
 
 }

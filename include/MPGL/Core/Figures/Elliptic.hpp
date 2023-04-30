@@ -370,12 +370,14 @@ namespace mpgl {
             0, 1, 2, 0, 3, 2};
     };
 
-    template class Elliptic<dim::Dim2, void>;
-    template class Elliptic<dim::Dim3, void>;
-    template class Elliptic<dim::Dim2, uint8>;
-    template class Elliptic<dim::Dim3, uint8>;
+    extern template class Elliptic<dim::Dim2, void>;
+    extern template class Elliptic<dim::Dim3, void>;
+    extern template class Elliptic<dim::Dim2, uint8>;
+    extern template class Elliptic<dim::Dim3, uint8>;
 
     typedef Elliptic<dim::Dim2, void>                   Elliptic2D;
     typedef Elliptic<dim::Dim3, void>                   Elliptic3D;
 
 }
+
+#include <MPGL/Core/Figures/Elliptic.tpp>
