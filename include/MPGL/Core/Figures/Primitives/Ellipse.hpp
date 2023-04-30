@@ -205,12 +205,15 @@ namespace mpgl {
         void actualizeLocations(void) const noexcept override final;
     };
 
-    template class Ellipse<dim::Dim2>;
-    template class Ellipse<dim::Dim3>;
-    template class Ellipse<dim::Dim2, uint8>;
-    template class Ellipse<dim::Dim3, uint8>;
+    extern template class Ellipse<dim::Dim2>;
+    extern template class Ellipse<dim::Dim3>;
+    extern template class Ellipse<dim::Dim2, uint8>;
+    extern template class Ellipse<dim::Dim3, uint8>;
 
     typedef Ellipse<dim::Dim2>                      Ellipse2D;
     typedef Ellipse<dim::Dim3>                      Ellipse3D;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Helpers/EllipseHelpers.tpp>
+#include <MPGL/Core/Figures/Primitives/Ellipse.tpp>

@@ -86,10 +86,10 @@ namespace mpgl {
             Vector2u const& position) const noexcept;
     };
 
-    template class EllipseClickChecker<dim::Dim2, void>;
-    template class EllipseClickChecker<dim::Dim3, void>;
-    template class EllipseClickChecker<dim::Dim2, uint8>;
-    template class EllipseClickChecker<dim::Dim3, uint8>;
+    extern template class EllipseClickChecker<dim::Dim2, void>;
+    extern template class EllipseClickChecker<dim::Dim3, void>;
+    extern template class EllipseClickChecker<dim::Dim2, uint8>;
+    extern template class EllipseClickChecker<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for calculating a new outline of the
@@ -185,10 +185,10 @@ namespace mpgl {
             Vector2f const& zVersor) const noexcept;
     };
 
-    template class EllipseOutlineCalculator<dim::Dim2, void>;
-    template class EllipseOutlineCalculator<dim::Dim3, void>;
-    template class EllipseOutlineCalculator<dim::Dim2, uint8>;
-    template class EllipseOutlineCalculator<dim::Dim3, uint8>;
+    extern template class EllipseOutlineCalculator<dim::Dim2, void>;
+    extern template class EllipseOutlineCalculator<dim::Dim3, void>;
+    extern template class EllipseOutlineCalculator<dim::Dim2, uint8>;
+    extern template class EllipseOutlineCalculator<dim::Dim3, uint8>;
 
     /**
      * Structure containing information about shader used by
