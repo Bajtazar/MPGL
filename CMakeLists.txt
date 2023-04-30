@@ -18,9 +18,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "MPGL_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"")
 
-set(MPGL_RELEASE_FLAGS "-Wall -Wextra -Werror -pedantic -fPIE -O2 -fcoroutines")
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${MPGL_RELEASE_FLAGS}")
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -fpie -O2")
+set(MPGL_RELEASE_FLAGS "-Wall;-Wextra;-Werror;-pedantic;-fPIE;-O2;-fcoroutines")
+target_compile_options(${PROJECT_NAME} PUBLIC ${MPGL_RELEASE_FLAGS})
 
 # configure_file(mpgl.pc.in mpgl.pc @ONLY)
 
