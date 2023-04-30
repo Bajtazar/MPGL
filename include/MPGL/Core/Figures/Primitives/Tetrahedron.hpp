@@ -31,6 +31,7 @@
 namespace mpgl {
 
     namespace details {
+
         /**
          * Base class for the tetrahedron figure. Holds all type-independent
          * methods and attributes that are shared between all tetrahedron
@@ -51,7 +52,7 @@ namespace mpgl {
             /**
              * Destroys a tetrahedron base object
             */
-            ~TetrahedronBase(void) noexcept = default;
+            virtual ~TetrahedronBase(void) noexcept = default;
         };
 
     }
