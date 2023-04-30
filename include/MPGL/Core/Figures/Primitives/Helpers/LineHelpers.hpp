@@ -79,10 +79,10 @@ namespace mpgl {
             Line<dim::Dim3, Spec> const& line) const noexcept;
     };
 
-    template class LineDrawer<dim::Dim2, void>;
-    template class LineDrawer<dim::Dim3, void>;
-    template class LineDrawer<dim::Dim2, uint8>;
-    template class LineDrawer<dim::Dim3, uint8>;
+    extern template class LineDrawer<dim::Dim2, void>;
+    extern template class LineDrawer<dim::Dim3, void>;
+    extern template class LineDrawer<dim::Dim2, uint8>;
+    extern template class LineDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for checking whether given point is
@@ -136,9 +136,9 @@ namespace mpgl {
             Vector2u const& position) const noexcept;
     };
 
-    template class LineClickChecker<dim::Dim2, void>;
-    template class LineClickChecker<dim::Dim3, void>;
-    template class LineClickChecker<dim::Dim2, uint8>;
-    template class LineClickChecker<dim::Dim3, uint8>;
+    extern template class LineClickChecker<dim::Dim2, void>;
+    extern template class LineClickChecker<dim::Dim3, void>;
+    extern template class LineClickChecker<dim::Dim2, uint8>;
+    extern template class LineClickChecker<dim::Dim3, uint8>;
 
 }

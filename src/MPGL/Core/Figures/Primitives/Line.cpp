@@ -27,45 +27,9 @@
 
 namespace mpgl {
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Line<Dim, Spec>::Drawer const
-        Line<Dim, Spec>::drawer = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Line<Dim, Spec>::Clicker const
-        Line<Dim, Spec>::clicker = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Line<Dim, Spec>::Line(
-        Vector const& firstVertex,
-        Vector const& secondVertex,
-        Color const& color)
-            : Angular<Dim, Spec>{{
-                VertexTraits::buildVertex(firstVertex, color),
-                VertexTraits::buildVertex(secondVertex, color)}} {}
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    Line<Dim, Spec>::Line(Color const& color)
-        : Angular<Dim, Spec>{2, color} {}
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] Line<Dim, Spec>::Vector
-        Line<Dim, Spec>::getLineCenter(void) const noexcept
-    {
-        return (static_cast<Vector>(get<"position">(this->vertices[0]))
-            + static_cast<Vector>(get<"position">(this->vertices[1]))) / 2.f;
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    void Line<Dim, Spec>::draw(void) const noexcept {
-        drawer(*this);
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool Line<Dim, Spec>::contains(
-        Vector2u const& position) const noexcept
-    {
-        return clicker(*this, position);
-    }
+    template class Line<dim::Dim2>;
+    template class Line<dim::Dim3>;
+    template class Line<dim::Dim2, uint8>;
+    template class Line<dim::Dim3, uint8>;
 
 }
