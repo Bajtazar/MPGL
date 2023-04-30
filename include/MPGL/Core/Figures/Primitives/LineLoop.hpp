@@ -116,14 +116,15 @@ namespace mpgl {
         static Clicker const                        clicker;
     };
 
-    template class LineLoop<dim::Dim2>;
-    template class LineLoop<dim::Dim3>;
-    template class LineLoop<dim::Dim2, uint8>;
-    template class LineLoop<dim::Dim3, uint8>;
+    extern template class LineLoop<dim::Dim2>;
+    extern template class LineLoop<dim::Dim3>;
+    extern template class LineLoop<dim::Dim2, uint8>;
+    extern template class LineLoop<dim::Dim3, uint8>;
 
     typedef LineLoop<dim::Dim2>                     LineLoop2D;
     typedef LineLoop<dim::Dim3>                     LineLoop3D;
 
 }
 
+#include <MPGL/Core/Figures/Primitives/Helpers/LineLoopHelpers.tpp>
 #include <MPGL/Core/Figures/Primitives/LineLoop.tpp>

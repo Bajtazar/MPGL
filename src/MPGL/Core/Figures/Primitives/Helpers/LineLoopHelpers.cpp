@@ -24,76 +24,22 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/LineLoop.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] auto
-        LineLoopClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
-            LineLoop<dim::Dim2, Spec> const& lineLoop) const noexcept
-    {
-        auto normalizer = [](Vector2f const& value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return lineLoop.vertices | views::position
-            | std::views::transform(normalizer);
-    }
+    template class LineLoopDrawer<dim::Dim2, void>;
+    template class LineLoopDrawer<dim::Dim2, uint8>;
+    template class LineLoopDrawer<dim::Dim3, void>;
+    template class LineLoopDrawer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] auto
-        LineLoopClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
-            LineLoop<dim::Dim3, Spec> const& lineLoop) const noexcept
-    {
-        auto normalizer = [](auto value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return lineLoop.vertices | views::position | views::project(
-            lineLoop.model) | std::views::transform(normalizer);
-    }
+    template class LineLoopClickCheckerNormalizer<dim::Dim2, void>;
+    template class LineLoopClickCheckerNormalizer<dim::Dim3, void>;
+    template class LineLoopClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class LineLoopClickCheckerNormalizer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    void LineLoopDrawer<dim::Dim2, Spec>::operator() (
-        LineLoop<dim::Dim2, Spec> const& lineLoop) const noexcept
-    {
-        lineLoop.actualizeBufferBeforeDraw();
-        lineLoop.shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{lineLoop.vertexArray};
-        lineLoop.vertexArray.drawArrays(
-            VertexArray::DrawMode::LineLoop,
-            lineLoop.vertices.size());
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void LineLoopDrawer<dim::Dim3, Spec>::operator() (
-        LineLoop<dim::Dim3, Spec> const& lineLoop) const noexcept
-    {
-        lineLoop.actualizeBufferBeforeDraw();
-        lineLoop.shaderProgram->use();
-        lineLoop.actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{lineLoop.vertexArray};
-        lineLoop.vertexArray.drawArrays(
-            VertexArray::DrawMode::LineLoop,
-            lineLoop.vertices.size());
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool
-        LineLoopClickChecker<Dim, Spec>::operator() (
-            LineLoop<Dim, Spec> const& lineLoop,
-            Vector2u const& position) const noexcept
-    {
-        Vector2f pos = Adapter2D{position}.get();
-        auto range = Normalizer{}(lineLoop);
-        auto first = *range.begin();
-        for (Vector2f last : range | std::views::drop(1)) {
-            if (isOnLine(pos, first, last))
-                return true;
-            first = last;
-        }
-        return isOnLine(pos, first, *range.begin());
-    }
+    template class LineLoopClickChecker<dim::Dim2, void>;
+    template class LineLoopClickChecker<dim::Dim3, void>;
+    template class LineLoopClickChecker<dim::Dim2, uint8>;
+    template class LineLoopClickChecker<dim::Dim3, uint8>;
 
 }

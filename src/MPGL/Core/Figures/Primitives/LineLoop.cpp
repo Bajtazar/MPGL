@@ -27,30 +27,9 @@
 
 namespace mpgl {
 
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    LineLoop<Dim, Spec>::Drawer const
-        LineLoop<Dim, Spec>::drawer = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    LineLoop<Dim, Spec>::Clicker const
-        LineLoop<Dim, Spec>::clicker = {};
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    LineLoop<Dim, Spec>::LineLoop(
-        std::size_t vertices,
-        Color const& color)
-            : ResizableAngular<Dim, Spec>{vertices, color} {}
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    void LineLoop<Dim, Spec>::draw(void) const noexcept {
-        drawer(*this);
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool LineLoop<Dim, Spec>::contains(
-        Vector2u const& position) const noexcept
-    {
-        return clicker(*this, position);
-    }
+    template class LineLoop<dim::Dim2>;
+    template class LineLoop<dim::Dim3>;
+    template class LineLoop<dim::Dim2, uint8>;
+    template class LineLoop<dim::Dim3, uint8>;
 
 }
