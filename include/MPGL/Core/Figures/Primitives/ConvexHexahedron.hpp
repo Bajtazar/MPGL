@@ -105,6 +105,8 @@ namespace mpgl {
         ElementArrayBuffer                          elementBuffer;
     };
 
-    template class ConvexHexahedron<void>;
+    extern template class ConvexHexahedron<void>;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/ConvexHexahedron.tpp>
