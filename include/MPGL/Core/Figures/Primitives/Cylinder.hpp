@@ -224,6 +224,8 @@ namespace mpgl {
             size_t third);
     };
 
-    template class Cylinder<void>;
+    extern template class Cylinder<void>;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Cylinder.tpp>
