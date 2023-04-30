@@ -29,7 +29,41 @@
 #include <MPGL/Core/Vertex/Indices/IndicesTetragon.hpp>
 #include <MPGL/Core/Figures/Angular.hpp>
 
+#include <array>
+
 namespace mpgl {
+
+    namespace details {
+
+        /**
+         * Base class for the torus figure. Holds all type-independent
+         * methods and attributes that are shared between all torus
+         * specializations
+        */
+        class TorusBase {
+        protected:
+            using BaseIndiciesArray = std::array<IndicesTetragon, 16>;
+
+            /**
+             * Constructs a new torus base object
+            */
+            explicit TorusBase(void) noexcept = default;
+
+            /**
+             * Destroys a torus base object
+            */
+            virtual ~TorusBase(void) noexcept = default;
+
+            constexpr static BaseIndiciesArray      BaseIndices = {{
+                {0, 1, 5, 4}, {1, 2, 6, 5}, {2, 3, 7, 6}, {3, 0, 4, 7},
+                {4, 5, 9, 8}, {5, 6, 10, 9}, {6, 7, 11, 10}, {7, 4, 8, 11},
+                {8, 9, 13, 12}, {9, 10, 14, 13}, {10, 11, 15, 14},
+                {11, 8, 12, 15}, {12, 13, 1, 0}, {13, 14, 2, 1},
+                {14, 15, 3, 2}, {15, 12, 0, 3}
+            }};
+        };
+
+    }
 
     /**
      * Represents a torus figure
@@ -37,7 +71,10 @@ namespace mpgl {
      * @tparam Spec the angular vertices specifier
      */
     template <AngularTraitSpecifier<dim::Dim3> Spec = void>
-    class Torus : public Angular<dim::Dim3, Spec> {
+    class Torus :
+        public Angular<dim::Dim3, Spec>,
+        private details::TorusBase
+    {
     public:
         using VertexTraits = Angular<dim::Dim3, Spec>::VertexTraits;
 
@@ -90,8 +127,8 @@ namespace mpgl {
          */
         virtual ~Torus(void) noexcept = default;
     private:
-        using Vertex = typename VertexTraits::Vertex;
         using Indices = std::vector<IndicesTetragon>;
+        using Vertex = typename VertexTraits::Vertex;
         using Vertices = typename Angular<dim::Dim3, Spec>::Vertices;
         using TessellationResult = std::pair<Vertices, Indices>;
 
@@ -161,8 +198,6 @@ namespace mpgl {
             float32 ringRadius,
             Color const& color,
             uint8 tessellationSteps);
-
-        static Indices const                        BaseIndices;
     };
 
     extern template class Torus<void>;

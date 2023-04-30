@@ -31,14 +31,6 @@
 namespace mpgl {
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
-    Torus<Spec>::Indices const Torus<Spec>::BaseIndices {
-        {0, 1, 5, 4}, {1, 2, 6, 5}, {2, 3, 7, 6}, {3, 0, 4, 7},
-        {4, 5, 9, 8}, {5, 6, 10, 9}, {6, 7, 11, 10}, {7, 4, 8, 11},
-        {8, 9, 13, 12}, {9, 10, 14, 13}, {10, 11, 15, 14}, {11, 8, 12, 15},
-        {12, 13, 1, 0}, {13, 14, 2, 1}, {14, 15, 3, 2}, {15, 12, 0, 3}
-    };
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
     [[nodiscard]] Torus<Spec>::Vertices
         Torus<Spec>::generateBaseVertices(
             Vector3f const& position,
@@ -88,7 +80,8 @@ namespace mpgl {
         };
         return catmullClarkTessellator(generateBaseVertices(
             position, radius, ringRadius, color),
-            Indices{BaseIndices}, tessellationSteps, builder);
+            Indices{BaseIndices.begin(), BaseIndices.end()},
+            tessellationSteps, builder);
     }
 
     template <AngularTraitSpecifier<dim::Dim3> Spec>
