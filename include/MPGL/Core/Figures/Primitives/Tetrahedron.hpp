@@ -104,6 +104,8 @@ namespace mpgl {
         ElementArrayBuffer                          elementBuffer;
     };
 
-    template class Tetrahedron<void>;
+    extern template class Tetrahedron<void>;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Tetrahedron.tpp>
