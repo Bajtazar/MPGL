@@ -134,14 +134,15 @@ namespace mpgl {
         static Clicker const                        clicker;
     };
 
-    template class Polygon<dim::Dim2>;
-    template class Polygon<dim::Dim3>;
-    template class Polygon<dim::Dim2, uint8>;
-    template class Polygon<dim::Dim3, uint8>;
+    extern template class Polygon<dim::Dim2>;
+    extern template class Polygon<dim::Dim3>;
+    extern template class Polygon<dim::Dim2, uint8>;
+    extern template class Polygon<dim::Dim3, uint8>;
 
     typedef Polygon<dim::Dim2>                      Polygon2D;
     typedef Polygon<dim::Dim3>                      Polygon3D;
 
 }
 
+#include <MPGL/Core/Figures/Primitives/Helpers/PolygonHelpers.tpp>
 #include <MPGL/Core/Figures/Primitives/Polygon.tpp>

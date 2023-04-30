@@ -79,10 +79,10 @@ namespace mpgl {
             Polygon<dim::Dim3, Spec> const& polygon) const noexcept;
     };
 
-    template class PolygonDrawer<dim::Dim2, void>;
-    template class PolygonDrawer<dim::Dim3, void>;
-    template class PolygonDrawer<dim::Dim2, uint8>;
-    template class PolygonDrawer<dim::Dim3, uint8>;
+    extern template class PolygonDrawer<dim::Dim2, void>;
+    extern template class PolygonDrawer<dim::Dim3, void>;
+    extern template class PolygonDrawer<dim::Dim2, uint8>;
+    extern template class PolygonDrawer<dim::Dim3, uint8>;
 
     /**
      * Functor responsible for normalizing the vertices range
@@ -161,14 +161,14 @@ namespace mpgl {
             Polygon<dim::Dim3, Spec> const& polygon) const noexcept;
     };
 
-    template class PolygonClickCheckerNormalizer<dim::Dim2, void>;
-    template class PolygonClickCheckerNormalizer<dim::Dim3, void>;
-    template class PolygonClickCheckerNormalizer<dim::Dim2, uint8>;
-    template class PolygonClickCheckerNormalizer<dim::Dim3, uint8>;
+    extern template class PolygonClickCheckerNormalizer<dim::Dim2, void>;
+    extern template class PolygonClickCheckerNormalizer<dim::Dim3, void>;
+    extern template class PolygonClickCheckerNormalizer<dim::Dim2, uint8>;
+    extern template class PolygonClickCheckerNormalizer<dim::Dim3, uint8>;
 
-    template class PolygonClickChecker<dim::Dim2, void>;
-    template class PolygonClickChecker<dim::Dim3, void>;
-    template class PolygonClickChecker<dim::Dim2, uint8>;
-    template class PolygonClickChecker<dim::Dim3, uint8>;
+    extern template class PolygonClickChecker<dim::Dim2, void>;
+    extern template class PolygonClickChecker<dim::Dim3, void>;
+    extern template class PolygonClickChecker<dim::Dim2, uint8>;
+    extern template class PolygonClickChecker<dim::Dim3, uint8>;
 
 }

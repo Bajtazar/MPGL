@@ -24,76 +24,22 @@
  *  distribution
  */
 #include <MPGL/Core/Figures/Primitives/Polygon.hpp>
-#include <MPGL/Core/Context/Buffers/BindGuard.hpp>
-#include <MPGL/Mathematics/Systems.hpp>
-#include <MPGL/Core/Figures/Views.hpp>
 
 namespace mpgl {
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    [[nodiscard]] auto
-        PolygonClickCheckerNormalizer<dim::Dim2, Spec>::operator() (
-            Polygon<dim::Dim2, Spec> const& polygon) const noexcept
-    {
-        auto normalizer = [](Vector2f const& value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return polygon.vertices | views::position
-            | std::views::transform(normalizer);
-    }
+    template class PolygonDrawer<dim::Dim2, void>;
+    template class PolygonDrawer<dim::Dim3, void>;
+    template class PolygonDrawer<dim::Dim2, uint8>;
+    template class PolygonDrawer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    [[nodiscard]] auto
-        PolygonClickCheckerNormalizer<dim::Dim3, Spec>::operator() (
-            Polygon<dim::Dim3, Spec> const& polygon) const noexcept
-    {
-        auto normalizer = [](auto value) -> Vector2f {
-            return Adapter2D{value}.get();
-        };
-        return polygon.vertices | views::position | views::project(
-            polygon.model) | std::views::transform(normalizer);
-    }
+    template class PolygonClickCheckerNormalizer<dim::Dim2, void>;
+    template class PolygonClickCheckerNormalizer<dim::Dim3, void>;
+    template class PolygonClickCheckerNormalizer<dim::Dim2, uint8>;
+    template class PolygonClickCheckerNormalizer<dim::Dim3, uint8>;
 
-    template <AngularTraitSpecifier<dim::Dim2> Spec>
-    void PolygonDrawer<dim::Dim2, Spec>::operator() (
-        Polygon<dim::Dim2, Spec> const& polygon) const noexcept
-    {
-        polygon.actualizeBufferBeforeDraw();
-        polygon.shaderProgram->use();
-        BindGuard<VertexArray> vaoGuard{polygon.vertexArray};
-        polygon.vertexArray.drawArrays(
-            VertexArray::DrawMode::TriangleFan,
-            polygon.vertices.size());
-    }
-
-    template <AngularTraitSpecifier<dim::Dim3> Spec>
-    void PolygonDrawer<dim::Dim3, Spec>::operator() (
-        Polygon<dim::Dim3, Spec> const& polygon) const noexcept
-    {
-        polygon.actualizeBufferBeforeDraw();
-        polygon.shaderProgram->use();
-        polygon.actualizeLocations();
-        BindGuard<VertexArray> vaoGuard{polygon.vertexArray};
-        polygon.vertexArray.drawArrays(
-            VertexArray::DrawMode::TriangleFan,
-            polygon.vertices.size());
-    }
-
-    template <Dimension Dim, AngularTraitSpecifier<Dim> Spec>
-    [[nodiscard]] bool
-        PolygonClickChecker<Dim, Spec>::operator() (
-            Polygon<Dim, Spec> const& polygon,
-            Vector2u const& position) const noexcept
-    {
-        Vector2f normalized = Adapter2D{position}.get();
-        auto range = Normalizer{}(polygon);
-        auto begin = *range.begin(), last = *(++range.begin());
-        for (auto pos : range | std::views::drop(2)) {
-            if (isInsideTriangle(normalized, begin, last, pos))
-                return true;
-            last = pos;
-        }
-        return false;
-    }
+    template class PolygonClickChecker<dim::Dim2, void>;
+    template class PolygonClickChecker<dim::Dim3, void>;
+    template class PolygonClickChecker<dim::Dim2, uint8>;
+    template class PolygonClickChecker<dim::Dim3, uint8>;
 
 }
