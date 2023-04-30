@@ -110,10 +110,18 @@ namespace mpgl {
         void setLocations(void);
     };
 
-    template class Figure<dim::Dim2>;
-    template class Figure<dim::Dim3>;
+    template <>
+    Figure<dim::Dim2>::Figure(Figure const& shape);
+
+    template <>
+    Figure<dim::Dim3>::Figure(Figure const& shape);
+
+    extern template class Figure<dim::Dim2>;
+    extern template class Figure<dim::Dim3>;
 
     typedef Figure<dim::Dim2>                   Figure2D;
     typedef Figure<dim::Dim3>                   Figure3D;
 
 }
+
+#include <MPGL/Core/Figures/Figure.tpp>
