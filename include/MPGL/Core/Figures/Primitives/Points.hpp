@@ -117,14 +117,15 @@ namespace mpgl {
         static Clicker const                        clicker;
     };
 
-    template class Points<dim::Dim2>;
-    template class Points<dim::Dim3>;
-    template class Points<dim::Dim2, uint8>;
-    template class Points<dim::Dim3, uint8>;
+    extern template class Points<dim::Dim2>;
+    extern template class Points<dim::Dim3>;
+    extern template class Points<dim::Dim2, uint8>;
+    extern template class Points<dim::Dim3, uint8>;
 
     typedef Points<dim::Dim2>                       Points2D;
     typedef Points<dim::Dim3>                       Points3D;
 
 }
 
+#include <MPGL/Core/Figures/Primitives/Helpers/PointsHelpers.tpp>
 #include <MPGL/Core/Figures/Primitives/Points.tpp>
