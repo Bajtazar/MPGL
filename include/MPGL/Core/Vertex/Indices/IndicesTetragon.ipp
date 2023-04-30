@@ -23,11 +23,11 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Vertex/Indices/IndicesTetragon.hpp>
+#pragma once
 
 namespace mpgl {
 
-    IndicesTetragon::IndicesTetragon(
+    constexpr IndicesTetragon::IndicesTetragon(
         uint32 firstVertex,
         uint32 secondVertex,
         uint32 thirdVertex,
@@ -36,44 +36,44 @@ namespace mpgl {
             secondTriangle{secondVertex, thirdVertex, fourthVertex}
     {}
 
-    [[nodiscard]] uint32 IndicesTetragon::getFirstVertex(
+    [[nodiscard]] constexpr uint32 IndicesTetragon::getFirstVertex(
         void) const noexcept
     {
         return firstTriangle.firstVertex;
     }
 
-    [[nodiscard]] uint32 IndicesTetragon::getSecondVertex(
+    [[nodiscard]] constexpr uint32 IndicesTetragon::getSecondVertex(
         void) const noexcept
     {
         return firstTriangle.secondVertex;
     }
 
-    [[nodiscard]] uint32 IndicesTetragon::getThirdVertex(
+    [[nodiscard]] constexpr uint32 IndicesTetragon::getThirdVertex(
         void) const noexcept
     {
         return secondTriangle.secondVertex;
     }
 
-    [[nodiscard]] uint32 IndicesTetragon::getFourthVertex(
+    [[nodiscard]] constexpr uint32 IndicesTetragon::getFourthVertex(
         void) const noexcept
     {
         return secondTriangle.thirdVertex;
     }
 
-    void IndicesTetragon::setFirstVertex(uint32 value) noexcept {
+    constexpr void IndicesTetragon::setFirstVertex(uint32 value) noexcept {
         firstTriangle.firstVertex = value;
     }
 
-    void IndicesTetragon::setSecondVertex(uint32 value) noexcept {
+    constexpr void IndicesTetragon::setSecondVertex(uint32 value) noexcept {
         firstTriangle.secondVertex = value;
         secondTriangle.firstVertex = value;
     }
 
-    void IndicesTetragon::setThirdVertex(uint32 value) noexcept {
+    constexpr void IndicesTetragon::setThirdVertex(uint32 value) noexcept {
         secondTriangle.secondVertex = value;
     }
 
-    void IndicesTetragon::setFourthVertex(uint32 value) noexcept {
+    constexpr void IndicesTetragon::setFourthVertex(uint32 value) noexcept {
         firstTriangle.thirdVertex = value;
         secondTriangle.thirdVertex = value;
     }
