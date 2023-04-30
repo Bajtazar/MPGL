@@ -156,6 +156,8 @@ namespace mpgl {
         static float32 const                        ATan;
     };
 
-    template class Sphere<void>;
+    extern template class Sphere<void>;
 
 }
+
+#include <MPGL/Core/Figures/Primitives/Sphere.tpp>
