@@ -64,8 +64,8 @@ namespace mpgl {
         void operator() (Triangle<Dim, Spec>& triangle) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Triangle<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<Triangle<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<Triangle<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<Triangle<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -85,8 +85,8 @@ namespace mpgl {
         void operator() (Tetragon<Dim, Spec>& tetragon) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Tetragon<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<Tetragon<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<Tetragon<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<Tetragon<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -106,8 +106,8 @@ namespace mpgl {
         void operator() (Line<Dim, Spec>& line) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Line<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<Line<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<Line<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<Line<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -128,8 +128,8 @@ namespace mpgl {
         void operator() (LineStrip<Dim, Spec>& lineStrip) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<LineStrip<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<LineStrip<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<LineStrip<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<LineStrip<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -150,8 +150,8 @@ namespace mpgl {
         void operator() (LineLoop<Dim, Spec>& lineLoop) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<LineLoop<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<LineLoop<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<LineLoop<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<LineLoop<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -172,8 +172,8 @@ namespace mpgl {
         void operator() (Points<Dim, Spec>& points) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Points<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<Points<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<Points<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<Points<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -194,8 +194,8 @@ namespace mpgl {
         void operator() (Polygon<Dim, Spec>& polygon) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Polygon<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<Polygon<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<Polygon<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<Polygon<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -215,8 +215,8 @@ namespace mpgl {
         void operator() (Ellipse<Dim, Spec>& ellipse) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Ellipse<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<Ellipse<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<Ellipse<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<Ellipse<dim::Dim3, uint8>>;
 
     /**
      * Functor responsible for the default texture
@@ -236,7 +236,9 @@ namespace mpgl {
         void operator() (Ring<Dim, Spec>& ring) const noexcept;
     };
 
-    template struct TexturedFigurePlacer<Ring<dim::Dim2, uint8>>;
-    template struct TexturedFigurePlacer<Ring<dim::Dim3, uint8>>;
+    extern template struct TexturedFigurePlacer<Ring<dim::Dim2, uint8>>;
+    extern template struct TexturedFigurePlacer<Ring<dim::Dim3, uint8>>;
 
 }
+
+#include <MPGL/Core/Textures/TexturedFigurePlacer.tpp>

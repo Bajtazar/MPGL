@@ -23,11 +23,16 @@
  *  3. This notice may not be removed or altered from any source
  *  distribution
  */
-#include <MPGL/Core/Textures/Texturable.hpp>
+#pragma once
 
 namespace mpgl {
 
-    template class Texturable<dim::Dim2>;
-    template class Texturable<dim::Dim3>;
+    template <Dimension Dim>
+    Texturable<Dim>::Texturable(Texture const& texture)
+        : texture{texture} {}
+
+    template <Dimension Dim>
+    Texturable<Dim>::Texturable(Texturable const& texturable)
+        : texture{texturable.texture} {}
 
 }

@@ -112,10 +112,12 @@ namespace mpgl {
         Texture                                         texture;
     };
 
-    template class Texturable<dim::Dim2>;
-    template class Texturable<dim::Dim3>;
+    extern template class Texturable<dim::Dim2>;
+    extern template class Texturable<dim::Dim3>;
 
     typedef Texturable<dim::Dim2>                       Texturable2D;
     typedef Texturable<dim::Dim3>                       Texturable3D;
 
 }
+
+#include <MPGL/Core/Textures/Texturable.tpp>
