@@ -127,4 +127,60 @@ constexpr Quaternion<Tp>& Quaternion<Tp>::operator|=(
     return *this;
 }
 
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator+=(Tp const& right) {
+    _M_data += right;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator-=(Tp const& right) {
+    _M_data -= right;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator*=(Tp const& right) {
+    _M_data *= right;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator/=(Tp const& right) {
+    _M_data /= right;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator%=(
+    Tp const& right) requires mpgl_Operable(Tp, %)
+{
+    _M_data %= right;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator^=(
+    Tp const& right) requires mpgl_Operable(Tp, ^)
+{
+    _M_data ^= right;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator&=(
+    Tp const& right) requires mpgl_Operable(Tp, &)
+{
+    _M_data &= right;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator|=(
+    Tp const& right) requires mpgl_Operable(Tp, |)
+{
+    _M_data |= right;
+    return *this;
+}
+
 }
