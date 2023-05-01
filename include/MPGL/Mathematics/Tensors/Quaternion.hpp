@@ -125,7 +125,7 @@ namespace mpgl {
          * @param right the added quaternion
          * @return the reference to this quaternion
          */
-        constexpr Quaternion& operator+=(Quaternion const& right);
+        constexpr Quaternion& operator+=(Quaternion const& right) noexcept;
 
         /**
          * Subtracts the elements of this quaternion with
@@ -134,7 +134,7 @@ namespace mpgl {
          * @param right the subtracted quaternion
          * @return the reference to this quaternion
          */
-        constexpr Quaternion& operator-=(Quaternion const& right);
+        constexpr Quaternion& operator-=(Quaternion const& right) noexcept;
 
         /**
          * Multiplies two quaternions together
@@ -142,7 +142,7 @@ namespace mpgl {
          * @param right the multiplicand quaternion
          * @return the reference to this quaternion
          */
-        constexpr Quaternion& operator*=(Quaternion const& right);
+        constexpr Quaternion& operator*=(Quaternion const& right) noexcept;
 
         /**
          * Multiplies this quaternion with the reciprocal of the
@@ -171,7 +171,7 @@ namespace mpgl {
          * @return the reference to this quaternion
          */
         constexpr Quaternion& operator^=(Quaternion const& right)
-            requires mpgl_Operable(Tp, ^);
+            noexcept requires mpgl_Operable(Tp, ^);
 
         /**
          * Calculates the bitwise-and of elements of this quaternion
@@ -181,7 +181,7 @@ namespace mpgl {
          * @return the reference to this quaternion
          */
         constexpr Quaternion& operator&=(Quaternion const& right)
-            requires mpgl_Operable(Tp, &);
+            noexcept requires mpgl_Operable(Tp, &);
 
         /**
          * Calculates the bitwise-or of elements of this quaternion
@@ -191,7 +191,7 @@ namespace mpgl {
          * @return the reference to this quaternion
          */
         constexpr Quaternion& operator|=(Quaternion const& right)
-            requires mpgl_Operable(Tp, |);
+            noexcept requires mpgl_Operable(Tp, |);
 
         /**
          * Adds the given scalar value to the elements of
@@ -200,7 +200,7 @@ namespace mpgl {
          * @param right the added scalar
          * @return the reference to this quaternion
          */
-        constexpr Quaternion& operator+=(Tp const& right);
+        constexpr Quaternion& operator+=(Tp const& right) noexcept;
 
         /**
          * Subtracts the given scalar value to the elements of
@@ -209,7 +209,7 @@ namespace mpgl {
          * @param right the subtracted scalar
          * @return the reference to this quaternion
          */
-        constexpr Quaternion& operator-=(Tp const& right);
+        constexpr Quaternion& operator-=(Tp const& right) noexcept;
 
         /**
          * Multiplies the given scalar value to the elements of
@@ -218,7 +218,7 @@ namespace mpgl {
          * @param right the multiplied scalar
          * @return the reference to this quaternion
          */
-        constexpr Quaternion& operator*=(Tp const& right);
+        constexpr Quaternion& operator*=(Tp const& right) noexcept;
 
         /**
          * Divides the elements of this quaternion by the given
@@ -247,7 +247,7 @@ namespace mpgl {
          * @return the reference to this quaternion
          */
         constexpr Quaternion& operator^=(Tp const& right)
-            requires mpgl_Operable(Tp, ^);
+            noexcept requires mpgl_Operable(Tp, ^);
 
         /**
          * Calculates the bitwise-and of elements of this
@@ -257,7 +257,7 @@ namespace mpgl {
          * @return the reference to this quaternion
          */
         constexpr Quaternion& operator&=(Tp const& right)
-            requires mpgl_Operable(Tp, &);
+            noexcept requires mpgl_Operable(Tp, &);
 
         /**
          * Calculates the bitwise-or of elements of this
@@ -267,7 +267,7 @@ namespace mpgl {
          * @return the reference to this quaternion
          */
         constexpr Quaternion& operator|=(Tp const& right)
-            requires mpgl_Operable(Tp, |);
+            noexcept requires mpgl_Operable(Tp, |);
 
         /**
          * Returns a std::span that holds view to this quaternion
@@ -750,7 +750,7 @@ namespace mpgl {
     template <Arithmetic Tp>
     [[nodiscard]] constexpr Quaternion<Tp> operator/(
         Quaternion<Tp> const& left,
-        Quaternion<Tp> const& right) noexcept;
+        Quaternion<Tp> const& right);
 
     /**
      * Calculates the modulo of the quaternion and the other quaternion
@@ -763,7 +763,7 @@ namespace mpgl {
     template <Arithmetic Tp>
     [[nodiscard]] constexpr Quaternion<Tp> operator%(
         Quaternion<Tp> const& left,
-        Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, %);
+        Quaternion<Tp> const& right) requires mpgl_Operable(Tp, %);
 
     /**
      * Calculates the bitwise-xor of the quaternion and the other
@@ -820,180 +820,210 @@ namespace mpgl {
         Quaternion<Tp> const& left,
         Tp const& right) noexcept;
 
-    // /**
-    //  * Subtracts the scalar value from the quaternion
-    //  *
-    //  * @param left the constant reference to the quaternion
-    //  * @param right the constant reference to the scalar value
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator-(
-    //     Quaternion const& left,
-    //     Tp const& right);
+    /**
+     * Subtracts the scalar value from the quaternion
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the quaternion
+     * @param right the constant reference to the scalar value
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator-(
+        Quaternion<Tp> const& left,
+        Tp const& right) noexcept;
 
-    // /**
-    //  * Multiplies the quaternion with the scalar value
-    //  *
-    //  * @param left the constant reference to the quaternion
-    //  * @param right the constant reference to the scalar value
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator*(
-    //     Quaternion const& left,
-    //     Tp const& right);
+    /**
+     * Multiplies the quaternion with the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the quaternion
+     * @param right the constant reference to the scalar value
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator*(
+        Quaternion<Tp> const& left,
+        Tp const& right) noexcept;
 
-    // /**
-    //  * Divides the quaternion consisting of scalar value fields
-    //  * by the quaternion elements
-    //  *
-    //  * @param left the constant reference to the quaternion
-    //  * @param right the constant reference to the scalar value
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator/(
-    //     Quaternion const& left,
-    //     Tp const& right);
+    /**
+     * Divides the quaternion consisting of scalar value fields
+     * by the quaternion elements
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the quaternion
+     * @param right the constant reference to the scalar value
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator/(
+        Quaternion<Tp> const& left,
+        Tp const& right);
 
-    // /**
-    //  * Calculates the modulo of the quaternion consisting of scalar
-    //  * values with the scalar value
-    //  *e
-    //  * @param left the constant reference to the quaternion
-    //  * @param right the constant reference to the scalar value
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator%(
-    //     Quaternion const& left,
-    //     Tp const& right) requires mpgl_Operable(Tp, %);
+    /**
+     * Calculates the modulo of the quaternion consisting of scalar
+     * values with the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the quaternion
+     * @param right the constant reference to the scalar value
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator%(
+        Quaternion<Tp> const& left,
+        Tp const& right) requires mpgl_Operable(Tp, %);
 
-    // /**
-    //  * Calculates the bitwise-xor of the quaternion elements and
-    //  * the scalar value
-    //  *
-    //  * @param left the constant reference to the quaternion
-    //  * @param right the constant reference to the scalar value
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator^(
-    //     Quaternion const& left,
-    //     Tp const& right) requires mpgl_Operable(Tp, ^);
+    /**
+     * Calculates the bitwise-xor of the quaternion elements and
+     * the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the quaternion
+     * @param right the constant reference to the scalar value
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator^(
+        Quaternion<Tp> const& left,
+        Tp const& right) noexcept requires mpgl_Operable(Tp, ^);
 
-    // /**
-    //  * Calculates the bitwise-xor of the quaternion elements and
-    //  * the scalar value
-    //  *
-    //  * @param left the constant reference to the quaternion
-    //  * @param right the constant reference to the scalar value
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator&(
-    //     Quaternion const& left,
-    //     Tp const& right) requires mpgl_Operable(Tp, &);
+    /**
+     * Calculates the bitwise-xor of the quaternion elements and
+     * the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the quaternion
+     * @param right the constant reference to the scalar value
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator&(
+        Quaternion<Tp> const& left,
+        Tp const& right) noexcept requires mpgl_Operable(Tp, &);
 
-    // /**
-    //  * Calculates the bitwise-or of the quaternion elements and
-    //  * the scalar value
-    //  *
-    //  * @param left the constant reference to the quaternion
-    //  * @param right the constant reference to the scalar value
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator|(
-    //     Quaternion const& left,
-    //     Tp const& right) requires mpgl_Operable(Tp, |);
+    /**
+     * Calculates the bitwise-or of the quaternion elements and
+     * the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the quaternion
+     * @param right the constant reference to the scalar value
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator|(
+        Quaternion<Tp> const& left,
+        Tp const& right) noexcept requires mpgl_Operable(Tp, |);
 
-    // /**
-    //  * Adds the scalar value to the quaternion
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator+(
-    //     Tp const& left,
-    //     Quaternion const& right);
+    /**
+     * Adds the scalar value to the quaternion
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator+(
+        Tp const& left,
+        Quaternion<Tp> const& right) noexcept;
 
-    // /**
-    //  * Subtracts the scalar value from the quaternion
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator-(
-    //     Tp const& left,
-    //     Quaternion const& right);
+    /**
+     * Subtracts the scalar value from the quaternion
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator-(
+        Tp const& left,
+        Quaternion<Tp> const& right) noexcept;
 
-    // /**
-    //  * Multiplies the quaternion with the scalar value
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator*(
-    //     Tp const& left,
-    //     Quaternion const& right);
+    /**
+     * Multiplies the quaternion with the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator*(
+        Tp const& left,
+        Quaternion<Tp> const& right) noexcept;
 
-    // /**
-    //  * Divides the quaternion consisting of scalar value fields
-    //  * by the quaternion elements
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator/(
-    //     Tp const& left,
-    //     Quaternion const& right);
+    /**
+     * Divides the quaternion consisting of scalar value fields
+     * by the quaternion elements
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator/(
+        Tp const& left,
+        Quaternion<Tp> const& right);
 
-    // /**
-    //  * Calculates the modulo of the quaternion consisting of scalar
-    //  * values with the scalar value
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator%(
-    //     Tp const& left,
-    //     Quaternion const& right) requires mpgl_Operable(Tp, ^);
+    /**
+     * Calculates the modulo of the quaternion consisting of scalar
+     * values with the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator%(
+        Tp const& left,
+        Quaternion<Tp> const& right) requires mpgl_Operable(Tp, %);
 
-    // /**
-    //  * Calculates the bitwise-xor of the quaternion elements and
-    //  * the scalar value
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator^(
-    //     Tp const& left,
-    //     Quaternion const& right) requires mpgl_Operable(Tp, ^);
+    /**
+     * Calculates the bitwise-xor of the quaternion elements and
+     * the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator^(
+        Tp const& left,
+        Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, ^);
 
-    // /**
-    //  * Calculates the bitwise-xor of the quaternion elements and
-    //  * the scalar value
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion<Tp> operator&(
-    //     Tp const& left,
-    //     Quaternion const& right) requires mpgl_Operable(Tp, &);
+    /**
+     * Calculates the bitwise-xor of the quaternion elements and
+     * the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator&(
+        Tp const& left,
+        Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, &);
 
-    // /**
-    //  * Calculates the bitwise-or of the quaternion elements and
-    //  * the scalar value
-    //  *
-    //  * @param left the constant reference to the scalar value
-    //  * @param right the constant reference to the quaternion
-    //  * @return the result quaternion
-    //  */
-    // [[nodiscard]] constexpr Quaternion operator|(
-    //     Tp const& left,
-    //     Quaternion const& right) requires mpgl_Operable(Tp, |);
+    /**
+     * Calculates the bitwise-or of the quaternion elements and
+     * the scalar value
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the scalar value
+     * @param right the constant reference to the quaternion
+     * @return the result quaternion
+     */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> operator|(
+        Tp const& left,
+        Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, |);
 
     /**
      * Compares two quaternions in the lexicographical order
