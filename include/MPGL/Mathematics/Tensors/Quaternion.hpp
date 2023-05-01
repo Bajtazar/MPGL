@@ -601,7 +601,7 @@ namespace mpgl {
         Quaternion<Tp> const& quaternion);
 
     /**
-     * Adds two vectors together
+     * Adds two quaternions together
      *
      * @tparam Tp the quaternion's value type
      * @param left the constant reference to the left quaternion
@@ -627,7 +627,7 @@ namespace mpgl {
         Quaternion<Tp> const& right);
 
     /**
-     * Multiplies two vectors together
+     * Multiplies two quaternions together
      *
      * @tparam Tp the quaternion's value type
      * @param left the constant reference to the left quaternion
@@ -925,5 +925,63 @@ namespace mpgl {
     [[nodiscard]] constexpr Quaternion<Tp> operator|(
         Tp const& left,
         Quaternion<Tp> const& right) requires mpgl_Operable(Tp, |);
+
+/**
+     * Compares two quaternions in the lexicographical order
+     *
+     * @tparam Tp the quaternion's type
+     * @tparam Size the quaternion's size
+     * @param left the constant reference to the left quaternion
+     * @param right the constant reference to the right quaternion
+     * @return the ordering result
+     */
+    template <Arithmetic Tp, std::size_t Size>
+        requires std::three_way_comparable<Tp, std::weak_ordering>
+    [[nodiscard]] constexpr std::weak_ordering lexicographicalCompare(
+        Quaternion<Tp> const& left,
+        Quaternion<Tp> const& right) noexcept;
+
+    /**
+     * Compares two quaternions in the total order
+     *
+     * @tparam Tp the quaternion's typee
+     * @param left the constant reference to the left quaternion
+     * @param right the constant reference to the right quaternion
+     * @return the ordering result
+     */
+    template <Arithmetic Tp>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    [[nodiscard]] constexpr std::partial_ordering totalCompare(
+        Quaternion<Tp> const& left,
+        Quaternion<Tp> const& right) noexcept;
+
+    /**
+     * Checks whether two quaternions are equivalent in the total
+     * order
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the left quaternion
+     * @param right the constant reference to the right quaternion
+     * @return if the quaternions are equals
+     */
+    template <Arithmetic Tp>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    [[nodiscard]] bool constexpr operator== (
+        Quaternion<Tp> const& left,
+        Quaternion<Tp> const& right) noexcept;
+
+    /**
+     * Compares two quaternions in the total order
+     *
+     * @tparam Tp the quaternion's type
+     * @param left the constant reference to the left quaternion
+     * @param right the constant reference to the right quaternion
+     * @return the ordering result
+     */
+    template <Arithmetic Tp>
+        requires std::three_way_comparable<Tp, std::partial_ordering>
+    [[nodiscard]] std::partial_ordering constexpr operator<=> (
+        Quaternion<Tp> const& left,
+        Quaternion<Tp> const& right) noexcept;
 
 }
