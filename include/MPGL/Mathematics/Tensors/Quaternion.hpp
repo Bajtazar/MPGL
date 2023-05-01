@@ -641,7 +641,7 @@ namespace mpgl {
      */
     template <std::floating_point Tp>
     [[nodiscard]] constexpr Quaternion<Tp> floor(
-        Quaternion<Tp> quaternion);
+        Quaternion<Tp> const& quaternion) noexcept;
 
     /**
      * Returns the quaternion with the ceiled values
@@ -652,7 +652,7 @@ namespace mpgl {
      */
     template <std::floating_point Tp>
     [[nodiscard]] constexpr Quaternion<Tp> ceil(
-        Quaternion<Tp> quaternion);
+       Quaternion<Tp> const& quaternion) noexcept;
 
     /**
      * Returns the quaternion with the rounded values
@@ -664,7 +664,7 @@ namespace mpgl {
      */
     template <std::floating_point Tp>
     [[nodiscard]] constexpr Quaternion<Tp> round(
-        Quaternion<Tp> quaternion);
+        Quaternion<Tp> const& quaternion) noexcept;
 
     /**
      * Normalizes quaternion
@@ -1029,12 +1029,11 @@ namespace mpgl {
      * Compares two quaternions in the lexicographical order
      *
      * @tparam Tp the quaternion's type
-     * @tparam Size the quaternion's size
      * @param left the constant reference to the left quaternion
      * @param right the constant reference to the right quaternion
      * @return the ordering result
      */
-    template <Arithmetic Tp, std::size_t Size>
+    template <Arithmetic Tp>
         requires std::three_way_comparable<Tp, std::weak_ordering>
     [[nodiscard]] constexpr std::weak_ordering lexicographicalCompare(
         Quaternion<Tp> const& left,
@@ -1083,13 +1082,104 @@ namespace mpgl {
         Quaternion<Tp> const& left,
         Quaternion<Tp> const& right) noexcept;
 
+    typedef Quaternion<float32>                     Quaternion4f;
+    typedef Quaternion<float64>                     Quaternion4d;
+    typedef Quaternion<uint32>                      Quaternion4u;
+
     extern template class Quaternion<float32>;
     extern template class Quaternion<float64>;
     extern template class Quaternion<uint32>;
 
-    typedef Quaternion<float32>                     Quaternion4f;
-    typedef Quaternion<float64>                     Quaternion4d;
-    typedef Quaternion<uint32>                      Quaternion4u;
+    extern template Quaternion4d quaternionCast(
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f quaternionCast(
+        Quaternion4u const&) noexcept;
+
+    extern template Vector3f rotate(
+        Vector3f const&,
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f rotationQuaternion(
+        float32,
+        Vector3f const&) noexcept;
+
+    extern template Vector3f rotateWithQuaternion(
+        Vector3f const&,
+        float32,
+        Vector3f const&) noexcept;
+
+    extern template Quaternion4f floor(Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f ceil(Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f round(Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f normalize(Quaternion4f const&);
+
+    extern template Quaternion4f conjugate(Quaternion4f const&);
+
+    extern template Quaternion4f invert(Quaternion4f const&);
+
+    extern template Quaternion4f operator+(
+        Quaternion4f const&,
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f operator-(
+        Quaternion4f const&,
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f operator*(
+        Quaternion4f const&,
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f operator/(
+        Quaternion4f const&,
+        Quaternion4f const&);
+
+    extern template Quaternion4f operator+(
+        Quaternion4f const&,
+        float32 const&) noexcept;
+
+    extern template Quaternion4f operator-(
+        Quaternion4f const&,
+        float32 const&) noexcept;
+
+    extern template Quaternion4f operator*(
+        Quaternion4f const&,
+        float32 const&) noexcept;
+
+    extern template Quaternion4f operator/(
+        Quaternion4f const&,
+        float32 const&);
+
+    extern template Quaternion4f operator+(
+        float32 const&,
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f operator-(
+        float32 const&,
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f operator*(
+        float32 const&,
+        Quaternion4f const&) noexcept;
+
+    extern template Quaternion4f operator/(
+        float32 const&,
+        Quaternion4f const&);
+
+    extern template std::partial_ordering totalCompare(
+        Quaternion4f const&,
+        Quaternion4f const&) noexcept;
+
+    extern template bool operator==(
+        Quaternion4f const&,
+        Quaternion4f const&) noexcept;
+
+    extern template std::partial_ordering operator<=>(
+        Quaternion4f const&,
+        Quaternion4f const&) noexcept;
 
 }
 

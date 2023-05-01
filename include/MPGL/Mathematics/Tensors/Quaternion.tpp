@@ -433,7 +433,7 @@ template <Arithmetic Tp>
 
 template <std::floating_point Tp>
 [[nodiscard]] constexpr Quaternion<Tp> floor(
-    Quaternion<Tp> quaternion)
+    Quaternion<Tp> const& quaternion) noexcept
 {
     return {
         std::floor(quaternion[0]),
@@ -445,7 +445,7 @@ template <std::floating_point Tp>
 
 template <std::floating_point Tp>
 [[nodiscard]] constexpr Quaternion<Tp> ceil(
-    Quaternion<Tp> quaternion)
+    Quaternion<Tp> const& quaternion) noexcept
 {
     return {
         std::ceil(quaternion[0]),
@@ -457,7 +457,7 @@ template <std::floating_point Tp>
 
 template <std::floating_point Tp>
 [[nodiscard]] constexpr Quaternion<Tp> round(
-    Quaternion<Tp> quaternion)
+    Quaternion<Tp> const& quaternion) noexcept
 {
     return {
         std::round(quaternion[0]),
@@ -472,7 +472,7 @@ template <Arithmetic Tp>
     Quaternion<Tp> const& quaternion)
 {
     auto temp = quaternion;
-    return temp.nomalize();
+    return temp.normalize();
 }
 
 template <Arithmetic Tp>
@@ -528,7 +528,7 @@ template <Arithmetic Tp>
     Quaternion<Tp> const& left,
     Quaternion<Tp> const& right)
 {
-    return {left._M_data * invert(right)};
+    return left * invert(right);
 }
 
 template <Arithmetic Tp>
@@ -691,7 +691,7 @@ template <Arithmetic Tp>
     return {left | right._M_data};
 }
 
-template <Arithmetic Tp, std::size_t Size>
+template <Arithmetic Tp>
     requires std::three_way_comparable<Tp, std::weak_ordering>
 [[nodiscard]] constexpr std::weak_ordering lexicographicalCompare(
     Quaternion<Tp> const& left,
