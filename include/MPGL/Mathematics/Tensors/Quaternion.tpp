@@ -52,4 +52,41 @@ constexpr Quaternion<Tp>& Quaternion<Tp>::invert(void) const noexcept {
     return conjugate() /= (len * len);
 }
 
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator+=(
+    Quaternion const& right)
+{
+    _M_data += right._M_data;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator-=(
+    Quaternion const& right)
+{
+    _M_data -= right._M_data;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator*=(
+    Quaternion const& right)
+{
+    auto const a1 = (*this)[0];
+    auto const b1 = (*this)[1];
+    auto const c1 = (*this)[2];
+    auto const d1 = (*this)[3];
+    auto const a2 = right[0];
+    auto const b2 = right[1];
+    auto const c2 = right[2];
+    auto const d2 = right[3];
+
+    return *this = Quaternion{
+        a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2,
+        a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2,
+        a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2,
+        a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2
+    };
+}
+
 }
