@@ -534,6 +534,49 @@ namespace mpgl {
         quaternionCast(Quaternion<Tp> const& quaternion) noexcept;
 
     /**
+     * Rotates a 3D vector using a quaternion
+     *
+     * @tparam Tp the element's value type
+     * @param vector a constant reference to the rotated vector
+     * @param quaternion a constant reference to the rotation
+     * quaternion
+     * @return the rotated vector
+    */
+    template <Arithmetic Tp>
+    [[nodiscard]] constexpr Vector3<Tp> rotate(
+        Vector3<Tp> const& vector,
+        Quaternion<Tp> const& quaternion) noexcept;
+
+    /**
+     * Creates a rotation quaternion
+     *
+     * @tparam Tp the element's value type
+     * @param angle a rotation angle
+     * @param axis a rotation axis
+     * @return the rotation quaternion
+    */
+    template <Arithmetic Tp>
+    [[nodiscard]] Quaternion<Tp> rotationQuaternion(
+        Tp angle,
+        Vector3<Tp> const& axis) noexcept;
+
+    /**
+     * Rotates a 3D vector by a given angle around the given axis
+     * using a quaternion arithmetic
+     *
+     * @tparam Tp the element's type
+     * @param vector a constant reference to the rotated vector
+     * @param angle a rotation angle
+     * @param axis a rotation axis
+     * @return the rotated vector
+    */
+    template <Arithmetic Tp>
+    [[nodiscard]] Vector3<Tp> rotateWithQuaternion(
+        Vector3<Tp> const& vector,
+        Tp angle,
+        Vector3<Tp> const& axis) noexcept;
+
+    /**
      * Returns the quaternion with the floored values
      *
      * @tparam Tp the quaternion's type
