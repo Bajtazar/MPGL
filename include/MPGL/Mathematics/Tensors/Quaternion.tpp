@@ -691,4 +691,40 @@ template <Arithmetic Tp>
     return {left | right._M_data};
 }
 
+template <Arithmetic Tp, std::size_t Size>
+    requires std::three_way_comparable<Tp, std::weak_ordering>
+[[nodiscard]] constexpr std::weak_ordering lexicographicalCompare(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    return lexicographicalCompare(left._M_data, right._M_data);
+}
+
+template <Arithmetic Tp>
+    requires std::three_way_comparable<Tp, std::partial_ordering>
+[[nodiscard]] constexpr std::partial_ordering totalCompare(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    return totalCompare(left._M_data, right._M_data);
+}
+
+template <Arithmetic Tp>
+    requires std::three_way_comparable<Tp, std::partial_ordering>
+[[nodiscard]] bool constexpr operator== (
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    return left._M_data == right._M_data;
+}
+
+template <Arithmetic Tp>
+    requires std::three_way_comparable<Tp, std::partial_ordering>
+[[nodiscard]] std::partial_ordering constexpr operator<=> (
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    return left._M_data <=> right._M_data;
+}
+
 }

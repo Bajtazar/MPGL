@@ -1091,10 +1091,6 @@ namespace mpgl {
     typedef Quaternion<float64>                     Quaternion4d;
     typedef Quaternion<uint32>                      Quaternion4u;
 
-    template Quaternion4f operator+(
-            Quaternion4f const& left,
-            float32 const& right) noexcept;
-
 }
 
 #include <MPGL/Mathematics/Tensors/Quaternion.tpp>
