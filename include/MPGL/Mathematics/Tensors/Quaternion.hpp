@@ -35,10 +35,36 @@ namespace mpgl {
      * @tparam Tp the quaterion's value type
      */
     template <Arithmetic Tp>
-    struct Quaternion {
+    class Quaternion {
+    public:
         using value_type = typename Vector4<Tp>::value_type;
         using reference = typename Vector4<Tp>::reference;
         using const_reference = typename Vector4<Tp>::const_reference;
+
+        /**
+         * Constructs a new quaternion object
+        */
+        constexpr Quaternion(void) noexcept = default;
+
+        /**
+         * Constructs a new quaternion object
+         *
+         * @param vector a vector from which the quaternion
+         * will be created
+        */
+        constexpr Quaternion(Vector4<Tp> vector) noexcept;
+
+        /**
+         * Constructs a new quaternion object
+         *
+         * @param imaginary a constant reference to the vector
+         * representing an imaginary part of the quaternion
+         * @param real a constant reference to the scalar
+         * representing a real part of the quaternion
+        */
+        constexpr Quaternion(
+            const Vector3<Tp>& imaginary,
+            const Tp& real = Tp{}) noexcept;
 
         /**
          * Returns the size of the quaterion [always 4]
@@ -477,7 +503,7 @@ namespace mpgl {
             requires (N < Size)
         [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion>&
             get(void) & noexcept
-                { return _M_data[N]; }
+                { return vector[N]; }
 
         /**
          * Returns a constant reference to the quaternion's element
@@ -492,7 +518,7 @@ namespace mpgl {
         [[nodiscard]] constexpr
             std::tuple_element_t<N, Quaternion> const& get(
                 void) const& noexcept
-                    { return _M_data[N]; }
+                    { return vector[N]; }
 
         /**
          * Returns a rvalue reference to the quaternion's element
@@ -506,7 +532,7 @@ namespace mpgl {
             requires (N < Size)
         [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion>&&
             get(void) && noexcept
-                { return std::move(_M_data[N]); }
+                { return std::move(vector[N]); }
 
         /**
          * Returns a const rvalue reference to the quaternion's element
@@ -520,7 +546,7 @@ namespace mpgl {
             requires (N < Size)
         [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion> const&&
             get(void) const && noexcept
-                { return std::move(_M_data[N]); }
+                { return std::move(vector[N]); }
 
         /**
          * Returns a poiner to the handled memory
@@ -536,7 +562,8 @@ namespace mpgl {
          */
         [[nodiscard]] constexpr Tp const* data(void) const noexcept;
 
-        Vector4<Tp> _M_data;
+    private:
+        Vector4<Tp> vector;
     };
 
     /**
