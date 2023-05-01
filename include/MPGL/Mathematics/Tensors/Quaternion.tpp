@@ -48,8 +48,7 @@ constexpr Quaternion<Tp>& Quaternion<Tp>::conjugate(void) noexcept {
 
 template <Arithmetic Tp>
 constexpr Quaternion<Tp>& Quaternion<Tp>::invert(void) const noexcept {
-    auto const len = length();
-    return conjugate() /= (len * len);
+    return conjugate() /= dot(_M_data, _M_data);
 }
 
 template <Arithmetic Tp>
@@ -87,6 +86,45 @@ constexpr Quaternion<Tp>& Quaternion<Tp>::operator*=(
         a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2,
         a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2
     };
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator/=(
+    Quaternion const& right)
+{
+    return *this *= ::invert(right);
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator%=(
+    Quaternion const& right) requires mpgl_Operable(Tp, %)
+{
+    _M_data %= right._M_data;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator^=(
+    Quaternion const& right) requires mpgl_Operable(Tp, ^)
+{
+    _M_data ^= right._M_data;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator&=(
+    Quaternion const& right) requires mpgl_Operable(Tp, &)
+{
+    _M_data &= right._M_data;
+    return *this;
+}
+
+template <Arithmetic Tp>
+constexpr Quaternion<Tp>& Quaternion<Tp>::operator|=(
+    Quaternion const& right) requires mpgl_Operable(Tp, |)
+{
+    _M_data |= right._M_data;
+    return *this;
 }
 
 }
