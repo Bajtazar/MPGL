@@ -926,7 +926,7 @@ namespace mpgl {
         Tp const& left,
         Quaternion<Tp> const& right) requires mpgl_Operable(Tp, |);
 
-/**
+    /**
      * Compares two quaternions in the lexicographical order
      *
      * @tparam Tp the quaternion's type
@@ -984,4 +984,14 @@ namespace mpgl {
         Quaternion<Tp> const& left,
         Quaternion<Tp> const& right) noexcept;
 
+    extern template class Quaternion<float32>;
+    extern template class Quaternion<float64>;
+    extern template class Quaternion<uint32>;
+
+    typedef Quaternion<float32>                     Quaternion32f;
+    typedef Quaternion<float64>                     Quaternion64f;
+    typedef Quaternion<uint32>                      Quaternion32u;
+
 }
+
+#include <MPGL/Mathematics/Tensors/Quaternion.tpp>
