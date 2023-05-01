@@ -58,7 +58,7 @@ namespace mpgl {
          *
          * @return the size of the vector
          */
-        [[nodiscard]] static constexpr std::size_t size(
+        [[nodiscard]] static consteval std::size_t size(
             void) noexcept
                 { return Size; }
 
