@@ -67,11 +67,25 @@ namespace mpgl {
             const Tp& real = Tp{}) noexcept;
 
         /**
+         * Constructs a new quaternion object
+         *
+         * @param real the real part
+         * @param iPart the i imaginary part
+         * @param jPart the j imaginary part
+         * @param kPart the k imaginary part
+        */
+        constexpr Quaternion(
+            const Tp& real,
+            const Tp& iPart,
+            const Tp& jPart,
+            const Tp& kPart) noexcept;
+
+        /**
          * Returns the size of the quaterion [always 4]
          *
          * @return the size of the quaterion
          */
-        [[nodiscard]] static consteval std::size_t size(
+        [[nodiscard]] static constexpr std::size_t size(
             void) noexcept;
 
         /**
@@ -302,7 +316,7 @@ namespace mpgl {
          *
          * @param value the real part of the quaternion
         */
-        [[nodiscard]] constexpr void real(Tp value) noexcept;
+        constexpr void real(Tp value) noexcept;
 
         /**
          * Returns an imaginary part of the quaternion
@@ -316,8 +330,7 @@ namespace mpgl {
          *
          * @param value the imaginary part of the quaternion
         */
-        [[nodiscard]] constexpr void imaginary(
-            const Vector3<Tp>& value) noexcept;
+        constexpr void imaginary(const Vector3<Tp>& value) noexcept;
 
         /**
          * Inverses the sign of the quaternion's elements
@@ -500,7 +513,7 @@ namespace mpgl {
          * the given index
          */
         template<std::size_t N>
-            requires (N < Size)
+            requires (N < 4)
         [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion>&
             get(void) & noexcept
                 { return vector[N]; }
@@ -514,7 +527,7 @@ namespace mpgl {
          * the given index
          */
         template<std::size_t N>
-            requires (N < Size)
+            requires (N < 4)
         [[nodiscard]] constexpr
             std::tuple_element_t<N, Quaternion> const& get(
                 void) const& noexcept
@@ -529,7 +542,7 @@ namespace mpgl {
          * the given index
          */
         template<std::size_t N>
-            requires (N < Size)
+            requires (N < 4)
         [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion>&&
             get(void) && noexcept
                 { return std::move(vector[N]); }
@@ -543,7 +556,7 @@ namespace mpgl {
          * the given index
          */
         template<std::size_t N>
-            requires (N < Size)
+            requires (N < 4)
         [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion> const&&
             get(void) const && noexcept
                 { return std::move(vector[N]); }
@@ -569,9 +582,9 @@ namespace mpgl {
          * @param right the constant reference to the right quaternion
          * @return the result quaternion
          */
-        [[nodiscard]] friend constexpr Quaternion operator+(
+        [[nodiscard]] friend constexpr Quaternion operator+ <Tp> (
             Quaternion const& left,
-            Quaternion const& right);
+            Quaternion const& right) noexcept;
 
         /**
          * Subtracts quaternion from other quaternion
@@ -580,7 +593,7 @@ namespace mpgl {
          * @param right the constant reference to the right quaternion
          * @return the result quaternion
          */
-        [[nodiscard]] friend constexpr Quaternion operator-(
+        [[nodiscard]] friend constexpr Quaternion operator- <Tp> (
             Quaternion const& left,
             Quaternion const& right);
 
@@ -591,7 +604,7 @@ namespace mpgl {
          * @param right the constant reference to the right quaternion
          * @return the result quaternion
          */
-        [[nodiscard]] friend constexpr Quaternion operator*(
+        [[nodiscard]] friend constexpr Quaternion operator* <Tp> (
             Quaternion const& left,
             Quaternion const& right);
 
@@ -603,7 +616,7 @@ namespace mpgl {
          * @param right the constant reference to the right quaternion
          * @return the result quaternion
          */
-        [[nodiscard]] friend constexpr Quaternion operator/(
+        [[nodiscard]] friend constexpr Quaternion operator/ <Tp> (
             Quaternion const& left,
             Quaternion const& right);
 

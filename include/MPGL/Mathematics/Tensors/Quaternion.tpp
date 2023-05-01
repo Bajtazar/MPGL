@@ -40,7 +40,14 @@ constexpr Quaternion<Tp>::Quaternion(
         : vector{real, imaginary[0], imaginary[1], imaginary[2]} {}
 
 template <Arithmetic Tp>
-[[nodiscard]] consteval std::size_t Quaternion<Tp>::size(
+constexpr Quaternion<Tp>::Quaternion(
+    const Tp& real,
+    const Tp& iPart,
+    const Tp& jPart,
+    const Tp& kPart) noexcept : vector{real, iPart, jPart, kPart} {}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr std::size_t Quaternion<Tp>::size(
     void) noexcept
 {
     return 4;
@@ -232,7 +239,7 @@ template <Arithmetic Tp>
 }
 
 template <Arithmetic Tp>
-[[nodiscard]] constexpr void Quaternion<Tp>::real(
+constexpr void Quaternion<Tp>::real(
     Tp value) noexcept
 {
     return vector[0] = std::move(value);
@@ -246,8 +253,7 @@ template <Arithmetic Tp>
 }
 
 template <Arithmetic Tp>
-[[nodiscard]] constexpr void Quaternion<Tp>::imaginary(
-    const Vector3<Tp>& value) noexcept
+constexpr void Quaternion<Tp>::imaginary(const Vector3<Tp>& value) noexcept
 {
     for (uint8 i = 0;i < 3; ++i)
         vector[i + 1] = value[i];
@@ -384,6 +390,46 @@ template <Arithmetic Tp>
     return vector.data();
 }
 
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator+(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    return {left.value + right.value};
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator-(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    return {left.value - right.value};
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator*(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    auto const& [a1, b1, c1, d1] = left.vector;
+    auto const& [a2, b2, c2, d2] = right.vector;
+
+    return {
+        a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2,
+        a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2,
+        a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2,
+        a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2
+    };
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator/(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept
+{
+    return {left.value * invert(right)};
+}
+
 template <Arithmetic Up, Arithmetic Tp>
 [[nodiscard]] constexpr Quaternion<Up>
     quaternionCast(Quaternion<Tp> const& quaternion) noexcept
@@ -423,36 +469,36 @@ template <std::floating_point Tp>
 [[nodiscard]] constexpr Quaternion<Tp> floor(
     Quaternion<Tp> quaternion)
 {
-    return {{
+    return {
         std::floor(quaternion[0]),
         std::floor(quaternion[1]),
         std::floor(quaternion[2]),
         std::floor(quaternion[3])
-    }};
+    };
 }
 
 template <std::floating_point Tp>
 [[nodiscard]] constexpr Quaternion<Tp> ceil(
     Quaternion<Tp> quaternion)
 {
-    return {{
+    return {
         std::ceil(quaternion[0]),
         std::ceil(quaternion[1]),
         std::ceil(quaternion[2]),
         std::ceil(quaternion[3])
-    }};
+    };
 }
 
 template <std::floating_point Tp>
 [[nodiscard]] constexpr Quaternion<Tp> round(
     Quaternion<Tp> quaternion)
 {
-    return {{
+    return {
         std::round(quaternion[0]),
         std::round(quaternion[1]),
         std::round(quaternion[2]),
         std::round(quaternion[3])
-    }};
+    };
 }
 
 template <std::floating_point Tp>
