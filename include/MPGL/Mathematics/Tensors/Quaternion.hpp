@@ -236,7 +236,15 @@ namespace mpgl {
          *
          * @return the std::span that holds view to this quaternion
          */
-        [[nodiscard]] constexpr operator std::span<Tp const, Size>(
+        [[nodiscard]] constexpr operator std::span<Tp, 4>(
+            ) noexcept;
+
+        /**
+         * Returns a std::span that holds view to this quaternion
+         *
+         * @return the std::span that holds view to this quaternion
+         */
+        [[nodiscard]] constexpr operator std::span<Tp const, 4>(
             ) const noexcept;
 
         /**
@@ -260,9 +268,16 @@ namespace mpgl {
         /**
          * Returns a real part of the quaternion
          *
-         * @return the real part of the quaternion
+         * @return a reference to the real part of the quaternion
         */
         [[nodiscard]] constexpr Tp real(void) const noexcept;
+
+        /**
+         * Sets a real part of the quaternion
+         *
+         * @param value the real part of the quaternion
+        */
+        [[nodiscard]] constexpr void real(Tp value) noexcept;
 
         /**
          * Returns an imaginary part of the quaternion
@@ -270,6 +285,14 @@ namespace mpgl {
          * @return the imaginary part of the quaternion
         */
         [[nodiscard]] constexpr Vector3<Tp> imaginary(void) const noexcept;
+
+        /**
+         * Sets an imaginary part of the quaternion
+         *
+         * @param value the imaginary part of the quaternion
+        */
+        [[nodiscard]] constexpr void imaginary(
+            const Vector3<Tp>& value) noexcept;
 
         /**
          * Inverses the sign of the quaternion's elements
