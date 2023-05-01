@@ -521,4 +521,83 @@ namespace mpgl {
         Vector4<Tp> _M_data;
     };
 
+    /**
+     * Casts the quaternion elements to the given type
+     *
+     * @tparam Up the new quaternion's value type
+     * @tparam Tp the old quaternion's value type
+     * @param quaternion the constant reference to the quaternion
+     * @return the casted quaternion
+     */
+    template <Arithmetic Up, Arithmetic Tp>
+    [[nodiscard]] constexpr Quaternion<Up>
+        quaternionCast(Quaternion<Tp> const& quaternion) noexcept;
+
+    /**
+     * Returns the quaternion with the floored values
+     *
+     * @tparam Tp the quaternion's type
+     * @param quaternion the constant reference to the quaternion
+     * @return the floored quaternion
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> floor(
+        Quaternion<Tp> quaternion);
+
+    /**
+     * Returns the quaternion with the ceiled values
+     *
+     * @tparam Tp the quaternion's type
+     * @param quaternion the constant reference to the quaternion
+     * @return the ceiled quaternion
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> ceil(
+        Quaternion<Tp> quaternion);
+
+    /**
+     * Returns the quaternion with the rounded values
+     *
+     * @tparam Tp the quaternion's type
+     * @tparam Size the quaternion's type
+     * @param quaternion the constant reference to the quaternion
+     * @return the rounded quaternion
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> round(
+        Quaternion<Tp> quaternion);
+
+    /**
+     * Normalizes quaternion
+     *
+     * @tparam Tp the quaternion's type
+     * @param quaternion the constant reference to the quaternion
+     * @return the normalized quaternion
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> normalize(
+        Quaternion<Tp> const& quaternion);
+
+    /**
+     * Conjugates a quaternion
+     *
+     * @tparam Tp the quaternion's type
+     * @param quaternion the constant reference to the quaternion
+     * @return the normalized quaternion
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> conjugate(
+        Quaternion<Tp> const& quaternion);
+
+    /**
+     * Inverts a quaternion
+     *
+     * @tparam Tp the quaternion's type
+     * @param quaternion the constant reference to the quaternion
+     * @return the normalized quaternion
+     */
+    template <std::floating_point Tp>
+    [[nodiscard]] constexpr Quaternion<Tp> invert(
+        Quaternion<Tp> const& quaternion);
+
 }
