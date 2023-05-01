@@ -25,6 +25,8 @@
  */
 #pragma once
 
+#include <cmath>
+
 namespace mpgl {
 
 template <Arithmetic Tp>
@@ -396,6 +398,25 @@ template <Arithmetic Tp>
 {
     return (quaternion * Quaternion<Tp>{vector} * conjugate(quaternion)
         ).imaginary();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] Quaternion<Tp> rotationQuaternion(
+    Tp angle,
+    Vector3<Tp> const& axis) noexcept
+{
+    return {axis, std::cos(angle) / static_cast<Tp>(2)};
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] Vector3<Tp> rotateWithQuaternion(
+    Vector3<Tp> const& vector,
+    Tp angle,
+    Vector3<Tp> const& axis) noexcept
+{
+    auto const temp = static_cast<Tp>(2) * cross(axis, vector);
+    auto const real = std::cos(angle) / static_cast<Tp>(2);
+    return vector + real * temp + cross(axis, temp);
 }
 
 }
