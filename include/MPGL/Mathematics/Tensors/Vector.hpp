@@ -67,7 +67,6 @@ namespace mpgl {
          * to the square norm in the euclidean space]
          *
          * @tparam Up the result type
-         * @param init the initial value
          * @return the length of the vector
          */
         template <Arithmetic Up = Tp>
@@ -75,6 +74,8 @@ namespace mpgl {
 
         /**
          * Normalizes vector
+         *
+         * @return a reference to this object
          */
         constexpr Vector& normalize(void) noexcept;
 

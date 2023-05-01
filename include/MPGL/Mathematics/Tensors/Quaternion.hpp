@@ -29,77 +29,253 @@
 
 namespace mpgl {
 
+    /**
+     * Represents the mathematical quaterion in the memory
+     *
+     * @tparam Tp the quaterion's value type
+     */
     template <Arithmetic Tp>
     struct Quaternion {
         using value_type = typename Vector4<Tp>::value_type;
         using reference = typename Vector4<Tp>::reference;
         using const_reference = typename Vector4<Tp>::const_reference;
 
+        /**
+         * Returns the size of the quaterion [always 4]
+         *
+         * @return the size of the quaterion
+         */
         [[nodiscard]] static consteval std::size_t size(
             void) noexcept
                 { return 4; }
 
+        /**
+         * Returns the length of the quaterion [equivalent
+         * to the square norm in the euclidean space]
+         *
+         * @tparam Up the result type
+         * @return the length of the quaterion
+         */
         template <Arithmetic Up = Tp>
         [[nodiscard]] constexpr Up length(void) const noexcept;
 
+        /**
+         * Normalizes quaternion
+         *
+         * @return a reference to this object
+         */
         constexpr Quaternion& normalize(void) noexcept;
 
+        /**
+         * Conjugates quaternion
+         *
+         * @return a reference to this object
+        */
         constexpr Quaternion& conjugate(void) noexcept;
 
+        /**
+         * Calculates a multiplicative inversions of this quaterion
+         *
+         * @return a reference to this object
+        */
+        constexpr Quaternion& invert(void) const noexcept;
+
+        /**
+         * Adds the elements of this quaternion with
+         * the given quaternion elements
+         *
+         * @param right the added quaternion
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator+=(Quaternion const& right);
 
+        /**
+         * Subtracts the elements of this quaternion with
+         * the given quaternion elements
+         *
+         * @param right the subtracted quaternion
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator-=(Quaternion const& right);
 
+        /**
+         * Multiplies two quaternions together
+         *
+         * @param right the multiplicand quaternion
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator*=(Quaternion const& right);
 
+        /**
+         * Multiplies this quaternion with the reciprocal of the
+         * second one
+         *
+         * @param right the divider quaternion
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator/=(Quaternion const& right);
 
+        /**
+         * Calculates the modulo of elements of this quaternion
+         * and the given quaternion elements
+         *
+         * @param right the quaternion with modulos
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator%=(Quaternion const& right)
             requires mpgl_Operable(Tp, %);
 
+        /**
+         * Calculates the bitwise-xor of elements of this
+         * quaternion and the given quaternion elements
+         *
+         * @param right the quaternion with values
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator^=(Quaternion const& right)
             requires mpgl_Operable(Tp, ^);
 
+        /**
+         * Calculates the bitwise-and of elements of this quaternion
+         * and the given quaternion elements
+         *
+         * @param right the quaternion with values
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator&=(Quaternion const& right)
             requires mpgl_Operable(Tp, &);
 
+        /**
+         * Calculates the bitwise-or of elements of this quaternion
+         * and the given quaternion elements
+         *
+         * @param right the quaternion with values
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator|=(Quaternion const& right)
             requires mpgl_Operable(Tp, |);
 
+        /**
+         * Adds the given scalar value to the elements of
+         * this quaternion
+         *
+         * @param right the added scalar
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator+=(Tp const& right);
 
+        /**
+         * Subtracts the given scalar value to the elements of
+         * this quaternion
+         *
+         * @param right the subtracted scalar
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator-=(Tp const& right);
 
+        /**
+         * Multiplies the given scalar value to the elements of
+         * this quaternion
+         *
+         * @param right the multiplied scalar
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator*=(Tp const& right);
 
+        /**
+         * Divides the elements of this quaternion by the given
+         * scalar value
+         *
+         * @param right the divisor scalar
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator/=(Tp const& right);
 
+        /**
+         * Calculates the modulo of elements of this quaternion
+         * with the given scalar
+         *
+         * @param right the modulo scalar
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator%=(Tp const& right)
             requires mpgl_Operable(Tp, %);
 
+        /**
+         * Calculates the bitwise-xor of elements of this
+         * quaternion and the given scalar value
+         *
+         * @param right the scalar value
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator^=(Tp const& right)
             requires mpgl_Operable(Tp, ^);
 
+        /**
+         * Calculates the bitwise-and of elements of this
+         * quaternion and the given scalar value
+         *
+         * @param right the scalar value
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator&=(Tp const& right)
             requires mpgl_Operable(Tp, &);
 
+        /**
+         * Calculates the bitwise-or of elements of this
+         * quaternion and the given scalar value
+         *
+         * @param right the scalar value
+         * @return the reference to this quaternion
+         */
         constexpr Quaternion& operator|=(Tp const& right)
             requires mpgl_Operable(Tp, |);
 
+        /**
+         * Returns a std::span that holds view to this quaternion
+         *
+         * @return the std::span that holds view to this quaternion
+         */
         [[nodiscard]] constexpr operator std::span<Tp const, Size>(
             ) const noexcept;
 
+        /**
+         * Casts the quaternion to the given type
+         *
+         * @tparam Up the new quaternion's element type
+         * @return the casted quaternion
+         */
         template <Arithmetic Up>
             requires std::convertible_to<Tp, Up>
         [[nodiscard]] constexpr operator Quaternion<Up>(
             ) const noexcept;
 
+        /**
+         * Returns a quaternion value as a Vector4
+         *
+         * @return a Vector4 containing the current quaternion's value
+        */
         [[nodiscard]] constexpr Vector4<Tp> asVector(void) const noexcept;
 
+        /**
+         * Returns a real part of the quaternion
+         *
+         * @return the real part of the quaternion
+        */
         [[nodiscard]] constexpr Tp real(void) const noexcept;
 
+        /**
+         * Returns an imaginary part of the quaternion
+         *
+         * @return the imaginary part of the quaternion
+        */
         [[nodiscard]] constexpr Vector3<Tp> imaginary(void) const noexcept;
 
+        /**
+         * Inverses the sign of the quaternion's elements
+         *
+         * @return the quaternion with sign-inversed elements
+         */
         [[nodiscard]] constexpr Quaternion operator-(void) const noexcept;
 
         using iterator = typename Vector4<Tp>::iterator;
@@ -110,27 +286,27 @@ namespace mpgl {
             = typename Vector4<Tp>::const_reverse_iterator;
 
         /**
-         * Returns the iterator to the begining of the vector
+         * Returns the iterator to the begining of the quaternion
          *
-         * @return the iterator to the begining of the vector
+         * @return the iterator to the begining of the quaternion
          */
         [[nodiscard]] constexpr iterator begin(void) noexcept
             { return _M_data.begin(); }
 
         /**
-         * Returns the iterator to the end of the vector
+         * Returns the iterator to the end of the quaternion
          *
-         * @return the iterator to the end of the vector
+         * @return the iterator to the end of the quaternion
          */
         [[nodiscard]] constexpr iterator end(void) noexcept
             { return _M_data.end(); }
 
         /**
          * Returns the constant iterator to the begining
-         * of the vector
+         * of the quaternion
          *
          * @return the constant iterator to the begining
-         * of the vector
+         * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator begin(
             void) const noexcept
@@ -138,10 +314,10 @@ namespace mpgl {
 
         /**
          * Returns the constant iterator to the end
-         * of the vector
+         * of the quaternion
          *
          * @return the constant iterator to the end
-         * of the vector
+         * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator end(
             void) const noexcept
@@ -149,10 +325,10 @@ namespace mpgl {
 
         /**
          * Returns the constant iterator to the begining
-         * of the vector
+         * of the quaternion
          *
          * @return the constant iterator to the begining
-         * of the vector
+         * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator cbegin(
             void) const noexcept
@@ -160,10 +336,10 @@ namespace mpgl {
 
         /**
          * Returns the constant iterator to the end
-         * of the vector
+         * of the quaternion
          *
          * @return the constant iterator to the end
-         * of the vector
+         * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator cend(
             void) const noexcept
@@ -171,10 +347,10 @@ namespace mpgl {
 
         /**
          * Returns the reverse iterator to the end of
-         * the vector
+         * the quaternion
          *
          * @return the reverse iterator to the end of
-         * the vector
+         * the quaternion
          */
         [[nodiscard]] constexpr reverse_iterator rbegin(
             void) noexcept
@@ -182,10 +358,10 @@ namespace mpgl {
 
         /**
          * Returns the reverse iterator to the begining of
-         * the vector
+         * the quaternion
          *
          * @return the reverse iterator to the begining of
-         * the vector
+         * the quaternion
          */
         [[nodiscard]] constexpr reverse_iterator rend(
             void) noexcept
@@ -193,10 +369,10 @@ namespace mpgl {
 
         /**
          * Returns the constant reverse iterator to the end of
-         * the vector
+         * the quaternion
          *
          * @return the constant reverse iterator to the end of
-         * the vector
+         * the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator rbegin(
             void) const noexcept
@@ -204,10 +380,10 @@ namespace mpgl {
 
         /**
          * Returns the constant reverse iterator to the
-         * begining of the vector
+         * begining of the quaternion
          *
          * @return the constant reverse iterator to the
-         * begining of the vector
+         * begining of the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator rend(
             void) const noexcept
@@ -215,10 +391,10 @@ namespace mpgl {
 
         /**
          * Returns the constant reverse iterator to the end of
-         * the vector
+         * the quaternion
          *
          * @return the constant reverse iterator to the end of
-         * the vector
+         * the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator crbegin(
             void) const noexcept
@@ -226,10 +402,10 @@ namespace mpgl {
 
         /**
          * Returns the constant reverse iterator to the
-         * begining of the vector
+         * begining of the quaternion
          *
          * @return the constant reverse iterator to the
-         * begining of the vector
+         * begining of the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator crend(
             void) const noexcept
@@ -260,7 +436,7 @@ namespace mpgl {
         /**
          * Returns the reference to element with the given index
          * @throws std::out_of_range when the index is out of the
-         * vector's scope
+         * quaternion's scope
          *
          * @param index the element's index
          * @return the reference to element with the given index
@@ -273,7 +449,7 @@ namespace mpgl {
          * Returns the constant reference to element with
          * the given index
          * @throws std::out_of_range when the index is out of the
-         * vector's scope
+         * quaternion's scope
          *
          * @param index the element's index
          * @return the constant reference to element with
@@ -284,7 +460,7 @@ namespace mpgl {
                 { return _M_data.at(index); }
 
         /**
-         * Returns a reference to the vector's element with
+         * Returns a reference to the quaternion's element with
          * the given index
          *
          * @tparam N the element's index
@@ -298,7 +474,7 @@ namespace mpgl {
                 { return _M_data[N]; }
 
         /**
-         * Returns a constant reference to the vector's element
+         * Returns a constant reference to the quaternion's element
          * with the given index
          *
          * @tparam N the element's index
@@ -313,7 +489,7 @@ namespace mpgl {
                     { return _M_data[N]; }
 
         /**
-         * Returns a rvalue reference to the vector's element
+         * Returns a rvalue reference to the quaternion's element
          * with the given index
          *
          * @tparam N the element's index
