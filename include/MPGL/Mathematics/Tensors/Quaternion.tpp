@@ -73,7 +73,7 @@ constexpr Quaternion<Tp>& Quaternion<Tp>::conjugate(void) noexcept {
 }
 
 template <Arithmetic Tp>
-constexpr Quaternion<Tp>& Quaternion<Tp>::invert(void) const noexcept {
+constexpr Quaternion<Tp>& Quaternion<Tp>::invert(void) noexcept {
     return conjugate() /= dot(vector, vector);
 }
 
@@ -112,7 +112,7 @@ template <Arithmetic Tp>
 constexpr Quaternion<Tp>& Quaternion<Tp>::operator/=(
     Quaternion const& right)
 {
-    return *this *= ::invert(right);
+    return *this *= mpgl::invert(right);
 }
 
 template <Arithmetic Tp>
@@ -242,14 +242,14 @@ template <Arithmetic Tp>
 constexpr void Quaternion<Tp>::real(
     Tp value) noexcept
 {
-    return vector[0] = std::move(value);
+    vector[0] = std::move(value);
 }
 
 template <Arithmetic Tp>
 [[nodiscard]] constexpr Vector3<Tp> Quaternion<Tp>::imaginary(
     void) const noexcept
 {
-    return Vector3f{vector[1], vector[2], vector[3]};
+    return Vector3<Tp>{vector[1], vector[2], vector[3]};
 }
 
 template <Arithmetic Tp>
@@ -430,6 +430,38 @@ template <Arithmetic Tp>
     return {left.value * invert(right)};
 }
 
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator%(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, %)
+{
+    return {left.value % right.value};
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator^(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, ^)
+{
+    return {left.value ^ right.value};
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator&(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, &)
+{
+    return {left.value & right.value};
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp> operator|(
+    Quaternion<Tp> const& left,
+    Quaternion<Tp> const& right) noexcept requires mpgl_Operable(Tp, |)
+{
+    return {left.value | right.value};
+}
+
 template <Arithmetic Up, Arithmetic Tp>
 [[nodiscard]] constexpr Quaternion<Up>
     quaternionCast(Quaternion<Tp> const& quaternion) noexcept
@@ -501,7 +533,7 @@ template <std::floating_point Tp>
     };
 }
 
-template <std::floating_point Tp>
+template <Arithmetic Tp>
 [[nodiscard]] constexpr Quaternion<Tp> normalize(
     Quaternion<Tp> const& quaternion)
 {
@@ -509,7 +541,7 @@ template <std::floating_point Tp>
     return temp.nomalize();
 }
 
-template <std::floating_point Tp>
+template <Arithmetic Tp>
 [[nodiscard]] constexpr Quaternion<Tp> conjugate(
     Quaternion<Tp> const& quaternion)
 {
@@ -517,7 +549,7 @@ template <std::floating_point Tp>
     return temp.conjugate();
 }
 
-template <std::floating_point Tp>
+template <Arithmetic Tp>
 [[nodiscard]] constexpr Quaternion<Tp> invert(
     Quaternion<Tp> const& quaternion)
 {
