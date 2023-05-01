@@ -419,4 +419,64 @@ template <Arithmetic Tp>
     return vector + real * temp + cross(axis, temp);
 }
 
+template <std::floating_point Tp>
+[[nodiscard]] constexpr Quaternion<Tp> floor(
+    Quaternion<Tp> quaternion)
+{
+    return {{
+        std::floor(quaternion[0]),
+        std::floor(quaternion[1]),
+        std::floor(quaternion[2]),
+        std::floor(quaternion[3])
+    }};
+}
+
+template <std::floating_point Tp>
+[[nodiscard]] constexpr Quaternion<Tp> ceil(
+    Quaternion<Tp> quaternion)
+{
+    return {{
+        std::ceil(quaternion[0]),
+        std::ceil(quaternion[1]),
+        std::ceil(quaternion[2]),
+        std::ceil(quaternion[3])
+    }};
+}
+
+template <std::floating_point Tp>
+[[nodiscard]] constexpr Quaternion<Tp> round(
+    Quaternion<Tp> quaternion)
+{
+    return {{
+        std::round(quaternion[0]),
+        std::round(quaternion[1]),
+        std::round(quaternion[2]),
+        std::round(quaternion[3])
+    }};
+}
+
+template <std::floating_point Tp>
+[[nodiscard]] constexpr Quaternion<Tp> normalize(
+    Quaternion<Tp> const& quaternion)
+{
+    auto temp = quaternion;
+    return temp.nomalize();
+}
+
+template <std::floating_point Tp>
+[[nodiscard]] constexpr Quaternion<Tp> conjugate(
+    Quaternion<Tp> const& quaternion)
+{
+    auto temp = quaternion;
+    return temp.conjugate();
+}
+
+template <std::floating_point Tp>
+[[nodiscard]] constexpr Quaternion<Tp> invert(
+    Quaternion<Tp> const& quaternion)
+{
+    auto temp = quaternion;
+    return temp.invert();
+}
+
 }
