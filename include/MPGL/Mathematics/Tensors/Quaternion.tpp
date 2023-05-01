@@ -28,6 +28,13 @@
 namespace mpgl {
 
 template <Arithmetic Tp>
+[[nodiscard]] consteval std::size_t Quaternion<Tp>::size(
+    void) noexcept
+{
+    return 4;
+}
+
+template <Arithmetic Tp>
 template <Arithmetic Up>
 [[nodiscard]] constexpr Up Quaternion<Tp>::length(void) const noexcept {
     return _M_data.length();
@@ -239,6 +246,137 @@ template <Arithmetic Tp>
     void) const noexcept
 {
     return Quaternion<Tp>{-_M_data};
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::iterator Quaternion<Tp>::begin(
+    void) noexcept
+{
+    return _M_data.begin();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::iterator Quaternion<Tp>::end(
+    void) noexcept
+{
+    return _M_data.end();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_iterator
+    Quaternion<Tp>::begin(void) const noexcept
+{
+    return _M_data.begin();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_iterator
+    Quaternion<Tp>::end(void) const noexcept
+{
+    return _M_data.end();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_iterator
+    Quaternion<Tp>::cbegin(void) const noexcept
+{
+    return _M_data.cbegin();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_iterator
+    Quaternion<Tp>::cend(void) const noexcept
+{
+    return _M_data.cend();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::reverse_iterator
+    Quaternion<Tp>::rbegin(void) noexcept
+{
+    return _M_data.rbegin();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::reverse_iterator
+    Quaternion<Tp>::rend(void) noexcept
+{
+    return _M_data.rend();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_reverse_iterator
+    Quaternion<Tp>::rbegin(void) const noexcept
+{
+    return _M_data.rbegin();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_reverse_iterator
+    Quaternion<Tp>::rend(void) const noexcept
+{
+    return _M_data.rend();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_reverse_iterator
+    Quaternion<Tp>::crbegin(void) const noexcept
+{
+    return _M_data.crbegin();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_reverse_iterator
+    Quaternion<Tp>::crend(void) const noexcept
+{
+    return _M_data.crend();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::reference
+    Quaternion<Tp>::operator[] (std::size_t index) noexcept
+{
+    return _M_data[index];
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_reference
+    Quaternion<Tp>::operator[] (std::size_t index) const noexcept
+{
+    return _M_data[index];
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::reference
+    Quaternion<Tp>::at(std::size_t index)
+{
+    return _M_data.at(index);
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Tp>::const_reference
+    Quaternion<Tp>::at(std::size_t index) const
+{
+    return _M_data.at(index);
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Tp* Quaternion<Tp>::data(void) noexcept {
+    return _M_data.data();
+}
+
+template <Arithmetic Tp>
+[[nodiscard]] constexpr Tp const* Quaternion<Tp>::data(
+    void) const noexcept
+{
+    return _M_data.data();
+}
+
+template <Arithmetic Up, Arithmetic Tp>
+[[nodiscard]] constexpr Quaternion<Up>
+    quaternionCast(Quaternion<Tp> const& quaternion) noexcept
+{
+    return static_cast<Quaternion<Up>>(quaternion);
 }
 
 }

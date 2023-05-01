@@ -46,8 +46,7 @@ namespace mpgl {
          * @return the size of the quaterion
          */
         [[nodiscard]] static consteval std::size_t size(
-            void) noexcept
-                { return 4; }
+            void) noexcept;
 
         /**
          * Returns the length of the quaterion [equivalent
@@ -313,16 +312,14 @@ namespace mpgl {
          *
          * @return the iterator to the begining of the quaternion
          */
-        [[nodiscard]] constexpr iterator begin(void) noexcept
-            { return _M_data.begin(); }
+        [[nodiscard]] constexpr iterator begin(void) noexcept;
 
         /**
          * Returns the iterator to the end of the quaternion
          *
          * @return the iterator to the end of the quaternion
          */
-        [[nodiscard]] constexpr iterator end(void) noexcept
-            { return _M_data.end(); }
+        [[nodiscard]] constexpr iterator end(void) noexcept;
 
         /**
          * Returns the constant iterator to the begining
@@ -332,8 +329,7 @@ namespace mpgl {
          * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator begin(
-            void) const noexcept
-                { return _M_data.begin(); }
+            void) const noexcept;
 
         /**
          * Returns the constant iterator to the end
@@ -343,8 +339,7 @@ namespace mpgl {
          * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator end(
-            void) const noexcept
-                { return _M_data.end(); }
+            void) const noexcept;
 
         /**
          * Returns the constant iterator to the begining
@@ -354,8 +349,7 @@ namespace mpgl {
          * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator cbegin(
-            void) const noexcept
-                { return _M_data.cbegin(); }
+            void) const noexcept;
 
         /**
          * Returns the constant iterator to the end
@@ -365,8 +359,7 @@ namespace mpgl {
          * of the quaternion
          */
         [[nodiscard]] constexpr const_iterator cend(
-            void) const noexcept
-                { return _M_data.cend(); }
+            void) const noexcept;
 
         /**
          * Returns the reverse iterator to the end of
@@ -376,8 +369,7 @@ namespace mpgl {
          * the quaternion
          */
         [[nodiscard]] constexpr reverse_iterator rbegin(
-            void) noexcept
-                { return _M_data.rbegin(); }
+            void) noexcept;
 
         /**
          * Returns the reverse iterator to the begining of
@@ -387,8 +379,7 @@ namespace mpgl {
          * the quaternion
          */
         [[nodiscard]] constexpr reverse_iterator rend(
-            void) noexcept
-                { return _M_data.rend(); }
+            void) noexcept;
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -398,8 +389,7 @@ namespace mpgl {
          * the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator rbegin(
-            void) const noexcept
-                { return _M_data.rbegin(); }
+            void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the
@@ -409,8 +399,7 @@ namespace mpgl {
          * begining of the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator rend(
-            void) const noexcept
-                { return _M_data.rend(); }
+            void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the end of
@@ -420,8 +409,7 @@ namespace mpgl {
          * the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator crbegin(
-            void) const noexcept
-                { return _M_data.crbegin(); }
+            void) const noexcept;
 
         /**
          * Returns the constant reverse iterator to the
@@ -431,8 +419,7 @@ namespace mpgl {
          * begining of the quaternion
          */
         [[nodiscard]] constexpr const_reverse_iterator crend(
-            void) const noexcept
-                { return _M_data.crend(); }
+            void) const noexcept;
 
         /**
          * Returns the reference to element with the given index
@@ -441,8 +428,7 @@ namespace mpgl {
          * @return the reference to element with the given index
          */
         [[nodiscard]] constexpr reference operator[] (
-            std::size_t index) noexcept
-                { return _M_data[index]; }
+            std::size_t index) noexcept;
 
         /**
          * Returns the constant reference to element with
@@ -453,8 +439,7 @@ namespace mpgl {
          * the given index
          */
         [[nodiscard]] constexpr const_reference operator[] (
-            std::size_t index) const noexcept
-                { return _M_data[index]; }
+            std::size_t index) const noexcept;
 
         /**
          * Returns the reference to element with the given index
@@ -465,8 +450,7 @@ namespace mpgl {
          * @return the reference to element with the given index
          */
         [[nodiscard]] constexpr reference at(
-            std::size_t index)
-                { return _M_data.at(index); }
+            std::size_t index);
 
         /**
          * Returns the constant reference to element with
@@ -479,8 +463,7 @@ namespace mpgl {
          * the given index
          */
         [[nodiscard]] constexpr const_reference at(
-            std::size_t index) const
-                { return _M_data.at(index); }
+            std::size_t index) const;
 
         /**
          * Returns a reference to the quaternion's element with
@@ -492,7 +475,7 @@ namespace mpgl {
          */
         template<std::size_t N>
             requires (N < Size)
-        [[nodiscard]] constexpr std::tuple_element_t<N, Vector>&
+        [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion>&
             get(void) & noexcept
                 { return _M_data[N]; }
 
@@ -507,7 +490,7 @@ namespace mpgl {
         template<std::size_t N>
             requires (N < Size)
         [[nodiscard]] constexpr
-            std::tuple_element_t<N, Vector> const& get(
+            std::tuple_element_t<N, Quaternion> const& get(
                 void) const& noexcept
                     { return _M_data[N]; }
 
@@ -521,8 +504,22 @@ namespace mpgl {
          */
         template<std::size_t N>
             requires (N < Size)
-        [[nodiscard]] constexpr std::tuple_element_t<N, Vector>&&
+        [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion>&&
             get(void) && noexcept
+                { return std::move(_M_data[N]); }
+
+        /**
+         * Returns a const rvalue reference to the quaternion's element
+         * with the given index
+         *
+         * @tparam N the element's index
+         * @return the const rvalue reference to the element with
+         * the given index
+         */
+        template<std::size_t N>
+            requires (N < Size)
+        [[nodiscard]] constexpr std::tuple_element_t<N, Quaternion> const&&
+            get(void) const && noexcept
                 { return std::move(_M_data[N]); }
 
         /**
@@ -530,16 +527,14 @@ namespace mpgl {
          *
          * @return the poiner to the handled memory
          */
-        [[nodiscard]] Tp* data(void) noexcept
-            { return _M_data.data(); }
+        [[nodiscard]] constexpr Tp* data(void) noexcept;
 
         /**
          * Returns a constant poiner to the handled memory
          *
          * @return the constant poiner to the handled memory
          */
-        [[nodiscard]] Tp const* data(void) const noexcept
-            { return _M_data.data(); }
+        [[nodiscard]] constexpr Tp const* data(void) const noexcept;
 
         Vector4<Tp> _M_data;
     };
@@ -1054,9 +1049,9 @@ namespace mpgl {
     extern template class Quaternion<float64>;
     extern template class Quaternion<uint32>;
 
-    typedef Quaternion<float32>                     Quaternion32f;
-    typedef Quaternion<float64>                     Quaternion64f;
-    typedef Quaternion<uint32>                      Quaternion32u;
+    typedef Quaternion<float32>                     Quaternion4f;
+    typedef Quaternion<float64>                     Quaternion4d;
+    typedef Quaternion<uint32>                      Quaternion4u;
 
 }
 
