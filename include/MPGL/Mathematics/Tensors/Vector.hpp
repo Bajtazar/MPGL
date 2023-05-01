@@ -67,7 +67,6 @@ namespace mpgl {
          * to the square norm in the euclidean space]
          *
          * @tparam Up the result type
-         * @param init the initial value
          * @return the length of the vector
          */
         template <Arithmetic Up = Tp>
@@ -75,6 +74,8 @@ namespace mpgl {
 
         /**
          * Normalizes vector
+         *
+         * @return a reference to this object
          */
         constexpr Vector& normalize(void) noexcept;
 
@@ -229,6 +230,14 @@ namespace mpgl {
          */
         constexpr Vector& operator|=(Tp const& right)
             requires mpgl_Operable(Tp, |);
+
+        /**
+         * Returns a std::span that holds view to this vector
+         *
+         * @return the std::span that holds view to this vector
+         */
+        [[nodiscard]] constexpr operator std::span<Tp, Size>(
+            ) noexcept;
 
         /**
          * Returns a std::span that holds view to this vector
@@ -615,7 +624,7 @@ namespace mpgl {
      * Adds two vectors together
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -629,7 +638,7 @@ namespace mpgl {
      * Subtracts vector from other vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -643,7 +652,7 @@ namespace mpgl {
      * Multiplies two vectors together
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -658,7 +667,7 @@ namespace mpgl {
      * of another
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -672,7 +681,7 @@ namespace mpgl {
      * Calculates the modulo of the vector and the other vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -686,7 +695,7 @@ namespace mpgl {
      * Calculates the bitwise-xor of the vector and the other vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -700,7 +709,7 @@ namespace mpgl {
      * Calculates the bitwise-and of the vector and the other vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -714,7 +723,7 @@ namespace mpgl {
      * Calculates the bitwise-or of the vector and the other vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the left vector
      * @param right the constant reference to the right vector
      * @return the result vector
@@ -728,7 +737,7 @@ namespace mpgl {
      * Adds the scalar value to the vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -742,7 +751,7 @@ namespace mpgl {
      * Subtracts the scalar value from the vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -756,7 +765,7 @@ namespace mpgl {
      * Multiplies the vector with the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -771,7 +780,7 @@ namespace mpgl {
      * by the vector elements
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -786,7 +795,7 @@ namespace mpgl {
      * values with the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -801,7 +810,7 @@ namespace mpgl {
      * the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -816,7 +825,7 @@ namespace mpgl {
      * the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -831,7 +840,7 @@ namespace mpgl {
      * the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the vector
      * @param right the constant reference to the scalar value
      * @return the result vector
@@ -845,7 +854,7 @@ namespace mpgl {
      * Adds the scalar value to the vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
@@ -859,7 +868,7 @@ namespace mpgl {
      * Subtracts the scalar value from the vector
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
@@ -873,7 +882,7 @@ namespace mpgl {
      * Multiplies the vector with the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
@@ -888,7 +897,7 @@ namespace mpgl {
      * by the vector elements
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
@@ -903,7 +912,7 @@ namespace mpgl {
      * values with the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
@@ -918,7 +927,7 @@ namespace mpgl {
      * the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
@@ -933,7 +942,7 @@ namespace mpgl {
      * the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
@@ -948,7 +957,7 @@ namespace mpgl {
      * the scalar value
      *
      * @tparam Tp the vector's value type
-     * @tparam Rows the vector's rows
+     * @tparam Size the vector's size
      * @param left the constant reference to the scalar value
      * @param right the constant reference to the vector
      * @return the result vector
