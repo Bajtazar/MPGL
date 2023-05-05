@@ -61,22 +61,24 @@ namespace mpgl {
 
     template <bool ShaderType>
     Shader<ShaderType>::Shader(Shader&& shader) noexcept
-        : shaderID{shader.shaderID}
-    {
-        shader.shaderID = 0;
-    }
+        : shaderID{std::exchange(shader.shaderID, 0)} {}
 
     template <bool ShaderType>
     Shader<ShaderType>& Shader<ShaderType>::operator= (
         Shader&& shader) noexcept
     {
-        shaderID = shader.shaderID;
-        shader.shaderID = 0;
+        destroy();
+        shaderID = std::exchange(shader.shaderID, 0);
         return *this;
     }
 
     template <bool ShaderType>
     Shader<ShaderType>::~Shader(void) noexcept {
+        destroy();
+    }
+
+    template <bool ShaderType>
+    void Shader<ShaderType>::destroy(void) noexcept {
         if (shaderID)
             glDeleteShader(shaderID);
     }

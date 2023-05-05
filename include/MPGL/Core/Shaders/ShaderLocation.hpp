@@ -127,7 +127,7 @@ namespace mpgl {
          * @return if the given shader location is valid
          */
         [[nodiscard]] bool isValid(void) const noexcept
-            { return location == 0xFFFFFFFF; }
+            { return location != 0xFFFFFFFF; }
 
         /**
          * Returns whether the given shader location is valid

@@ -134,6 +134,12 @@ namespace mpgl {
             requires std::same_as<std::ranges::range_value_t<Range>,
                 char>
         void loadShader(Range&& range);
+
+        /**
+         * Destroys the shader object. Doesn't imply the end of the
+         * object's lifetime
+        */
+        void destroy(void) noexcept;
     };
 
     template class Shader<true>;
