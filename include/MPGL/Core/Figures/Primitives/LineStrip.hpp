@@ -127,4 +127,5 @@ namespace mpgl {
 
 }
 
+#include <MPGL/Core/Figures/Primitives/Helpers/LineStripHelpers.tpp>
 #include <MPGL/Core/Figures/Primitives/LineStrip.tpp>
