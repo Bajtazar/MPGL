@@ -94,3 +94,5 @@ namespace mpgl {
     typedef Sprite<dim::Dim3>                           Sprite3D;
 
 }
+
+#include <MPGL/Core/Textures/Sprite.tpp>
